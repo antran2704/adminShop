@@ -50,14 +50,14 @@ export default function Home() {
   };
 
   return (
-    <section className="scrollHidden relative flex flex-col items-start w-full h-full overflow-auto gap-5">
-      <div className="w-full h-[10%] mb-10">
-        <h1 className="lg:text-3xl sm:text-xl text-lg font-bold mb-1">
+    <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 lg:pt-5 pt-24 overflow-auto gap-5">
+      <div className="w-full h-[10%] lg:mb-10 mb-5">
+        <h1 className="lg:text-3xl text-2xl font-bold mb-1">
           Welcome Back Antrandev
         </h1>
-        <p className="text-base"> Manager your maketing's performence</p>
+        <p className="text-lg"> Manager your maketing's performence</p>
       </div>
-      <div className="w-full mb-10">
+      <div className="w-full lg:mb-10 mb-5">
         <h2 className="text-xl font-medium mb-4">Performance</h2>
         <div className="flex lg:flex-row flex-col items-start justify-between h-full gap-10">
           <div className="lg:w-7/12 w-full h-full bg-[#f4f7ff] rounded-xl p-5">

@@ -1,5 +1,5 @@
-import { AiOutlineSetting } from "react-icons/ai";
-import { BiLogOut } from "react-icons/bi";
+import { AiOutlineSetting, AiOutlineShoppingCart } from "react-icons/ai";
+import { BiLogOut, BiUser } from "react-icons/bi";
 import { RxDashboard } from "react-icons/rx";
 import { ReactNode } from "react";
 
@@ -17,27 +17,32 @@ const listBody: itemNav[] = [
     icon: <RxDashboard />,
   },
   {
-    name: "Dashboard",
-    path: "/",
-    icon: <RxDashboard />,
-    children: [
-      {
-        name: "Dashboard",
-        path: "/",
-      },
-    ],
+    name: "Category",
+    path: "/category",
+    icon: <AiOutlineShoppingCart />
   },
+  {
+    name: "Order",
+    path: "/order",
+    icon: <RxDashboard />,
+  },
+  {
+    name: "User",
+    path: "/user",
+    icon: <BiUser />,
+  },
+  
 ];
 
 const listSetting: itemNav[] = [
   {
     name: "Setting",
-    path: "/",
+    path: "/setting",
     icon: <AiOutlineSetting />,
   },
   {
     name: "Logout",
-    path: "/",
+    path: "/logout",
     icon: <BiLogOut />,
   },
 ];
