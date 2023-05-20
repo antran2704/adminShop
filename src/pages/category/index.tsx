@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { IoAdd } from "react-icons/io5";
+
 import ButtonShowMore from "~/components/Button/ButtonShowMore";
 import { ICategory } from "./interface";
 
@@ -9,6 +11,7 @@ const Category = () => {
   const [message, setMessage] = useState<String>("");
   const [loading, setLoading] = useState<Boolean>(true);
   const [loadingShowMore, setLoadingShowMore] = useState<Boolean>(false);
+  const [isEdit, setIsEdit] = useState<Boolean>(false);
 
   const handleGetData = async () => {
     setLoading(true);
@@ -34,7 +37,25 @@ const Category = () => {
 
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 lg:pt-5 pt-24 overflow-auto gap-5">
-      <h1 className="lg:text-3xl text-2xl font-bold mb-1">All Categories</h1>
+      <div className="w-full flex items-center justify-between mb-1 gap-10">
+        <h1 className="lg:text-3xl text-2xl font-bold">All Categories</h1>
+        {!isEdit && (
+          <button
+            onClick={() => setIsEdit(true)}
+            className=" text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
+          >
+            Edit
+          </button>
+        )}
+        {isEdit && (
+          <button
+            onClick={() => setIsEdit(false)}
+            className=" text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
+          >
+            Cancle
+          </button>
+        )}
+      </div>
 
       <ul className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 w-full gap-5">
         {categories.length > 0 &&
@@ -52,9 +73,24 @@ const Category = () => {
                 <p className="text-base font-medium text-[#1e1e1e] text-center mt-3 truncate">
                   {item.title}
                 </p>
+
+                {isEdit && (
+                  <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-2 lg:gap-5 gap-2">
+                    <button className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
+                      Delete
+                    </button>
+                    <button className="lg:w-fit w-full text-lg text-white font-medium bg-primary px-5 py-1 rounded-md">
+                      Edit
+                    </button>
+                  </div>
+                )}
               </Link>
             </li>
           ))}
+
+        {isEdit && <Link href={'/add/category'} className="flex items-center justify-center p-5 bg-gray-50 border border-gray-300 rounded-lg transition-all ease-linear duration-200">
+          <IoAdd className="md:text-6xl text-4xl" />
+        </Link>}
 
         {loading &&
           [...new Array(8)].map((item, index: number) => (
@@ -67,9 +103,13 @@ const Category = () => {
           ))}
       </ul>
 
-      <p className="w-full text-2xl text-center font-medium text-[#e91e63]">{message}</p>
+      <p className="w-full text-2xl text-center font-medium text-[#e91e63]">
+        {message}
+      </p>
 
-      {categories.length > 12 && <ButtonShowMore loading={loadingShowMore} onClick={handleGetData} />}
+      {categories.length > 12 && (
+        <ButtonShowMore loading={loadingShowMore} onClick={handleGetData} />
+      )}
     </section>
   );
 };

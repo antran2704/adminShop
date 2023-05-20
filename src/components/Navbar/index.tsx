@@ -31,10 +31,10 @@ const Navbar: FC = () => {
             alt="avatar"
             className="w-[60px] h-[60px] border rounded-full"
           />
-          <h2 className="text-xl font-medium">Antran</h2>
+          <h2 className="text-black text-xl font-medium">Antran</h2>
         </div>
         <div className="h-[60%] py-3 overflow-hidden">
-          <h3 className="text-lg font-medium mb-3">Menu</h3>
+          <h3 className="text-black text-lg font-medium mb-3">Menu</h3>
           <ul className="scrollHidden h-full pb-7 overflow-auto">
             {listBody.map((item: itemNav, index: number) => (
               <NavbarItem
@@ -46,7 +46,7 @@ const Navbar: FC = () => {
           </ul>
         </div>
         <div className="h-[30%] py-3 overflow-hidden">
-          <h3 className="text-lg font-medium mb-3">Setting</h3>
+          <h3 className="text-black text-lg font-medium mb-3">Setting</h3>
           <ul className="scrollHidden h-full pb-7 overflow-auto">
             {listSetting.map((item: itemNav, index: number) => (
               <NavbarItem

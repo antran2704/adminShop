@@ -6,8 +6,11 @@ module.exports = {
       colors: {
         primary: "#418efd",
         text: "#1E1E1E",
-        desc: "#333333"
-      }
+        desc: "#333333",
+        success: "#71be34",
+        warn: "#ffb702",
+        error: "#ff623d",
+      },
     },
   },
   plugins: [],

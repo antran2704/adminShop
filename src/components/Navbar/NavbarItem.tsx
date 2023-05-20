@@ -33,7 +33,7 @@ const NavbarItem: FC<Props> = (props: Props) => {
       {!subNav && (
         <li className="w-full mb-1">
           <Link
-            className={`w-full flex items-center text-lg font-medium px-3 py-2 ${router.asPath === data.path ? 'bg-primary text-white' : 'hover:bg-primary hover:text-white'}  rounded-lg transition-all ease-linear duration-100 gap-3`}
+            className={`w-full flex items-center text-lg font-medium px-3 py-2 ${router.asPath === data.path ? 'bg-primary text-white' : 'hover:bg-primary text-black hover:text-white'}  rounded-lg transition-all ease-linear duration-100 gap-3`}
             href={data.path}
           >
             <span>{data.icon}</span>
