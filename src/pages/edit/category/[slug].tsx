@@ -1,6 +1,7 @@
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 
 import FieldAdd from "~/components/FieldAdd";
 import Thumbnail from "~/components/Image/Thumbnail";
@@ -27,8 +28,13 @@ const initData: IDataCategory = {
   filters: [],
 };
 
-const AddCategoryPage = () => {
+interface Prop {
+  query: any;
+}
+
+const EditCategoryPage = (prop: Prop) => {
   const router = useRouter();
+  const { query } = prop;
 
   const [data, setData] = useState<IDataCategory>(initData);
   const [thumbnailUrl, setThumbnailUrl] = useState<IThumbnailUrl>({
@@ -40,7 +46,6 @@ const AddCategoryPage = () => {
     name: string,
     value: string | number | boolean
   ) => {
-    // console.log(name, value);
     setData({ ...data, [name]: value });
   };
 
@@ -59,20 +64,11 @@ const AddCategoryPage = () => {
   };
 
   const handleOnSubmit = async () => {
-    // const path =
-    //   "http://localhost:3001/uploads\\category\\1686243662008.png".replace(
-    //     "http://localhost:3001/",
-    //     "./"
-    //   );
     const formData = new FormData();
     const source: any = thumbnailUrl.source;
     formData.append("thumbnail", source);
 
     try {
-      // const payload = await axios
-      //   .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/delete`, { path })
-      //   .then((res) => res.data);
-      // console.log(payload);
       const uploadPayload = await axios
         .post(
           `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/uploadThumbnail`,
@@ -96,12 +92,41 @@ const AddCategoryPage = () => {
     }
   };
 
+  const handleGetData = async () => {
+    const slug = query.slug;
+
+    try {
+      const data = await axios
+        .get(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${slug}`)
+        .then((res) => res.data);
+
+      if (data.status === 200) {
+        setData({
+          title: data.payload.title,
+          description: data.payload.description,
+          thumbnail: data.payload.thumbnail,
+          filters: [],
+        });
+
+        setThumbnailUrl({...thumbnailUrl, url: data.payload.thumbnail});
+      }
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    handleGetData();
+  }, []);
+
   return (
     <AddLayout onSubmit={handleOnSubmit}>
       <div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">
           <FieldAdd
             title="Title"
+            value={data.title}
             widthFull={false}
             name="title"
             type="input"
@@ -112,6 +137,7 @@ const AddCategoryPage = () => {
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
           <FieldAdd
             title="Description"
+            value={data.description}
             widthFull={true}
             name="description"
             type="textarea"
@@ -130,4 +156,12 @@ const AddCategoryPage = () => {
   );
 };
 
-export default AddCategoryPage;
+export default EditCategoryPage;
+
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+  return {
+    props: {
+      query,
+    },
+  };
+};

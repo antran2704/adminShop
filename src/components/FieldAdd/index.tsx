@@ -1,9 +1,10 @@
-import { FC, ChangeEvent, MouseEvent } from "react";
+import { FC, ChangeEvent, MouseEvent, FormEvent } from "react";
 
 enum type {
   input = "input",
   select = "select",
   button = "button",
+  textarea = "textarea",
 }
 
 interface prop {
@@ -11,16 +12,24 @@ interface prop {
   widthFull: boolean;
   name: string;
   type: string;
+  value?: string;
   optionsSelect?: string[];
   isChecked?: boolean;
   onClick?: () => void;
   onGetValue: (name: string, value: string | number | boolean) => void;
 }
 const FieldAdd: FC<prop> = (prop: prop) => {
-  const handleChangeValue = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChangeInpValue = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name;
     const value = e.target.value;
 
+    prop.onGetValue(name, value);
+  };
+
+  const handleChangeTextareaValue = (e: FormEvent<HTMLTextAreaElement>) => {
+    const name = e.currentTarget.name;
+    const value = e.currentTarget.value;
+    
     prop.onGetValue(name, value);
   };
 
@@ -48,10 +57,23 @@ const FieldAdd: FC<prop> = (prop: prop) => {
         <input
           required
           name={prop.name}
-          onInput={handleChangeValue}
+          value={prop.value}
+          onInput={handleChangeInpValue}
           type="text"
           className="w-full rounded-md px-2 py-1 border-2 focus:border-gray-600 outline-none"
         />
+      )}
+
+      {prop.type === type.textarea && (
+        <textarea
+          className="w-full rounded-md px-2 py-1 border-2 focus:border-gray-600 outline-none"
+          name={prop.name}
+          value={prop.value}
+          onInput={handleChangeTextareaValue}
+          placeholder="Description about product..."
+          cols={30}
+          rows={6}
+        ></textarea>
       )}
 
       {prop.type === type.select && (

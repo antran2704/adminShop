@@ -30,6 +30,7 @@ const Thumbnail: FC<prop> = (prop: prop) => {
           onChange={prop.onChange}
           type="file"
           id="thumbnail"
+          name="thumbnail"
           className="hidden"
         />
       </label>
