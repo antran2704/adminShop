@@ -12,7 +12,7 @@ interface prop {
   widthFull: boolean;
   name: string;
   type: string;
-  value?: string;
+  value?: string | number | readonly string[] | undefined;
   optionsSelect?: string[];
   isChecked?: boolean;
   onClick?: () => void;
@@ -41,10 +41,12 @@ const FieldAdd: FC<prop> = (prop: prop) => {
   };
 
   const handleButtonValue = (e: MouseEvent<HTMLSpanElement>) => {
-    const name = e.target.dataset.name;
-    const value = !prop.isChecked;
-    prop.onGetValue(name, value);
-    prop.onClick?.();
+    if(e.currentTarget) {
+      const name = e.currentTarget.dataset.name;
+      const value = !prop.isChecked;
+      prop.onGetValue(name, value);
+      prop.onClick?.();
+    }
   };
 
   return (
@@ -81,7 +83,7 @@ const FieldAdd: FC<prop> = (prop: prop) => {
           name={prop.name}
           onChange={handleSelectValue}
           className="w-full rounded-md px-2 py-1 border-2 focus:border-gray-600 outline-none"
-          defaultValue="Choose category"
+          defaultValue={prop.value}
         >
           <option disabled>Choose category</option>
           {prop.optionsSelect?.map((item: string, index: number) => (

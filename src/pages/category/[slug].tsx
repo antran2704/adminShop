@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { Fragment, useState } from "react";
+
+import { ICategory } from "./interface";
 import ButtonShowMore from "~/components/Button/ButtonShowMore";
+import CategoryLayout from "~/layouts/CategoryLayout";
 
 interface Props {
   query: any;
@@ -9,23 +12,39 @@ interface Props {
 
 const CategoryItem = (props: Props) => {
   const { slug } = props.query;
-  const [loadingShowMore, setLoadingShowMore] = useState(false);
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [message, setMessage] = useState<string>("");
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
 
-  const handleGetData = () => {
-    setLoadingShowMore(true);
+  // const handleGetData = () => {
+  //   setLoadingShowMore(true);
 
-    setTimeout(() => {
-      setLoadingShowMore(false);
-    }, 4000);
+  //   setTimeout(() => {
+  //     setLoadingShowMore(false);
+  //   }, 4000);
+  // };
+
+  const handleDeleteCategory = async (item: string | null) => {
+    console.log("delete");
   };
 
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 lg:pt-5 pt-24 overflow-auto gap-5">
-      <h1 className="lg:text-3xl text-2xl font-bold mb-1">
-        Products in {slug}
-      </h1>
-
-      <ul className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 w-full gap-5">
+      <CategoryLayout
+        itemId={categoryId}
+        title={`Products in ${slug}`}
+        linkAddItem="/add/product"
+        message={message}
+        loading={loading}
+        isEdit={isEdit}
+        isShowPopup={showPopup}
+        onEdit={() => setIsEdit(!isEdit)}
+        onShowPopup={() => setShowPopup(!showPopup)}
+        onDeleteItem={handleDeleteCategory}
+      >
         <li className="relative md:p-4 p-3 hover:shadow-lg bg-gray-50 rounded-md border border-gray-300 transition-all ease-linear duration-200">
           <Link href={`/product/test`} className="w-ful">
             <img
@@ -57,17 +76,30 @@ const CategoryItem = (props: Props) => {
           <span className="absolute top-2 right-2 text-xs font-medium py-0.5 px-2 bg-primary text-white rounded">
             25 %
           </span>
-        </li>
-        <li>
-          <div className="block p-5 bg-gray-50 border border-gray-300 rounded-lg transition-all ease-linear duration-200">
-            <div className="skelaton w-full h-[300px] rounded-xl"></div>
-            <p className="skelaton h-5 text-base font-medium text-[#1e1e1e] text-center mt-3 rounded-md"></p>
-            <p className="skelaton w-1/2 h-5 text-base font-medium text-[#1e1e1e] text-center mt-3 rounded-md"></p>
-          </div>
-        </li>
-      </ul>
 
-      <ButtonShowMore loading={loadingShowMore} onClick={handleGetData} />
+          {isEdit && (
+            <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-2 lg:gap-5 gap-2">
+              <button
+                onClick={() => {
+                  setCategoryId("1");
+                  setShowPopup(true);
+                }}
+                className="lg:w-fit w-full text-lg text-center text-white font-medium bg-error px-5 py-1 rounded-md"
+              >
+                Delete
+              </button>
+              <Link
+                href={`/edit/project/test`}
+                className="lg:w-fit w-full text-lg text-center text-white font-medium bg-primary px-5 py-1 rounded-md"
+              >
+                Edit
+              </Link>
+            </div>
+          )}
+        </li>
+      </CategoryLayout>
+
+      {/* <ButtonShowMore loading={loadingShowMore} onClick={handleGetData} /> */}
     </section>
   );
 };

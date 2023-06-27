@@ -190,7 +190,7 @@ const AddProductPage = () => {
             widthFull={false}
             name="status"
             type="select"
-            optionsSelect={["1", "2"]}
+            optionsSelect={["In stock", "Out of stock"]}
             onGetValue={handleChangeValue}
           />
         </div>
@@ -248,9 +248,23 @@ const AddProductPage = () => {
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
           <div className="lg:w-1/2 w-full">
-            <span className="block text-base text-[#1E1E1E] font-medium">
-              Options
-            </span>
+            <div className="flex lg:flex-nowrap flex-wrap items-center justify-between pt-5 lg:gap-5 gap-2">
+              <span className="block text-base text-[#1E1E1E] font-medium">
+                Options
+              </span>
+              <button
+                onClick={() => {
+                  if (optionRef.current) {
+                    optionRef.current.value = "";
+                  }
+                  setEditOption(false);
+                  setShowOption(!showOption);
+                }}
+                className="w-fit text-lg text-white font-medium bg-success px-5 py-1 rounded-md"
+              >
+                +
+              </button>
+            </div>
 
             {listOption.map((item: IListOption, indexParent: number) => (
               <ul
@@ -265,7 +279,7 @@ const AddProductPage = () => {
                       getOptionItemEdit(indexParent, indexChildren);
                     }}
                     key={indexChildren}
-                    className={`w-fit text-base text-white font-medium bg-gray-600 px-2 py-1 rounded-md ${
+                    className={`w-fit text-base text-white font-medium bg-gray-600 px-2 py-1 rounded-md cursor-pointer ${
                       !option.status && "opacity-60"
                     }`}
                   >
@@ -297,21 +311,6 @@ const AddProductPage = () => {
                 </button>
               </ul>
             ))}
-
-            <div className="flex lg:flex-nowrap flex-wrap items-center justify-between pt-5 lg:gap-5 gap-2">
-              <button
-                onClick={() => {
-                  if (optionRef.current) {
-                    optionRef.current.value = "";
-                  }
-                  setEditOption(false);
-                  setShowOption(!showOption);
-                }}
-                className="w-fit text-lg text-white font-medium bg-success px-5 py-1 rounded-md"
-              >
-                + Add option
-              </button>
-            </div>
           </div>
         </div>
 
@@ -418,6 +417,7 @@ const AddProductPage = () => {
               <div className="flex lg:flex-nowrap flex-wrap items-center justify-between pt-5 lg:gap-5 gap-2">
                 <button
                   type="button"
+                  onClick={() => setShowOptionItem(!showOptionItem)}
                   className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
                 >
                   Cancle

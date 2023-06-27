@@ -6,7 +6,7 @@ import { useState, ChangeEvent, useEffect } from "react";
 import FieldAdd from "~/components/FieldAdd";
 import Thumbnail from "~/components/Image/Thumbnail";
 
-import { uploadImage } from "~/helper/handleImage";
+import { deleteImageInSever, uploadImage } from "~/helper/handleImage";
 import AddLayout from "~/layouts/AddLayout";
 
 interface IThumbnailUrl {
@@ -15,6 +15,7 @@ interface IThumbnailUrl {
 }
 
 interface IDataCategory {
+  id: string;
   title: string;
   description: string;
   thumbnail: string;
@@ -22,6 +23,7 @@ interface IDataCategory {
 }
 
 const initData: IDataCategory = {
+  id: "",
   title: "",
   description: "",
   thumbnail: "",
@@ -58,34 +60,53 @@ const EditCategoryPage = (prop: Prop) => {
         const url: string = uploadImage(e.target);
 
         setThumbnailUrl({ source, url });
-        setData({ ...data, [name]: { url, source } });
       }
     }
   };
 
   const handleOnSubmit = async () => {
-    const formData = new FormData();
-    const source: any = thumbnailUrl.source;
-    formData.append("thumbnail", source);
-
     try {
-      const uploadPayload = await axios
-        .post(
-          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/uploadThumbnail`,
-          formData
-        )
-        .then((res) => res.data);
+      if (data.thumbnail !== thumbnailUrl.url) {
+        const formData = new FormData();
+        const source: any = thumbnailUrl.source;
+        formData.append("thumbnail", source);
+        const deleteImagePayload = await deleteImageInSever(data.thumbnail);
+        if (deleteImagePayload.status === 200) {
+          const uploadPayload = await axios
+            .post(
+              `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/uploadThumbnail`,
+              formData
+            )
+            .then((res) => res.data);
+            console.log(uploadPayload)
 
-      const payload = await axios
-        .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/category`, {
-          ...data,
-          thumbnail: uploadPayload.payload.thumbnail,
-        })
-        .then((res) => res.data);
+          const payload = await axios
+            .patch(
+              `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${data.id}`,
+              {
+                ...data,
+                thumbnail: uploadPayload.payload.thumbnail,
+              }
+            )
+            .then((res) => res.data);
 
-      if (payload.status === 200) {
-        console.log("upload successfully");
-        router.back();
+          if (payload.status === 200) {
+            router.back();
+          }
+        }
+      } else {
+        const payload = await axios
+          .patch(
+            `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${data.id}`,
+            {
+              ...data,
+            }
+          )
+          .then((res) => res.data);
+
+        if (payload.status === 200) {
+          router.back();
+        }
       }
     } catch (error) {
       console.log(error);
@@ -102,15 +123,15 @@ const EditCategoryPage = (prop: Prop) => {
 
       if (data.status === 200) {
         setData({
+          id: data.payload._id,
           title: data.payload.title,
           description: data.payload.description,
           thumbnail: data.payload.thumbnail,
           filters: [],
         });
 
-        setThumbnailUrl({...thumbnailUrl, url: data.payload.thumbnail});
+        setThumbnailUrl({ ...thumbnailUrl, url: data.payload.thumbnail });
       }
-      console.log(data);
     } catch (error) {
       console.log(error);
     }
