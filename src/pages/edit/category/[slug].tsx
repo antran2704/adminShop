@@ -1,33 +1,34 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { useState, ChangeEvent, useEffect } from "react";
+import { useState, useEffect } from "react";
 
-import FieldAdd from "~/components/FieldAdd";
-import Thumbnail from "~/components/Image/Thumbnail";
-
-import { deleteImageInSever, uploadImage } from "~/helper/handleImage";
-import AddLayout from "~/layouts/AddLayout";
+import { deleteImageInSever } from "~/helper/handleImage";
+import HandleLayout from "~/pages/add/category/HandleLayout";
 
 interface IThumbnailUrl {
   source: FileList | {};
   url: string;
 }
 
+interface IOption {
+  title: string;
+}
+
 interface IDataCategory {
-  id: string;
+  id: string | null;
   title: string;
   description: string;
   thumbnail: string;
-  filters: string[];
+  options: IOption[];
 }
 
 const initData: IDataCategory = {
-  id: "",
+  id: null,
   title: "",
   description: "",
   thumbnail: "",
-  filters: [],
+  options: [],
 };
 
 interface Prop {
@@ -39,32 +40,62 @@ const EditCategoryPage = (prop: Prop) => {
   const { query } = prop;
 
   const [data, setData] = useState<IDataCategory>(initData);
+  const [selectOptionIndex, setSelectOptionIndex] = useState<number | null>(
+    null
+  );
+
   const [thumbnailUrl, setThumbnailUrl] = useState<IThumbnailUrl>({
     source: {},
     url: "",
   });
 
-  const handleChangeValue = (
-    name: string,
-    value: string | number | boolean
-  ) => {
+  const changeValue = (name: string, value: string | number | boolean) => {
     setData({ ...data, [name]: value });
   };
 
-  const handleUploadThumbnail = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const file = e.target.files[0];
-      if (/^image\//.test(file.type)) {
-        const name = e.target.name;
-        const source: object = file;
-        const url: string = uploadImage(e.target);
+  const uploadThumbnail = (source: object, url: string, name: string) => {
+    if (source && url) {
+      setThumbnailUrl({ source, url });
+      setData({ ...data, [name]: url });
+    }
+  };
 
-        setThumbnailUrl({ source, url });
-      }
+  const addOption = (newOption: string) => {
+    setData({ ...data, options: [...data.options, { title: newOption }] });
+  };
+
+  const selectOption = (text: string, index: number) => {
+    setSelectOptionIndex(index);
+  };
+
+  const editOption = (newOption: string) => {
+    if (selectOptionIndex !== null) {
+      const oldOptions = data.options;
+
+      oldOptions[selectOptionIndex].title = newOption;
+
+      setData({ ...data, options: [...oldOptions] });
+    }
+  };
+
+  const deleteOption = () => {
+    if (selectOptionIndex) {
+      const oldOptions = data.options;
+
+      oldOptions.splice(selectOptionIndex, 1);
+      setData({ ...data, options: [...oldOptions] });
     }
   };
 
   const handleOnSubmit = async () => {
+    let payload;
+    let currentData = {
+      title: data.title,
+      description: data.description,
+      thumbnai: data.thumbnail,
+      options: data.options,
+    };
+
     try {
       if (data.thumbnail !== thumbnailUrl.url) {
         const formData = new FormData();
@@ -78,9 +109,9 @@ const EditCategoryPage = (prop: Prop) => {
               formData
             )
             .then((res) => res.data);
-            console.log(uploadPayload)
+          console.log("thay doi anh thanh cong");
 
-          const payload = await axios
+          payload = await axios
             .patch(
               `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${data.id}`,
               {
@@ -89,24 +120,18 @@ const EditCategoryPage = (prop: Prop) => {
               }
             )
             .then((res) => res.data);
-
-          if (payload.status === 200) {
-            router.back();
-          }
         }
       } else {
-        const payload = await axios
+        payload = await axios
           .patch(
             `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${data.id}`,
-            {
-              ...data,
-            }
+            data
           )
           .then((res) => res.data);
+      }
 
-        if (payload.status === 200) {
-          router.back();
-        }
+      if (payload.status === 200) {
+        router.back();
       }
     } catch (error) {
       console.log(error);
@@ -120,14 +145,14 @@ const EditCategoryPage = (prop: Prop) => {
       const data = await axios
         .get(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${slug}`)
         .then((res) => res.data);
-
+      console.log(data);
       if (data.status === 200) {
         setData({
           id: data.payload._id,
           title: data.payload.title,
           description: data.payload.description,
           thumbnail: data.payload.thumbnail,
-          filters: [],
+          options: data.payload.options.list || [],
         });
 
         setThumbnailUrl({ ...thumbnailUrl, url: data.payload.thumbnail });
@@ -142,38 +167,18 @@ const EditCategoryPage = (prop: Prop) => {
   }, []);
 
   return (
-    <AddLayout onSubmit={handleOnSubmit}>
-      <div>
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">
-          <FieldAdd
-            title="Title"
-            value={data.title}
-            widthFull={false}
-            name="title"
-            type="input"
-            onGetValue={handleChangeValue}
-          />
-        </div>
-
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          <FieldAdd
-            title="Description"
-            value={data.description}
-            widthFull={true}
-            name="description"
-            type="textarea"
-            onGetValue={handleChangeValue}
-          />
-        </div>
-
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          <Thumbnail
-            thumbnailUrl={thumbnailUrl.url}
-            onChange={handleUploadThumbnail}
-          />
-        </div>
-      </div>
-    </AddLayout>
+    <HandleLayout
+      data={data}
+      thumbnailUrl={thumbnailUrl}
+      selectOptionIndex={selectOptionIndex}
+      handleChangeValue={changeValue}
+      uploadThumbnail={uploadThumbnail}
+      addOption={addOption}
+      selectOption={selectOption}
+      editOption={editOption}
+      deleteOption={deleteOption}
+      handleOnSubmit={handleOnSubmit}
+    />
   );
 };
 

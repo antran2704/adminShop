@@ -5,7 +5,7 @@ interface prop {
     onSubmit?: () => void;
 }
 
-const AddLayout: ForwardRefRenderFunction<HTMLUListElement, prop> = (prop: prop, ref: Ref<HTMLUListElement> | undefined) => {
+const FormLayout: ForwardRefRenderFunction<HTMLUListElement, prop> = (prop: prop, ref: Ref<HTMLUListElement> | undefined) => {
   return (
     <section className="scrollHidden w-full h-screen px-5 pb-5 lg:pt-5 pt-24 overflow-auto">
       <h1 className="lg:text-2xl text-xl font-bold mb-2">Add Category</h1>
@@ -26,4 +26,4 @@ const AddLayout: ForwardRefRenderFunction<HTMLUListElement, prop> = (prop: prop,
   );
 };
 
-export default forwardRef(AddLayout);
+export default forwardRef(FormLayout);

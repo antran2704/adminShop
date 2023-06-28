@@ -4,7 +4,7 @@ import Gallery from "~/components/Image/Gallery";
 import Thumbnail from "~/components/Image/Thumbnail";
 import Popup from "~/components/Popup";
 import { deleteGallery, uploadImage } from "~/helper/handleImage";
-import AddLayout from "~/layouts/AddLayout";
+import AddLayout from "~/layouts/FormLayout";
 
 interface IOption {
   name: string;
