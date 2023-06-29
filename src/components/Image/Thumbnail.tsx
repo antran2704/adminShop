@@ -1,12 +1,25 @@
 import { FC, ChangeEvent } from "react";
 import { IoAdd } from "react-icons/io5";
+import { uploadImage } from "~/helper/handleImage";
+
+import { IThumbnail } from "~/interface/image";
 
 interface prop {
-    thumbnailUrl: string;
-    onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  thumbnailUrl: string | null;
+  onChange: (source: File, urlBase64: string) => void;
 }
 
 const Thumbnail: FC<prop> = (prop: prop) => {
+  const hanldeChangeGallery = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const file = e.target.files[0];
+      if (/^image\//.test(file.type)) {
+        const source: File = file;
+        const url: string = uploadImage(e.target);
+        prop.onChange(source, url);
+      }
+    }
+  };
   return (
     <div className="lg:w-1/2 w-full">
       <span className="block text-base text-[#1E1E1E] font-medium mb-1">
@@ -24,10 +37,14 @@ const Thumbnail: FC<prop> = (prop: prop) => {
           </>
         )}
         {prop.thumbnailUrl && (
-          <img src={prop.thumbnailUrl} alt="thumbnail" className="w-full h-full" />
+          <img
+            src={prop.thumbnailUrl}
+            alt="thumbnail"
+            className="w-full h-full"
+          />
         )}
         <input
-          onChange={prop.onChange}
+          onChange={hanldeChangeGallery}
           type="file"
           id="thumbnail"
           name="thumbnail"

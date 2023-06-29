@@ -6,38 +6,16 @@ import Thumbnail from "~/components/Image/Thumbnail";
 import { uploadImage } from "~/helper/handleImage";
 import FormLayout from "~/layouts/FormLayout";
 import Popup from "~/components/Popup";
-
-interface IThumbnailUrl {
-  source: FileList | {};
-  url: string;
-}
-
-interface IOption {
-  title: string;
-}
-
-interface IDataCategory {
-  title: string;
-  description: string;
-  thumbnail: string;
-  options: IOption[];
-}
-
-const initData: IDataCategory = {
-  title: "",
-  description: "",
-  thumbnail: "",
-  options: [],
-};
+import { IThumbnailUrl, IOption, IDataCategory } from "~/interface/category";
 
 interface Props {
   data: IDataCategory;
   selectOptionIndex: number | null;
   thumbnailUrl: IThumbnailUrl;
   handleChangeValue: (name: string, value: string | number | boolean) => void;
-  uploadThumbnail: (source: object, url: string, name: string) => void;
+  uploadThumbnail: (source: object, url: string) => void;
   addOption: (newOption: string) => void;
-  selectOption: (text: string, index: number) => void;
+  selectOption: (index: number) => void;
   editOption: (newOption: string) => void;
   deleteOption: () => void;
   handleOnSubmit: () => void;
@@ -56,16 +34,8 @@ const HandleLayout: FC<Props> = (props: Props) => {
     props.handleChangeValue(name, value);
   };
 
-  const handleUploadThumbnail = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const file = e.target.files[0];
-      if (/^image\//.test(file.type)) {
-        const name = e.target.name;
-        const source: object = file;
-        const url: string = uploadImage(e.target);
-        props.uploadThumbnail(source, url, name);
-      }
-    }
+  const handleUploadThumbnail = (source: File, urlBase64: string) => {
+    props.uploadThumbnail(source, urlBase64);
   };
 
   const handleShowPopup = () => {
@@ -83,7 +53,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
   const handleSelectOption = (text: string, index: number) => {
     if (optionRef.current) {
       optionRef.current.value = text;
-      props.selectOption(text, index);
+      props.selectOption(index);
       setEditOption(true);
       setShowOption(true);
     }
@@ -98,7 +68,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
   };
 
   const handleDeleteOption = () => {
-    if (optionRef.current && props.selectOptionIndex) {
+    if (optionRef.current && props.selectOptionIndex !== null) {
       optionRef.current.value = "";
       props.deleteOption();
       setShowOption(false);
@@ -106,11 +76,11 @@ const HandleLayout: FC<Props> = (props: Props) => {
   };
 
   useEffect(() => {
-    if(!showOption && optionRef.current) {
-        setEditOption(false);
-        optionRef.current.value = "";
+    if (!showOption && optionRef.current) {
+      setEditOption(false);
+      optionRef.current.value = "";
     }
-  }, [showOption])
+  }, [showOption]);
   return (
     <FormLayout onSubmit={props.handleOnSubmit}>
       <div>

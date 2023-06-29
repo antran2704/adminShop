@@ -1,4 +1,5 @@
 import axios from "axios";
+import { IThumbnail } from "~/interface/image";
 
 const uploadImage = (el: Element) => {
   const target = el as HTMLInputElement;
@@ -14,14 +15,13 @@ const deleteImageInSever = async (filePath: string) => {
     const payload = await axios
       .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/delete`, { path })
       .then((res) => res.data);
-    console.log(payload)
     return payload;
   } catch (error) {
     console.log(error);
   }
 };
 
-const deleteGallery = (index: number, gallery: string[]) => {
+const deleteGallery = (index: number, gallery: IThumbnail[]) => {
   gallery.splice(index, 1);
 
   return gallery;

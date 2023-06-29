@@ -2,8 +2,6 @@ import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { Fragment, useState } from "react";
 
-import { ICategory } from "./interface";
-import ButtonShowMore from "~/components/Button/ButtonShowMore";
 import CategoryLayout from "~/layouts/CategoryLayout";
 
 interface Props {
@@ -12,20 +10,12 @@ interface Props {
 
 const CategoryItem = (props: Props) => {
   const { slug } = props.query;
-  const [categories, setCategories] = useState<ICategory[]>([]);
+  // const [categories, setCategories] = useState<ICategory[]>([]);
   const [message, setMessage] = useState<string>("");
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [showPopup, setShowPopup] = useState<boolean>(false);
-
-  // const handleGetData = () => {
-  //   setLoadingShowMore(true);
-
-  //   setTimeout(() => {
-  //     setLoadingShowMore(false);
-  //   }, 4000);
-  // };
 
   const handleDeleteCategory = async (item: string | null) => {
     console.log("delete");
@@ -99,7 +89,6 @@ const CategoryItem = (props: Props) => {
         </li>
       </CategoryLayout>
 
-      {/* <ButtonShowMore loading={loadingShowMore} onClick={handleGetData} /> */}
     </section>
   );
 };

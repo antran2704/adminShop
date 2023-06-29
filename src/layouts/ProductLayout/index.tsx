@@ -2,12 +2,12 @@ import Link from "next/link";
 import { FC } from "react";
 import { IoAdd } from "react-icons/io5";
 
+import { ICategory } from "~/pages/category/interface";
 import Popup from "~/components/Popup";
-import { IDataCategory } from "~/interface/category";
 
 interface prop {
   children: JSX.Element;
-  item: IDataCategory | null;
+  item: ICategory | null;
   title: string;
   message: string;
   linkAddItem: string;
@@ -16,10 +16,10 @@ interface prop {
   isShowPopup: boolean;
   onEdit: () => void;
   onShowPopup: () => void;
-  onDeleteItem: (item: IDataCategory) => void;
+  onDeleteItem: (item: ICategory) => void;
 }
 
-const CategoryLayout: FC<prop> = (prop: prop) => {
+const ProductLayout: FC<prop> = (prop: prop) => {
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 lg:pt-5 pt-24 overflow-auto gap-5">
       <div className="w-full flex items-center justify-between mb-1 gap-10">
@@ -91,4 +91,4 @@ const CategoryLayout: FC<prop> = (prop: prop) => {
   );
 };
 
-export default CategoryLayout;
+export default ProductLayout;

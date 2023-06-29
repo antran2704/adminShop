@@ -1,4 +1,5 @@
 import { FC, ChangeEvent, MouseEvent, FormEvent } from "react";
+import handleCheckValidNumber from "~/helper/checkNumber";
 
 enum type {
   input = "input",
@@ -21,15 +22,26 @@ interface prop {
 const FieldAdd: FC<prop> = (prop: prop) => {
   const handleChangeInpValue = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name;
-    const value = e.target.value;
+    let value = e.target.value;
 
-    prop.onGetValue(name, value);
+    if (name.toLowerCase().includes("price")) {
+      const valid = handleCheckValidNumber(value);
+      if (valid) {
+        prop.onGetValue(name, value);
+      }
+      if(value.length <= 0) {
+        value = "";
+        prop.onGetValue(name, value);
+      }
+    } else {
+      prop.onGetValue(name, value);
+    }
   };
 
   const handleChangeTextareaValue = (e: FormEvent<HTMLTextAreaElement>) => {
     const name = e.currentTarget.name;
     const value = e.currentTarget.value;
-    
+
     prop.onGetValue(name, value);
   };
 
@@ -41,11 +53,10 @@ const FieldAdd: FC<prop> = (prop: prop) => {
   };
 
   const handleButtonValue = (e: MouseEvent<HTMLSpanElement>) => {
-    if(e.currentTarget) {
+    if (e.currentTarget) {
       const name = e.currentTarget.dataset.name;
       const value = !prop.isChecked;
       prop.onGetValue(name, value);
-      prop.onClick?.();
     }
   };
 

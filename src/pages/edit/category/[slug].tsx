@@ -4,24 +4,8 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 
 import { deleteImageInSever } from "~/helper/handleImage";
-import HandleLayout from "~/pages/add/category/HandleLayout";
-
-interface IThumbnailUrl {
-  source: FileList | {};
-  url: string;
-}
-
-interface IOption {
-  title: string;
-}
-
-interface IDataCategory {
-  id: string | null;
-  title: string;
-  description: string;
-  thumbnail: string;
-  options: IOption[];
-}
+import HandleLayout from "~/layouts/CategoryLayout/HandleLayout";
+import { IThumbnailUrl, IDataCategory } from "~/interface/category";
 
 const initData: IDataCategory = {
   id: null,
@@ -40,6 +24,7 @@ const EditCategoryPage = (prop: Prop) => {
   const { query } = prop;
 
   const [data, setData] = useState<IDataCategory>(initData);
+  const [optionId, setOptionId] = useState<string | null>(null);
   const [selectOptionIndex, setSelectOptionIndex] = useState<number | null>(
     null
   );
@@ -53,10 +38,9 @@ const EditCategoryPage = (prop: Prop) => {
     setData({ ...data, [name]: value });
   };
 
-  const uploadThumbnail = (source: object, url: string, name: string) => {
+  const uploadThumbnail = (source: object, url: string) => {
     if (source && url) {
       setThumbnailUrl({ source, url });
-      setData({ ...data, [name]: url });
     }
   };
 
@@ -64,7 +48,7 @@ const EditCategoryPage = (prop: Prop) => {
     setData({ ...data, options: [...data.options, { title: newOption }] });
   };
 
-  const selectOption = (text: string, index: number) => {
+  const selectOption = (index: number) => {
     setSelectOptionIndex(index);
   };
 
@@ -79,7 +63,7 @@ const EditCategoryPage = (prop: Prop) => {
   };
 
   const deleteOption = () => {
-    if (selectOptionIndex) {
+    if (selectOptionIndex !== null) {
       const oldOptions = data.options;
 
       oldOptions.splice(selectOptionIndex, 1);
@@ -89,11 +73,12 @@ const EditCategoryPage = (prop: Prop) => {
 
   const handleOnSubmit = async () => {
     let payload;
-    let currentData = {
+    let sendData = {
       title: data.title,
       description: data.description,
-      thumbnai: data.thumbnail,
+      thumbnail: data.thumbnail,
       options: data.options,
+      optionId: optionId,
     };
 
     try {
@@ -109,13 +94,12 @@ const EditCategoryPage = (prop: Prop) => {
               formData
             )
             .then((res) => res.data);
-          console.log("thay doi anh thanh cong");
-
+          console.log("thay doi anh");
           payload = await axios
             .patch(
               `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${data.id}`,
               {
-                ...data,
+                ...sendData,
                 thumbnail: uploadPayload.payload.thumbnail,
               }
             )
@@ -125,7 +109,7 @@ const EditCategoryPage = (prop: Prop) => {
         payload = await axios
           .patch(
             `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${data.id}`,
-            data
+            sendData
           )
           .then((res) => res.data);
       }
@@ -145,7 +129,6 @@ const EditCategoryPage = (prop: Prop) => {
       const data = await axios
         .get(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${slug}`)
         .then((res) => res.data);
-      console.log(data);
       if (data.status === 200) {
         setData({
           id: data.payload._id,
@@ -154,7 +137,7 @@ const EditCategoryPage = (prop: Prop) => {
           thumbnail: data.payload.thumbnail,
           options: data.payload.options.list || [],
         });
-
+        setOptionId(data.payload.options._id);
         setThumbnailUrl({ ...thumbnailUrl, url: data.payload.thumbnail });
       }
     } catch (error) {

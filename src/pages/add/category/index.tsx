@@ -2,23 +2,8 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { useState } from "react";
 
-import HandleLayout from "./HandleLayout";
-
-interface IThumbnailUrl {
-  source: FileList | {};
-  url: string;
-}
-
-interface IOption {
-  title: string;
-}
-
-interface IDataCategory {
-  title: string;
-  description: string;
-  thumbnail: string;
-  options: IOption[];
-}
+import { IThumbnailUrl, IDataCategory } from "~/interface/category";
+import HandleLayout from "~/layouts/CategoryLayout/HandleLayout";
 
 const initData: IDataCategory = {
   title: "",
@@ -43,10 +28,10 @@ const AddCategoryPage = () => {
     setData({ ...data, [name]: value });
   };
 
-  const uploadThumbnail = (source: object, url: string, name: string) => {
+  const uploadThumbnail = (source: object, url: string) => {
     if (source && url) {
       setThumbnailUrl({ source, url });
-      setData({ ...data, [name]: url });
+      setData({ ...data, thumbnail: url });
     }
   };
 
@@ -54,7 +39,7 @@ const AddCategoryPage = () => {
     setData({ ...data, options: [...data.options, { title: newOption }] });
   };
 
-  const selectOption = (text: string, index: number) => {
+  const selectOption = (index: number) => {
     setSelectOptionIndex(index);
   };
 
