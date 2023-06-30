@@ -10,7 +10,7 @@ interface prop {
 }
 
 const Thumbnail: FC<prop> = (prop: prop) => {
-  const hanldeChangeGallery = (e: ChangeEvent<HTMLInputElement>) => {
+  const hanldeChangeThumbnail = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
       if (/^image\//.test(file.type)) {
@@ -44,7 +44,7 @@ const Thumbnail: FC<prop> = (prop: prop) => {
           />
         )}
         <input
-          onChange={hanldeChangeGallery}
+          onChange={hanldeChangeThumbnail}
           type="file"
           id="thumbnail"
           name="thumbnail"

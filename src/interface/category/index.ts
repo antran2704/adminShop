@@ -8,7 +8,8 @@ interface IOption {
 }
 
 interface IDataCategory {
-  id?: string | null;
+  _id?: string | null;
+  slug?: string;
   title: string;
   description: string;
   thumbnail: string;

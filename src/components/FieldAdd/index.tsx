@@ -1,4 +1,4 @@
-import { FC, ChangeEvent, MouseEvent, FormEvent } from "react";
+import { FC, ChangeEvent, MouseEvent, FormEvent, memo } from "react";
 import handleCheckValidNumber from "~/helper/checkNumber";
 
 enum type {
@@ -8,33 +8,39 @@ enum type {
   textarea = "textarea",
 }
 
-interface prop {
+interface IOptionSelect {
+  _id: string;
+  title: string;
+  options?: string;
+}
+
+interface props {
   title: string;
   widthFull: boolean;
   name: string;
   type: string;
   value?: string | number | readonly string[] | undefined;
-  optionsSelect?: string[];
+  optionsSelect?: IOptionSelect[];
   isChecked?: boolean;
+  checkValidNumber?: boolean
   onClick?: () => void;
-  onGetValue: (name: string, value: string | number | boolean) => void;
+  onGetValue: (name: string | undefined, value: string | number | boolean) => void;
 }
-const FieldAdd: FC<prop> = (prop: prop) => {
+const FieldAdd: FC<props> = (props: props) => {
   const handleChangeInpValue = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name;
     let value = e.target.value;
-
-    if (name.toLowerCase().includes("price")) {
+    if (props.checkValidNumber) {
       const valid = handleCheckValidNumber(value);
       if (valid) {
-        prop.onGetValue(name, value);
+        props.onGetValue(name, value);
       }
       if(value.length <= 0) {
         value = "";
-        prop.onGetValue(name, value);
+        props.onGetValue(name, value);
       }
     } else {
-      prop.onGetValue(name, value);
+      props.onGetValue(name, value);
     }
   };
 
@@ -42,46 +48,46 @@ const FieldAdd: FC<prop> = (prop: prop) => {
     const name = e.currentTarget.name;
     const value = e.currentTarget.value;
 
-    prop.onGetValue(name, value);
+    props.onGetValue(name, value);
   };
 
   const handleSelectValue = (e: ChangeEvent<HTMLSelectElement>) => {
     const name = e.target.name;
     const value = e.target.value;
 
-    prop.onGetValue(name, value);
+    props.onGetValue(name, value);
   };
 
   const handleButtonValue = (e: MouseEvent<HTMLSpanElement>) => {
     if (e.currentTarget) {
       const name = e.currentTarget.dataset.name;
-      const value = !prop.isChecked;
-      prop.onGetValue(name, value);
+      const value = !props.isChecked;
+      props.onGetValue(name, value);
     }
   };
 
   return (
-    <div className={`${!prop.widthFull && "lg:w-1/2"} w-full`}>
+    <div className={`${!props.widthFull && "lg:w-1/2"} w-full`}>
       <span className="block text-base text-[#1E1E1E] font-medium mb-1">
-        {prop.title}
+        {props.title}
       </span>
 
-      {prop.type === type.input && (
+      {props.type === type.input && (
         <input
           required
-          name={prop.name}
-          value={prop.value}
+          name={props.name}
+          value={props.value}
           onInput={handleChangeInpValue}
           type="text"
           className="w-full rounded-md px-2 py-1 border-2 focus:border-gray-600 outline-none"
         />
       )}
 
-      {prop.type === type.textarea && (
+      {props.type === type.textarea && (
         <textarea
           className="w-full rounded-md px-2 py-1 border-2 focus:border-gray-600 outline-none"
-          name={prop.name}
-          value={prop.value}
+          name={props.name}
+          value={props.value}
           onInput={handleChangeTextareaValue}
           placeholder="Description about product..."
           cols={30}
@@ -89,33 +95,33 @@ const FieldAdd: FC<prop> = (prop: prop) => {
         ></textarea>
       )}
 
-      {prop.type === type.select && (
+      {props.type === type.select && (
         <select
-          name={prop.name}
+          name={props.name}
           onChange={handleSelectValue}
           className="w-full rounded-md px-2 py-1 border-2 focus:border-gray-600 outline-none"
-          defaultValue={prop.value}
+          defaultValue={props.value}
         >
           <option disabled>Choose category</option>
-          {prop.optionsSelect?.map((item: string, index: number) => (
-            <option key={index} value={item}>
-              {item}
+          {props.optionsSelect?.map((item: IOptionSelect) => (
+            <option key={item._id} value={item.options ? item.options : item._id}>
+              {item.title}
             </option>
           ))}
         </select>
       )}
 
-      {prop.type === type.button && (
+      {props.type === type.button && (
         <button
           className={`relative w-[60px] h-8 ${
-            !prop.isChecked ? "bg-black" : "bg-success"
+            !props.isChecked ? "bg-black" : "bg-success"
           } rounded-3xl transition-all ease-linear duration-200`}
         >
           <span
-            data-name={prop.name}
+            data-name={props.name}
             onClick={handleButtonValue}
             className={`absolute top-1/2 ${
-              prop.isChecked ? "left-1/2" : "left-1"
+              props.isChecked ? "left-1/2" : "left-1"
             } -translate-y-1/2 block rounded-full w-6 h-6 bg-white transition-all ease-linear duration-100`}
           ></span>
         </button>
@@ -124,4 +130,4 @@ const FieldAdd: FC<prop> = (prop: prop) => {
   );
 };
 
-export default FieldAdd;
+export default memo(FieldAdd);

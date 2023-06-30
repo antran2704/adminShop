@@ -1,29 +1,23 @@
-import { useState, useRef, ChangeEvent, FC, useEffect, FormEvent } from "react";
+import { useState, useRef, FC, useEffect, memo, useCallback } from "react";
 
 import FormLayout from "../FormLayout";
 import FieldAdd from "~/components/FieldAdd";
 import Thumbnail from "~/components/Image/Thumbnail";
 import Gallery from "~/components/Image/Gallery";
 import Popup from "~/components/Popup";
-import { IOption, IListOption, IProductData } from "~/interface/product";
+import {
+  IOption,
+  IListOption,
+  IProductData,
+  ICategory,
+} from "~/interface/product";
+import { deleteGallery } from "~/helper/handleImage";
+import axios from "axios";
 
 interface Props {
-  data: IProductData;
-  handleChangeValue: (name: string, value: string | number | boolean) => void;
-  handleUploadGallery: (source: File, urlBase64: string) => void;
-  handleDeleteGallery: (index: number) => void;
-  handleUploadThumbnail: (source: File, urlBase64: string) => void;
-  handleAddOption: (newOption: string) => void;
-  handleEditOption: (text: string, index: number) => void;
-  handleEditOptionItem: (
-    name: string,
-    status: boolean,
-    firstIndex: number,
-    secondIndex: number
-  ) => void;
-  handleDeleteOption: (index: number) => void;
-  handleDeleteOptionItem: (firstIndex: number, secondIndex: number) => void;
-  handleAddOptionItem: (index: number, name: string, status: boolean) => void;
+  initData: IProductData;
+  categories: ICategory[];
+  // onSubmit: (data: IProductData) => void;
 }
 
 const HandleLayout: FC<Props> = (props: Props) => {
@@ -31,6 +25,8 @@ const HandleLayout: FC<Props> = (props: Props) => {
   const optionRef = useRef<HTMLInputElement>(null);
   const optionItemRef = useRef<HTMLInputElement>(null);
   const optionItemStatusRef = useRef<HTMLSelectElement>(null);
+
+  const [data, setData] = useState<IProductData>(props.initData);
 
   const [optionIndex, setOptionIndex] = useState<number>(0);
   const [optionItemIndex, setOptionItemIndex] = useState({
@@ -44,17 +40,55 @@ const HandleLayout: FC<Props> = (props: Props) => {
   const [isEditOptionItem, setEditOptionItem] = useState<boolean>(false);
   const [isEditOption, setEditOption] = useState<boolean>(false);
 
-  const handleAddOption = (e: FormEvent<HTMLFormElement>) => {
+  const handleChangeValue = useCallback(
+    (name: string | undefined, value: string | number | boolean) => {
+      if (name && value) {
+        setData({ ...data, [name]: value });
+      }
+      if (name === "category") {
+        getOption(String(value));
+      }
+    },
+    [data]
+  );
+
+  const handleUploadGallery = useCallback(
+    (source: File, urlBase64: string) => {
+      console.log("gallery", urlBase64)
+      setData({ ...data, gallery: [...data.gallery, { source, urlBase64 }] });
+    },
+    [data.gallery]
+  );
+
+  const handleDeleteGallery = useCallback(
+    (index: number) => {
+      const newGallery = deleteGallery(index, data.gallery);
+      setData({ ...data, gallery: [...newGallery] });
+    },
+    [data.gallery]
+  );
+
+  const handleUploadThumbnail = useCallback(
+    (source: File, urlBase64: string) => {
+      console.log("thumnail", urlBase64)
+      setData({ ...data, thumbnail: { source, urlBase64 } });
+    },
+    [data.thumbnail]
+  );
+
+  const handleAddOption = useCallback(() => {
     if (optionRef.current) {
-      const optionName = optionRef.current.value;
-      props.handleAddOption(optionName);
-      setShowOption(false);
+      const newOption = optionRef.current.value;
+      setData({
+        ...data,
+        options: [...data.options, { name: newOption, list: [] }],
+      });
       optionRef.current.value = "";
     }
-  };
+  }, [data.options]);
 
   const getOptionEdit = (index: number) => {
-    const item = props.data.options[index];
+    const item = data.options[index];
 
     if (optionRef.current) {
       optionRef.current.value = item.name;
@@ -66,7 +100,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
   };
 
   const getOptionItemEdit = (indexParent: number, indexChildren: number) => {
-    const item = props.data.options[indexParent].list[indexChildren];
+    const item = data.options[indexParent].list[indexChildren];
 
     if (optionItemRef.current && optionItemStatusRef.current) {
       optionItemRef.current.value = item.name;
@@ -80,59 +114,93 @@ const HandleLayout: FC<Props> = (props: Props) => {
     }
   };
 
-  const handleEditOption = () => {
+  const handleEditOption = useCallback(() => {
     if (optionRef.current) {
       const name = optionRef.current.value;
-      props.handleEditOption(name, optionIndex);
+      const currentList = data.options;
+      currentList[optionIndex].name = name;
+
+      setData({ ...data, options: currentList });
     }
     setEditOption(false);
     setShowOption(!showOption);
-  };
+  }, [data.options]);
 
-  const handleEditOptionItem = () => {
+  const handleEditOptionItem = useCallback(() => {
     if (optionItemRef.current && optionItemStatusRef.current) {
       const name = optionItemRef.current.value;
       const status = optionItemStatusRef.current.value === "1" ? true : false;
       const firstIndex = optionItemIndex.firstIndex;
       const secondIndex = optionItemIndex.secondIndex;
 
-      props.handleEditOptionItem(name, status, firstIndex, secondIndex);
+      const currentList = data.options;
+
+      currentList[firstIndex].list[secondIndex].name = name;
+      currentList[firstIndex].list[secondIndex].status = status;
+
+      setData({ ...data, options: currentList });
       setShowOptionItem(false);
       setEditOptionItem(false);
     }
-  };
+  }, [data.options]);
 
-  const handleDeleteOption = () => {
-    props.handleDeleteOption(optionIndex);
-    setShowOption(false);
-    setEditOption(false);
-  };
+  const handleDeleteOption = useCallback(() => {
+    const currentList = data.options;
 
-  const handleDeleteOptionItem = () => {
+    currentList.splice(optionIndex, 1);
+
+    setData({ ...data, options: currentList });
+  }, [data.options]);
+
+  const handleDeleteOptionItem = useCallback(() => {
     const firstIndex = optionItemIndex.firstIndex;
     const secondIndex = optionItemIndex.secondIndex;
+    const currentList = data.options;
+    currentList[firstIndex].list.splice(secondIndex, 1);
 
-    props.handleDeleteOptionItem(firstIndex, secondIndex);
+    setData({ ...data, options: currentList });
     setShowOptionItem(false);
     setEditOptionItem(false);
-  };
+  }, [data.options]);
 
-  const handleAddOptionItem = (e: FormEvent<HTMLFormElement>) => {
+  const handleAddOptionItem = useCallback(() => {
     if (optionItemRef.current && optionItemStatusRef.current) {
       const name = optionItemRef.current.value;
       const status = optionItemStatusRef.current.value === "1" ? true : false;
-      props.handleAddOptionItem(optionIndex, name, status);
+      const currentList = data.options;
 
+      currentList[optionIndex].list.push({
+        name,
+        status,
+      });
+
+      setData({ ...data, options: currentList });
       setShowOptionItem(false);
       optionItemRef.current.value = "";
+    }
+  }, [data.options]);
+
+  const getOption = async (id: string) => {
+    try {
+      const optionData = await axios
+        .get(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/option/${id}`)
+        .then((res) => res.data);
+
+      if (optionData.status === 200) {
+        setData({ ...data, type: optionData.payload.list });
+      }
+    } catch (error) {
+      console.log(error);
+      setData({ ...data, type: [] });
     }
   };
 
   useEffect(() => {
-    if (listRef.current && props.data.options.length > 0) {
+    if (listRef.current && data.options.length > 0) {
       listRef.current.scrollTop = listRef.current.scrollHeight + 200;
     }
-  }, [props.data.options]);
+  }, [data.options]);
+
   return (
     <FormLayout ref={listRef}>
       <div>
@@ -142,8 +210,8 @@ const HandleLayout: FC<Props> = (props: Props) => {
             widthFull={false}
             name="category"
             type="select"
-            optionsSelect={["test1", "test2"]}
-            onGetValue={props.handleChangeValue}
+            optionsSelect={props.categories}
+            onGetValue={handleChangeValue}
           />
 
           <FieldAdd
@@ -151,8 +219,8 @@ const HandleLayout: FC<Props> = (props: Props) => {
             widthFull={false}
             name="status"
             type="select"
-            optionsSelect={["In stock", "Out of stock"]}
-            onGetValue={props.handleChangeValue}
+            optionsSelect={data.type}
+            onGetValue={handleChangeValue}
           />
         </div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
@@ -161,8 +229,8 @@ const HandleLayout: FC<Props> = (props: Props) => {
             widthFull={false}
             name="name"
             type="input"
-            value={props.data.name}
-            onGetValue={props.handleChangeValue}
+            value={data.name}
+            onGetValue={handleChangeValue}
           />
 
           <FieldAdd
@@ -170,8 +238,8 @@ const HandleLayout: FC<Props> = (props: Props) => {
             widthFull={false}
             name="shortDescription"
             type="input"
-            value={props.data.shortDescription}
-            onGetValue={props.handleChangeValue}
+            value={data.shortDescription}
+            onGetValue={handleChangeValue}
           />
         </div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
@@ -180,41 +248,43 @@ const HandleLayout: FC<Props> = (props: Props) => {
             widthFull={true}
             name="description"
             type="textarea"
-            value={props.data.description}
-            onGetValue={props.handleChangeValue}
+            value={data.description}
+            onGetValue={handleChangeValue}
           />
         </div>
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
           <FieldAdd
             title="Price"
-            value={props.data.price}
+            checkValidNumber
+            value={data.price}
             widthFull={false}
             name="price"
             type="input"
-            onGetValue={props.handleChangeValue}
+            onGetValue={handleChangeValue}
           />
 
           <FieldAdd
             title="Promorion price"
-            value={props.data.promotionPrice}
+            value={data.promotionPrice}
+            checkValidNumber
             widthFull={false}
             name="promotionPrice"
             type="input"
-            onGetValue={props.handleChangeValue}
+            onGetValue={handleChangeValue}
           />
         </div>
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
           <Thumbnail
-            thumbnailUrl={props.data.thumbnail.urlBase64}
-            onChange={props.handleUploadThumbnail}
+            thumbnailUrl={data.thumbnail.urlBase64}
+            onChange={handleUploadThumbnail}
           />
 
           <Gallery
-            gallery={props.data.gallery}
-            onChange={props.handleUploadGallery}
-            onDelete={props.handleDeleteGallery}
+            gallery={data.gallery}
+            onChange={handleUploadGallery}
+            onDelete={handleDeleteGallery}
           />
         </div>
 
@@ -222,9 +292,11 @@ const HandleLayout: FC<Props> = (props: Props) => {
           <FieldAdd
             title="Quantity"
             widthFull={false}
+            value={data.quantity}
+            checkValidNumber
             name="quantity"
             type="input"
-            onGetValue={props.handleChangeValue}
+            onGetValue={handleChangeValue}
           />
 
           <FieldAdd
@@ -232,9 +304,8 @@ const HandleLayout: FC<Props> = (props: Props) => {
             widthFull={false}
             name="hotProduct"
             type="button"
-            isChecked={props.data.hotProduct}
-            // onClick={() => setData({ ...data, hotProduct: !data.hotProduct })}
-            onGetValue={props.handleChangeValue}
+            isChecked={data.hotProduct}
+            onGetValue={handleChangeValue}
           />
         </div>
 
@@ -258,55 +329,51 @@ const HandleLayout: FC<Props> = (props: Props) => {
               </button>
             </div>
 
-            {props.data.options.map(
-              (item: IListOption, indexParent: number) => (
-                <ul
-                  key={indexParent}
-                  className="relative flex flex-wrap items-center w-full min-h-[40px] rounded-md px-2 py-1 mt-8 border-2 focus:border-gray-600 outline-none gap-2"
+            {data.options.map((item: IListOption, indexParent: number) => (
+              <ul
+                key={indexParent}
+                className="relative flex flex-wrap items-center w-full min-h-[40px] rounded-md px-2 py-1 mt-8 border-2 focus:border-gray-600 outline-none gap-2"
+              >
+                <span className="text-base text-[#1E1E1E]">{item.name}: </span>
+
+                {item.list.map((option: IOption, indexChildren: number) => (
+                  <li
+                    onClick={() => {
+                      getOptionItemEdit(indexParent, indexChildren);
+                    }}
+                    key={indexChildren}
+                    className={`w-fit text-base text-white font-medium bg-gray-600 px-2 py-1 rounded-md cursor-pointer ${
+                      !option.status && "opacity-60"
+                    }`}
+                  >
+                    {option.name}
+                  </li>
+                ))}
+
+                <button
+                  onClick={() => {
+                    getOptionEdit(indexParent);
+                  }}
+                  className="absolute -top-5 right-0 text-xs font-medium text-white bg-primary px-2 pt-1 rounded-tl-md rounded-tr-md"
                 >
-                  <span className="text-base text-[#1E1E1E]">
-                    {item.name}:{" "}
-                  </span>
+                  Edit
+                </button>
 
-                  {item.list.map((option: IOption, indexChildren: number) => (
-                    <li
-                      onClick={() => {
-                        getOptionItemEdit(indexParent, indexChildren);
-                      }}
-                      key={indexChildren}
-                      className={`w-fit text-base text-white font-medium bg-gray-600 px-2 py-1 rounded-md cursor-pointer ${
-                        !option.status && "opacity-60"
-                      }`}
-                    >
-                      {option.name}
-                    </li>
-                  ))}
-
-                  <button
-                    onClick={() => {
-                      getOptionEdit(indexParent);
-                    }}
-                    className="absolute -top-5 right-0 text-xs font-medium text-white bg-primary px-2 pt-1 rounded-tl-md rounded-tr-md"
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      if (optionItemRef.current) {
-                        optionItemRef.current.value = "";
-                      }
-                      setShowOptionItem(true);
-                      setEditOptionItem(false);
-                      setOptionIndex(indexParent);
-                    }}
-                    className="lg:w-fit text-lg text-white font-medium bg-primary px-3 py-1 rounded-md"
-                  >
-                    +
-                  </button>
-                </ul>
-              )
-            )}
+                <button
+                  onClick={() => {
+                    if (optionItemRef.current) {
+                      optionItemRef.current.value = "";
+                    }
+                    setShowOptionItem(true);
+                    setEditOptionItem(false);
+                    setOptionIndex(indexParent);
+                  }}
+                  className="lg:w-fit text-lg text-white font-medium bg-primary px-3 py-1 rounded-md"
+                >
+                  +
+                </button>
+              </ul>
+            ))}
           </div>
         </div>
 
@@ -317,7 +384,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
               e.preventDefault();
 
               if (!isEditOption) {
-                handleAddOption(e);
+                handleAddOption();
               } else {
                 handleEditOption();
               }
@@ -377,7 +444,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
               e.preventDefault();
 
               if (!isEditOptionItem) {
-                handleAddOptionItem(e);
+                handleAddOptionItem();
               } else {
                 handleEditOptionItem();
               }
@@ -445,4 +512,4 @@ const HandleLayout: FC<Props> = (props: Props) => {
   );
 };
 
-export default HandleLayout;
+export default memo(HandleLayout);

@@ -2,12 +2,12 @@ import Link from "next/link";
 import { FC } from "react";
 import { IoAdd } from "react-icons/io5";
 
-import { ICategory } from "~/pages/category/interface";
 import Popup from "~/components/Popup";
+import { IProductData } from "~/interface/product";
 
 interface prop {
   children: JSX.Element;
-  item: ICategory | null;
+  item: IProductData;
   title: string;
   message: string;
   linkAddItem: string;
@@ -16,7 +16,7 @@ interface prop {
   isShowPopup: boolean;
   onEdit: () => void;
   onShowPopup: () => void;
-  onDeleteItem: (item: ICategory) => void;
+  onDeleteItem: (item: IProductData) => void;
 }
 
 const ProductLayout: FC<prop> = (prop: prop) => {
@@ -72,7 +72,7 @@ const ProductLayout: FC<prop> = (prop: prop) => {
       <Popup show={prop.isShowPopup} onClose={prop.onShowPopup}>
         <div>
           <p className="text-lg">
-            Do you want delete category <strong>{prop.item?.title}</strong>
+            Do you want delete category <strong>{prop.item?.name}</strong>
           </p>
           <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-2 lg:gap-5 gap-2">
             <button

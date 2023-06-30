@@ -2,14 +2,14 @@ import Link from "next/link";
 import { useState, useEffect, Fragment } from "react";
 import axios from "axios";
 
-import { ICategory } from "./interface";
+import { IDataCategory } from "~/interface/category";
 import CategoryLayout from "~/layouts/CategoryLayout";
 import { deleteImageInSever } from "~/helper/handleImage";
 
 const Category = () => {
-  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [categories, setCategories] = useState<IDataCategory[]>([]);
   const [message, setMessage] = useState<string>("");
-  const [categorySelect, setCategorySelect] = useState<ICategory | null>(null);
+  const [categorySelect, setCategorySelect] = useState<IDataCategory | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [showPopup, setShowPopup] = useState<boolean>(false);
@@ -32,7 +32,7 @@ const Category = () => {
     }
   };
 
-  const handleDeleteCategory = async (item: ICategory) => {
+  const handleDeleteCategory = async (item: IDataCategory) => {
     if (!item._id) {
       setShowPopup(false);
       return;
@@ -69,7 +69,7 @@ const Category = () => {
     >
       <Fragment>
         {categories.length > 0 &&
-          categories.map((item: ICategory) => (
+          categories.map((item: IDataCategory) => (
             <li
               key={item._id}
               className="block p-5 hover:shadow-lg bg-gray-50 border border-gray-300 rounded-lg transition-all ease-linear duration-200"

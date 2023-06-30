@@ -34,8 +34,10 @@ const EditCategoryPage = (prop: Prop) => {
     url: "",
   });
 
-  const changeValue = (name: string, value: string | number | boolean) => {
-    setData({ ...data, [name]: value });
+  const changeValue = (name: string | undefined, value: string | number | boolean) => {
+    if(name && value) {
+      setData({ ...data, [name]: value });
+    }
   };
 
   const uploadThumbnail = (source: object, url: string) => {

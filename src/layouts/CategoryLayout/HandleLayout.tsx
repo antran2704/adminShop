@@ -1,9 +1,8 @@
-import { useState, useRef, ChangeEvent, FC, useEffect } from "react";
+import { useState, useRef, FC, useEffect } from "react";
 
 import FieldAdd from "~/components/FieldAdd";
 import Thumbnail from "~/components/Image/Thumbnail";
 
-import { uploadImage } from "~/helper/handleImage";
 import FormLayout from "~/layouts/FormLayout";
 import Popup from "~/components/Popup";
 import { IThumbnailUrl, IOption, IDataCategory } from "~/interface/category";
@@ -12,7 +11,7 @@ interface Props {
   data: IDataCategory;
   selectOptionIndex: number | null;
   thumbnailUrl: IThumbnailUrl;
-  handleChangeValue: (name: string, value: string | number | boolean) => void;
+  handleChangeValue: (name: string | undefined, value: string | number | boolean) => void;
   uploadThumbnail: (source: object, url: string) => void;
   addOption: (newOption: string) => void;
   selectOption: (index: number) => void;
@@ -26,17 +25,6 @@ const HandleLayout: FC<Props> = (props: Props) => {
 
   const [showOption, setShowOption] = useState<boolean>(false);
   const [isEditOption, setEditOption] = useState<boolean>(false);
-
-  const handleChangeValue = (
-    name: string,
-    value: string | number | boolean
-  ) => {
-    props.handleChangeValue(name, value);
-  };
-
-  const handleUploadThumbnail = (source: File, urlBase64: string) => {
-    props.uploadThumbnail(source, urlBase64);
-  };
 
   const handleShowPopup = () => {
     setShowOption(!showOption);
@@ -91,7 +79,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
             value={props.data.title}
             name="title"
             type="input"
-            onGetValue={handleChangeValue}
+            onGetValue={props.handleChangeValue}
           />
         </div>
 
@@ -102,14 +90,14 @@ const HandleLayout: FC<Props> = (props: Props) => {
             value={props.data.description}
             name="description"
             type="textarea"
-            onGetValue={handleChangeValue}
+            onGetValue={props.handleChangeValue}
           />
         </div>
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
           <Thumbnail
             thumbnailUrl={props.thumbnailUrl.url}
-            onChange={handleUploadThumbnail}
+            onChange={props.uploadThumbnail}
           />
           <div className="lg:w-1/2 w-full">
             <div className="flex items-center justify-between">

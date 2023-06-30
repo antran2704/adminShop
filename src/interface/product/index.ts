@@ -12,12 +12,12 @@ interface IListOption {
 
 interface ITypeProduct {
   title: string;
-  id: string;
+  _id: string;
 }
 
 interface IProductData {
   name: string;
-  category?: string;
+  category?: string | null;
   type: ITypeProduct[] | [];
   shortDescription: string;
   description: string;
@@ -32,4 +32,10 @@ interface IProductData {
   status: boolean | true;
 }
 
-export type { IOption, IListOption, ITypeProduct, IProductData };
+interface ICategory {
+  _id: string;
+  title: string;
+  option: string;
+}
+
+export type { IOption, IListOption, ITypeProduct, IProductData, ICategory };
