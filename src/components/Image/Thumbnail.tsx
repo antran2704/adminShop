@@ -1,8 +1,6 @@
-import { FC, ChangeEvent } from "react";
+import { FC, ChangeEvent, memo } from "react";
 import { IoAdd } from "react-icons/io5";
 import { uploadImage } from "~/helper/handleImage";
-
-import { IThumbnail } from "~/interface/image";
 
 interface prop {
   thumbnailUrl: string | null;
@@ -55,4 +53,4 @@ const Thumbnail: FC<prop> = (prop: prop) => {
   );
 };
 
-export default Thumbnail;
+export default memo(Thumbnail);

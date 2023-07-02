@@ -1,6 +1,8 @@
 import { useState, useRef, FC, useEffect } from "react";
 
-import FieldAdd from "~/components/FieldAdd";
+import { typeInput } from "~/enums";
+
+import Input from "~/components/Input";
 import Thumbnail from "~/components/Image/Thumbnail";
 
 import FormLayout from "~/layouts/FormLayout";
@@ -73,23 +75,23 @@ const HandleLayout: FC<Props> = (props: Props) => {
     <FormLayout onSubmit={props.handleOnSubmit}>
       <div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">
-          <FieldAdd
+          <Input
             title="Title"
             widthFull={false}
             value={props.data.title}
             name="title"
-            type="input"
+            type={typeInput.input}
             onGetValue={props.handleChangeValue}
           />
         </div>
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          <FieldAdd
+          <Input
             title="Description"
             widthFull={true}
             value={props.data.description}
             name="description"
-            type="textarea"
+            type={typeInput.textarea}
             onGetValue={props.handleChangeValue}
           />
         </div>

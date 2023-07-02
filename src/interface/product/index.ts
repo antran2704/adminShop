@@ -33,9 +33,9 @@ interface IProductData {
 }
 
 interface ICategory {
-  _id: string;
-  title: string;
-  option: string;
+  _id: string | null;
+  title: string | null;
+  option: string | null;
 }
 
 export type { IOption, IListOption, ITypeProduct, IProductData, ICategory };

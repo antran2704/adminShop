@@ -1,4 +1,4 @@
-import { FC, ChangeEvent } from "react";
+import { FC, ChangeEvent, memo } from "react";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { IoAdd } from "react-icons/io5";
 import { uploadImage } from "~/helper/handleImage";
@@ -65,4 +65,4 @@ const Gallery: FC<prop> = (prop: prop) => {
   );
 };
 
-export default Gallery;
+export default memo(Gallery);

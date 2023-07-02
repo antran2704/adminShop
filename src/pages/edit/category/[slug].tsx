@@ -8,7 +8,7 @@ import HandleLayout from "~/layouts/CategoryLayout/HandleLayout";
 import { IThumbnailUrl, IDataCategory } from "~/interface/category";
 
 const initData: IDataCategory = {
-  id: null,
+  _id: null,
   title: "",
   description: "",
   thumbnail: "",
@@ -99,7 +99,7 @@ const EditCategoryPage = (prop: Prop) => {
           console.log("thay doi anh");
           payload = await axios
             .patch(
-              `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${data.id}`,
+              `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${data._id}`,
               {
                 ...sendData,
                 thumbnail: uploadPayload.payload.thumbnail,
@@ -110,7 +110,7 @@ const EditCategoryPage = (prop: Prop) => {
       } else {
         payload = await axios
           .patch(
-            `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${data.id}`,
+            `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${data._id}`,
             sendData
           )
           .then((res) => res.data);
@@ -133,7 +133,7 @@ const EditCategoryPage = (prop: Prop) => {
         .then((res) => res.data);
       if (data.status === 200) {
         setData({
-          id: data.payload._id,
+          _id: data.payload._id,
           title: data.payload.title,
           description: data.payload.description,
           thumbnail: data.payload.thumbnail,

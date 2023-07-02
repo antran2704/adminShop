@@ -1,7 +1,9 @@
 import { useState, useRef, FC, useEffect, memo, useCallback } from "react";
 
+import { typeInput } from "~/enums";
+
 import FormLayout from "../FormLayout";
-import FieldAdd from "~/components/FieldAdd";
+import Input from "~/components/Input";
 import Thumbnail from "~/components/Image/Thumbnail";
 import Gallery from "~/components/Image/Gallery";
 import Popup from "~/components/Popup";
@@ -13,6 +15,8 @@ import {
 } from "~/interface/product";
 import { deleteGallery } from "~/helper/handleImage";
 import axios from "axios";
+import ButtonCheck from "~/components/Button/ButtonCheck";
+import SelectItem from "~/components/Select/SelectItem";
 
 interface Props {
   initData: IProductData;
@@ -27,6 +31,11 @@ const HandleLayout: FC<Props> = (props: Props) => {
   const optionItemStatusRef = useRef<HTMLSelectElement>(null);
 
   const [data, setData] = useState<IProductData>(props.initData);
+  const [selectCategory, setSelectCategory] = useState<ICategory>({
+    _id: null,
+    title: null,
+    option: null,
+  });
 
   const [optionIndex, setOptionIndex] = useState<number>(0);
   const [optionItemIndex, setOptionItemIndex] = useState({
@@ -42,39 +51,35 @@ const HandleLayout: FC<Props> = (props: Props) => {
 
   const handleChangeValue = useCallback(
     (name: string | undefined, value: string | number | boolean) => {
-      if (name && value) {
+      if (name) {
         setData({ ...data, [name]: value });
-      }
-      if (name === "category") {
-        getOption(String(value));
       }
     },
     [data]
   );
 
-  const handleUploadGallery = useCallback(
-    (source: File, urlBase64: string) => {
-      console.log("gallery", urlBase64)
-      setData({ ...data, gallery: [...data.gallery, { source, urlBase64 }] });
+  const handleSelectCategory = useCallback(
+    (item: ICategory) => {
+      setSelectCategory(item);
+      if (item?.option) {
+        getOption(item.option);
+      }
     },
-    [data.gallery]
+    [selectCategory]
   );
 
-  const handleDeleteGallery = useCallback(
-    (index: number) => {
-      const newGallery = deleteGallery(index, data.gallery);
-      setData({ ...data, gallery: [...newGallery] });
-    },
-    [data.gallery]
-  );
+  const handleUploadGallery = (source: File, urlBase64: string) => {
+    setData({ ...data, gallery: [...data.gallery, { source, urlBase64 }] });
+  };
 
-  const handleUploadThumbnail = useCallback(
-    (source: File, urlBase64: string) => {
-      console.log("thumnail", urlBase64)
-      setData({ ...data, thumbnail: { source, urlBase64 } });
-    },
-    [data.thumbnail]
-  );
+  const handleDeleteGallery = (index: number) => {
+    const newGallery = deleteGallery(index, data.gallery);
+    setData({ ...data, gallery: [...newGallery] });
+  };
+
+  const handleUploadThumbnail = (source: File, urlBase64: string) => {
+    setData({ ...data, thumbnail: { source, urlBase64 } });
+  };
 
   const handleAddOption = useCallback(() => {
     if (optionRef.current) {
@@ -83,9 +88,10 @@ const HandleLayout: FC<Props> = (props: Props) => {
         ...data,
         options: [...data.options, { name: newOption, list: [] }],
       });
+      setShowOption(!showOption);
       optionRef.current.value = "";
     }
-  }, [data.options]);
+  }, [data.options, showOption]);
 
   const getOptionEdit = (index: number) => {
     const item = data.options[index];
@@ -139,8 +145,8 @@ const HandleLayout: FC<Props> = (props: Props) => {
       currentList[firstIndex].list[secondIndex].status = status;
 
       setData({ ...data, options: currentList });
-      setShowOptionItem(false);
-      setEditOptionItem(false);
+      setShowOption(false);
+      setEditOption(false);
     }
   }, [data.options]);
 
@@ -150,6 +156,8 @@ const HandleLayout: FC<Props> = (props: Props) => {
     currentList.splice(optionIndex, 1);
 
     setData({ ...data, options: currentList });
+    setShowOption(false);
+    setEditOption(false);
   }, [data.options]);
 
   const handleDeleteOptionItem = useCallback(() => {
@@ -205,7 +213,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
     <FormLayout ref={listRef}>
       <div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          <FieldAdd
+          {/* <Input
             title="Category"
             widthFull={false}
             name="category"
@@ -214,63 +222,71 @@ const HandleLayout: FC<Props> = (props: Props) => {
             onGetValue={handleChangeValue}
           />
 
-          <FieldAdd
+          <Input
             title="In stock"
             widthFull={false}
             name="status"
             type="select"
             optionsSelect={data.type}
             onGetValue={handleChangeValue}
+          /> */}
+
+          <SelectItem
+            title="Category"
+            widthFull={false}
+            data={selectCategory}
+            categories={props.categories}
+            onSelect={handleSelectCategory}
           />
         </div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          <FieldAdd
+          <Input
             title="Name of product"
             widthFull={false}
             name="name"
-            type="input"
+            type={typeInput.input}
             value={data.name}
             onGetValue={handleChangeValue}
           />
 
-          <FieldAdd
+          <Input
             title="Short Detail"
             widthFull={false}
             name="shortDescription"
-            type="input"
+            type={typeInput.input}
             value={data.shortDescription}
             onGetValue={handleChangeValue}
           />
         </div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          <FieldAdd
+          <Input
             title="Description of product"
             widthFull={true}
             name="description"
-            type="textarea"
+            type={typeInput.textarea}
             value={data.description}
             onGetValue={handleChangeValue}
           />
         </div>
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          <FieldAdd
+          <Input
             title="Price"
             checkValidNumber
             value={data.price}
             widthFull={false}
             name="price"
-            type="input"
+            type={typeInput.input}
             onGetValue={handleChangeValue}
           />
 
-          <FieldAdd
+          <Input
             title="Promorion price"
             value={data.promotionPrice}
             checkValidNumber
             widthFull={false}
             name="promotionPrice"
-            type="input"
+            type={typeInput.input}
             onGetValue={handleChangeValue}
           />
         </div>
@@ -289,21 +305,20 @@ const HandleLayout: FC<Props> = (props: Props) => {
         </div>
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          <FieldAdd
+          <Input
             title="Quantity"
             widthFull={false}
             value={data.quantity}
             checkValidNumber
             name="quantity"
-            type="input"
+            type={typeInput.input}
             onGetValue={handleChangeValue}
           />
 
-          <FieldAdd
-            title="Hot product"
-            widthFull={false}
+          <ButtonCheck
+            title="Hot Product"
             name="hotProduct"
-            type="button"
+            widthFull={false}
             isChecked={data.hotProduct}
             onGetValue={handleChangeValue}
           />
