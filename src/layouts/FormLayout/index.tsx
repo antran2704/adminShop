@@ -2,7 +2,7 @@ import { forwardRef, ForwardRefRenderFunction, Ref } from "react";
 
 interface prop {
     children: JSX.Element;
-    onSubmit?: () => void;
+    onSubmit: () => void;
 }
 
 const FormLayout: ForwardRefRenderFunction<HTMLUListElement, prop> = (prop: prop, ref: Ref<HTMLUListElement> | undefined) => {

@@ -10,10 +10,9 @@ const uploadImage = (el: Element) => {
 };
 
 const deleteImageInSever = async (filePath: string) => {
-  const path = filePath.replace("http://localhost:3001/", "./");
   try {
     const payload = await axios
-      .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/delete`, { path })
+      .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/delete`, { filePath })
       .then((res) => res.data);
     return payload;
   } catch (error) {

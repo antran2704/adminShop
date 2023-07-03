@@ -6,13 +6,17 @@ interface IOption {
 }
 
 interface IListOption {
-  name: string;
+  title: string;
   list: IOption[];
 }
 
 interface ITypeProduct {
-  title: string;
-  _id: string;
+  _id: string | null;
+  title: string | null;
+}
+
+interface ICategory extends ITypeProduct {
+  options: string | null;
 }
 
 interface IProductData {
@@ -30,12 +34,6 @@ interface IProductData {
   options: IListOption[];
   hotProduct: boolean | false;
   status: boolean | true;
-}
-
-interface ICategory {
-  _id: string | null;
-  title: string | null;
-  option: string | null;
 }
 
 export type { IOption, IListOption, ITypeProduct, IProductData, ICategory };

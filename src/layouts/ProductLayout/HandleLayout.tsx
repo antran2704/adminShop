@@ -1,5 +1,13 @@
 import { useState, useRef, FC, useEffect, memo, useCallback } from "react";
+import axios from "axios";
 
+import {
+  IOption,
+  IListOption,
+  IProductData,
+  ICategory,
+  ITypeProduct,
+} from "~/interface/product";
 import { typeInput } from "~/enums";
 
 import FormLayout from "../FormLayout";
@@ -7,16 +15,13 @@ import Input from "~/components/Input";
 import Thumbnail from "~/components/Image/Thumbnail";
 import Gallery from "~/components/Image/Gallery";
 import Popup from "~/components/Popup";
-import {
-  IOption,
-  IListOption,
-  IProductData,
-  ICategory,
-} from "~/interface/product";
+
 import { deleteGallery } from "~/helper/handleImage";
-import axios from "axios";
+
 import ButtonCheck from "~/components/Button/ButtonCheck";
+
 import SelectItem from "~/components/Select/SelectItem";
+import SelectMutipleItem from "~/components/Select/SelectMutipleItem";
 
 interface Props {
   initData: IProductData;
@@ -34,8 +39,12 @@ const HandleLayout: FC<Props> = (props: Props) => {
   const [selectCategory, setSelectCategory] = useState<ICategory>({
     _id: null,
     title: null,
-    option: null,
+    options: null,
   });
+
+  const [productType, setProductType] = useState<ITypeProduct[]>([]);
+
+  const [selectProductType, setSelectType] = useState<ITypeProduct[]>([]);
 
   const [optionIndex, setOptionIndex] = useState<number>(0);
   const [optionItemIndex, setOptionItemIndex] = useState({
@@ -61,11 +70,35 @@ const HandleLayout: FC<Props> = (props: Props) => {
   const handleSelectCategory = useCallback(
     (item: ICategory) => {
       setSelectCategory(item);
-      if (item?.option) {
-        getOption(item.option);
+
+      if (item?.options) {
+        getOption(item.options);
       }
     },
-    [selectCategory]
+    [selectCategory, productType]
+  );
+
+  const handleSelectTypeProduct = useCallback(
+    (item: ITypeProduct) => {
+      if (!selectProductType.includes(item)) {
+        setSelectType([...selectProductType, item]);
+      } else {
+        handleDeleteTypeProduct(item._id);
+      }
+    },
+    [selectProductType]
+  );
+
+  const handleDeleteTypeProduct = useCallback(
+    (id: string | null) => {
+      if (id) {
+        const newList = selectProductType.filter(
+          (item: ITypeProduct) => item._id !== id
+        );
+        setSelectType(newList);
+      }
+    },
+    [selectProductType, productType]
   );
 
   const handleUploadGallery = (source: File, urlBase64: string) => {
@@ -86,7 +119,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
       const newOption = optionRef.current.value;
       setData({
         ...data,
-        options: [...data.options, { name: newOption, list: [] }],
+        options: [...data.options, { title: newOption, list: [] }],
       });
       setShowOption(!showOption);
       optionRef.current.value = "";
@@ -97,7 +130,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
     const item = data.options[index];
 
     if (optionRef.current) {
-      optionRef.current.value = item.name;
+      optionRef.current.value = item.title;
     }
 
     setEditOption(true);
@@ -124,7 +157,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
     if (optionRef.current) {
       const name = optionRef.current.value;
       const currentList = data.options;
-      currentList[optionIndex].name = name;
+      currentList[optionIndex].title = name;
 
       setData({ ...data, options: currentList });
     }
@@ -195,12 +228,15 @@ const HandleLayout: FC<Props> = (props: Props) => {
         .then((res) => res.data);
 
       if (optionData.status === 200) {
-        setData({ ...data, type: optionData.payload.list });
+        setProductType(optionData.payload.list);
       }
     } catch (error) {
-      console.log(error);
-      setData({ ...data, type: [] });
+      setProductType([]);
     }
+  };
+
+  const onSubmit = () => {
+    console.log(data);
   };
 
   useEffect(() => {
@@ -210,33 +246,26 @@ const HandleLayout: FC<Props> = (props: Props) => {
   }, [data.options]);
 
   return (
-    <FormLayout ref={listRef}>
+    <FormLayout onSubmit={onSubmit} ref={listRef}>
       <div>
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          {/* <Input
-            title="Category"
-            widthFull={false}
-            name="category"
-            type="select"
-            optionsSelect={props.categories}
-            onGetValue={handleChangeValue}
-          />
-
-          <Input
-            title="In stock"
-            widthFull={false}
-            name="status"
-            type="select"
-            optionsSelect={data.type}
-            onGetValue={handleChangeValue}
-          /> */}
-
+        <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
           <SelectItem
             title="Category"
             widthFull={false}
             data={selectCategory}
             categories={props.categories}
             onSelect={handleSelectCategory}
+          />
+        </div>
+
+        <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
+          <SelectMutipleItem
+            title="Type product"
+            widthFull={false}
+            data={selectProductType}
+            types={productType}
+            onSelect={handleSelectTypeProduct}
+            onDelete={handleDeleteTypeProduct}
           />
         </div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
@@ -349,7 +378,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
                 key={indexParent}
                 className="relative flex flex-wrap items-center w-full min-h-[40px] rounded-md px-2 py-1 mt-8 border-2 focus:border-gray-600 outline-none gap-2"
               >
-                <span className="text-base text-[#1E1E1E]">{item.name}: </span>
+                <span className="text-base text-[#1E1E1E]">{item.title}: </span>
 
                 {item.list.map((option: IOption, indexChildren: number) => (
                   <li

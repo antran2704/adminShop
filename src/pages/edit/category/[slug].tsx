@@ -96,7 +96,7 @@ const EditCategoryPage = (prop: Prop) => {
               formData
             )
             .then((res) => res.data);
-          console.log("thay doi anh");
+            
           payload = await axios
             .patch(
               `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${data._id}`,
