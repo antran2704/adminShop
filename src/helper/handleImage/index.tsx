@@ -9,6 +9,25 @@ const uploadImage = (el: Element) => {
   return url;
 };
 
+const uploadImageOnServer = async (url: string, formData: FormData) => {
+  try {
+    const payload = await axios.post(url, formData).then((res) => res.data);
+    return payload;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const uploadGalleryOnServer = async (url: string, formData: FormData) => {
+  try {
+    const payload = await axios.post(url, formData).then((res) => res.data);
+    console.log(payload)
+    return payload;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const deleteImageInSever = async (filePath: string) => {
   try {
     const payload = await axios
@@ -26,4 +45,10 @@ const deleteGallery = (index: number, gallery: IThumbnail[]) => {
   return gallery;
 };
 
-export { uploadImage, deleteGallery, deleteImageInSever };
+export {
+  uploadImage,
+  deleteGallery,
+  deleteImageInSever,
+  uploadImageOnServer,
+  uploadGalleryOnServer,
+};

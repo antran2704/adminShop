@@ -8,6 +8,7 @@ import {
   ICategory,
   ITypeProduct,
 } from "~/interface/product";
+import { IThumbnail } from "~/interface/image";
 import { typeInput } from "~/enums";
 
 import FormLayout from "../FormLayout";
@@ -16,7 +17,11 @@ import Thumbnail from "~/components/Image/Thumbnail";
 import Gallery from "~/components/Image/Gallery";
 import Popup from "~/components/Popup";
 
-import { deleteGallery } from "~/helper/handleImage";
+import {
+  deleteGallery,
+  uploadGalleryOnServer,
+  uploadImageOnServer,
+} from "~/helper/handleImage";
 
 import ButtonCheck from "~/components/Button/ButtonCheck";
 
@@ -235,8 +240,53 @@ const HandleLayout: FC<Props> = (props: Props) => {
     }
   };
 
-  const onSubmit = () => {
-    console.log(data);
+  const onSubmit = async () => {
+    const handleUploadThumbnail = async () => {
+      const formData: FormData = new FormData();
+      const source: any = data.thumbnail.source;
+      formData.append("thumbnail", source);
+
+      const payload = await uploadImageOnServer(
+        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/uploadThumbnail`,
+        formData
+      );
+
+      return payload;
+    };
+
+    const handleUploadGallery = async (item: IThumbnail) => {
+      const formData: FormData = new FormData();
+      const source: any = item.source;
+      formData.append("gallery", source);
+
+      return await uploadGalleryOnServer(
+        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/uploadGallery`,
+        formData
+      );
+    };
+
+    try {
+      const thumbailPayload = await handleUploadThumbnail();
+      const formData: FormData = new FormData();
+
+      for (let i = 0; i < data.gallery.length; i++) {
+        const source: any = data.gallery[i].source;
+        formData.append("gallery", source);
+      }
+
+      const galleryPayload = await uploadGalleryOnServer(
+        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/uploadGallery`,
+        formData
+      );
+
+      if(thumbailPayload.status === 200 && galleryPayload.status === 200) {
+        console.log(thumbailPayload);
+        console.log(galleryPayload)
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -277,12 +327,13 @@ const HandleLayout: FC<Props> = (props: Props) => {
             value={data.name}
             onGetValue={handleChangeValue}
           />
-
+        </div>
+        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
           <Input
             title="Short Detail"
             widthFull={false}
             name="shortDescription"
-            type={typeInput.input}
+            type={typeInput.textarea}
             value={data.shortDescription}
             onGetValue={handleChangeValue}
           />
@@ -290,7 +341,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
           <Input
             title="Description of product"
-            widthFull={true}
+            widthFull={false}
             name="description"
             type={typeInput.textarea}
             value={data.description}

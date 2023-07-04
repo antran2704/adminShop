@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { useState, useEffect } from "react";
 
-import { deleteImageInSever } from "~/helper/handleImage";
+import { deleteImageInSever, uploadImageOnServer } from "~/helper/handleImage";
 import HandleLayout from "~/layouts/CategoryLayout/HandleLayout";
 import { IThumbnailUrl, IDataCategory } from "~/interface/category";
 
@@ -34,8 +34,11 @@ const EditCategoryPage = (prop: Prop) => {
     url: "",
   });
 
-  const changeValue = (name: string | undefined, value: string | number | boolean) => {
-    if(name && value) {
+  const changeValue = (
+    name: string | undefined,
+    value: string | number | boolean
+  ) => {
+    if (name && value) {
       setData({ ...data, [name]: value });
     }
   };
@@ -90,13 +93,11 @@ const EditCategoryPage = (prop: Prop) => {
         formData.append("thumbnail", source);
         const deleteImagePayload = await deleteImageInSever(data.thumbnail);
         if (deleteImagePayload.status === 200) {
-          const uploadPayload = await axios
-            .post(
-              `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/uploadThumbnail`,
-              formData
-            )
-            .then((res) => res.data);
-            
+          const uploadPayload = await uploadImageOnServer(
+            `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/uploadThumbnail`,
+            formData
+          );
+
           payload = await axios
             .patch(
               `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${data._id}`,

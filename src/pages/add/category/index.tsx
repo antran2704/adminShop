@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { IThumbnailUrl, IDataCategory } from "~/interface/category";
 import HandleLayout from "~/layouts/CategoryLayout/HandleLayout";
+import { uploadImageOnServer } from "~/helper/handleImage";
 
 const initData: IDataCategory = {
   title: "",
@@ -24,8 +25,11 @@ const AddCategoryPage = () => {
     url: "",
   });
 
-  const changeValue = (name: string | undefined, value: string | number | boolean) => {
-    if(name && value) {
+  const changeValue = (
+    name: string | undefined,
+    value: string | number | boolean
+  ) => {
+    if (name && value) {
       setData({ ...data, [name]: value });
     }
   };
@@ -65,17 +69,15 @@ const AddCategoryPage = () => {
   };
 
   const handleOnSubmit = async () => {
-    const formData = new FormData();
+    const formData: FormData = new FormData();
     const source: any = thumbnailUrl.source;
     formData.append("thumbnail", source);
 
     try {
-      const uploadPayload = await axios
-        .post(
-          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/uploadThumbnail`,
-          formData
-        )
-        .then((res) => res.data);
+      const uploadPayload = await uploadImageOnServer(
+        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/uploadThumbnail`,
+        formData
+      );
 
       const payload = await axios
         .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/category`, {

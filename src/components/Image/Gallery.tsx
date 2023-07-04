@@ -38,6 +38,8 @@ const Gallery: FC<prop> = (prop: prop) => {
           type="file"
           id="gallery"
           className="hidden"
+          multiple
+          name="gallery"
         />
       </label>
 
