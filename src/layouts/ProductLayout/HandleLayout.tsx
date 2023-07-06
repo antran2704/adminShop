@@ -31,7 +31,7 @@ import SelectMutipleItem from "~/components/Select/SelectMutipleItem";
 interface Props {
   initData: IProductData;
   categories: ICategory[];
-  // onSubmit: (data: IProductData) => void;
+  onSubmit: (data: IProductData) => void;
 }
 
 const HandleLayout: FC<Props> = (props: Props) => {
@@ -240,53 +240,12 @@ const HandleLayout: FC<Props> = (props: Props) => {
     }
   };
 
-  const onSubmit = async () => {
-    const handleUploadThumbnail = async () => {
-      const formData: FormData = new FormData();
-      const source: any = data.thumbnail.source;
-      formData.append("thumbnail", source);
+  const onSubmit = () => {
+    const sendData = data;
+    sendData.category = selectCategory;
+    sendData.type = selectProductType;
 
-      const payload = await uploadImageOnServer(
-        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/uploadThumbnail`,
-        formData
-      );
-
-      return payload;
-    };
-
-    const handleUploadGallery = async (item: IThumbnail) => {
-      const formData: FormData = new FormData();
-      const source: any = item.source;
-      formData.append("gallery", source);
-
-      return await uploadGalleryOnServer(
-        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/uploadGallery`,
-        formData
-      );
-    };
-
-    try {
-      const thumbailPayload = await handleUploadThumbnail();
-      const formData: FormData = new FormData();
-
-      for (let i = 0; i < data.gallery.length; i++) {
-        const source: any = data.gallery[i].source;
-        formData.append("gallery", source);
-      }
-
-      const galleryPayload = await uploadGalleryOnServer(
-        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/uploadGallery`,
-        formData
-      );
-
-      if(thumbailPayload.status === 200 && galleryPayload.status === 200) {
-        console.log(thumbailPayload);
-        console.log(galleryPayload)
-      }
-
-    } catch (error) {
-      console.log(error);
-    }
+    props.onSubmit(sendData);
   };
 
   useEffect(() => {
@@ -322,9 +281,9 @@ const HandleLayout: FC<Props> = (props: Props) => {
           <Input
             title="Name of product"
             widthFull={false}
-            name="name"
+            name="title"
             type={typeInput.input}
-            value={data.name}
+            value={data.title}
             onGetValue={handleChangeValue}
           />
         </div>
@@ -362,7 +321,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
 
           <Input
             title="Promorion price"
-            value={data.promotionPrice}
+            value={data.promotionPrice?.toString()}
             checkValidNumber
             widthFull={false}
             name="promotionPrice"
@@ -396,10 +355,10 @@ const HandleLayout: FC<Props> = (props: Props) => {
           />
 
           <ButtonCheck
-            title="Hot Product"
-            name="hotProduct"
+            title="Status"
+            name="status"
             widthFull={false}
-            isChecked={data.hotProduct}
+            isChecked={data.status}
             onGetValue={handleChangeValue}
           />
         </div>

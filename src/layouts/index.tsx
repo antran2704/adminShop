@@ -10,7 +10,7 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
     <main>
       <div className="flex items-start justify-between gap-10">
         <Navbar />
-        <div className="w-full h-screen bg-white overflow-hidden">{children}</div>
+        <div className="w-full bg-white min-h-screen">{children}</div>
       </div>
     </main>
   );

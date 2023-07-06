@@ -20,20 +20,23 @@ interface ICategory extends ITypeProduct {
 }
 
 interface IProductData {
-  name: string;
-  category?: string | null;
+  _id?: string | null;
+  title: string;
+  category?: ICategory | null;
+  slug?: string;
   type: ITypeProduct[] | [];
   shortDescription: string;
   description: string;
-  price: string;
-  promotionPrice: string;
-  quantity: string;
+  price: number;
+  promotionPrice: number | null;
+  quantity: number;
   thumbnail: IThumbnail;
   gallery: IThumbnail[];
   brand: string | null;
   options: IListOption[];
   hotProduct: boolean | false;
   status: boolean | true;
+  createdAt?: string;
 }
 
 export type { IOption, IListOption, ITypeProduct, IProductData, ICategory };

@@ -23,7 +23,7 @@ const FieldAdd: FC<Props> = (props: Props) => {
     if (props.checkValidNumber) {
       const valid = handleCheckValidNumber(value);
       if (valid) {
-        props.onGetValue(name, value);
+        props.onGetValue(name, Number(value));
       }
       if (value.length <= 0) {
         value = "";

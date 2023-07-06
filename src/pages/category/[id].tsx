@@ -1,51 +1,54 @@
 import Link from "next/link";
-import { useState, useEffect, Fragment, useCallback } from "react";
+import { GetServerSideProps } from "next";
+import { useState, useEffect, useCallback, Fragment } from "react";
 import axios from "axios";
 import { IoIosAdd } from "react-icons/io";
 
 import { IDataTable } from "~/interface/table";
-import { IDataCategory } from "~/interface/category";
-
-import { deleteImageInSever } from "~/helper/handleImage";
+import { IProductData } from "~/interface/product";
 
 import Search from "~/components/Search";
 import Table from "~/components/Table";
 import Pagination from "~/components/Pagination";
+import { deleteImageInSever } from "~/helper/handleImage";
 
-// Title for tabel
+interface Props {
+  query: any;
+}
+
 const colHeadTable = ["Name", "Thumnail", "Status", "Created Date", ""];
 
-const Category = () => {
-  const [categories, setCategories] = useState<IDataTable[]>([]);
+const CategoryItem = (props: Props) => {
+  const { id } = props.query;
+  const [products, setProducts] = useState<IDataTable[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [searchText, setSearchText] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
   const handlePopup = useCallback(() => {
-    setShowPopup(!showPopup)
-  }, [categories, showPopup]);
+    setShowPopup(!showPopup);
+  }, [products, showPopup]);
 
-  const handleGetData = useCallback( async () => {
+  const handleGetData = useCallback(async () => {
     setLoading(true);
 
     try {
       const response = await axios
         .get(
-          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/getAllCategories`
+          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/getAllProductsInCategory/${id}`
         )
         .then((payload) => payload.data);
 
       if (response.status === 200) {
         if (response.payload.length === 0) {
-          setCategories([]);
-          setMessage("No category");
+          setProducts([]);
+          setMessage("No item in category");
           setLoading(false);
           return;
         }
-
         const data: IDataTable[] = response.payload.map(
-          (item: IDataCategory) => {
+          (item: IProductData) => {
             return {
               _id: item._id,
               title: item.title,
@@ -55,8 +58,7 @@ const Category = () => {
             };
           }
         );
-
-        setCategories(data);
+        setProducts(data);
         setLoading(false);
       }
     } catch (error) {
@@ -64,40 +66,38 @@ const Category = () => {
       setMessage("Error in server");
       setLoading(false);
     }
-  }, [categories]);
+  }, [products]);
 
-  const handleDeleteCategory = useCallback(async (item: IDataTable) => {
-    if (!item._id) {
-      setShowPopup(false);
-      return;
-    }
+  const handleDeleteProduct = useCallback(
+    async (item: IDataTable) => {
+      if (!item._id) {
+        setShowPopup(false);
+        return;
+      }
 
-    try {
-      await deleteImageInSever(item.thumbnail);
-      await axios
-        .delete(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${item._id}`)
-        .then((res) => res.data);
-      setShowPopup(false);
-      handleGetData();
-    } catch (error) {
-      console.log(error);
-    }
-  }, [categories]);
-
-  const hanleSearch = (text: string) => {
-    setSearchText(text);
-  };
+      try {
+        await deleteImageInSever(item.thumbnail);
+        await axios
+          .delete(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/${item._id}`)
+          .then((res) => res.data);
+        setShowPopup(false);
+        handleGetData();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [products]
+  );
 
   useEffect(() => {
     handleGetData();
   }, []);
-
   return (
     <section className="lg:pt-10 px-5 pt-24">
       <div className="flex items-center justify-between gap-5">
         <h1 className="lg:text-3xl text-2xl font-bold">Categories</h1>
         <Link
-          href={"/add/category"}
+          href={"/add/product"}
           className="block font-medium bg-primary px-3 py-2 rounded-md"
         >
           <IoIosAdd className=" text-2xl text-white" />
@@ -105,20 +105,28 @@ const Category = () => {
       </div>
 
       <Fragment>
-        <Search onSearch={hanleSearch}/>
+        <Search />
         <Table
           colHeadTabel={colHeadTable}
-          data={categories}
+          data={products}
           message={message}
           loading={loading}
-          onDelete={handleDeleteCategory}
+          onDelete={handleDeleteProduct}
           showPopup={showPopup}
-          onShowPopup={handlePopup}
+          onShowPopup={() => setShowPopup(!showPopup)}
         />
-        {categories.length > 0 && <Pagination />}
+        {products.length > 0 && <Pagination />}
       </Fragment>
     </section>
   );
 };
 
-export default Category;
+export default CategoryItem;
+
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+  return {
+    props: {
+      query,
+    },
+  };
+};
