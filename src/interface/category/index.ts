@@ -14,7 +14,7 @@ interface IDataCategory {
   description: string;
   thumbnail: string;
   options: IOption[];
-  createdAt: string;
+  createdAt?: string;
 }
 
 export type { IThumbnailUrl, IOption, IDataCategory };

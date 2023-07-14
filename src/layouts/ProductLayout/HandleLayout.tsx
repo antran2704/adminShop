@@ -1,10 +1,9 @@
-import { useState, useRef, FC, useEffect, memo, useCallback } from "react";
+import { useState, useRef, FC, useEffect, useCallback } from "react";
 import axios from "axios";
 
 import {
   IOption,
   IListOption,
-  IProductData,
   ICategory,
   ITypeProduct,
 } from "~/interface/product";
@@ -17,21 +16,32 @@ import Thumbnail from "~/components/Image/Thumbnail";
 import Gallery from "~/components/Image/Gallery";
 import Popup from "~/components/Popup";
 
-import {
-  deleteGallery,
-  uploadGalleryOnServer,
-  uploadImageOnServer,
-} from "~/helper/handleImage";
+import { deleteGallery } from "~/helper/handleImage";
 
 import ButtonCheck from "~/components/Button/ButtonCheck";
 
 import SelectItem from "~/components/Select/SelectItem";
 import SelectMutipleItem from "~/components/Select/SelectMutipleItem";
 
+interface IData {
+  title: string;
+  description: string;
+  shortDescription: string;
+}
+
 interface Props {
-  initData: IProductData;
   categories: ICategory[];
-  onSubmit: (data: IProductData) => void;
+  selectCategory: ICategory;
+  productType: ITypeProduct[];
+  data: IData;
+  price: number;
+  promotionPrice: number | null;
+  thumbnail: IThumbnail;
+  gallery: IThumbnail[];
+  quantity: number;
+  options: IListOption[];
+  status: boolean;
+  onSubmit: (data: any, thumbnail: IThumbnail, gallery: IThumbnail[]) => void;
 }
 
 const HandleLayout: FC<Props> = (props: Props) => {
@@ -40,16 +50,28 @@ const HandleLayout: FC<Props> = (props: Props) => {
   const optionItemRef = useRef<HTMLInputElement>(null);
   const optionItemStatusRef = useRef<HTMLSelectElement>(null);
 
-  const [data, setData] = useState<IProductData>(props.initData);
-  const [selectCategory, setSelectCategory] = useState<ICategory>({
-    _id: null,
-    title: null,
-    options: null,
-  });
+  const [data, setData] = useState<IData>(props.data);
+
+  const [selectCategory, setSelectCategory] = useState<ICategory>(
+    props.selectCategory
+  );
+  const [selectProductType, setSelectType] = useState<ITypeProduct[]>(
+    props.productType
+  );
 
   const [productType, setProductType] = useState<ITypeProduct[]>([]);
+  const [options, setOptions] = useState<IListOption[]>(props.options);
 
-  const [selectProductType, setSelectType] = useState<ITypeProduct[]>([]);
+  const [thumbnail, setThumbnail] = useState<IThumbnail>(props.thumbnail);
+  const [gallery, setGallery] = useState<IThumbnail[]>(props.gallery);
+
+  const [price, setPrice] = useState<number>(props.price);
+  const [promotionPrice, setPromotionPrice] = useState<number | null>(
+    props.promotionPrice
+  );
+  const [quantity, setQuantity] = useState<number>(props.quantity);
+
+  const [status, setStatus] = useState<boolean>(true);
 
   const [optionIndex, setOptionIndex] = useState<number>(0);
   const [optionItemIndex, setOptionItemIndex] = useState({
@@ -63,76 +85,81 @@ const HandleLayout: FC<Props> = (props: Props) => {
   const [isEditOptionItem, setEditOptionItem] = useState<boolean>(false);
   const [isEditOption, setEditOption] = useState<boolean>(false);
 
-  const handleChangeValue = useCallback(
-    (name: string | undefined, value: string | number | boolean) => {
-      if (name) {
-        setData({ ...data, [name]: value });
-      }
-    },
-    [data]
-  );
+  const handleChangeValue = (name: string | undefined,
+    value: string | number | boolean) => {
+    if (name) {
+      setData({ ...data, [name]: value });
+    }
+  };
 
-  const handleSelectCategory = useCallback(
-    (item: ICategory) => {
-      setSelectCategory(item);
-
-      if (item?.options) {
-        getOption(item.options);
-      }
-    },
-    [selectCategory, productType]
-  );
-
-  const handleSelectTypeProduct = useCallback(
-    (item: ITypeProduct) => {
-      if (!selectProductType.includes(item)) {
-        setSelectType([...selectProductType, item]);
+  const handleChangePrice = (name: string | undefined,
+    value: string | number | boolean) => {
+      if(name === "price") {
+        setPrice(Number(value));
       } else {
-        handleDeleteTypeProduct(item._id);
+        setPromotionPrice(Number(value));
       }
-    },
-    [selectProductType]
-  );
+  };
 
-  const handleDeleteTypeProduct = useCallback(
-    (id: string | null) => {
-      if (id) {
-        const newList = selectProductType.filter(
-          (item: ITypeProduct) => item._id !== id
-        );
-        setSelectType(newList);
-      }
-    },
-    [selectProductType, productType]
-  );
+  const handleChangeQuantity = (name: string | undefined,
+    value: string | number | boolean) => {
+      setQuantity(Number(value));
+  };
+
+  const handleChangeStatus = (name: string | undefined,
+    value: string | number | boolean) => {
+      setStatus(Boolean(value));
+  };
+
+  const handleSelectCategory = (item: ICategory) => {
+    setSelectCategory(item);
+
+    if (item?.options) {
+      getOption(item.options);
+    }
+  };
+
+  const handleSelectTypeProduct = (item: ITypeProduct) => {
+    if (!selectProductType.includes(item)) {
+      setSelectType([...selectProductType, item]);
+    } else {
+      handleDeleteTypeProduct(item._id);
+    }
+  };
+
+  const handleDeleteTypeProduct = (id: string | null) => {
+    if (id) {
+      const newList = selectProductType.filter(
+        (item: ITypeProduct) => item._id !== id
+      );
+      setSelectType(newList);
+    }
+  };
 
   const handleUploadGallery = (source: File, urlBase64: string) => {
-    setData({ ...data, gallery: [...data.gallery, { source, urlBase64 }] });
+    setGallery([...gallery, { source, urlBase64 }]);
   };
 
   const handleDeleteGallery = (index: number) => {
-    const newGallery = deleteGallery(index, data.gallery);
-    setData({ ...data, gallery: [...newGallery] });
+    const newGallery = deleteGallery(index, gallery);
+    setGallery([...newGallery]);
   };
 
   const handleUploadThumbnail = (source: File, urlBase64: string) => {
-    setData({ ...data, thumbnail: { source, urlBase64 } });
+    setThumbnail({ source, urlBase64 });
   };
 
-  const handleAddOption = useCallback(() => {
+  const handleAddOption = () => {
     if (optionRef.current) {
       const newOption = optionRef.current.value;
-      setData({
-        ...data,
-        options: [...data.options, { title: newOption, list: [] }],
-      });
+      setOptions([...options, { title: newOption, list: [] }])
       setShowOption(!showOption);
       optionRef.current.value = "";
     }
-  }, [data.options, showOption]);
+  };
 
   const getOptionEdit = (index: number) => {
-    const item = data.options[index];
+    const item = options[index];
 
     if (optionRef.current) {
       optionRef.current.value = item.title;
@@ -144,7 +171,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
   };
 
   const getOptionItemEdit = (indexParent: number, indexChildren: number) => {
-    const item = data.options[indexParent].list[indexChildren];
+    const item = options[indexParent].list[indexChildren];
 
     if (optionItemRef.current && optionItemStatusRef.current) {
       optionItemRef.current.value = item.name;
@@ -158,73 +185,73 @@ const HandleLayout: FC<Props> = (props: Props) => {
     }
   };
 
-  const handleEditOption = useCallback(() => {
+  const handleEditOption = () => {
     if (optionRef.current) {
       const name = optionRef.current.value;
-      const currentList = data.options;
+      const currentList = options;
       currentList[optionIndex].title = name;
 
-      setData({ ...data, options: currentList });
+      setOptions(currentList);
     }
     setEditOption(false);
     setShowOption(!showOption);
-  }, [data.options]);
+  };
 
-  const handleEditOptionItem = useCallback(() => {
+  const handleEditOptionItem = () => {
     if (optionItemRef.current && optionItemStatusRef.current) {
       const name = optionItemRef.current.value;
       const status = optionItemStatusRef.current.value === "1" ? true : false;
       const firstIndex = optionItemIndex.firstIndex;
       const secondIndex = optionItemIndex.secondIndex;
 
-      const currentList = data.options;
+      const currentList = options;
 
       currentList[firstIndex].list[secondIndex].name = name;
       currentList[firstIndex].list[secondIndex].status = status;
 
-      setData({ ...data, options: currentList });
+      setOptions(currentList);
       setShowOption(false);
       setEditOption(false);
     }
-  }, [data.options]);
+  };
 
-  const handleDeleteOption = useCallback(() => {
-    const currentList = data.options;
+  const handleDeleteOption = () => {
+    const currentList = options;
 
     currentList.splice(optionIndex, 1);
 
-    setData({ ...data, options: currentList });
+    setOptions(currentList);
     setShowOption(false);
     setEditOption(false);
-  }, [data.options]);
+  };
 
-  const handleDeleteOptionItem = useCallback(() => {
+  const handleDeleteOptionItem = () => {
     const firstIndex = optionItemIndex.firstIndex;
     const secondIndex = optionItemIndex.secondIndex;
-    const currentList = data.options;
+    const currentList = options;
     currentList[firstIndex].list.splice(secondIndex, 1);
 
-    setData({ ...data, options: currentList });
+    setOptions(currentList);
     setShowOptionItem(false);
     setEditOptionItem(false);
-  }, [data.options]);
+  };
 
-  const handleAddOptionItem = useCallback(() => {
+  const handleAddOptionItem = () => {
     if (optionItemRef.current && optionItemStatusRef.current) {
       const name = optionItemRef.current.value;
       const status = optionItemStatusRef.current.value === "1" ? true : false;
-      const currentList = data.options;
+      const currentList = options;
 
       currentList[optionIndex].list.push({
         name,
         status,
       });
 
-      setData({ ...data, options: currentList });
+      setOptions(currentList);
       setShowOptionItem(false);
       optionItemRef.current.value = "";
     }
-  }, [data.options]);
+  };
 
   const getOption = async (id: string) => {
     try {
@@ -241,18 +268,22 @@ const HandleLayout: FC<Props> = (props: Props) => {
   };
 
   const onSubmit = () => {
-    const sendData = data;
-    sendData.category = selectCategory;
-    sendData.type = selectProductType;
+    const sendData = {
+      title: data.title,
+      description: data.description,
+      shortDescription: data.shortDescription,
+      category: selectCategory,
+      type: selectProductType
+    };
 
-    props.onSubmit(sendData);
+    props.onSubmit(sendData, thumbnail, gallery);
   };
 
   useEffect(() => {
-    if (listRef.current && data.options.length > 0) {
+    if (listRef.current && options.length > 0) {
       listRef.current.scrollTop = listRef.current.scrollHeight + 200;
     }
-  }, [data.options]);
+  }, [options]);
 
   return (
     <FormLayout onSubmit={onSubmit} ref={listRef}>
@@ -312,16 +343,16 @@ const HandleLayout: FC<Props> = (props: Props) => {
           <Input
             title="Price"
             checkValidNumber
-            value={data.price}
+            value={price}
             widthFull={false}
             name="price"
             type={typeInput.input}
-            onGetValue={handleChangeValue}
+            onGetValue={handleChangePrice}
           />
 
           <Input
             title="Promorion price"
-            value={data.promotionPrice?.toString()}
+            value={promotionPrice?.toString()}
             checkValidNumber
             widthFull={false}
             name="promotionPrice"
@@ -332,12 +363,12 @@ const HandleLayout: FC<Props> = (props: Props) => {
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
           <Thumbnail
-            thumbnailUrl={data.thumbnail.urlBase64}
+            thumbnailUrl={thumbnail.urlBase64}
             onChange={handleUploadThumbnail}
           />
 
           <Gallery
-            gallery={data.gallery}
+            gallery={gallery}
             onChange={handleUploadGallery}
             onDelete={handleDeleteGallery}
           />
@@ -347,19 +378,19 @@ const HandleLayout: FC<Props> = (props: Props) => {
           <Input
             title="Quantity"
             widthFull={false}
-            value={data.quantity}
+            value={quantity}
             checkValidNumber
             name="quantity"
             type={typeInput.input}
-            onGetValue={handleChangeValue}
+            onGetValue={handleChangeQuantity}
           />
 
           <ButtonCheck
             title="Status"
             name="status"
             widthFull={false}
-            isChecked={data.status}
-            onGetValue={handleChangeValue}
+            isChecked={status}
+            onGetValue={handleChangeStatus}
           />
         </div>
 
@@ -383,7 +414,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
               </button>
             </div>
 
-            {data.options.map((item: IListOption, indexParent: number) => (
+            {options.map((item: IListOption, indexParent: number) => (
               <ul
                 key={indexParent}
                 className="relative flex flex-wrap items-center w-full min-h-[40px] rounded-md px-2 py-1 mt-8 border-2 focus:border-gray-600 outline-none gap-2"
@@ -566,4 +597,4 @@ const HandleLayout: FC<Props> = (props: Props) => {
   );
 };
 
-export default memo(HandleLayout);
+export default HandleLayout;

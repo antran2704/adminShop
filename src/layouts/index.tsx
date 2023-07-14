@@ -1,4 +1,7 @@
 import { FC } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import Navbar from "~/components/Navbar";
 
 interface Props {
@@ -10,6 +13,7 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
     <main>
       <div className="flex items-start justify-between gap-10">
         <Navbar />
+        <ToastContainer autoClose={5000} pauseOnFocusLoss={false} pauseOnHover={false}/>
         <div className="w-full bg-white min-h-screen">{children}</div>
       </div>
     </main>

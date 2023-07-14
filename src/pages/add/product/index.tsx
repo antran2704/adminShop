@@ -1,30 +1,56 @@
 import { useRouter } from "next/router";
-import axios from "axios";
 import { useState, useEffect } from "react";
-import { IProductData, ICategory } from "~/interface/product";
-import HandleLayout from "~/layouts/ProductLayout/HandleLayout";
+import axios from "axios";
+import { toast } from "react-toastify";
+
+import {
+  IProductData,
+  ICategory,
+  ITypeProduct,
+  IListOption,
+} from "~/interface/product";
 
 import {
   uploadGalleryOnServer,
   uploadImageOnServer,
 } from "~/helper/handleImage";
 
-const initData: IProductData = {
+import HandleLayout from "~/layouts/ProductLayout/HandleLayout";
+import { IThumbnail } from "~/interface/image";
+
+interface IData {
+  title: string;
+  description: string;
+  shortDescription: string;
+}
+
+const data: IData = {
   title: "",
-  category: null,
-  type: [],
-  shortDescription: "",
   description: "",
-  price: 0,
-  promotionPrice: null,
-  quantity: 0,
-  thumbnail: { source: {}, urlBase64: "" },
-  gallery: [],
-  brand: null,
-  options: [],
-  hotProduct: false,
-  status: true,
+  shortDescription: "",
 };
+
+const selectCategory: ICategory = {
+  _id: null,
+  options: null,
+  title: null,
+};
+
+const thumbnail: IThumbnail = {
+  source: {},
+  urlBase64: "",
+};
+
+const gallery: IThumbnail[] = [];
+
+const productType: ITypeProduct[] = [];
+const options: IListOption[] = [];
+
+const price: number = 0;
+const promotionPrice: number | null = null;
+const quantity: number = 0;
+
+const status: boolean = true;
 
 const AddProductPage = () => {
   const router = useRouter();
@@ -44,10 +70,14 @@ const AddProductPage = () => {
     }
   };
 
-  const handleSubmit = async (data: IProductData) => {
+  const onSubmit = async (
+    currentData: any,
+    currentThumbnail: IThumbnail,
+    currentGallery: IThumbnail[]
+  ) => {
     const handleUploadThumbnail = async () => {
       const formData: FormData = new FormData();
-      const source: any = data.thumbnail.source;
+      const source: any = currentThumbnail.source;
       formData.append("thumbnail", source);
 
       const payload = await uploadImageOnServer(
@@ -62,8 +92,8 @@ const AddProductPage = () => {
       const thumbailPayload = await handleUploadThumbnail();
       const formGallery: FormData = new FormData();
 
-      for (let i = 0; i < data.gallery.length; i++) {
-        const source: any = data.gallery[i].source;
+      for (let i = 0; i < currentGallery.length; i++) {
+        const source: any = currentGallery[i].source;
         formGallery.append("gallery", source);
       }
 
@@ -73,18 +103,27 @@ const AddProductPage = () => {
       );
 
       if (thumbailPayload.status === 200 && galleryPayload.status === 200) {
-        data.thumbnail = thumbailPayload.payload.thumbnail;
-        data.gallery = galleryPayload.payload.gallery;
+        const sendData = {
+          ...currentData,
+          thumbnail: thumbailPayload.payload.thumbnail,
+          gallery: galleryPayload.payload.gallery,
+        };
 
         const response = await axios
-          .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/product`, data)
+          .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/product`, sendData)
           .then((res) => res.data);
 
         if (response.status === 200) {
+          toast.success("Success add product", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
           router.back();
         }
       }
     } catch (error) {
+      toast.error("Error add product", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
       console.log(error);
     }
   };
@@ -95,9 +134,18 @@ const AddProductPage = () => {
 
   return (
     <HandleLayout
-      onSubmit={handleSubmit}
-      initData={initData}
+      data={data}
       categories={categories}
+      selectCategory={selectCategory}
+      productType={productType}
+      price={price}
+      promotionPrice={promotionPrice}
+      thumbnail={thumbnail}
+      gallery={gallery}
+      quantity={quantity}
+      options={options}
+      status={status}
+      onSubmit={onSubmit}
     />
   );
 };

@@ -1,11 +1,19 @@
-import { FC, memo } from "react";
+import { FC, memo, useState, useEffect } from "react";
+import useDebounce from "~/hooks/useDebounce";
 
 interface Props {
-  onSearch?: (text: string) => void;
+  onSearch: (text: string) => void;
 }
 
 const Search: FC<Props> = (props: Props) => {
+  const [search, setSearch] = useState<string | null>(null);
+  const debouncedValue = useDebounce(search, 1000);
 
+  useEffect(() => {
+    if(search !== null) {
+      props.onSearch(search);
+    }
+  }, [debouncedValue]);
   return (
     <div className="flex justify-end py-5">
       <div className="inline-flex border-2 rounded lg:w-4/12 md:w-6/12 w-full lg:px-2 px-5 h-10 bg-transparent">
@@ -37,7 +45,7 @@ const Search: FC<Props> = (props: Props) => {
           </div>
           <input
             type="text"
-            onChange={(e) => props.onSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             className="flex-shrink flex-grow leading-normal tracking-wide w-px flex-1 border border-none border-l-0 rounded rounded-l-none px-3 relative focus:outline-none text-xxs lg:text-base text-[#343a40]"
             placeholder="Search"
           />

@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import axios from "axios";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 import { IThumbnailUrl, IDataCategory } from "~/interface/category";
 import HandleLayout from "~/layouts/CategoryLayout/HandleLayout";
@@ -11,6 +12,7 @@ const initData: IDataCategory = {
   description: "",
   thumbnail: "",
   options: [],
+  createdAt: "",
 };
 
 const AddCategoryPage = () => {
@@ -87,10 +89,15 @@ const AddCategoryPage = () => {
         .then((res) => res.data);
 
       if (payload.status === 200) {
-        console.log("upload successfully");
+        toast.success("Success add category", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
         router.back();
       }
     } catch (error) {
+      toast.error("Error in add category", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
       console.log(error);
     }
   };

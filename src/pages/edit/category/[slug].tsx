@@ -15,13 +15,13 @@ const initData: IDataCategory = {
   options: [],
 };
 
-interface Prop {
+interface Props {
   query: any;
 }
 
-const EditCategoryPage = (prop: Prop) => {
+const EditCategoryPage = (props: Props) => {
   const router = useRouter();
-  const { query } = prop;
+  const { query } = props;
 
   const [data, setData] = useState<IDataCategory>(initData);
   const [optionId, setOptionId] = useState<string | null>(null);
@@ -132,6 +132,7 @@ const EditCategoryPage = (prop: Prop) => {
       const data = await axios
         .get(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${slug}`)
         .then((res) => res.data);
+        
       if (data.status === 200) {
         setData({
           _id: data.payload._id,

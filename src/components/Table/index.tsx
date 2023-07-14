@@ -8,6 +8,8 @@ import Popup from "~/components/Popup";
 interface Props {
   colHeadTabel: string[];
   data: IDataTable[];
+  href: string;
+  hrefEdit: string;
   message: string | null;
   showPopup: boolean | false;
   loading: boolean;
@@ -24,7 +26,6 @@ const initData: IDataTable = {
 };
 
 const Table: FC<Props> = (props: Props) => {
-  console.log("table")
   const [selectItem, setSelectItem] = useState<IDataTable>(initData);
 
   const onSelectDeleteItem = (item: IDataTable) => {
@@ -54,12 +55,12 @@ const Table: FC<Props> = (props: Props) => {
                 props.data.map((item: IDataTable) => (
                   <tr
                     key={item._id}
-                    className="hover:bg-slate-100 cursor-pointer"
+                    className="hover:bg-slate-100"
                   >
                     <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                       <div className="flex items-center">
                         <Link
-                          href={`/category/${item._id}`}
+                          href={`${props.href}/${item._id}`}
                           className="text-sm leading-5 text-gray-800 font-medium"
                         >
                           {item.title}
@@ -68,7 +69,7 @@ const Table: FC<Props> = (props: Props) => {
                     </td>
                     <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
                       <Link
-                        href={`/category/${item._id}`}
+                        href={`${props.href}/${item._id}`}
                         className="block w-[160px] h-[100px] rounded overflow-hidden"
                       >
                         <img
@@ -95,7 +96,7 @@ const Table: FC<Props> = (props: Props) => {
                     <td className="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-500 text-sm leading-5">
                       <div className="flex items-center justify-center">
                         <Link
-                          href={`/edit/category/${item.slug}`}
+                          href={`${props.hrefEdit}/${item.slug}`}
                           className="block px-3 py-2 border-blue-700 border-2 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
                         >
                           <AiOutlineEdit className="text-xl" />
@@ -110,6 +111,7 @@ const Table: FC<Props> = (props: Props) => {
                     </td>
                   </tr>
                 ))}
+
               {props.loading && (
                 <>
                   <tr>

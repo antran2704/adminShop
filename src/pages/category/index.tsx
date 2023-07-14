@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useState, useEffect, Fragment, useCallback } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 import { IoIosAdd } from "react-icons/io";
 
 import { IDataTable } from "~/interface/table";
@@ -18,15 +19,14 @@ const colHeadTable = ["Name", "Thumnail", "Status", "Created Date", ""];
 const Category = () => {
   const [categories, setCategories] = useState<IDataTable[]>([]);
   const [message, setMessage] = useState<string | null>(null);
-  const [searchText, setSearchText] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
   const handlePopup = useCallback(() => {
-    setShowPopup(!showPopup)
+    setShowPopup(!showPopup);
   }, [categories, showPopup]);
 
-  const handleGetData = useCallback( async () => {
+  const handleGetData = useCallback(async () => {
     setLoading(true);
 
     try {
@@ -66,26 +66,75 @@ const Category = () => {
     }
   }, [categories]);
 
-  const handleDeleteCategory = useCallback(async (item: IDataTable) => {
-    if (!item._id) {
-      setShowPopup(false);
-      return;
-    }
+  const handleDeleteCategory = useCallback(
+    async (item: IDataTable) => {
+      if (!item._id) {
+        setShowPopup(false);
+        toast.error("False delete category", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        return;
+      }
 
+      try {
+        await deleteImageInSever(item.thumbnail);
+        await axios
+          .delete(
+            `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${item._id}`
+          )
+          .then((res) => res.data);
+        setShowPopup(false);
+        handleGetData();
+        toast.success("Success delete category", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      } catch (error) {
+        toast.error("Error delete category", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        console.log(error);
+      }
+    },
+    [categories]
+  );
+
+  const handleSearch = async (text: string) => {
+    setLoading(true);
     try {
-      await deleteImageInSever(item.thumbnail);
-      await axios
-        .delete(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${item._id}`)
-        .then((res) => res.data);
-      setShowPopup(false);
-      handleGetData();
+      const response = await axios
+        .get(
+          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/search?search=${text}`
+        )
+        .then((payload) => payload.data);
+
+      if (response.status === 200) {
+        if (response.payload.length === 0) {
+          setCategories([]);
+          setMessage(`No category with text ${text}`);
+          setLoading(false);
+          return;
+        }
+
+        const data: IDataTable[] = response.payload.map(
+          (item: IDataCategory) => {
+            return {
+              _id: item._id,
+              title: item.title,
+              slug: item.slug,
+              thumbnail: item.thumbnail,
+              createdAt: item.createdAt,
+            };
+          }
+        );
+        setMessage(null);
+        setCategories(data);
+        setLoading(false);
+      }
     } catch (error) {
       console.log(error);
+      setMessage(`No category with text ${text}`);
+      setLoading(false);
     }
-  }, [categories]);
-
-  const hanleSearch = (text: string) => {
-    setSearchText(text);
   };
 
   useEffect(() => {
@@ -105,10 +154,12 @@ const Category = () => {
       </div>
 
       <Fragment>
-        <Search onSearch={hanleSearch}/>
+        <Search onSearch={handleSearch} />
         <Table
           colHeadTabel={colHeadTable}
           data={categories}
+          href="/category"
+          hrefEdit="/edit/category"
           message={message}
           loading={loading}
           onDelete={handleDeleteCategory}
