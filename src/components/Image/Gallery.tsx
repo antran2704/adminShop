@@ -45,7 +45,7 @@ const Gallery: FC<prop> = (prop: prop) => {
 
       <ul className="grid flex-wrap grid-cols-3 mt-4 gap-3">
         {prop.gallery.map((image: IThumbnail, index: number) => (
-          <li key={index} className="relative rounded-md overflow-hidden">
+          <li key={index} className="relative min-h-[160px] rounded-md overflow-hidden">
             <div
               onClick={() => prop.onDelete(index)}
               className=" opacity-0 hover:opacity-100 cursor-pointer transition-all ease-linear duration-100"

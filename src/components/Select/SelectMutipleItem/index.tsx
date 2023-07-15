@@ -18,7 +18,6 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
   const popupRef = useRef<HTMLUListElement>(null);
 
   const [show, setShow] = useState(false);
-
   useEffect(() => {
     if (divRef.current && popupRef.current) {
       const height = divRef.current.clientHeight;
@@ -81,7 +80,7 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
               key={item._id}
               onClick={() => props.onSelect(item)}
               className={`w-full text-base ${
-                props.data.includes(item) && "bg-[#4f46e5] text-white"
+                props.data.find((itemData: ITypeProduct) => itemData._id === item._id) && "bg-[#4f46e5] text-white"
               } hover:bg-[#4f46e5] hover:text-white px-5 py-1 cursor-pointer transition-all ease-linear duration-100`}
             >
               {item.title}

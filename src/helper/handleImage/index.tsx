@@ -21,7 +21,7 @@ const uploadImageOnServer = async (url: string, formData: FormData) => {
 const uploadGalleryOnServer = async (url: string, formData: FormData) => {
   try {
     const payload = await axios.post(url, formData).then((res) => res.data);
-    console.log(payload)
+    console.log(payload);
     return payload;
   } catch (error) {
     console.log(error);
@@ -39,9 +39,23 @@ const deleteImageInSever = async (filePath: string) => {
   }
 };
 
+const deleteImagesInServer = async (images: IThumbnail[]) => {
+  const list = images.map((image: IThumbnail) => {
+    return { filePath: image.urlBase64 };
+  });
+
+  try {
+    const payload = await axios
+      .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/delete`, { images: list })
+      .then((res) => res.data);
+    return payload;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const deleteGallery = (index: number, gallery: IThumbnail[]) => {
   gallery.splice(index, 1);
-
   return gallery;
 };
 
@@ -49,6 +63,7 @@ export {
   uploadImage,
   deleteGallery,
   deleteImageInSever,
+  deleteImagesInServer,
   uploadImageOnServer,
   uploadGalleryOnServer,
 };

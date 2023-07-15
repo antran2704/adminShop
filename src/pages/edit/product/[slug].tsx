@@ -14,7 +14,8 @@ import {
 import { IThumbnail } from "~/interface/image";
 
 import {
-  deleteGallery,
+  deleteImageInSever,
+  deleteImagesInServer,
   uploadGalleryOnServer,
   uploadImageOnServer,
 } from "~/helper/handleImage";
@@ -57,11 +58,9 @@ const EditProductPage = (props: Props) => {
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [selectCategory, setSelectCategory] =
     useState<ICategory>(initSelectCategory);
-  const [selectProductType, setSelectType] = useState<ITypeProduct[]>([]);
 
   const [productType, setProductType] = useState<ITypeProduct[]>([]);
   const [options, setOptions] = useState<IListOption[]>([]);
-  console.log(selectProductType);
   const [thumbnail, setThumbnail] = useState<IThumbnail>(initThumbnail);
   const [gallery, setGallery] = useState<IThumbnail[]>([]);
 
@@ -90,6 +89,33 @@ const EditProductPage = (props: Props) => {
     currentThumbnail: IThumbnail,
     currentGallery: IThumbnail[]
   ) => {
+    // check new image
+    const handleCheckNewGallery = () => {
+      const newGallery = currentGallery.filter((image: IThumbnail) => {
+        const isExit = gallery.every(
+          (item: IThumbnail) => item.urlBase64 === image.urlBase64
+        );
+        if (!isExit) {
+          return image;
+        }
+      });
+
+      return newGallery;
+    };
+
+    const handleFilterOldImages = () => {
+      const deleteImages = gallery.filter((image: IThumbnail) => {
+        const isExit = currentGallery.some(
+          (item: IThumbnail) => item.urlBase64 === image.urlBase64
+        );
+        if (!isExit) {
+          return image;
+        }
+      });
+
+      return deleteImages;
+    };
+
     const handleUploadThumbnail = async () => {
       const formData: FormData = new FormData();
       const source: any = currentThumbnail.source;
@@ -104,36 +130,82 @@ const EditProductPage = (props: Props) => {
     };
 
     try {
-      const thumbailPayload = await handleUploadThumbnail();
-      const formGallery: FormData = new FormData();
+      const newGallery = handleCheckNewGallery();
+      const deleteImages = handleFilterOldImages();
+      let galleryPayload: any = null;
+      let thumbailPayload: any = null;
+      let sendData = {
+        ...currentData,
+      };
 
-      for (let i = 0; i < currentGallery.length; i++) {
-        const source: any = currentGallery[i].source;
-        formGallery.append("gallery", source);
+      // upload thumnail
+      if (currentThumbnail.urlBase64 !== thumbnail.urlBase64) {
+        const payload = await deleteImageInSever(thumbnail.urlBase64);
+        if (payload.status === 200) {
+          thumbailPayload = await handleUploadThumbnail();
+        } else {
+          toast.error("Error delete thumbail", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        }
+        console.log("upload new thumnail")
       }
 
-      const galleryPayload = await uploadGalleryOnServer(
-        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/uploadGallery`,
-        formGallery
-      );
+      // delete old images
+      if (deleteImages.length > 0) {
+        deleteImagesInServer(deleteImages);
+        console.log("delete old images")
+      }
 
-      if (thumbailPayload.status === 200 && galleryPayload.status === 200) {
-        const sendData = {
+      // upload new gallery
+      if (newGallery.length > 0) {
+        const formGallery: FormData = new FormData();
+        for (let i = 0; i < newGallery.length; i++) {
+          const source: any = newGallery[i].source;
+          formGallery.append("gallery", source);
+        }
+
+        galleryPayload = await uploadGalleryOnServer(
+          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/uploadGallery`,
+          formGallery
+        );
+
+        console.log("upload new images")
+      }
+
+      if (thumbailPayload !== null && galleryPayload !== null) {
+        sendData = {
           ...currentData,
           thumbnail: thumbailPayload.payload.thumbnail,
           gallery: galleryPayload.payload.gallery,
         };
+      }
 
-        const response = await axios
-          .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/product`, sendData)
-          .then((res) => res.data);
+      if (thumbailPayload !== null) {
+        sendData = {
+          ...currentData,
+          thumbnail: thumbailPayload.payload.thumbnail,
+        };
+      }
 
-        if (response.status === 200) {
-          toast.success("Success add product", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-          router.back();
-        }
+      if (galleryPayload !== null) {
+        sendData = {
+          ...currentData,
+          gallery: galleryPayload.payload.gallery,
+        };
+      }
+
+      const response = await axios
+        .patch(
+          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/${data._id}`,
+          sendData
+        )
+        .then((res) => res.data);
+      if (response.status === 200) {
+        toast.success("Success add product", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        router.back();
       }
     } catch (error) {
       toast.error("Error add product", {
@@ -162,7 +234,6 @@ const EditProductPage = (props: Props) => {
             };
           });
         }
-
         if (dataRes._id && dataRes.category && dataRes.category.options) {
           setData({
             _id: dataRes._id,
@@ -171,7 +242,7 @@ const EditProductPage = (props: Props) => {
             shortDescription: dataRes.shortDescription,
           });
           setSelectCategory(dataRes.category);
-          setSelectType(dataRes.type);
+          setProductType(dataRes.type);
           setThumbnail({
             source: {},
             urlBase64: dataRes.thumbnail,

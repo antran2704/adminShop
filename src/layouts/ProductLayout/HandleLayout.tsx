@@ -85,30 +85,38 @@ const HandleLayout: FC<Props> = (props: Props) => {
   const [isEditOptionItem, setEditOptionItem] = useState<boolean>(false);
   const [isEditOption, setEditOption] = useState<boolean>(false);
 
-  const handleChangeValue = (name: string | undefined,
-    value: string | number | boolean) => {
+  const handleChangeValue = (
+    name: string | undefined,
+    value: string | number | boolean
+  ) => {
     if (name) {
       setData({ ...data, [name]: value });
     }
   };
 
-  const handleChangePrice = (name: string | undefined,
-    value: string | number | boolean) => {
-      if(name === "price") {
-        setPrice(Number(value));
-      } else {
-        setPromotionPrice(Number(value));
-      }
+  const handleChangePrice = (
+    name: string | undefined,
+    value: string | number | boolean
+  ) => {
+    if (name === "price") {
+      setPrice(Number(value));
+    } else {
+      setPromotionPrice(Number(value));
+    }
   };
 
-  const handleChangeQuantity = (name: string | undefined,
-    value: string | number | boolean) => {
-      setQuantity(Number(value));
+  const handleChangeQuantity = (
+    name: string | undefined,
+    value: string | number | boolean
+  ) => {
+    setQuantity(Number(value));
   };
 
-  const handleChangeStatus = (name: string | undefined,
-    value: string | number | boolean) => {
-      setStatus(Boolean(value));
+  const handleChangeStatus = (
+    name: string | undefined,
+    value: string | number | boolean
+  ) => {
+    setStatus(Boolean(value));
   };
 
   const handleSelectCategory = (item: ICategory) => {
@@ -116,11 +124,18 @@ const HandleLayout: FC<Props> = (props: Props) => {
 
     if (item?.options) {
       getOption(item.options);
+    } else {
+      setProductType([]);
+      setSelectType([]);
     }
   };
 
   const handleSelectTypeProduct = (item: ITypeProduct) => {
-    if (!selectProductType.includes(item)) {
+    if (
+      !selectProductType.find(
+        (selectItem: ITypeProduct) => selectItem._id === item._id
+      )
+    ) {
       setSelectType([...selectProductType, item]);
     } else {
       handleDeleteTypeProduct(item._id);
@@ -152,7 +167,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
   const handleAddOption = () => {
     if (optionRef.current) {
       const newOption = optionRef.current.value;
-      setOptions([...options, { title: newOption, list: [] }])
+      setOptions([...options, { title: newOption, list: [] }]);
       setShowOption(!showOption);
       optionRef.current.value = "";
     }
@@ -273,11 +288,17 @@ const HandleLayout: FC<Props> = (props: Props) => {
       description: data.description,
       shortDescription: data.shortDescription,
       category: selectCategory,
-      type: selectProductType
+      type: selectProductType,
     };
 
     props.onSubmit(sendData, thumbnail, gallery);
   };
+
+  useEffect(() => {
+    if (selectCategory._id !== null && selectCategory.options !== null) {
+      getOption(selectCategory.options);
+    }
+  }, []);
 
   useEffect(() => {
     if (listRef.current && options.length > 0) {
