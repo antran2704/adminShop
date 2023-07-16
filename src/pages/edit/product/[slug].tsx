@@ -89,10 +89,12 @@ const EditProductPage = (props: Props) => {
     currentThumbnail: IThumbnail,
     currentGallery: IThumbnail[]
   ) => {
+    let listImages: string[] = [];
+
     // check new image
     const handleCheckNewGallery = () => {
       const newGallery = currentGallery.filter((image: IThumbnail) => {
-        const isExit = gallery.every(
+        const isExit = gallery.some(
           (item: IThumbnail) => item.urlBase64 === image.urlBase64
         );
         if (!isExit) {
@@ -105,10 +107,10 @@ const EditProductPage = (props: Props) => {
 
     const handleFilterOldImages = () => {
       const deleteImages = gallery.filter((image: IThumbnail) => {
-        const isExit = currentGallery.some(
-          (item: IThumbnail) => item.urlBase64 === image.urlBase64
-        );
-        if (!isExit) {
+        const isExit = currentGallery.some((item: IThumbnail) => item.urlBase64 === image.urlBase64);
+        if (isExit) {
+          listImages.push(image.urlBase64);
+        } else {
           return image;
         }
       });
@@ -130,10 +132,12 @@ const EditProductPage = (props: Props) => {
     };
 
     try {
-      const newGallery = handleCheckNewGallery();
       const deleteImages = handleFilterOldImages();
+      const newGallery = handleCheckNewGallery();
       let galleryPayload: any = null;
       let thumbailPayload: any = null;
+      console.log("new", newGallery);
+      console.log("delete", deleteImages);
       let sendData = {
         ...currentData,
       };
@@ -148,13 +152,13 @@ const EditProductPage = (props: Props) => {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
-        console.log("upload new thumnail")
+        console.log("upload new thumnail");
       }
 
       // delete old images
       if (deleteImages.length > 0) {
         deleteImagesInServer(deleteImages);
-        console.log("delete old images")
+        console.log("delete old images");
       }
 
       // upload new gallery
@@ -169,16 +173,8 @@ const EditProductPage = (props: Props) => {
           `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/uploadGallery`,
           formGallery
         );
-
-        console.log("upload new images")
-      }
-
-      if (thumbailPayload !== null && galleryPayload !== null) {
-        sendData = {
-          ...currentData,
-          thumbnail: thumbailPayload.payload.thumbnail,
-          gallery: galleryPayload.payload.gallery,
-        };
+        listImages = listImages.concat(galleryPayload.payload.gallery);
+        console.log("upload new images");
       }
 
       if (thumbailPayload !== null) {
@@ -188,18 +184,11 @@ const EditProductPage = (props: Props) => {
         };
       }
 
-      if (galleryPayload !== null) {
-        sendData = {
-          ...currentData,
-          gallery: galleryPayload.payload.gallery,
-        };
-      }
-
       const response = await axios
-        .patch(
-          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/${data._id}`,
-          sendData
-        )
+        .patch(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/${data._id}`, {
+          ...sendData,
+          gallery: listImages,
+        })
         .then((res) => res.data);
       if (response.status === 200) {
         toast.success("Success add product", {

@@ -91,7 +91,8 @@ const AddProductPage = () => {
     try {
       const thumbailPayload = await handleUploadThumbnail();
       const formGallery: FormData = new FormData();
-
+      console.log(currentGallery)
+      
       for (let i = 0; i < currentGallery.length; i++) {
         const source: any = currentGallery[i].source;
         formGallery.append("gallery", source);

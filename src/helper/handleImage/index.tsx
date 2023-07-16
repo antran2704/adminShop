@@ -46,7 +46,7 @@ const deleteImagesInServer = async (images: IThumbnail[]) => {
 
   try {
     const payload = await axios
-      .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/delete`, { images: list })
+      .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/delete/images`, { images: list })
       .then((res) => res.data);
     return payload;
   } catch (error) {
