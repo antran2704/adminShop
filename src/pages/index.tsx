@@ -1,6 +1,6 @@
-import { AiOutlineShoppingCart } from "react-icons/ai";
+import { useState } from "react";
+import { AiOutlineEdit, AiOutlineShoppingCart } from "react-icons/ai";
 import { BiCircleThreeQuarter } from "react-icons/bi";
-import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,6 +11,12 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+
+import Table from "~/components/Table";
+import CelTable from "~/components/Table/CelTable";
+
+import { typeCel } from "~/enums";
+import Link from "next/link";
 
 ChartJS.register(
   CategoryScale,
@@ -35,7 +41,12 @@ const options = {
   },
 };
 
+const colHeadTable = ["Name", "Email", "Phone", "Status", ""];
+
 export default function Home() {
+  const [message, setMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+
   const data = {
     labels: ["January", "February", "March", "April", "May", "June", "July"],
     datasets: [
@@ -78,9 +89,9 @@ export default function Home() {
             <div className="flex item-start justify-between w-full lg:h-[40%] bg-[#eef8f3] px-5 py-10 rounded-xl gap-10">
               <div>
                 <h3 className="text-xl font-bold mb-3">Orders today: 23</h3>
-                <button className="w-fit font-medium text-white bg-[#71ce98] px-5 py-2 rounded-lg mx-auto">
+                <Link href={"/orders"} className="w-fit font-medium text-white bg-[#71ce98] px-5 py-2 rounded-lg mx-auto">
                   Detail
-                </button>
+                </Link>
               </div>
               <AiOutlineShoppingCart className="text-3xl" />
             </div>
@@ -90,87 +101,40 @@ export default function Home() {
       <div className="w-full pb-10">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-medium">Recent Order</h2>
-          <a
-            href="/"
+          <Link
+            href={"/orders"}
             className="text-base font-medium text-[#74aef8] hover:underline"
           >
             View All
-          </a>
+          </Link>
         </div>
         <div>
-          <ul className="grid grid-cols-6 grid-rows-1 text-base text-[#b0b0b0] mb-2">
-            <li className="text-center">Creator</li>
-            <li className="text-center">Contact</li>
-            <li className="text-center">Spent</li>
-            <li className="text-center">Placement</li>
-            <li className="text-center">Status</li>
-            <li className="text-center"></li>
-          </ul>
-          <ul className="flex flex-col items-start gap-3">
-            <li className="grid grid-cols-6 grid-rows-1 w-full items-center bg-[#f4f7ff] py-2 px-3 rounded-lg hover:shadow-md transition-all ease-linear duration-100 cursor-pointer">
-              <div className="flex items-center gap-2">
-                <div>
-                  <img
-                    className="w-10 h-10 border rounded-full"
-                    src="https://scontent.fsgn5-2.fna.fbcdn.net/v/t39.30808-1/339008852_924551378682494_5390565819522752388_n.jpg?stp=dst-jpg_p100x100&_nc_cat=105&ccb=1-7&_nc_sid=7206a8&_nc_ohc=kBy7yusXoccAX9A1PZM&_nc_ht=scontent.fsgn5-2.fna&oh=00_AfCpsY3N3Ra1Bqoni8C_6auUpH4qB2bnpDv4YEOF96Mq8Q&oe=64642926"
-                    alt="avatar"
-                  />
-                </div>
-                <h3 className="text-base font-medium">AntranDev</h3>
-              </div>
-              <p className="text-base text-center">0946003423</p>
-              <p className="text-base text-center">$1000</p>
-              <p className="text-base text-center">ADV</p>
-              <p className="w-fit font-medium text-white bg-[#71ce98] px-5 py-2 rounded-lg mx-auto">
-                Active
-              </p>
-              <div className="flex items-center justify-center cursor-pointer">
-                <HiOutlineDotsHorizontal className="text-2xl" />
-              </div>
-            </li>
-            <li className="grid grid-cols-6 grid-rows-1 w-full items-center bg-[#f4f7ff] py-2 px-3 rounded-lg hover:shadow-md transition-all ease-linear duration-100 cursor-pointer">
-              <div className="flex items-center gap-2">
-                <div>
-                  <img
-                    className="w-10 h-10 border rounded-full"
-                    src="https://scontent.fsgn5-2.fna.fbcdn.net/v/t39.30808-1/339008852_924551378682494_5390565819522752388_n.jpg?stp=dst-jpg_p100x100&_nc_cat=105&ccb=1-7&_nc_sid=7206a8&_nc_ohc=kBy7yusXoccAX9A1PZM&_nc_ht=scontent.fsgn5-2.fna&oh=00_AfCpsY3N3Ra1Bqoni8C_6auUpH4qB2bnpDv4YEOF96Mq8Q&oe=64642926"
-                    alt="avatar"
-                  />
-                </div>
-                <h3 className="text-base font-medium">AntranDev</h3>
-              </div>
-              <p className="text-base text-center">0946003423</p>
-              <p className="text-base text-center">$1000</p>
-              <p className="text-base text-center">ADV</p>
-              <p className="w-fit font-medium text-white bg-[#71ce98] px-5 py-2 rounded-lg mx-auto">
-                Active
-              </p>
-              <div className="flex items-center justify-center cursor-pointer">
-                <HiOutlineDotsHorizontal className="text-2xl" />
-              </div>
-            </li>
-            <li className="grid grid-cols-6 grid-rows-1 w-full items-center bg-[#f4f7ff] py-2 px-3 rounded-lg hover:shadow-md transition-all ease-linear duration-100 cursor-pointer">
-              <div className="flex items-center gap-2">
-                <div>
-                  <img
-                    className="w-10 h-10 border rounded-full"
-                    src="https://scontent.fsgn5-2.fna.fbcdn.net/v/t39.30808-1/339008852_924551378682494_5390565819522752388_n.jpg?stp=dst-jpg_p100x100&_nc_cat=105&ccb=1-7&_nc_sid=7206a8&_nc_ohc=kBy7yusXoccAX9A1PZM&_nc_ht=scontent.fsgn5-2.fna&oh=00_AfCpsY3N3Ra1Bqoni8C_6auUpH4qB2bnpDv4YEOF96Mq8Q&oe=64642926"
-                    alt="avatar"
-                  />
-                </div>
-                <h3 className="text-base font-medium">AntranDev</h3>
-              </div>
-              <p className="text-base text-center">0946003423</p>
-              <p className="text-base text-center">$1000</p>
-              <p className="text-base text-center">ADV</p>
-              <p className="w-fit font-medium text-white bg-[#71ce98] px-5 py-2 rounded-lg mx-auto">
-                Active
-              </p>
-              <div className="flex items-center justify-center cursor-pointer">
-                <HiOutlineDotsHorizontal className="text-2xl" />
-              </div>
-            </li>
-          </ul>
+          <Table
+            colHeadTabel={colHeadTable}
+            message={message}
+            loading={loading}
+          >
+            <tr className="hover:bg-slate-100">
+              <CelTable type={typeCel.TEXT} value={"1"} />
+              <CelTable type={typeCel.TEXT} value={"Antrandev"} />
+              <CelTable
+                type={typeCel.TEXT}
+                value={"phamtrangiaan27@gmail.com"}
+              />
+              <CelTable
+                type={typeCel.TEXT}
+                value={"0946003423"}
+                className="text-primary"
+              />
+              <CelTable type={typeCel.STATUS} value={"pending"} />
+              <CelTable
+                type={typeCel.BUTTON_LINK}
+                href={`/`}
+                value={""}
+                icon={<AiOutlineEdit className="text-xl w-fit" />}
+              />
+            </tr>
+          </Table>
         </div>
       </div>
     </section>

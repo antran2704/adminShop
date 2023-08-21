@@ -13,6 +13,7 @@ const uploadImageOnServer = async (url: string, formData: FormData) => {
   try {
     const payload = await axios.post(url, formData).then((res) => res.data);
     return payload;
+    
   } catch (error) {
     console.log(error);
   }

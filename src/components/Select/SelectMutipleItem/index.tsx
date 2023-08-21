@@ -18,6 +18,7 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
   const popupRef = useRef<HTMLUListElement>(null);
 
   const [show, setShow] = useState(false);
+  
   useEffect(() => {
     if (divRef.current && popupRef.current) {
       const height = divRef.current.clientHeight;

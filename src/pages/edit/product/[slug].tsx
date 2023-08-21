@@ -133,6 +133,7 @@ const EditProductPage = (props: Props) => {
 
     try {
       const deleteImages = handleFilterOldImages();
+      console.log(deleteImages);
       const newGallery = handleCheckNewGallery();
       let galleryPayload: any = null;
       let thumbailPayload: any = null;
@@ -152,6 +153,7 @@ const EditProductPage = (props: Props) => {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
+
         console.log("upload new thumnail");
       }
 

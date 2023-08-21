@@ -10,6 +10,8 @@ module.exports = {
         success: "#71be34",
         warn: "#ffb702",
         error: "#ff623d",
+        pending: "#ffb702",
+        cancle: "#ff623d"
       },
     },
   },

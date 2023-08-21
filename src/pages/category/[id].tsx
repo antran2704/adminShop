@@ -3,7 +3,10 @@ import { GetServerSideProps } from "next";
 import { useState, useEffect, useCallback, Fragment } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { IoIosAdd } from "react-icons/io";
+
+import { typeCel } from "~/enums";
 
 import { IDataTable } from "~/interface/table";
 import { IProductData } from "~/interface/product";
@@ -12,12 +15,22 @@ import Search from "~/components/Search";
 import Table from "~/components/Table";
 import Pagination from "~/components/Pagination";
 import { deleteImageInSever } from "~/helper/handleImage";
+import { productStatus } from "~/components/Table/statusCel";
+import CelTable from "~/components/Table/CelTable";
+import { colHeadCategory as colHeadTable } from "~/components/Table/colHeadTable";
+import Popup from "~/components/Popup";
 
 interface Props {
   query: any;
 }
 
-const colHeadTable = ["Name", "Thumnail", "Status", "Created Date", ""];
+const initData: IDataTable = {
+  _id: null,
+  title: "",
+  slug: "",
+  thumbnail: "",
+  createdAt: "",
+};
 
 const CategoryItem = (props: Props) => {
   const { id } = props.query;
@@ -25,6 +38,12 @@ const CategoryItem = (props: Props) => {
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [selectItem, setSelectItem] = useState<IDataTable>(initData);
+
+  const onSelectDeleteItem = (item: IDataTable) => {
+    setSelectItem(item);
+    handlePopup();
+  };
 
   const handlePopup = useCallback(() => {
     setShowPopup(!showPopup);
@@ -136,7 +155,7 @@ const CategoryItem = (props: Props) => {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     handleGetData();
   }, []);
@@ -154,19 +173,69 @@ const CategoryItem = (props: Props) => {
 
       <Fragment>
         <Search onSearch={handleSearch} />
-        <Table
-          colHeadTabel={colHeadTable}
-          data={products}
-          href="/edit/product"
-          hrefEdit="/edit/product"
-          message={message}
-          loading={loading}
-          onDelete={handleDeleteProduct}
-          showPopup={showPopup}
-          onShowPopup={handlePopup}
-        />
+        <Table colHeadTabel={colHeadTable} message={message} loading={loading}>
+          <Fragment>
+            {products.map((item: IDataTable) => (
+              <tr
+                key={item._id}
+                className="hover:bg-slate-100 border-b border-gray-300"
+              >
+                <CelTable
+                  type={typeCel.LINK}
+                  value={item.title}
+                  href={`/edit/product/${item.slug}`}
+                />
+                <CelTable
+                  type={typeCel.THUMBNAIL}
+                  value={item.thumbnail}
+                  href={`/edit/product/${item.slug}`}
+                />
+                <CelTable
+                  type={typeCel.STATUS}
+                  value={"public"}
+                  status={productStatus["public"]}
+                />
+                <CelTable type={typeCel.DATE} value={item.createdAt} />
+                <CelTable
+                  type={typeCel.BUTTON_LINK}
+                  href={`/edit/product/${item.slug}`}
+                  value={""}
+                  icon={<AiOutlineEdit className="text-xl" />}
+                />
+                <CelTable
+                  type={typeCel.BUTTON}
+                  value={""}
+                  onClick={() => onSelectDeleteItem(item)}
+                  icon={<AiOutlineDelete className="text-xl" />}
+                />
+              </tr>
+            ))}
+          </Fragment>
+        </Table>
         {products.length > 0 && <Pagination />}
       </Fragment>
+
+      <Popup show={showPopup} onClose={handlePopup}>
+        <div>
+          <p className="text-lg">
+            Do you want delete category <strong>{selectItem?.title}</strong>
+          </p>
+          <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-2 lg:gap-5 gap-2">
+            <button
+              onClick={() => handleDeleteProduct(selectItem)}
+              className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
+            >
+              Delete
+            </button>
+            <button
+              onClick={handlePopup}
+              className="lg:w-fit w-full text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
+            >
+              Cancle
+            </button>
+          </div>
+        </div>
+      </Popup>
     </section>
   );
 };

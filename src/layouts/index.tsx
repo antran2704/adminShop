@@ -11,7 +11,7 @@ interface Props {
 const DefaultLayout: FC<Props> = ({ children }: Props) => {
   return (
     <main>
-      <div className="flex items-start justify-between gap-10">
+      <div className="flex items-start justify-between lg:gap-4">
         <Navbar />
         <ToastContainer autoClose={5000} pauseOnFocusLoss={false} pauseOnHover={false}/>
         <div className="w-full bg-white min-h-screen">{children}</div>

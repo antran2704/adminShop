@@ -85,16 +85,16 @@ const HandleLayout: FC<Props> = (props: Props) => {
   const [isEditOptionItem, setEditOptionItem] = useState<boolean>(false);
   const [isEditOption, setEditOption] = useState<boolean>(false);
 
-  const handleChangeValue = (
-    name: string | undefined,
-    value: string | number | boolean
-  ) => {
-    if (name) {
-      setData({ ...data, [name]: value });
-    }
-  };
+  const handleChangeValue = useCallback(
+    (name: string | undefined, value: string | number | boolean) => {
+      if (name) {
+        setData({ ...data, [name]: value });
+      }
+    },
+    [data]
+  );
 
-  const handleChangePrice = (
+  const handleChangePrice = useCallback((
     name: string | undefined,
     value: string | number | boolean
   ) => {
@@ -103,53 +103,62 @@ const HandleLayout: FC<Props> = (props: Props) => {
     } else {
       setPromotionPrice(Number(value));
     }
-  };
+  }, [price, promotionPrice]);
 
-  const handleChangeQuantity = (
+  const handleChangeQuantity = useCallback((
     name: string | undefined,
     value: string | number | boolean
   ) => {
     setQuantity(Number(value));
-  };
+  }, [quantity]);
 
-  const handleChangeStatus = (
+  const handleChangeStatus = useCallback((
     name: string | undefined,
     value: string | number | boolean
   ) => {
     setStatus(Boolean(value));
-  };
+  }, [status]);
 
-  const handleSelectCategory = (item: ICategory) => {
-    setSelectCategory(item);
+  const handleSelectCategory = useCallback(
+    (item: ICategory) => {
+      setSelectCategory(item);
 
-    if (item?.options) {
-      getOption(item.options);
-    } else {
-      setProductType([]);
-      setSelectType([]);
-    }
-  };
+      if (item?.options) {
+        getOption(item.options);
+      } else {
+        setProductType([]);
+        setSelectType([]);
+      }
+    },
+    [selectCategory]
+  );
 
-  const handleSelectTypeProduct = (item: ITypeProduct) => {
-    if (
-      !selectProductType.find(
-        (selectItem: ITypeProduct) => selectItem._id === item._id
-      )
-    ) {
-      setSelectType([...selectProductType, item]);
-    } else {
-      handleDeleteTypeProduct(item._id);
-    }
-  };
+  const handleSelectTypeProduct = useCallback(
+    (item: ITypeProduct) => {
+      if (
+        !selectProductType.find(
+          (selectItem: ITypeProduct) => selectItem._id === item._id
+        )
+      ) {
+        setSelectType([...selectProductType, item]);
+      } else {
+        handleDeleteTypeProduct(item._id);
+      }
+    },
+    [productType, selectProductType]
+  );
 
-  const handleDeleteTypeProduct = (id: string | null) => {
-    if (id) {
-      const newList = selectProductType.filter(
-        (item: ITypeProduct) => item._id !== id
-      );
-      setSelectType(newList);
-    }
-  };
+  const handleDeleteTypeProduct = useCallback(
+    (id: string | null) => {
+      if (id) {
+        const newList = selectProductType.filter(
+          (item: ITypeProduct) => item._id !== id
+        );
+        setSelectType(newList);
+      }
+    },
+    [selectProductType]
+  );
 
   const handleUploadGallery = (source: File, urlBase64: string) => {
     setGallery([...gallery, { source, urlBase64 }]);
@@ -288,7 +297,11 @@ const HandleLayout: FC<Props> = (props: Props) => {
       description: data.description,
       shortDescription: data.shortDescription,
       category: selectCategory,
+      options: options,
       type: selectProductType,
+      price,
+      promotionPrice,
+      quantity
     };
 
     props.onSubmit(sendData, thumbnail, gallery);
@@ -373,12 +386,12 @@ const HandleLayout: FC<Props> = (props: Props) => {
 
           <Input
             title="Promorion price"
-            value={promotionPrice?.toString()}
+            value={promotionPrice || "0"}
             checkValidNumber
             widthFull={false}
             name="promotionPrice"
             type={typeInput.input}
-            onGetValue={handleChangeValue}
+            onGetValue={handleChangePrice}
           />
         </div>
 

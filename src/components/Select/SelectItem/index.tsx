@@ -13,6 +13,7 @@ interface Props {
 
 const SelectItem: FC<Props> = (props: Props) => {
   const [show, setShow] = useState(false);
+
   return (
     <div className={`${!props.widthFull && "lg:w-1/2"} w-full`}>
       <span className="block text-base text-[#1E1E1E] font-medium mb-1">

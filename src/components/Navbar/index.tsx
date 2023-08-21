@@ -23,7 +23,7 @@ const Navbar: FC = () => {
       <nav
         className={`lg:sticky fixed top-0 lg:left-0 ${
           show ? "left-0" : "-left-[100%]"
-        } lg:w-3/12 md:w-6/12 w-8/12 h-screen bg-white px-5 py-10 rounded-tr-xl rounded-br-xl shadow-xl overflow-hidden transition-all ease-linear duration-300 z-[1000]`}
+        } lg:w-3/12 md:w-6/12 w-8/12 h-screen bg-white lg:px-5 pl-5 py-10 rounded-tr-xl rounded-br-xl shadow-xl overflow-hidden transition-all ease-linear duration-300 z-[1000]`}
       >
         <div className="h-20 flex items-center gap-3">
           <img

@@ -127,19 +127,18 @@ const EditCategoryPage = (props: Props) => {
 
   const handleGetData = async () => {
     const slug = query.slug;
-
     try {
       const data = await axios
         .get(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${slug}`)
         .then((res) => res.data);
-        
+
       if (data.status === 200) {
         setData({
           _id: data.payload._id,
           title: data.payload.title,
           description: data.payload.description,
           thumbnail: data.payload.thumbnail,
-          options: data.payload.options.list || [],
+          options: data.payload.options?.list || [],
         });
         setOptionId(data.payload.options._id);
         setThumbnailUrl({ ...thumbnailUrl, url: data.payload.thumbnail });

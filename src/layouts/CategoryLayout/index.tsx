@@ -81,8 +81,11 @@ const CategoryLayout: FC<prop> = (prop: prop) => {
             >
               Delete
             </button>
-            <button className="lg:w-fit w-full text-lg text-white font-medium bg-primary px-5 py-1 rounded-md">
-              Edit
+            <button
+              onClick={prop.onShowPopup}
+              className="lg:w-fit w-full text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
+            >
+              Cancle
             </button>
           </div>
         </div>

@@ -22,8 +22,8 @@ const listBody: itemNav[] = [
     icon: <AiOutlineShoppingCart />
   },
   {
-    name: "Order",
-    path: "/order",
+    name: "Orders",
+    path: "/orders",
     icon: <RxDashboard />,
   },
   {

@@ -1,3 +1,9 @@
+import { typeCel } from "~/enums";
+
+interface IDataCelTable {
+  type: typeCel;
+  value: string;
+}
 interface IDataTable {
   _id: string | null;
   title: string;
@@ -6,4 +12,5 @@ interface IDataTable {
   createdAt: string;
 }
 
-export type { IDataTable };
+
+export type { IDataTable, IDataCelTable };

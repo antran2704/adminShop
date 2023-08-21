@@ -1,3 +1,4 @@
 import { typeInput } from "./input";
+import { typeCel } from "./table";
 
-export { typeInput };
+export { typeInput, typeCel };

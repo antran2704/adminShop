@@ -2,6 +2,7 @@ import { FC, memo, useState, useEffect } from "react";
 import useDebounce from "~/hooks/useDebounce";
 
 interface Props {
+  placeholder?: string,
   onSearch: (text: string) => void;
 }
 
@@ -47,7 +48,7 @@ const Search: FC<Props> = (props: Props) => {
             type="text"
             onChange={(e) => setSearch(e.target.value)}
             className="flex-shrink flex-grow leading-normal tracking-wide w-px flex-1 border border-none border-l-0 rounded rounded-l-none px-3 relative focus:outline-none text-xxs lg:text-base text-[#343a40]"
-            placeholder="Search"
+            placeholder={props?.placeholder ? props.placeholder : "Search..."}
           />
         </div>
       </div>
