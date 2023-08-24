@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import { useState, Fragment } from "react";
 import { AiOutlinePrinter } from "react-icons/ai";
 
@@ -7,9 +8,19 @@ import CelTable from "~/components/Table/CelTable";
 
 import { colHeaderOrderDetail } from "~/components/Table/colHeadTable";
 
+const MyDocument = dynamic(() => import("~/components/MyDocument/"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false,
+});
+
 const OrderDetail = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [showPrint, setShowPrint] = useState<boolean>(false);
+
+  const onShowPrint = () => {
+    setShowPrint(!showPrint);
+  }
 
   return (
     <section className="lg:py-5 px-5 py-24">
@@ -85,28 +96,48 @@ const OrderDetail = () => {
       </div>
 
       <div className="flex md:flex-row flex-col md:items-center items-start justify-between bg-[#f9fafb] p-5 border rounded-md gap-5">
-          <div>
-            <h3 className="lg:text-lg  md:text-base text-sm font-medium uppercase">Payment method</h3>
-            <p className="md:text-base text-sm font-medium text-[#707275] mt-2">Card</p>
-          </div>
-          <div>
-            <h3 className="lg:text-lg  md:text-base text-sm font-medium uppercase">Shipping cost</h3>
-            <p className="md:text-base text-sm font-medium text-[#707275] mt-2">30.000 VND</p>
-          </div>
-          <div>
-            <h3 className="lg:text-lg  md:text-base text-sm font-medium uppercase">Total</h3>
-            <p className="md:text-base text-sm font-medium text-primary mt-2">300.000 VND</p>
-          </div>
+        <div>
+          <h3 className="lg:text-lg  md:text-base text-sm font-medium uppercase">
+            Payment method
+          </h3>
+          <p className="md:text-base text-sm font-medium text-[#707275] mt-2">
+            Card
+          </p>
+        </div>
+        <div>
+          <h3 className="lg:text-lg  md:text-base text-sm font-medium uppercase">
+            Shipping cost
+          </h3>
+          <p className="md:text-base text-sm font-medium text-[#707275] mt-2">
+            30.000 VND
+          </p>
+        </div>
+        <div>
+          <h3 className="lg:text-lg  md:text-base text-sm font-medium uppercase">
+            Total
+          </h3>
+          <p className="md:text-base text-sm font-medium text-primary mt-2">
+            300.000 VND
+          </p>
+        </div>
       </div>
 
       <div className="flex items-center justify-end mt-5">
-          <button className="flex items-center text-base text-white bg-[#0E9F6E] px-5 py-2 rounded-md gap-2">
-            Print Invoice
-            <AiOutlinePrinter />
-          </button>
+        <button onClick={onShowPrint} className="flex items-center text-base text-white bg-[#0E9F6E] px-5 py-2 rounded-md gap-2">
+          Print Invoice
+          <AiOutlinePrinter />
+        </button>
+
+        {showPrint && (
+          <div className="fixed top-0 left-0 right-0 bottom-0 z-[9999]">
+            <div onClick={onShowPrint} className="absolute w-full h-full bg-black opacity-60 z-10"></div>
+            <div className="absolute w-10/12 h-screen top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 z-20">
+              <MyDocument />
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
 };
-
 export default OrderDetail;

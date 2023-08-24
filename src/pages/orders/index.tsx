@@ -57,7 +57,6 @@ const OrdersPage = () => {
             <CelTable
               type={typeCel.TEXT}
               value={"0946003423"}
-              className="text-primary"
             />
             <CelTable type={typeCel.STATUS} value={"pending"} status={orderStatus["pending"]}/>
             <CelTable

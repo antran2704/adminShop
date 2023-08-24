@@ -18,7 +18,7 @@ const Table: FC<Props> = (props: Props) => {
                 {props.colHeadTabel.map((item: string, index: number) => (
                   <th
                     key={index}
-                    className="px-6 py-3 border-b border-gray-300 text-center leading-4 text-[#707275] tracking-wider"
+                    className="text-[#707275] text-center font-medium px-6 py-3 border-b border-gray-300 leading-4 tracking-wider"
                   >
                     {item}
                   </th>

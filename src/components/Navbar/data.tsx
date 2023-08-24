@@ -1,7 +1,8 @@
 import { AiOutlineSetting, AiOutlineShoppingCart } from "react-icons/ai";
-import { BiLogOut, BiUser } from "react-icons/bi";
+import { BiLogOut } from "react-icons/bi";
 import { RxDashboard } from "react-icons/rx";
 import { ReactNode } from "react";
+import { HiOutlineUsers } from "react-icons/hi2";
 
 export interface itemNav {
   name: string;
@@ -27,9 +28,9 @@ const listBody: itemNav[] = [
     icon: <RxDashboard />,
   },
   {
-    name: "User",
-    path: "/user",
-    icon: <BiUser />,
+    name: "Customers",
+    path: "/customer",
+    icon: <HiOutlineUsers />,
   },
   
 ];
