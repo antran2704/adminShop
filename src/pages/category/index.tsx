@@ -178,7 +178,10 @@ const Category = () => {
         <Table colHeadTabel={colHeadTable} message={message} loading={loading}>
           <Fragment>
             {categories.map((item: IDataTable) => (
-              <tr key={item._id} className="hover:bg-slate-100 border-b border-gray-300">
+              <tr
+                key={item._id}
+                className="hover:bg-slate-100 border-b border-gray-300"
+              >
                 <CelTable
                   type={typeCel.LINK}
                   value={item.title}
@@ -189,7 +192,11 @@ const Category = () => {
                   value={item.thumbnail}
                   href={`/category/${item._id}`}
                 />
-                <CelTable type={typeCel.STATUS} value={"public"} status={productStatus["public"]}/>
+                <CelTable
+                  type={typeCel.STATUS}
+                  value={"public"}
+                  status={productStatus["public"]}
+                />
                 <CelTable type={typeCel.DATE} value={item.createdAt} />
                 <CelTable
                   type={typeCel.BUTTON_LINK}
@@ -217,16 +224,16 @@ const Category = () => {
           </p>
           <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-2 lg:gap-5 gap-2">
             <button
+              onClick={handlePopup}
+              className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"
+            >
+              Cancle
+            </button>
+            <button
               onClick={() => handleDeleteCategory(selectItem)}
               className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
             >
               Delete
-            </button>
-            <button
-              onClick={handlePopup}
-              className="lg:w-fit w-full text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
-            >
-              Cancle
             </button>
           </div>
         </div>

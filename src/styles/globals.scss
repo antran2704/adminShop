@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .transition-cus {
+    transition-property: theme("transitionProperty.all");
+    transition-timing-function: theme("transitionTimingFunction.linear");
+    transition-duration: theme("transitionDelay.100");
+  }
+}
+
 body {
   overflow-x: hidden;
 }

@@ -222,16 +222,16 @@ const CategoryItem = (props: Props) => {
           </p>
           <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-2 lg:gap-5 gap-2">
             <button
+              onClick={handlePopup}
+              className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"
+            >
+              Cancle
+            </button>
+            <button
               onClick={() => handleDeleteProduct(selectItem)}
               className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
             >
               Delete
-            </button>
-            <button
-              onClick={handlePopup}
-              className="lg:w-fit w-full text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
-            >
-              Cancle
             </button>
           </div>
         </div>
