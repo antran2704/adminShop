@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import axios from "axios";
 import { useState, useEffect } from "react";
+import { axiosGet, axiosPatch } from "~/ultils/configAxios";
 
 import { deleteImageInSever, uploadImageOnServer } from "~/helper/handleImage";
 import HandleLayout from "~/layouts/CategoryLayout/HandleLayout";
@@ -98,23 +98,13 @@ const EditCategoryPage = (props: Props) => {
             formData
           );
 
-          payload = await axios
-            .patch(
-              `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${data._id}`,
-              {
-                ...sendData,
-                thumbnail: uploadPayload.payload.thumbnail,
-              }
-            )
-            .then((res) => res.data);
+          payload = await axiosPatch(`/category/${data._id}`, {
+            ...sendData,
+            thumbnail: uploadPayload.payload.thumbnail,
+          });
         }
       } else {
-        payload = await axios
-          .patch(
-            `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${data._id}`,
-            sendData
-          )
-          .then((res) => res.data);
+        payload = await axiosPatch(`/category/${data._id}`, { ...sendData });
       }
 
       if (payload.status === 200) {
@@ -128,9 +118,7 @@ const EditCategoryPage = (props: Props) => {
   const handleGetData = async () => {
     const slug = query.slug;
     try {
-      const data = await axios
-        .get(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/${slug}`)
-        .then((res) => res.data);
+      const data = await axiosGet(`/category/${slug}`);
 
       if (data.status === 200) {
         setData({

@@ -1,14 +1,10 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 
-import {
-  IProductData,
-  ICategory,
-  ITypeProduct,
-  IListOption,
-} from "~/interface/product";
+import { axiosGet, axiosPost } from "~/ultils/configAxios";
+
+import { ICategory, ITypeProduct, IListOption } from "~/interface/product";
 
 import {
   uploadGalleryOnServer,
@@ -58,9 +54,7 @@ const AddProductPage = () => {
 
   const getCategories = async () => {
     try {
-      const data = await axios
-        .get(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/getCategories`)
-        .then((res) => res.data);
+      const data = await axiosGet("/product/getCategories");
 
       if (data.status === 200) {
         setCategories(data.payload);
@@ -91,8 +85,8 @@ const AddProductPage = () => {
     try {
       const thumbailPayload = await handleUploadThumbnail();
       const formGallery: FormData = new FormData();
-      console.log(currentGallery)
-      
+      console.log(currentGallery);
+
       for (let i = 0; i < currentGallery.length; i++) {
         const source: any = currentGallery[i].source;
         formGallery.append("gallery", source);
@@ -110,9 +104,7 @@ const AddProductPage = () => {
           gallery: galleryPayload.payload.gallery,
         };
 
-        const response = await axios
-          .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/product`, sendData)
-          .then((res) => res.data);
+        const response = await axiosPost("/product", sendData)
 
         if (response.status === 200) {
           toast.success("Success add product", {

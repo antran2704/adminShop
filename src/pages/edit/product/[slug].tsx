@@ -1,11 +1,10 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
+import { axiosGet, axiosPatch } from "~/ultils/configAxios";
 
 import {
-  IOption,
   IListOption,
   IProductData,
   ICategory,
@@ -72,9 +71,7 @@ const EditProductPage = (props: Props) => {
 
   const getCategories = async () => {
     try {
-      const data = await axios
-        .get(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/getCategories`)
-        .then((res) => res.data);
+      const data = await axiosGet("/product/getCategories");
 
       if (data.status === 200) {
         setCategories(data.payload);
@@ -186,12 +183,11 @@ const EditProductPage = (props: Props) => {
         };
       }
 
-      const response = await axios
-        .patch(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/${data._id}`, {
-          ...sendData,
-          gallery: listImages,
-        })
-        .then((res) => res.data);
+      const response = await axiosPatch(`/product/${data._id}`, {
+        ...sendData,
+        gallery: listImages,
+      })
+
       if (response.status === 200) {
         toast.success("Success add product", {
           position: toast.POSITION.TOP_RIGHT,
@@ -209,9 +205,7 @@ const EditProductPage = (props: Props) => {
   const handleGetData = async () => {
     const { slug } = query;
     try {
-      const response = await axios
-        .get(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/${slug}`)
-        .then((res) => res.data);
+      const response = await axiosGet(`/product/${slug}`)
 
       if (response.status === 200) {
         const dataRes: IProductData = response.payload;

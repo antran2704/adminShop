@@ -1,9 +1,18 @@
 import dynamic from "next/dynamic";
-import { useState, Fragment, Dispatch, SetStateAction } from "react";
+import {
+  useState,
+  Fragment,
+  useRef,
+  useCallback,
+  Dispatch,
+  SetStateAction,
+  ChangeEvent,
+} from "react";
 import { toast } from "react-toastify";
 import { AiOutlinePrinter } from "react-icons/ai";
 
 import { currencyFormat } from "../../../helper/currencyFormat";
+import options from "./optionCancle";
 
 import { typeCel, typeButton } from "~/enums";
 import Table from "~/components/Table";
@@ -12,18 +21,36 @@ import CelTable from "~/components/Table/CelTable";
 import { colHeaderOrderDetail } from "~/components/Table/colHeadTable";
 import Button from "~/components/Button";
 import Popup from "~/components/Popup";
-import axios from "axios";
+import { axiosPatch } from "~/ultils/configAxios";
 
 const MyDocument = dynamic(() => import("~/components/MyDocument/"), {
   loading: () => <p>Loading...</p>,
   ssr: false,
 });
 
+const initCancle: { option: string | null; note: string | null } = {
+  option: null,
+  note: null,
+};
+
 const OrderDetail = () => {
+  const noteRef = useRef<HTMLTextAreaElement>(null);
+
   const [message, setMessage] = useState<string | null>(null);
+  const [cancle, setCancle] = useState<typeof initCancle>(initCancle);
   const [loading, setLoading] = useState<boolean>(false);
   const [showPrint, setShowPrint] = useState<boolean>(false);
   const [showCancle, setShowCancle] = useState<boolean>(false);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [disableBtnCancle, setDisableBtn] = useState<boolean>(true);
+
+  const onShowCancle = useCallback(() => {
+    setShowCancle(!showCancle);
+  }, [showCancle]);
+
+  const onShowSuccess = useCallback(() => {
+    setShowSuccess(!showSuccess);
+  }, [showSuccess]);
 
   const onShow = (
     value: boolean,
@@ -32,13 +59,17 @@ const OrderDetail = () => {
     setValue(!value);
   };
 
+  const onChooseOption = (e: ChangeEvent<HTMLInputElement>): void => {
+    const value: string = e.target.value;
+    setCancle({ ...cancle, option: value });
+    setDisableBtn(false);
+  };
+
   const hanldeChangeStatus: () => void = async () => {
     try {
-      const payload = await axios
-        .patch(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/order/123`, {
-          status: "success",
-        })
-        .then((res) => res.data);
+      const payload = await axiosPatch("/order/123", {
+        status: "success",
+      });
 
       if (payload.status === 200) {
         toast.success("Success change status order", {
@@ -108,12 +139,13 @@ const OrderDetail = () => {
             <Button
               title="Success"
               type={typeButton.MEDIUM}
-              onClick={() => onShow(showCancle, setShowCancle)}
+              onClick={onShowSuccess}
               className="text-white bg-success opacity-80 hover:opacity-100"
             />
             <Button
               title="Cancle"
               type={typeButton.MEDIUM}
+              onClick={onShowCancle}
               className="text-white bg-cancle opacity-80 hover:opacity-100"
             />
           </div>
@@ -214,15 +246,72 @@ const OrderDetail = () => {
         )}
       </div>
 
+      <Popup show={showCancle} title="Lý do hủy đơn" onClose={onShowCancle}>
+        <div className="mx-auto">
+          <fieldset>
+            <legend className="sr-only">Countries</legend>
+
+            {options.map((option) => (
+              <div key={option.id} className="flex items-center mb-4">
+                <input
+                  id={option.id}
+                  type="radio"
+                  name="options"
+                  onChange={(e) => onChooseOption(e)}
+                  value={option.value}
+                  className="h-4 w-4 border-gray-300"
+                />
+                <label
+                  htmlFor={option.id}
+                  className="text-sm font-medium text-gray-900 ml-2 block"
+                >
+                  {option.lable}
+                </label>
+              </div>
+            ))}
+          </fieldset>
+
+          <div className="my-4">
+            <h3 className="text-base mb-2">Note</h3>
+            <textarea
+              ref={noteRef}
+              className="w-full px-5 py-2 rounded-md border-2"
+              name="note_option"
+              id="note_option"
+              cols={30}
+              rows={4}
+              placeholder="Enter note..."
+            ></textarea>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Button
+              title="Cancle"
+              type={typeButton.MEDIUM}
+              onClick={onShowCancle}
+              className="bg-[#e6e6e6] text-black opacity-80 hover:opacity-100"
+            />
+
+            <Button
+              title="Accept"
+              disable={disableBtnCancle}
+              type={typeButton.MEDIUM}
+              className="bg-success text-white"
+            />
+          </div>
+        </div>
+      </Popup>
+
       <Popup
-        show={showCancle}
-        onClose={() => onShow(showCancle, setShowCancle)}
+        title="Bạn có muốn hoàn thành đơn hàng này"
+        show={showSuccess}
+        onClose={onShowSuccess}
       >
         <div className="flex items-center justify-between">
           <Button
             title="Cancle"
             type={typeButton.MEDIUM}
-            onClick={() => onShow(showCancle, setShowCancle)}
+            onClick={onShowSuccess}
             className="bg-[#e6e6e6] text-black opacity-80 hover:opacity-100"
           />
 

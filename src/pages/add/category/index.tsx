@@ -1,7 +1,8 @@
 import { useRouter } from "next/router";
-import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
+
+import { axiosPost } from "~/ultils/configAxios";
 
 import { IThumbnailUrl, IDataCategory } from "~/interface/category";
 import HandleLayout from "~/layouts/CategoryLayout/HandleLayout";
@@ -81,12 +82,10 @@ const AddCategoryPage = () => {
         formData
       );
 
-      const payload = await axios
-        .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/category`, {
-          ...data,
-          thumbnail: uploadPayload.payload.thumbnail,
-        })
-        .then((res) => res.data);
+      const payload = await axiosPost("/category", {
+        ...data,
+        thumbnail: uploadPayload.payload.thumbnail,
+      });
 
       if (payload.status === 200) {
         toast.success("Success add category", {

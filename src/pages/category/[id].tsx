@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { useState, useEffect, useCallback, Fragment } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { IoIosAdd } from "react-icons/io";
 
+import { axiosDelete, axiosGet } from "~/ultils/configAxios";
 import { typeCel } from "~/enums";
 
 import { IDataTable } from "~/interface/table";
@@ -53,11 +53,8 @@ const CategoryItem = (props: Props) => {
     setLoading(true);
 
     try {
-      const response = await axios
-        .get(
-          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/getAllProductsInCategory/${id}`
-        )
-        .then((payload) => payload.data);
+      
+      const response = await axiosGet(`/product/getAllProductsInCategory/${id}`);
 
       if (response.status === 200) {
         if (response.payload.length === 0) {
@@ -99,9 +96,7 @@ const CategoryItem = (props: Props) => {
 
       try {
         await deleteImageInSever(item.thumbnail);
-        await axios
-          .delete(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/${item._id}`)
-          .then((res) => res.data);
+        await axiosDelete(`/product/${item._id}`);
         setShowPopup(false);
         handleGetData();
         toast.success("Success delete product", {
@@ -120,11 +115,7 @@ const CategoryItem = (props: Props) => {
   const handleSearch = async (text: string) => {
     setLoading(true);
     try {
-      const response = await axios
-        .get(
-          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/search?search=${text}`
-        )
-        .then((payload) => payload.data);
+      const response = await axiosGet(`/product/search?search=${text}`);
 
       if (response.status === 200) {
         if (response.payload.length === 0) {
@@ -215,7 +206,7 @@ const CategoryItem = (props: Props) => {
         {products.length > 0 && <Pagination />}
       </Fragment>
 
-      <Popup show={showPopup} onClose={handlePopup}>
+      <Popup title="Form" show={showPopup} onClose={handlePopup}>
         <div>
           <p className="text-lg">
             Do you want delete category <strong>{selectItem?.title}</strong>
