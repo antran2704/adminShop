@@ -11,7 +11,7 @@ import {
 import { toast } from "react-toastify";
 import { AiOutlinePrinter } from "react-icons/ai";
 
-import { currencyFormat } from "../../../helper/currencyFormat";
+import { currencyFormat } from "../../helper/currencyFormat";
 import options from "./optionCancle";
 
 import { typeCel, typeButton } from "~/enums";

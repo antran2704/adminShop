@@ -1,20 +1,40 @@
-import { FC, memo, useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { FC, memo, useState, useEffect, ChangeEvent } from "react";
 import useDebounce from "~/hooks/useDebounce";
 
 interface Props {
-  placeholder?: string,
+  placeholder?: string;
   onSearch: (text: string) => void;
 }
 
 const Search: FC<Props> = (props: Props) => {
+  console.log("re-render");
+
+  const router = useRouter();
+  const currentSearch = router.query.search;
   const [search, setSearch] = useState<string | null>(null);
   const debouncedValue = useDebounce(search, 1000);
 
+  const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    const searchText = e.target.value;
+
+    if (searchText.length > 0) {
+      router.replace({
+        query: { search: searchText },
+      });
+    } else {
+      router.replace({});
+    }
+
+    setSearch(searchText);
+  };
+
   useEffect(() => {
-    if(search !== null) {
+    if (search !== null) {
       props.onSearch(search);
     }
   }, [debouncedValue]);
+
   return (
     <div className="flex justify-end py-5">
       <div className="inline-flex border-2 rounded lg:w-4/12 md:w-6/12 w-full lg:px-2 px-5 h-10 bg-transparent">
@@ -45,8 +65,9 @@ const Search: FC<Props> = (props: Props) => {
             </span>
           </div>
           <input
+            value={currentSearch || ""}
             type="text"
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={onChangeSearch}
             className="flex-shrink flex-grow leading-normal tracking-wide w-px flex-1 border border-none border-l-0 rounded rounded-l-none px-3 relative focus:outline-none text-xxs lg:text-base text-[#343a40]"
             placeholder={props?.placeholder ? props.placeholder : "Search..."}
           />

@@ -9,7 +9,21 @@ const colHeadCategory: string[] = [
 ];
 
 // header table for orders
-const colHeadOrder: string[] = ["ID", "Name", "Email", "Phone", "Status", ""];
-const colHeaderOrderDetail: string[] = ["NO", "Product", "Quantity", "Price", "Amout"]
+const colHeadOrder: string[] = [
+  "ID",
+  "Name",
+  "Email",
+  "Phone",
+  "Status",
+  "Created Date",
+  "",
+];
+const colHeaderOrderDetail: string[] = [
+  "NO",
+  "Product",
+  "Quantity",
+  "Price",
+  "Amout",
+];
 
 export { colHeadCategory, colHeadOrder, colHeaderOrderDetail };

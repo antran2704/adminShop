@@ -1,46 +1,99 @@
-import { useState } from "react";
-import axios from "axios";
-import { AiOutlineEdit } from "react-icons/ai";
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import { useEffect, useState, useCallback } from "react";
+import { axiosGet } from "~/ultils/configAxios";
 
-import { colHeadOrder as colHeadTable } from "~/components/Table/colHeadTable";
+import { IOrder } from "~/interface/order";
+import { IPagination } from "~/interface/pagination";
 
-import { typeCel } from "~/enums";
-
-import { orderStatus } from "~/components/Table/statusCel";
-
-import Table from "~/components/Table";
-import CelTable from "~/components/Table/CelTable";
+import TableOrder from "~/components/Table/TableOrder";
 import Search from "~/components/Search";
 
-const OrdersPage = () => {
+interface Props {
+  query: InferGetServerSidePropsType<typeof getServerSideProps>;
+}
+
+const initPagination: IPagination = {
+  currentPage: 1,
+  pageSize: 0,
+  totalItems: 0,
+};
+
+const OrdersPage = (props: Props) => {
+  const { query } = props;
+  const currentPage = query.page || 1;
+  const search = query.search;
+  const [orders, setOrders] = useState<IOrder[]>([]);
   const [message, setMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [pagination, setPagination] = useState<IPagination>(initPagination);
 
-  const handleSearch = async (id: string) => {
-    setLoading(true);
-    try {
-      const response = await axios
-        .get(
-          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/search?search=${id}`
-        )
-        .then((payload) => payload.data);
+  const handleSearch = useCallback(
+    async (value: string) => {
+      console.log("start search");
 
-      if (response.status === 200) {
-        if (response.payload.length === 0) {
-          setMessage(`No category with ID ${id}`);
-          setLoading(false);
-          return;
+      setLoading(true);
+      try {
+        const response = await axiosGet(
+          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/order/search?search=${value}&page=${currentPage}`
+        );
+
+        if (response.status === 200) {
+          if (response.payload.length === 0) {
+            setOrders([]);
+            setMessage(`No category with text ${value}`);
+          } else {
+            setMessage(null);
+            setOrders(response.payload);
+          }
         }
 
-        setMessage(null);
+        setPagination(response.pagination);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+        setOrders([]);
+        setPagination(initPagination);
+        setMessage(`No order with text ${value}`);
         setLoading(false);
       }
+    },
+    [search]
+  );
+
+  const getOrders = async (currentPage: string) => {
+    setLoading(true);
+    try {
+      const response = await axiosGet(
+        `/order/getAllOrders?page=${currentPage}`
+      );
+      if (response.status === 200) {
+        if (response.payload.length === 0) {
+          setOrders([]);
+          setMessage(`No Data`);
+        } else {
+          setMessage(null);
+          setOrders(response.payload);
+        }
+      }
+
+      setPagination(response.pagination);
+      setLoading(false);
     } catch (error) {
       console.log(error);
-      setMessage(`No order with id ${id}`);
+      setOrders([]);
+      setMessage(`No Data`);
+      setPagination(initPagination);
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!search) {
+      getOrders(currentPage);
+    } else {
+      handleSearch(search);
+    }
+  }, [currentPage]);
 
   return (
     <section className="lg:py-5 px-5 py-24">
@@ -48,28 +101,23 @@ const OrdersPage = () => {
         <h1 className="lg:text-3xl text-2xl font-bold">List orders</h1>
       </div>
       <div>
-        <Search onSearch={handleSearch} placeholder="Seach with ID order"/>
-        <Table colHeadTabel={colHeadTable} message={message} loading={loading}>
-          <tr className="hover:bg-slate-100 border-b border-gray-300">
-            <CelTable type={typeCel.TEXT} value={"1"} />
-            <CelTable type={typeCel.TEXT} value={"Antrandev"} />
-            <CelTable type={typeCel.TEXT} value={"phamtrangiaan27@gmail.com"} />
-            <CelTable
-              type={typeCel.TEXT}
-              value={"0946003423"}
-            />
-            <CelTable type={typeCel.STATUS} value={"pending"} status={orderStatus["pending"]}/>
-            <CelTable
-              type={typeCel.BUTTON_LINK}
-              href={`/orders/1`}
-              value={""}
-              icon={<AiOutlineEdit className="text-xl w-fit" />}
-            />
-          </tr>
-        </Table>
+        <Search
+          onSearch={handleSearch}
+          placeholder="Search with name, phone, email"
+        />
+        <TableOrder
+          message={message}
+          loading={loading}
+          orders={orders}
+          pagination={pagination}
+        />
       </div>
     </section>
   );
 };
 
 export default OrdersPage;
+
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+  return { props: { query } };
+};

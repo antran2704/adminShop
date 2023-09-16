@@ -41,7 +41,7 @@ const options = {
   },
 };
 
-const colHeadTable = ["Name", "Email", "Phone", "Status", ""];
+const colHeadTable = ["Name", "Email", "Phone", "Status", "", ""];
 
 export default function Home() {
   const [message, setMessage] = useState<string | null>(null);

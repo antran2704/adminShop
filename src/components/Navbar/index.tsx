@@ -1,8 +1,11 @@
 import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
 import { FC, useState, useEffect } from "react";
 import { HiBars3BottomRight } from "react-icons/hi2";
-import NavbarItem from "./NavbarItem";
 import { listBody, listSetting, itemNav } from "./data";
+const NavbarItem = dynamic(() => import("./NavbarItem"), {
+  ssr: false,
+});
 
 const Navbar: FC = () => {
   const router = useRouter();
@@ -15,15 +18,15 @@ const Navbar: FC = () => {
 
   useEffect(() => {
     setShow(false);
-  }, [router.asPath])
+  }, [router.asPath]);
 
   return (
     <>
       {/* Navbar on PC */}
       <nav
-        className={`lg:sticky fixed top-0 lg:left-0 ${
+        className={`xl:sticky fixed top-0 xl:left-0 ${
           show ? "left-0" : "-left-[100%]"
-        } lg:w-3/12 md:w-6/12 w-8/12 h-screen bg-white lg:px-5 pl-5 py-10 rounded-tr-xl rounded-br-xl shadow-xl overflow-hidden transition-all ease-linear duration-300 z-[1000]`}
+        } xl:w-3/12 md:w-6/12 w-8/12 h-screen bg-white lg:px-5 pl-5 py-10 rounded-tr-xl rounded-br-xl shadow-xl overflow-hidden transition-all ease-linear duration-300 z-[1000]`}
       >
         <div className="h-20 flex items-center gap-3">
           <img
@@ -62,13 +65,20 @@ const Navbar: FC = () => {
       {/* Navbar on Tablet && Mobile */}
       <div
         onClick={handeShow}
-        className={`lg:hidden fixed top-0 left-0 right-0 bottom-0 bg-black ${show ? 'opacity-60 pointer-events-auto' : 'opacity-0 pointer-events-none'} transition-all ease-linear duration-200 z-10`}
+        className={`xl:hidden fixed top-0 left-0 right-0 bottom-0 bg-black ${
+          show
+            ? "opacity-60 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        } transition-all ease-linear duration-200 z-10`}
       ></div>
       <div
         style={{ backgroundColor: "rgba(37, 40, 54, 0.8)" }}
-        className="fixed lg:hidden block max-h-[70px] top-0 left-0 right-0 p-5 backdrop-blur z-10"
+        className="fixed xl:hidden block max-h-[70px] top-0 left-0 right-0 p-5 backdrop-blur z-10"
       >
-        <HiBars3BottomRight onClick={handeShow} className="text-3xl text-white ml-auto cursor-pointer" />
+        <HiBars3BottomRight
+          onClick={handeShow}
+          className="text-3xl text-white ml-auto cursor-pointer"
+        />
       </div>
     </>
   );
