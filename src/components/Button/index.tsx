@@ -11,7 +11,6 @@ interface Props {
 
 const Button = (props: Props) => {
   const { title, type, className, onClick } = props;
-  console.log("re-render btn");
   const style = {
     large: "",
     medium:

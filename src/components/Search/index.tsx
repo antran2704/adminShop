@@ -8,13 +8,11 @@ interface Props {
 }
 
 const Search: FC<Props> = (props: Props) => {
-  console.log("re-render");
-
   const router = useRouter();
   const currentSearch = router.query.search;
   const [search, setSearch] = useState<string | null>(null);
   const debouncedValue = useDebounce(search, 1000);
-
+  
   const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const searchText = e.target.value;
 

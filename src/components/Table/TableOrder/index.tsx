@@ -52,7 +52,7 @@ const TableOrder: FC<Props> = (props: Props) => {
         </Fragment>
       </Table>
 
-      <Pagination pagination={pagination} />
+      {pagination.totalItems > pagination.pageSize && <Pagination pagination={pagination} />}
     </Fragment>
   );
 };

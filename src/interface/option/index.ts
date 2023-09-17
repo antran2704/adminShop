@@ -8,4 +8,10 @@ interface IOption {
   list: IOptionItem[];
 }
 
-export type { IOption, IOptionItem };
+interface IOptionCancle {
+  id: string;
+  lable: string;
+  value: string;
+}
+
+export type { IOption, IOptionItem, IOptionCancle };

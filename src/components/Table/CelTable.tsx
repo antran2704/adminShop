@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FC, ReactNode } from "react";
 import { typeCel } from "~/enums";
+import { getDateTime } from "~/helper/datetimeFormat";
 
 interface Props {
   type: typeCel;
@@ -13,11 +14,6 @@ interface Props {
 }
 
 const CelTable: FC<Props> = (props: Props) => {
-  const handleGetDate = (timestamps: string) => {
-    const date = new Date(timestamps);
-    return date.toLocaleDateString("en-GB", {hour: "numeric", minute: "numeric", second: "numeric"});
-  };
-
   switch (props.type) {
     case typeCel.TEXT:
       return (
@@ -30,8 +26,10 @@ const CelTable: FC<Props> = (props: Props) => {
 
     case typeCel.DATE:
       return (
-        <td className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${props.className} text-center text-blue-900 sm:text-sm text-xs leading-5`}>
-          {handleGetDate(props.value)}
+        <td
+          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${props.className} text-center text-blue-900 sm:text-sm text-xs leading-5`}
+        >
+          {getDateTime(props.value)}
         </td>
       );
 
@@ -40,7 +38,7 @@ const CelTable: FC<Props> = (props: Props) => {
         <td className="px-6 py-4 whitespace-no-wrap border-b">
           <div className="flex items-center">
             <Link
-            target="_blank"
+              target="_blank"
               href={props?.href ? props.href : "/"}
               className={`sm:text-sm text-xs leading-5 text-gray-800 ${props.className} text-center font-medium`}
             >

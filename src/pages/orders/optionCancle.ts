@@ -1,10 +1,6 @@
-interface IOptionCancle {
-    id: string,
-    lable: string,
-    value: string,
-}
+import { IOptionCancle } from "~/interface/option";
 
-const options: Readonly<IOptionCancle[]> = [
+const options: IOptionCancle[] = [
     {
         id: "1",
         lable: "Hết hàng",
@@ -21,5 +17,4 @@ const options: Readonly<IOptionCancle[]> = [
         value: "Khách hàng muốn hủy đơn hàng"
     },
 ]
-
 export default options;

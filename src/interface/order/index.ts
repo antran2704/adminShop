@@ -1,11 +1,11 @@
-enum statusOrder {
+export enum statusOrder {
   pending = "pending",
   success = "success",
   cancle = "cancle",
 }
 
 interface IItemOrder {
-  productId: string;
+  product: string;
   price: number;
   quantity: number;
   linkProduct: string;
@@ -20,6 +20,8 @@ interface IOrder {
   items: IItemOrder[];
   total: number;
   status: statusOrder;
+  cancleContent?: string;
+  note?: string;
   createdAt: string;
 }
 

@@ -9,13 +9,14 @@ interface Props {
 }
 
 const Popup: FC<Props> = (props: Props) => {
+  console.log("re-render", props.title);
   return (
     <div
       className={`fixed top-0 left-0 right-0 bottom-0 ${
         props.show
-          ? "opacity-100 pointer-events-auto"
-          : "opacity-0 pointer-events-none"
-      } transition-all ease-linear duration-200 z-[9999]`}
+          ? "show__popup pointer-events-auto"
+          : "hide__popup pointer-events-none"
+      } z-[9999]`}
     >
       <div
         onClick={props.onClose}

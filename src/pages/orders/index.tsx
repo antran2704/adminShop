@@ -29,7 +29,6 @@ const OrdersPage = (props: Props) => {
 
   const handleSearch = useCallback(
     async (value: string) => {
-      console.log("start search");
 
       setLoading(true);
       try {
@@ -88,10 +87,14 @@ const OrdersPage = (props: Props) => {
   };
 
   useEffect(() => {
+    if (search) {
+      handleSearch(search);
+    }
+  }, []);
+
+  useEffect(() => {
     if (!search) {
       getOrders(currentPage);
-    } else {
-      handleSearch(search);
     }
   }, [currentPage]);
 

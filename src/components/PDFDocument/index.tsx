@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
 });
 
 // Create Document Component
-const MyDocument = () => {
+const PDFDocument = () => {
   const date = new Date().toLocaleDateString("en-GB", {
     hour: "numeric",
     minute: "numeric",
@@ -222,4 +222,4 @@ const MyDocument = () => {
     </PDFViewer>
   );
 };
-export default MyDocument;
+export default PDFDocument;
