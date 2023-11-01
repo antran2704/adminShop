@@ -3,26 +3,26 @@ import {
   Text,
   View,
   Font,
+  Note,
   Document,
   StyleSheet,
   PDFViewer,
 } from "@react-pdf/renderer";
+import { currencyFormat } from "~/helper/currencyFormat";
+import { getDateTime } from "~/helper/datetimeFormat";
+import { IOrder, IItemOrder } from "~/interface/order";
+
+interface Props {
+  data: IOrder;
+}
 
 Font.register({
-  family: "Poppins",
+  family: "Roboto",
   fonts: [
-    {
-      src: "/fonts/Poppins-Light.ttf",
-      fontWeight: 300,
-    },
-    {
-      src: "/fonts/Poppins-Medium.ttf",
-      fontWeight: 500,
-    },
-    {
-      src: "/fonts/Poppins-Bold.ttf",
-      fontWeight: 600,
-    },
+    { src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf", fontWeight: 300 },
+    { src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf", fontWeight: 400 },
+    { src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-medium-webfont.ttf", fontWeight: 500 },
+    { src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf", fontWeight: 600 },
   ],
 });
 
@@ -49,13 +49,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 12,
-    fontFamily: "Poppins",
+    fontFamily: "Roboto",
     fontWeight: "medium",
     textTransform: "capitalize",
   },
   headerTitle: {
     fontSize: 20,
-    fontFamily: "Poppins",
+    fontFamily: "Roboto",
     fontWeight: "medium",
     textAlign: "center",
     textTransform: "uppercase",
@@ -85,12 +85,12 @@ const styles = StyleSheet.create({
   },
   content: {
     fontSize: 12,
-    fontFamily: "Poppins",
+    fontFamily: "Roboto",
     fontWeight: "light",
   },
   table: {
     width: "100%",
-    fontSize: 10, 
+    fontSize: 10,
     border: "1px solid #111111",
     borderRadius: 6,
   },
@@ -112,7 +112,9 @@ const styles = StyleSheet.create({
 });
 
 // Create Document Component
-const PDFDocument = () => {
+const PDFDocument = (props: Props) => {
+  const { data } = props;
+
   const date = new Date().toLocaleDateString("en-GB", {
     hour: "numeric",
     minute: "numeric",
@@ -121,7 +123,7 @@ const PDFDocument = () => {
 
   return (
     <PDFViewer style={styles.viewer}>
-      <Document pageLayout="singlePage">
+      <Document pageLayout="singlePage" language="vi_VN">
         <Page size="A4" style={styles.page}>
           <View style={styles.section}>
             <Text style={styles.date}>{date}</Text>
@@ -134,32 +136,29 @@ const PDFDocument = () => {
               <View>
                 <View style={styles.wrapContent}>
                   <Text style={styles.title}>ID invoice: </Text>
-                  <Text style={styles.content}>#123</Text>
+                  <Text style={styles.content}>{data._id}</Text>
                 </View>
 
                 <View style={styles.wrapContent}>
                   <Text style={styles.title}>Name: </Text>
-                  <Text style={styles.content}>Antran</Text>
+                  <Text style={styles.content}>{data.name}</Text>
                 </View>
 
                 <View style={styles.wrapContent}>
                   <Text style={styles.title}>Email: </Text>
-                  <Text style={styles.content}>phamtrangiaan27@gmail.com</Text>
+                  <Text style={styles.content}>{data.email}</Text>
                 </View>
 
                 <View style={styles.wrapContent}>
                   <Text style={styles.title}>Address: </Text>
-                  <Text style={styles.content}>55 Nguyen Kiem, P3, HCM</Text>
-                </View>
-
-                <View style={styles.wrapContent}>
-                  <Text style={styles.title}>Name: </Text>
-                  <Text style={styles.content}>Antran</Text>
+                  <Text style={styles.content}>{data.address}</Text>
                 </View>
 
                 <View style={styles.wrapContent}>
                   <Text style={styles.title}>Date: </Text>
-                  <Text style={styles.content}>29/06/2023, 21:50:24</Text>
+                  <Text style={styles.content}>
+                    {getDateTime(data.createdAt)}
+                  </Text>
                 </View>
               </View>
 
@@ -174,7 +173,13 @@ const PDFDocument = () => {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Product</Text>
             <View style={styles.table}>
-              <View style={[styles.row, styles.paddingRow, {fontFamily: "Poppins", fontWeight: "medium"}]}>
+              <View
+                style={[
+                  styles.row,
+                  styles.paddingRow,
+                  { fontFamily: "Roboto", fontWeight: "medium" },
+                ]}
+              >
                 <Text style={[styles.col, styles.textCenter]}>NO</Text>
                 <Text style={[styles.col, styles.textCenter]}>Product</Text>
                 <Text style={[styles.col, styles.textCenter]}>Quantity</Text>
@@ -182,15 +187,25 @@ const PDFDocument = () => {
                 <Text style={[styles.col, styles.textCenter]}>Amount</Text>
               </View>
 
-              <View style={[styles.row, styles.borderTop, styles.paddingRow]}>
-                <Text style={[styles.col, styles.textCenter]}>1</Text>
-                <Text style={[styles.col, styles.textJustify]}>
-                  Lorem ipsum
-                </Text>
-                <Text style={[styles.col, styles.textCenter]}>1</Text>
-                <Text style={[styles.col, styles.textCenter]}>120.000 VND</Text>
-                <Text style={[styles.col, styles.textCenter]}>120.000 VND</Text>
-              </View>
+              {data.items.map((item: IItemOrder, index: number) => (
+                <View key={index} style={[styles.row, styles.borderTop, styles.paddingRow]}>
+                  <Text style={[styles.col, styles.textCenter]}>
+                    {index + 1}
+                  </Text>
+                  <Text style={[styles.col, styles.textJustify]}>
+                    {item.product.title}
+                  </Text>
+                  <Text style={[styles.col, styles.textCenter]}>
+                    {item.quantity}
+                  </Text>
+                  <Text style={[styles.col, styles.textCenter]}>
+                    {currencyFormat(item.price)} VND
+                  </Text>
+                  <Text style={[styles.col, styles.textCenter]}>
+                    {currencyFormat(item.price * item.quantity)} VND
+                  </Text>
+                </View>
+              ))}
             </View>
           </View>
 
@@ -210,9 +225,17 @@ const PDFDocument = () => {
                   </Text>
                   <Text style={styles.content}>120.000 VND</Text>
                 </View>
-                <View style={[styles.wrapContent, styles.borderTop, styles.paddingRow]}>
+                <View
+                  style={[
+                    styles.wrapContent,
+                    styles.borderTop,
+                    styles.paddingRow,
+                  ]}
+                >
                   <Text style={[styles.title, styles.footerTitle]}>Total:</Text>
-                  <Text style={styles.content}>120.000 VND</Text>
+                  <Text style={styles.content}>
+                    {currencyFormat(data.total)} VND
+                  </Text>
                 </View>
               </View>
             </View>

@@ -18,7 +18,7 @@ const Table: FC<Props> = (props: Props) => {
                 {props.colHeadTabel.map((item: string, index: number) => (
                   <th
                     key={index}
-                    className="text-[#707275] text-center font-medium px-6 py-3 border-b border-gray-300 leading-4 tracking-wider"
+                    className="text-sm text-[#707275] text-center font-medium px-6 py-3 border-b border-gray-300 leading-4 tracking-wider"
                   >
                     {item}
                   </th>
@@ -44,7 +44,7 @@ const Table: FC<Props> = (props: Props) => {
                     colSpan={props.colHeadTabel.length}
                     className="px-6 py-4 whitespace-no-wrap"
                   >
-                    <p className="text-xl text-center font-medium text-error">
+                    <p className="text-lg text-center font-medium text-error">
                       {props.message}
                     </p>
                   </td>

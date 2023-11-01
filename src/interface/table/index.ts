@@ -6,9 +6,15 @@ interface IDataCelTable {
 }
 interface IDataTable {
   _id: string | null;
+  parent_id?: string;
+  childrens?: string[];
   title: string;
   slug: string;
+  meta_title?: string;
+  meta_description?: string;
+  publish: boolean;
   thumbnail: string;
+  breadcrumbs?: string;
   createdAt: string;
 }
 

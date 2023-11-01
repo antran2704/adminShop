@@ -2,9 +2,8 @@
 const colHeadCategory: string[] = [
   "Name",
   "Thumnail",
-  "Status",
+  "Publish",
   "Created Date",
-  "",
   "",
 ];
 

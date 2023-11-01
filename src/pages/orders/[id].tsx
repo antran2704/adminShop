@@ -112,7 +112,7 @@ const OrderDetail = () => {
   const getDataOrder = async (id: string) => {
     try {
       const response = await axiosGet(`/order/${id}`);
-
+      console.log(response)
       if (response.status === 200) {
         setData(response.payload);
       }
@@ -177,25 +177,25 @@ const OrderDetail = () => {
             </li>
           )}
 
-          {/* {data.status === statusOrder.pending && ( */}
-          <li className="flex items-start justify-start mt-5 text-base gap-1">
-            <h3 className="font-medium capitalize">Change Status:</h3>
-            <div className="flex items-center gap-3">
-              <Button
-                title="Success"
-                type={typeButton.MEDIUM}
-                onClick={onShowSuccess}
-                className="text-white bg-success opacity-80 hover:opacity-100"
-              />
-              <Button
-                title="Cancle"
-                type={typeButton.MEDIUM}
-                onClick={onShowCancle}
-                className="text-white bg-cancle opacity-80 hover:opacity-100"
-              />
-            </div>
-          </li>
-          {/* )} */}
+          {data.status === statusOrder.pending && (
+            <li className="flex items-start justify-start mt-5 text-base gap-1">
+              <h3 className="font-medium capitalize">Change Status:</h3>
+              <div className="flex items-center gap-3">
+                <Button
+                  title="Success"
+                  type={typeButton.MEDIUM}
+                  onClick={onShowSuccess}
+                  className="text-white bg-success opacity-80 hover:opacity-100"
+                />
+                <Button
+                  title="Cancle"
+                  type={typeButton.MEDIUM}
+                  onClick={onShowCancle}
+                  className="text-white bg-cancle opacity-80 hover:opacity-100"
+                />
+              </div>
+            </li>
+          )}
         </ul>
       )}
 
@@ -208,21 +208,27 @@ const OrderDetail = () => {
           >
             <Fragment>
               {data.items.map((item: IItemOrder, index: number) => (
-                <tr key={item.productId} className="hover:bg-slate-100">
-                  <CelTable type={typeCel.TEXT} value={index.toString()} />
+                <tr key={item.product._id} className="hover:bg-slate-100">
+                  <CelTable
+                    type={typeCel.TEXT}
+                    value={(index + 1).toString()}
+                  />
                   <CelTable
                     type={typeCel.LINK}
-                    value={"Premium T-Shirtasdasdasdasd"}
-                    href="/category"
-                  />
-                  <CelTable type={typeCel.TEXT} value={"1"} />
-                  <CelTable
-                    type={typeCel.TEXT}
-                    value={currencyFormat(120000) + " VND"}
+                    value={item.product.title}
+                    href={item.linkProduct}
                   />
                   <CelTable
                     type={typeCel.TEXT}
-                    value={currencyFormat(120000) + " VND"}
+                    value={item.quantity.toString()}
+                  />
+                  <CelTable
+                    type={typeCel.TEXT}
+                    value={currencyFormat(item.price) + " VND"}
+                  />
+                  <CelTable
+                    type={typeCel.TEXT}
+                    value={currencyFormat(item.price * item.quantity) + " VND"}
                   />
                 </tr>
               ))}
@@ -269,14 +275,14 @@ const OrderDetail = () => {
           <AiOutlinePrinter />
         </button>
 
-        {showPrint && (
+        {showPrint && data && (
           <div className="fixed top-0 left-0 right-0 bottom-0 z-[9999]">
             <div
               onClick={() => onShow(showPrint, setShowPrint)}
               className="absolute w-full h-full bg-black opacity-60 z-10"
             ></div>
             <div className="absolute w-10/12 h-screen top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 z-20">
-              <PDFDocument />
+              <PDFDocument data={data} />
             </div>
           </div>
         )}

@@ -53,8 +53,9 @@ const CategoryItem = (props: Props) => {
     setLoading(true);
 
     try {
-      
-      const response = await axiosGet(`/product/getAllProductsInCategory/${id}`);
+      const response = await axiosGet(
+        `/product/getAllProductsInCategory/${id}`
+      );
 
       if (response.status === 200) {
         if (response.payload.length === 0) {
@@ -203,30 +204,32 @@ const CategoryItem = (props: Props) => {
             ))}
           </Fragment>
         </Table>
-        {products.length > 0 && <Pagination />}
+        {/* {products.length > 0 && <Pagination />} */}
       </Fragment>
 
-      <Popup title="Form" show={showPopup} onClose={handlePopup}>
-        <div>
-          <p className="text-lg">
-            Do you want delete category <strong>{selectItem?.title}</strong>
-          </p>
-          <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-2 lg:gap-5 gap-2">
-            <button
-              onClick={handlePopup}
-              className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"
-            >
-              Cancle
-            </button>
-            <button
-              onClick={() => handleDeleteProduct(selectItem)}
-              className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
-            >
-              Delete
-            </button>
+      {showPopup && (
+        <Popup title="Form" show={showPopup} onClose={handlePopup}>
+          <div>
+            <p className="text-lg">
+              Do you want delete category <strong>{selectItem?.title}</strong>
+            </p>
+            <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-2 lg:gap-5 gap-2">
+              <button
+                onClick={handlePopup}
+                className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"
+              >
+                Cancle
+              </button>
+              <button
+                onClick={() => handleDeleteProduct(selectItem)}
+                className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
+              >
+                Delete
+              </button>
+            </div>
           </div>
-        </div>
-      </Popup>
+        </Popup>
+      )}
     </section>
   );
 };

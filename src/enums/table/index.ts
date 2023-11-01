@@ -7,4 +7,6 @@ export enum typeCel {
   AVATAR = "avatar",
   BUTTON = "button",
   BUTTON_LINK = "buttonLink",
+  GROUP = "group",
+  PUBLIC = "public"
 }

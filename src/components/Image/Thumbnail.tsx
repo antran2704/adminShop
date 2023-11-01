@@ -2,19 +2,22 @@ import { FC, ChangeEvent, memo } from "react";
 import { IoAdd } from "react-icons/io5";
 import { uploadImage } from "~/helper/handleImage";
 
-interface prop {
+interface Props {
   thumbnailUrl: string | null;
+  className?: string;
   onChange: (source: File, urlBase64: string) => void;
 }
 
-const Thumbnail: FC<prop> = (prop: prop) => {
+const Thumbnail: FC<Props> = (props: Props) => {
+  const {thumbnailUrl, className, onChange} = props;
+
   const hanldeChangeThumbnail = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
       if (/^image\//.test(file.type)) {
         const source: File = file;
         const url: string = uploadImage(e.target);
-        prop.onChange(source, url);
+        onChange(source, url);
       }
     }
   };
@@ -26,17 +29,17 @@ const Thumbnail: FC<prop> = (prop: prop) => {
 
       <label
         htmlFor="thumbnail"
-        className="flex flex-col items-center justify-center w-full h-[300px] rounded-md border-2 cursor-pointer overflow-hidden"
+        className={`flex flex-col items-center justify-center w-full ${className ? className : 'h-[400px]'} rounded-md border-2 cursor-pointer overflow-hidden`}
       >
-        {!prop.thumbnailUrl && (
+        {!thumbnailUrl && (
           <>
             <IoAdd className="md:text-6xl text-4xl" />
             <h3 className="text-lg font-medium text-center">Click to upload</h3>
           </>
         )}
-        {prop.thumbnailUrl && (
+        {thumbnailUrl && (
           <img
-            src={prop.thumbnailUrl}
+            src={thumbnailUrl}
             alt="thumbnail"
             className="w-full h-full"
           />

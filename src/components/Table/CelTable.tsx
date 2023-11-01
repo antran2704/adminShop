@@ -2,34 +2,42 @@ import Link from "next/link";
 import { FC, ReactNode } from "react";
 import { typeCel } from "~/enums";
 import { getDateTime } from "~/helper/datetimeFormat";
+import ButtonCheck from "../Button/ButtonCheck";
 
 interface Props {
+  id?: string;
   type: typeCel;
-  value: string;
+  value?: string;
   className?: string;
   href?: string;
   status?: string;
+  checked?: boolean;
   icon?: ReactNode;
+  onChangeStatus?: void;
+  onGetChecked?: (id: string, status: boolean) => void;
   onClick?(): void;
+  children?: JSX.Element;
 }
 
 const CelTable: FC<Props> = (props: Props) => {
-  switch (props.type) {
+  const {id, type, value = "", className, href, status, checked, icon, onChangeStatus, onClick, onGetChecked, children} = props;
+
+  switch (type) {
     case typeCel.TEXT:
       return (
         <td
-          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${props.className} sm:text-sm text-xs text-center leading-5`}
+          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${className} sm:text-sm text-xs text-center leading-5`}
         >
-          {props.value}
+          {value}
         </td>
       );
 
     case typeCel.DATE:
       return (
         <td
-          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${props.className} text-center text-blue-900 sm:text-sm text-xs leading-5`}
+          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${className} text-center text-blue-900 sm:text-sm text-xs leading-5`}
         >
-          {getDateTime(props.value)}
+          {getDateTime(value)}
         </td>
       );
 
@@ -39,10 +47,10 @@ const CelTable: FC<Props> = (props: Props) => {
           <div className="flex items-center">
             <Link
               target="_blank"
-              href={props?.href ? props.href : "/"}
-              className={`sm:text-sm text-xs leading-5 text-gray-800 ${props.className} text-center font-medium`}
+              href={href ? href : "/"}
+              className={`sm:text-sm text-xs leading-5 text-gray-800 ${className} text-center font-medium`}
             >
-              {props.value}
+              {value}
             </Link>
           </div>
         </td>
@@ -52,12 +60,12 @@ const CelTable: FC<Props> = (props: Props) => {
       return (
         <td className="px-6 py-4 whitespace-no-wrap border-b">
           <Link
-            href={props?.href ? props.href : "/"}
+            href={href ? href : "/"}
             className="block w-[160px] h-[100px] mx-auto rounded overflow-hidden"
           >
             <img
-              src={props.value}
-              alt={props.value}
+              src={value}
+              alt={value}
               className="w-full h-full object-cover object-center"
             />
           </Link>
@@ -68,9 +76,9 @@ const CelTable: FC<Props> = (props: Props) => {
       return (
         <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 sm:text-sm text-xs leading-5">
           <p
-            className={`w-fit font-medium text-white ${props.status} capitalize mx-auto px-5 py-2 rounded-lg`}
+            className={`w-fit font-medium text-white ${status} capitalize mx-auto px-5 py-2 rounded-lg`}
           >
-            {props.value}
+            {value}
           </p>
         </td>
       );
@@ -79,23 +87,43 @@ const CelTable: FC<Props> = (props: Props) => {
       return (
         <td className="px-6 py-4 whitespace-no-wrap border-b sm:text-sm text-xs leading-5">
           <button
-            onClick={props.onClick}
+            onClick={onClick}
             className="px-3 py-2 mx-auto border-error border-2 text-error rounded transition duration-300 hover:bg-error hover:text-white focus:outline-none"
           >
-            {props.icon}
+            {icon}
           </button>
+        </td>
+      );
+
+    case typeCel.GROUP:
+      return (
+        <td className="px-6 py-4">
+          {children}
         </td>
       );
 
     case typeCel.BUTTON_LINK:
       return (
-        <td className="px-6 py-4 whitespace-no-wrap border-b sm:text-sm text-xs leading-5">
+        <td className="whitespace-no-wrap border-b sm:text-sm text-xs leading-5">
           <Link
-            href={props?.href ? props.href : "/"}
-            className="block w-fit px-3 py-2 mx-auto border-blue-700 border-2 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
+            href={href ? href : "/"}
+            className="block w-fit px-3 py-2 border-blue-700 border-2 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
           >
-            {props.icon}
+            {icon}
           </Link>
+        </td>
+      );
+
+    case typeCel.PUBLIC:
+      return (
+        <td className="whitespace-no-wrap border-b sm:text-sm text-xs leading-5">
+          <ButtonCheck
+            name="public"
+            width="w-fit mx-auto"
+            isChecked={checked}
+            id={id}
+            onGetChecked={onGetChecked}
+          />
         </td>
       );
     default:

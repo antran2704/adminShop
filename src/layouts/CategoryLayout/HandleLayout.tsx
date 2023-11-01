@@ -1,5 +1,12 @@
-import { useState, useRef, FC, useEffect } from "react";
-
+import {
+  useState,
+  useRef,
+  FC,
+  useEffect,
+  createContext,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { typeInput } from "~/enums";
 
 import Input from "~/components/Input";
@@ -8,12 +15,17 @@ import Thumbnail from "~/components/Image/Thumbnail";
 import FormLayout from "~/layouts/FormLayout";
 import Popup from "~/components/Popup";
 import { IThumbnailUrl, IOption, IDataCategory } from "~/interface/category";
+import { axiosGet } from "~/ultils/configAxios";
+import Tree from "~/components/Tree";
 
 interface Props {
   data: IDataCategory;
   selectOptionIndex: number | null;
   thumbnailUrl: IThumbnailUrl;
-  handleChangeValue: (name: string | undefined, value: string | number | boolean) => void;
+  handleChangeValue: (
+    name: string | undefined,
+    value: string | number | boolean
+  ) => void;
   uploadThumbnail: (source: object, url: string) => void;
   addOption: (newOption: string) => void;
   selectOption: (index: number) => void;
@@ -22,78 +34,130 @@ interface Props {
   handleOnSubmit: () => void;
 }
 
-const HandleLayout: FC<Props> = (props: Props) => {
-  const optionRef = useRef<HTMLInputElement>(null);
+interface ICategorySelect {
+  title: string | null;
+  node_id: string | null;
+}
 
+interface ICategoryContext {
+  categorySelect: ICategorySelect;
+  setCategorySelect: Dispatch<SetStateAction<ICategorySelect>>;
+}
+
+const initData: IDataCategory = {
+  parent_id: null,
+  title: "",
+  description: "",
+  meta_title: "",
+  meta_description: "",
+  public: true,
+  slug: null,
+  thumbnail: null,
+  breadcrumbs: "",
+  childrens: [],
+};
+
+export const CategoryContext = createContext<ICategoryContext>({
+  categorySelect: {
+    title: null,
+    node_id: null,
+  },
+  setCategorySelect: () => null,
+});
+
+const HandleLayout: FC<Props> = (props: Props) => {
+  const [data, setData] = useState<IDataCategory>(initData);
+  const [categories, setCategories] = useState({});
+  const [categoriesParent, setCategoriesParent] = useState([]);
   const [showOption, setShowOption] = useState<boolean>(false);
-  const [isEditOption, setEditOption] = useState<boolean>(false);
+  const [categorySelect, setCategorySelect] = useState<ICategorySelect>({title: null, node_id: null});
+
+  const changeValue = (name: string, value: string) => {
+    setData({ ...data, [name]: value });
+  };
 
   const handleShowPopup = () => {
     setShowOption(!showOption);
   };
 
-  const handleAddOption = () => {
-    if (optionRef.current) {
-      const newOption = optionRef.current.value;
-      props.addOption(newOption);
-      setShowOption(false);
+  const handleGetCategories = async () => {
+    let data: any = {};
+    try {
+      const response = await axiosGet("category/getCategories");
+
+      for (const item of response.payload) {
+        const { _id, parent_id, title, childrens } = item;
+        data[_id] = { _id, parent_id, title, childrens };
+      }
+
+      setCategories(data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const handleSelectOption = (text: string, index: number) => {
-    if (optionRef.current) {
-      optionRef.current.value = text;
-      props.selectOption(index);
-      setEditOption(true);
-      setShowOption(true);
-    }
-  };
+  const handleGetCategoriesParent = async () => {
+    try {
+      const response = await axiosGet("category/parentCategories");
+      const data = response.payload.map((item: any) => item._id);
 
-  const handleEditOption = () => {
-    if (optionRef.current && props.selectOptionIndex !== null) {
-      const newOption = optionRef.current.value;
-      props.editOption(newOption);
-      setShowOption(false);
-    }
-  };
-
-  const handleDeleteOption = () => {
-    if (optionRef.current && props.selectOptionIndex !== null) {
-      optionRef.current.value = "";
-      props.deleteOption();
-      setShowOption(false);
+      setCategoriesParent(data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
   useEffect(() => {
-    if (!showOption && optionRef.current) {
-      setEditOption(false);
-      optionRef.current.value = "";
-    }
-  }, [showOption]);
+    handleGetCategories();
+    handleGetCategoriesParent();
+  }, []);
   return (
     <FormLayout onSubmit={props.handleOnSubmit}>
       <div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">
           <Input
             title="Title"
-            widthFull={false}
-            value={props.data.title}
+            width="lg:w-2/4 w-full"
+            value={data.title}
             name="title"
             type={typeInput.input}
-            onGetValue={props.handleChangeValue}
+            getValue={changeValue}
           />
         </div>
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
           <Input
             title="Description"
-            widthFull={true}
-            value={props.data.description}
+            width="lg:w-2/4 w-full"
+            value={data.description}
             name="description"
             type={typeInput.textarea}
-            onGetValue={props.handleChangeValue}
+            getValue={changeValue}
           />
+        </div>
+
+        <div className="w-full mt-5">
+          <Input
+            title="Parent Category"
+            width="lg:w-2/4 w-full"
+            value={categorySelect.title ? categorySelect.title : ""}
+            name="parent_id"
+            type={typeInput.input}
+            readonly={true}
+          />
+
+          <CategoryContext.Provider value={{ categorySelect, setCategorySelect }}>
+            {categoriesParent.length > 0 &&
+              Object.keys(categories).length > 0 &&
+              categoriesParent.map((id) => (
+                <Tree
+                  categories={categories}
+                  node_id={id}
+                  parent_id="null"
+                  key={id}
+                />
+              ))}
+          </CategoryContext.Provider>
         </div>
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
@@ -101,34 +165,11 @@ const HandleLayout: FC<Props> = (props: Props) => {
             thumbnailUrl={props.thumbnailUrl.url}
             onChange={props.uploadThumbnail}
           />
-          <div className="lg:w-1/2 w-full">
-            <div className="flex items-center justify-between">
-              <span className="block text-base text-[#1E1E1E] font-medium">
-                Options
-              </span>
-              <button
-                onClick={handleShowPopup}
-                className="w-fit text-lg text-white font-medium bg-success px-5 py-1 rounded-md"
-              >
-                +
-              </button>
-            </div>
-            <ul className="flex flex-wrap items-center gap-2">
-              {props.data.options.map((option: IOption, index: number) => (
-                <li
-                  key={index}
-                  onClick={() => handleSelectOption(option.title, index)}
-                  className="w-fit text-base text-white font-medium bg-gray-600 px-2 py-1 rounded-md cursor-pointer"
-                >
-                  {option.title}
-                </li>
-              ))}
-            </ul>
-          </div>
+         
         </div>
 
         {/* Popup add Options name */}
-        <Popup show={showOption} onClose={handleShowPopup}>
+        {/* <Popup show={showOption} onClose={handleShowPopup}>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -182,7 +223,7 @@ const HandleLayout: FC<Props> = (props: Props) => {
               </div>
             )}
           </form>
-        </Popup>
+        </Popup> */}
       </div>
     </FormLayout>
   );

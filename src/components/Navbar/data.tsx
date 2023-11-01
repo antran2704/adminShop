@@ -18,8 +18,8 @@ const listBody: itemNav[] = [
     icon: <RxDashboard />,
   },
   {
-    name: "Category",
-    path: "/category",
+    name: "Categories",
+    path: "/categories",
     icon: <AiOutlineShoppingCart />
   },
   {

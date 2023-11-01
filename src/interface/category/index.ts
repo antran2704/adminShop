@@ -7,14 +7,34 @@ interface IOption {
   title: string;
 }
 
+interface IBreadcrumb {
+  label: String;
+  url_path: String;
+}
+
+interface IParentCategory {
+  _id: string;
+  title: string
+}
+
 interface IDataCategory {
   _id?: string | null;
-  slug?: string;
+  parent_id: IParentCategory | null;
+  childrens?: string[];
   title: string;
   description: string;
-  thumbnail: string;
-  options: IOption[];
+  slug?: string | null;
+  meta_title?: string;
+  meta_description?: string;
+  public: boolean;
+  thumbnail: string | null;
+  breadcrumbs?: IBreadcrumb[];
   createdAt?: string;
 }
 
-export type { IThumbnailUrl, IOption, IDataCategory };
+interface ICategorySelect {
+  title: string | null;
+  node_id: string | null;
+}
+
+export type { IThumbnailUrl, IOption, IDataCategory, ICategorySelect };

@@ -2,11 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
+// variable global
+$PC-large-width: 1280px;
+$PC-normal-width: 1024px;
+$TABLET-normal-width: 768px;
+$TABLET-small-width: 640px;
+$MOBILE-width: 0px;
+
 @layer components {
   .transition-cus {
     transition-property: theme("transitionProperty.all");
     transition-timing-function: theme("transitionTimingFunction.linear");
     transition-duration: theme("transitionDelay.100");
+  }
+}
+
+@mixin largePC {
+  @media screen and (min-width: $PC-large-width) {
+    @content;
+  }
+}
+
+@mixin normalPC {
+  @media screen and (min-width: $PC-normal-width) {
+    @content;
+  }
+}
+
+@mixin normalTABLET {
+  @media screen and (min-width: $TABLET-normal-width) {
+    @content;
+  }
+}
+
+@mixin smallTABLET {
+  @media screen and (min-width: $TABLET-small-width) {
+    @content;
+  }
+}
+
+@mixin mobile {
+  @media screen and (min-width: $MOBILE-width) {
+    @content;
   }
 }
 
@@ -55,6 +92,13 @@ body::-webkit-scrollbar {
 
 .container__cus {
   max-width: 1280px;
+}
+
+// custome text
+.text-title {
+  font-size: 20px;
+  text-transform: capitalize;
+  font-weight: 500;
 }
 
 /* skelaton loading */

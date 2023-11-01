@@ -5,65 +5,81 @@ import { typeInput } from "~/enums";
 
 interface Props {
   title: string;
-  widthFull: boolean;
+  width?: string;
   name: string;
   type: string;
-  value?: string | number | readonly string[] | undefined;
-  checkValidNumber?: boolean;
+  value?: string;
+  readonly?: boolean;
   onClick?: () => void;
-  onGetValue: (
-    name: string | undefined,
-    value: string | number | boolean
-  ) => void;
+  getValue?: (name: string, value: string) => void;
+  getNumber?: (name: string, value: number) => void;
 }
 const FieldAdd: FC<Props> = (props: Props) => {
-  const handleChangeInpValue = (e: ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.name;
-    let value = e.target.value;
-    if (props.checkValidNumber) {
-      const valid = handleCheckValidNumber(value);
-      if (valid) {
-        props.onGetValue(name, Number(value));
-      }
-      if (value.length <= 0) {
-        value = "";
-        props.onGetValue(name, value);
-      }
-    } else {
-      props.onGetValue(name, value);
+  const { title, width, name, type, value, readonly = false, onClick, getValue, getNumber } =
+    props;
+
+  const handleChangeValue = (
+    e: FormEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const name = e.currentTarget.name;
+    let value = e.currentTarget.value;
+
+    if (getValue) {
+      getValue(name, value);
     }
   };
 
-  const handleChangeTextareaValue = (e: FormEvent<HTMLTextAreaElement>) => {
-    const name = e.currentTarget.name;
-    const value = e.currentTarget.value;
+  const handleChangeNumberValue = (e: ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.name;
+    let value = e.target.value;
 
-    props.onGetValue(name, value);
+    const valid = handleCheckValidNumber(value);
+
+    if (name && getNumber) {
+      if (valid) {
+        getNumber(name, Number(value));
+      }
+      if (Number(value) <= 0) {
+        getNumber(name, 0);
+      }
+    }
   };
 
   return (
-    <div className={`${!props.widthFull && "lg:w-1/2"} w-full`}>
+    <div className={`${width ? width : "w-full"}`}>
       <span className="block text-base text-[#1E1E1E] font-medium mb-1">
-        {props.title}
+        {title}
       </span>
 
-      {props.type === typeInput.input && (
+      {type === typeInput.input && (
         <input
           required
-          name={props.name}
-          value={props.value}
-          onInput={handleChangeInpValue}
+          name={name}
+          value={value}
+          readOnly={readonly}
+          onInput={handleChangeValue}
           type="text"
           className="w-full rounded-md px-2 py-1 border-2 focus:border-[#4f46e5] outline-none"
         />
       )}
 
-      {props.type === typeInput.textarea && (
+      {type === typeInput.number && (
+        <input
+          required
+          name={name}
+          value={value}
+          onInput={handleChangeNumberValue}
+          type="text"
+          className="w-full rounded-md px-2 py-1 border-2 focus:border-[#4f46e5] outline-none"
+        />
+      )}
+
+      {type === typeInput.textarea && (
         <textarea
           className="w-full rounded-md px-2 py-1 border-2 focus:border-[#4f46e5] outline-none"
-          name={props.name}
-          value={props.value}
-          onInput={handleChangeTextareaValue}
+          name={name}
+          value={value}
+          onInput={handleChangeValue}
           placeholder="Description about product..."
           cols={30}
           rows={6}

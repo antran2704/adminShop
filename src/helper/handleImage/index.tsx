@@ -13,7 +13,6 @@ const uploadImageOnServer = async (url: string, formData: FormData) => {
   try {
     const payload = await axios.post(url, formData).then((res) => res.data);
     return payload;
-    
   } catch (error) {
     console.log(error);
   }
@@ -37,6 +36,7 @@ const deleteImageInSever = async (filePath: string) => {
     return payload;
   } catch (error) {
     console.log(error);
+    return error;
   }
 };
 
@@ -47,7 +47,9 @@ const deleteImagesInServer = async (images: IThumbnail[]) => {
 
   try {
     const payload = await axios
-      .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/delete/images`, { images: list })
+      .post(`${process.env.NEXT_PUBLIC_ENDPOINT_API}/delete/images`, {
+        images: list,
+      })
       .then((res) => res.data);
     return payload;
   } catch (error) {

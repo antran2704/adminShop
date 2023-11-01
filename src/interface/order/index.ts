@@ -1,3 +1,5 @@
+import { IProductData } from "../product";
+
 export enum statusOrder {
   pending = "pending",
   success = "success",
@@ -5,7 +7,7 @@ export enum statusOrder {
 }
 
 interface IItemOrder {
-  product: string;
+  product: Pick<IProductData, "_id" | "title">;
   price: number;
   quantity: number;
   linkProduct: string;

@@ -1,26 +1,32 @@
-import { FC, useState, memo } from "react";
+import { FC, memo, ChangeEvent } from "react";
 
-import { FiChevronDown } from "react-icons/fi";
-import { ICategory } from "~/interface/product";
+interface selectItem {
+  id: string;
+  name: string;
+}
 
 interface Props {
-  title: string;
-  widthFull: boolean;
-  data: ICategory;
-  categories: ICategory[];
-  onSelect: (item: ICategory) => void;
+  title?: string;
+  width?: string;
+  name: string;
+  placeholder?: string;
+  value: string;
+  data: selectItem[] | [];
+  onSelect: (e: ChangeEvent<HTMLSelectElement>) => void;
 }
 
 const SelectItem: FC<Props> = (props: Props) => {
-  const [show, setShow] = useState(false);
+  const { width, title, data, placeholder, value, name, onSelect } = props;
 
   return (
-    <div className={`${!props.widthFull && "lg:w-1/2"} w-full`}>
-      <span className="block text-base text-[#1E1E1E] font-medium mb-1">
-        {props.title}
-      </span>
+    <div className={`${width ? width : "w-full"} h-full`}>
+      {title && (
+        <span className="block text-base text-[#1E1E1E] font-medium mb-1">
+          {title}
+        </span>
+      )}
       {/* layout to close list select item */}
-      <div
+      {/* <div
         onClick={() => setShow(!show)}
         className={`fixed ${
           show ? "block" : "hidden"
@@ -39,6 +45,7 @@ const SelectItem: FC<Props> = (props: Props) => {
           <FiChevronDown className="ml-auto text-lg" />
         </div>
 
+       
         <ul
           className={`absolute ${
             show
@@ -58,7 +65,27 @@ const SelectItem: FC<Props> = (props: Props) => {
             </li>
           ))}
         </ul>
-      </div>
+      </div> */}
+
+      <select
+        value={value}
+        name={name}
+        onChange={onSelect}
+        className="w-full min-h-[40px] rounded-md px-2 py-1 border-2 focus:border-[#4f46e5]"
+      >
+        {placeholder && (
+          <option value="All" hidden>
+            {placeholder}
+          </option>
+        )}
+
+        {data.length > 0 &&
+          data.map((item: selectItem) => (
+            <option key={item.id} value={item.id}>
+              {item.name}
+            </option>
+          ))}
+      </select>
     </div>
   );
 };
