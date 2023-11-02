@@ -5,9 +5,9 @@ import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { IoIosAdd } from "react-icons/io";
 
 import {
+  axiosDelete,
   axiosGet,
   axiosPatch,
-  axiosPost,
 } from "~/ultils/configAxios";
 import { typeCel } from "~/enums";
 
@@ -212,9 +212,7 @@ const Category = () => {
 
     try {
       await deleteImageInSever(selectItem.thumbnail);
-      await axiosPost(`/category/${selectItem.id}`, {
-        parent_id: selectItem.parent_id,
-      });
+      await axiosDelete(`/category/${selectItem.id}`);
       setShowPopup(false);
       handleGetData();
       toast.success("Success delete category", {
@@ -275,7 +273,7 @@ const Category = () => {
                   href={`/edit/category/${item._id}`}
                 />
                 <CelTable
-                  id={item._id}
+                  id={item._id as string}
                   type={typeCel.PUBLIC}
                   checked={item.public}
                   status={productStatus["public"]}

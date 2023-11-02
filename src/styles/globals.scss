@@ -137,12 +137,25 @@ body::-webkit-scrollbar {
   animation: hidePopup linear 0.2s forwards;
 }
 
+.error-animate {
+  animation: error linear 0.8s forwards;
+}
+
 @keyframes spinner {
   0% {
     transform: rotate(0deg);
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes error {
+  from {
+    border-color: red;
+  }
+  to {
+    border-color: #e3e3e3;
   }
 }
 

@@ -25,7 +25,7 @@ const FormLayout: ForwardRefRenderFunction<HTMLUListElement, prop> = (
 
       <div className="flex lg:flex-nowrap flex-wrap items-center justify-between pt-5 border-t-2 lg:gap-5 gap-2">
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push("/categories")}
           className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
         >
           Cancle

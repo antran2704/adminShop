@@ -74,6 +74,8 @@ const EditCategoryPage = (props: Props) => {
     let sendData = {
       title: data.title,
       description: data.description,
+      meta_title: data.title,
+      meta_description: data.description,
       thumbnail: data.thumbnail,
       public: data.public,
       parent_id: categorySelect.node_id,
@@ -203,9 +205,6 @@ const EditCategoryPage = (props: Props) => {
     ]).then(() => {
       setLoading(false);
     });
-    // handleGetData();
-    // handleGetCategories();
-    // handleGetCategoriesParent();
   }, []);
 
   return (

@@ -9,13 +9,14 @@ interface Props {
   name: string;
   type: string;
   value?: string;
+  error?: boolean
   readonly?: boolean;
   onClick?: () => void;
   getValue?: (name: string, value: string) => void;
   getNumber?: (name: string, value: number) => void;
 }
 const FieldAdd: FC<Props> = (props: Props) => {
-  const { title, width, name, type, value, readonly = false, onClick, getValue, getNumber } =
+  const { title, width, name, type, value, readonly = false, error, getValue, getNumber } =
     props;
 
   const handleChangeValue = (
@@ -47,7 +48,7 @@ const FieldAdd: FC<Props> = (props: Props) => {
 
   return (
     <div className={`${width ? width : "w-full"}`}>
-      <span className="block text-base text-[#1E1E1E] font-medium mb-1">
+      <span id={name} className="block text-base text-[#1E1E1E] font-medium mb-1">
         {title}
       </span>
 
@@ -59,7 +60,7 @@ const FieldAdd: FC<Props> = (props: Props) => {
           readOnly={readonly}
           onInput={handleChangeValue}
           type="text"
-          className="w-full rounded-md px-2 py-1 border-2 focus:border-[#4f46e5] outline-none"
+          className={`w-full rounded-md px-2 py-1 border-2 ${error && 'border-error'} focus:border-[#4f46e5] outline-none`}
         />
       )}
 
@@ -76,7 +77,7 @@ const FieldAdd: FC<Props> = (props: Props) => {
 
       {type === typeInput.textarea && (
         <textarea
-          className="w-full rounded-md px-2 py-1 border-2 focus:border-[#4f46e5] outline-none"
+          className={`w-full rounded-md px-2 py-1 border-2  ${error && 'border-error'} focus:border-[#4f46e5] outline-none`}
           name={name}
           value={value}
           onInput={handleChangeValue}

@@ -5,11 +5,12 @@ import { uploadImage } from "~/helper/handleImage";
 interface Props {
   thumbnailUrl: string | null;
   className?: string;
+  error?: boolean;
   onChange: (source: File, urlBase64: string) => void;
 }
 
 const Thumbnail: FC<Props> = (props: Props) => {
-  const {thumbnailUrl, className, onChange} = props;
+  const { thumbnailUrl, className, error, onChange } = props;
 
   const hanldeChangeThumbnail = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -23,13 +24,20 @@ const Thumbnail: FC<Props> = (props: Props) => {
   };
   return (
     <div className="lg:w-1/2 w-full">
-      <span className="block text-base text-[#1E1E1E] font-medium mb-1">
+      <span
+        id="thumbnail"
+        className="block text-base text-[#1E1E1E] font-medium mb-1"
+      >
         Thumbnail
       </span>
 
       <label
-        htmlFor="thumbnail"
-        className={`flex flex-col items-center justify-center w-full ${className ? className : 'h-[400px]'} rounded-md border-2 cursor-pointer overflow-hidden`}
+        htmlFor="thumbnail_input"
+        className={`flex flex-col items-center justify-center w-full ${
+          error ? "border-error" : ""
+        } ${
+          className ? className : "h-[400px]"
+        } rounded-md border-2 cursor-pointer overflow-hidden`}
       >
         {!thumbnailUrl && (
           <>
@@ -38,17 +46,13 @@ const Thumbnail: FC<Props> = (props: Props) => {
           </>
         )}
         {thumbnailUrl && (
-          <img
-            src={thumbnailUrl}
-            alt="thumbnail"
-            className="w-full h-full"
-          />
+          <img src={thumbnailUrl} alt="thumbnail" className="w-full h-full" />
         )}
         <input
           onChange={hanldeChangeThumbnail}
           type="file"
-          id="thumbnail"
-          name="thumbnail"
+          id="thumbnail_input"
+          name="thumbnail_input"
           className="hidden"
         />
       </label>

@@ -8,13 +8,13 @@ interface IOption {
 }
 
 interface IBreadcrumb {
-  label: String;
-  url_path: String;
+  label: string;
+  url_path: string;
 }
 
 interface IParentCategory {
-  _id: string;
-  title: string
+  _id: string | null;
+  title: string;
 }
 
 interface IDataCategory {
@@ -28,8 +28,18 @@ interface IDataCategory {
   meta_description?: string;
   public: boolean;
   thumbnail: string | null;
-  breadcrumbs?: IBreadcrumb[];
+  breadcrumbs?: IBreadcrumb[] | [];
   createdAt?: string;
+}
+
+interface IObjectCategory {
+  [key: string]: {
+    _id: string;
+    parent_id: string | null;
+    childrens: string[];
+    slug: string;
+    title: string;
+  };
 }
 
 interface ICategorySelect {
@@ -37,4 +47,11 @@ interface ICategorySelect {
   node_id: string | null;
 }
 
-export type { IThumbnailUrl, IOption, IDataCategory, ICategorySelect };
+export type {
+  IThumbnailUrl,
+  IOption,
+  IDataCategory,
+  ICategorySelect,
+  IObjectCategory,
+  IBreadcrumb,
+};

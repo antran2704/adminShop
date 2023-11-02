@@ -43,7 +43,6 @@ const TreeNode = (props: Props) => {
   return (
     <li>
       <div
-        onClick={handleSelect}
         className={`flex items-center w-fit ${
           categorySelect.title === title && "bg-primary text-white"
         } cursor-pointer px-3 py-1 rounded-md gap-2`}
@@ -55,7 +54,7 @@ const TreeNode = (props: Props) => {
         {childrens.length > 0 && open && (
           <AiOutlineMinus onClick={onOpen} className="text-lg w-5" />
         )}
-        <span>{title}</span>
+        <span onClick={handleSelect}>{title}</span>
       </div>
 
       <div className={`${open ? "h-auto" : "h-0 overflow-hidden"}`}>
