@@ -19,7 +19,7 @@ interface IParentCategory {
 
 interface IDataCategory {
   _id?: string | null;
-  parent_id: IParentCategory | null;
+  parent_id: IParentCategory | string | null;
   childrens?: string[];
   title: string;
   description: string;

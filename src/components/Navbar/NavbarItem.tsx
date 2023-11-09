@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC, useRef } from "react";
-import { MdAdd } from "react-icons/md";
+import { FC, useRef, useState } from "react";
+import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 import { itemNav } from "./data";
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 const NavbarItem: FC<Props> = (props: Props) => {
   const { subNav, data } = props;
   const router = useRouter();
+  const [show, setShow] = useState(false);
 
   const elRef = useRef<HTMLUListElement>(null);
 
@@ -26,6 +27,7 @@ const NavbarItem: FC<Props> = (props: Props) => {
         el.style.height = "0px";
       }
     }
+    setShow(!show);
   };
 
   return (
@@ -37,7 +39,7 @@ const NavbarItem: FC<Props> = (props: Props) => {
               router.asPath === data.path
                 ? "bg-primary text-white"
                 : "hover:bg-primary text-black hover:text-white"
-            } lg:rounded-lg rounded-tl-lg rounded-bl-lg transition-all ease-linear duration-100 gap-3`}
+            } lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}
             href={data.path}
           >
             <span>{data.icon}</span>
@@ -56,7 +58,12 @@ const NavbarItem: FC<Props> = (props: Props) => {
               <span>{data.icon}</span>
               <span>{data.name}</span>
             </div>
-            <MdAdd className={`lg:text-2xl text-xl lg:block `} />
+            {!show && (
+              <AiOutlinePlus className={`lg:text-2xl text-xl lg:block `} />
+            )}
+            {show && (
+              <AiOutlineMinus className={`lg:text-2xl text-xl lg:block `} />
+            )}
           </div>
 
           <ul
@@ -66,10 +73,15 @@ const NavbarItem: FC<Props> = (props: Props) => {
             {data.children?.map((item: itemNav, index: number) => (
               <li key={index} className="w-full">
                 <Link
-                  className="w-full flex items-center text-base font-medium px-3 py-2 hover:bg-primary hover:text-white rounded-lg transition-all ease-linear duration-100 gap-3"
+                  className={`w-full flex items-center text-base font-medium px-3 py-2 my-1 ${
+                    router.asPath === item.path
+                      ? "bg-primary text-white"
+                      : "hover:bg-primary text-black hover:text-white"
+                  } lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}
                   href={item.path}
                 >
-                  {item.name}
+                  {item?.icon && <span>{item.icon}</span>}
+                  <span>{item.name}</span>
                 </Link>
               </li>
             ))}

@@ -32,7 +32,7 @@ const initData: IDataCategory = {
   childrens: [],
 };
 
-const AddCategoryPage = () => {
+const CreateCategoryPage = () => {
   const router = useRouter();
 
   const [data, setData] = useState<IDataCategory>(initData);
@@ -141,7 +141,7 @@ const AddCategoryPage = () => {
 
     try {
       const imagePayload = await uploadImageOnServer(
-        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/uploadThumbnail`,
+        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/categories/uploadThumbnail`,
         formData
       );
 
@@ -158,7 +158,7 @@ const AddCategoryPage = () => {
         ) as string[];
       }
 
-      const payload = await axiosPost("/category", {
+      const payload = await axiosPost("/categories", {
         title: data.title,
         description: data.description,
         meta_title: data.title,
@@ -173,7 +173,7 @@ const AddCategoryPage = () => {
         toast.success("Success add category", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        router.back();
+        router.push("/categories");
       }
     } catch (error) {
       toast.error("Error in add category", {
@@ -186,7 +186,7 @@ const AddCategoryPage = () => {
   const handleGetCategories = async () => {
     let data: IObjectCategory = {};
     try {
-      const response = await axiosGet("category/getCategories");
+      const response = await axiosGet("categories");
 
       for (const item of response.payload) {
         const { _id, parent_id, title, childrens, slug } = item;
@@ -201,7 +201,7 @@ const AddCategoryPage = () => {
 
   const handleGetCategoriesParent = async () => {
     try {
-      const response = await axiosGet("category/parentCategories");
+      const response = await axiosGet("categories/parent");
       const data = response.payload.map((item: any) => item._id);
 
       setCategoriesParent(data);
@@ -289,4 +289,4 @@ const AddCategoryPage = () => {
   );
 };
 
-export default AddCategoryPage;
+export default CreateCategoryPage;

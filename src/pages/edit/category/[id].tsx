@@ -100,16 +100,16 @@ const EditCategoryPage = (props: Props) => {
         formData.append("thumbnail", source);
 
         const uploadImage = await uploadImageOnServer(
-          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/category/uploadThumbnail`,
+          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/categories/uploadThumbnail`,
           formData
         );
 
-        payload = await axiosPatch(`/category/${data._id}`, {
+        payload = await axiosPatch(`/categories/${data._id}`, {
           ...sendData,
           thumbnail: uploadImage.payload,
         });
       } else {
-        payload = await axiosPatch(`/category/${data._id}`, { ...sendData });
+        payload = await axiosPatch(`/categories/${data._id}`, { ...sendData });
       }
 
       if (payload.status === 201) {
@@ -129,7 +129,7 @@ const EditCategoryPage = (props: Props) => {
   const handleGetData = async () => {
     const id = query.id;
     try {
-      const data = await axiosGet(`/category/id/${id}`);
+      const data = await axiosGet(`/categories/id/${id}`);
 
       if (data.status === 200) {
         const title = data.payload.parent_id
@@ -167,7 +167,7 @@ const EditCategoryPage = (props: Props) => {
   const handleGetCategories = async () => {
     let data: any = {};
     try {
-      const response = await axiosGet("category/getCategories");
+      const response = await axiosGet("/categories");
 
       for (const item of response.payload) {
         const { _id, parent_id, title, childrens } = item;
@@ -185,7 +185,7 @@ const EditCategoryPage = (props: Props) => {
 
   const handleGetCategoriesParent = async () => {
     try {
-      const response = await axiosGet("category/parentCategories");
+      const response = await axiosGet("/categories/parent");
       const data = response.payload.map((item: any) => item._id);
 
       setCategoriesParent(data);

@@ -4,14 +4,10 @@ import { toast } from "react-toastify";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { IoIosAdd } from "react-icons/io";
 
-import {
-  axiosDelete,
-  axiosGet,
-  axiosPatch,
-} from "~/ultils/configAxios";
+import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
 import { typeCel } from "~/enums";
 
-import { IDataCategory } from "~/interface/category";
+import { IAttribute } from "~/interface";
 
 import { deleteImageInSever } from "~/helper/handleImage";
 
@@ -19,16 +15,19 @@ import Search from "~/components/Search";
 import Table from "~/components/Table";
 import Pagination from "~/components/Pagination";
 import CelTable from "~/components/Table/CelTable";
-import { colHeadCategory as colHeadTable } from "~/components/Table/colHeadTable";
+import { colHeaderAttribute as colHeadTable } from "~/components/Table/colHeadTable";
 import Popup from "~/components/Popup";
 import { IPagination } from "~/interface/pagination";
 
-interface ISelectCategory {
-  id: string;
-  parent_id: string | null;
+interface ISelectAttribute {
+  id: string | null;
   title: string;
-  thumbnail: string;
 }
+
+const initSelect: ISelectAttribute = {
+  id: null,
+  title: "",
+};
 
 const initFilter = {
   search: "",
@@ -41,42 +40,29 @@ const initPagination: IPagination = {
 };
 
 // Title for tabel
-const CategoriesPage = () => {
-  const [categories, setCategories] = useState<IDataCategory[]>([]);
+const AttributesPage = () => {
+  const [attributes, setAttribute] = useState<IAttribute[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
-  const [selectItem, setSelectItem] = useState<ISelectCategory | null>(null);
+  const [selectItem, setSelectItem] = useState<ISelectAttribute>(initSelect);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [fillter, setFillter] = useState(initFilter);
-  
+  const [fillter, setFiller] = useState(initFilter);
+
   const onReset = useCallback(() => {
-    setFillter(initFilter);
+    setFiller(initFilter);
     handleGetData();
-  }, [fillter, categories]);
+  }, [fillter, attributes]);
 
   const onChangeSearch = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       const name = e.target.name;
 
-      setFillter({ ...fillter, [name]: value });
+      setFiller({ ...fillter, [name]: value });
     },
-    [fillter, categories]
+    [fillter, attributes]
   );
-
-  const onSelect = (e: ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    const name = e.target.name;
-
-    setFillter({ ...fillter, [name]: value });
-  };
-
-  const onSelectDate = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const name = e.target.name;
-    setFillter({ ...fillter, [name]: value });
-  };
 
   const onChangePublish = async (id: string, status: boolean) => {
     if (!id) {
@@ -86,12 +72,12 @@ const CategoriesPage = () => {
     }
 
     try {
-      const payload = await axiosPatch(`/categories/${id}`, {
+      const payload = await axiosPatch(`/variants/${id}`, {
         public: status,
       });
 
       if (payload.status === 201) {
-        toast.success("Success updated category", {
+        toast.success("Success updated attribute", {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
@@ -102,21 +88,15 @@ const CategoriesPage = () => {
     }
   };
 
-  const onSelectDeleteItem = (
-    id: string,
-    parent_id: string | null,
-    title: string,
-    thumbnail: string
-  ) => {
-    console.log(parent_id)
-    setSelectItem({ id, parent_id, title, thumbnail });
+  const onSelectDeleteItem = (item: ISelectAttribute) => {
+    setSelectItem(item);
     handlePopup();
   };
 
   const handlePopup = () => {
     if (showPopup) {
       console.log("close");
-      setSelectItem(null);
+      setSelectItem(initSelect);
     }
 
     setShowPopup(!showPopup);
@@ -127,30 +107,26 @@ const CategoriesPage = () => {
     setLoading(true);
 
     try {
-      const response = await axiosGet("/categories");
+      const response = await axiosGet("/variants");
       if (response.status === 200) {
         if (response.payload.length === 0) {
-          setCategories([]);
-          setMessage("No category");
+          setAttribute([]);
+          setMessage("No attribute");
           setLoading(false);
           return;
         }
 
-        const data: IDataCategory[] = response.payload.map(
-          (item: IDataCategory) => {
-            return {
-              _id: item._id,
-              title: item.title,
-              slug: item.slug,
-              public: item.public,
-              parent_id: item.parent_id,
-              thumbnail: item.thumbnail,
-              createdAt: item.createdAt,
-            };
-          }
-        );
+        const data: IAttribute[] = response.payload.map((item: IAttribute) => {
+          return {
+            _id: item._id,
+            name: item.name,
+            code: item.code,
+            public: item.public,
+            createdAt: item.createdAt,
+          };
+        });
         setPagination(response.pagination);
-        setCategories(data);
+        setAttribute(data);
         setLoading(false);
       }
     } catch (error) {
@@ -166,31 +142,27 @@ const CategoriesPage = () => {
 
     try {
       const response = await axiosGet(
-        `/categories/search?search=${fillter.search}`
+        `/variants/search?search=${fillter.search}`
       );
       if (response.status === 200) {
         if (response.payload.length === 0) {
-          setCategories([]);
-          setMessage("No category");
+          setAttribute([]);
+          setMessage("No attribute");
           setLoading(false);
           return;
         }
 
-        const data: IDataCategory[] = response.payload.map(
-          (item: IDataCategory) => {
-            return {
-              _id: item._id,
-              title: item.title,
-              slug: item.slug,
-              public: item.public,
-              parent_id: item.parent_id,
-              thumbnail: item.thumbnail,
-              createdAt: item.createdAt,
-            };
-          }
-        );
+        const data: IAttribute[] = response.payload.map((item: IAttribute) => {
+          return {
+            _id: item._id,
+            name: item.name,
+            code: item.code,
+            public: item.public,
+            createdAt: item.createdAt,
+          };
+        });
         setPagination(response.pagination);
-        setCategories(data);
+        setAttribute(data);
         setLoading(false);
       }
     } catch (error) {
@@ -200,25 +172,24 @@ const CategoriesPage = () => {
     }
   }, [fillter]);
 
-  const handleDeleteCategory = useCallback(async () => {
-    if (!selectItem || !selectItem.id) {
+  const handleDeleteAttribute = useCallback(async () => {
+    if (!selectItem) {
       setShowPopup(false);
-      toast.error("False delete category", {
+      toast.error("False delete attribute", {
         position: toast.POSITION.TOP_RIGHT,
       });
       return;
     }
 
     try {
-      await deleteImageInSever(selectItem.thumbnail);
-      await axiosDelete(`/category/${selectItem.id}`);
+      await axiosDelete(`/variants/${selectItem.id}`);
       setShowPopup(false);
       handleGetData();
-      toast.success("Success delete category", {
+      toast.success("Success delete attribute", {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
-      toast.error("Error delete category", {
+      toast.error("Error delete attribute", {
         position: toast.POSITION.TOP_RIGHT,
       });
       console.log(error);
@@ -232,7 +203,7 @@ const CategoriesPage = () => {
   return (
     <section className="py-5 px-5">
       <div className="flex items-center justify-between gap-5">
-        <h1 className="lg:text-2xl text-xl font-bold">Categories</h1>
+        <h1 className="lg:text-2xl text-xl font-bold">Attributes</h1>
 
         <div className="flex items-center gap-2">
           <Link
@@ -240,7 +211,7 @@ const CategoriesPage = () => {
             className="flex items-center font-medium text-white bg-success px-3 py-2 rounded-md gap-1"
           >
             <IoIosAdd className=" text-2xl" />
-            Create category
+            Create attribute
           </Link>
         </div>
       </div>
@@ -251,25 +222,23 @@ const CategoriesPage = () => {
           onReset={onReset}
           onSearch={onChangeSearch}
           onFillter={handleGetDataByFillter}
-          placeholder="Search by category name..."
+          placeholder="Search by attribute name..."
         />
 
         <Table colHeadTabel={colHeadTable} message={message} loading={loading}>
           <Fragment>
-            {categories.map((item: IDataCategory) => (
+            {attributes.map((item: IAttribute) => (
               <tr
                 key={item._id}
                 className="hover:bg-slate-100 border-b border-gray-300"
               >
+                <CelTable type={typeCel.TEXT} value={item.code} />
+
                 <CelTable
                   type={typeCel.LINK}
-                  value={item.title}
-                  href={`/edit/category/${item._id}`}
-                />
-                <CelTable
-                  type={typeCel.THUMBNAIL}
-                  value={item.thumbnail as string}
-                  href={`/edit/category/${item._id}`}
+                  value={item.name}
+                  href={`/edit/attributes/${item._id}`}
+                  className="hover:text-primary"
                 />
                 <CelTable
                   id={item._id as string}
@@ -289,12 +258,10 @@ const CategoriesPage = () => {
 
                     <button
                       onClick={() =>
-                        onSelectDeleteItem(
-                          item._id as string,
-                          item.parent_id as string,
-                          item.title,
-                          item.thumbnail as string
-                        )
+                        onSelectDeleteItem({
+                          id: item._id as string,
+                          title: item.name,
+                        })
                       }
                       className="block w-fit px-3 py-2 border-error border-2 text-error rounded transition duration-300 hover:bg-error hover:text-white focus:outline-none"
                     >
@@ -315,7 +282,7 @@ const CategoriesPage = () => {
         <Popup title="Form" show={showPopup} onClose={handlePopup}>
           <div>
             <p className="text-lg">
-              Do you want delete category <strong>{selectItem?.title}</strong>
+              Do you want delete attribute <strong>{selectItem?.title}</strong>
             </p>
             <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-2 lg:gap-5 gap-2">
               <button
@@ -325,7 +292,7 @@ const CategoriesPage = () => {
                 Cancle
               </button>
               <button
-                onClick={handleDeleteCategory}
+                onClick={handleDeleteAttribute}
                 className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
               >
                 Delete
@@ -338,4 +305,4 @@ const CategoriesPage = () => {
   );
 };
 
-export default CategoriesPage;
+export default AttributesPage;

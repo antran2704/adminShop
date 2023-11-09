@@ -26,7 +26,7 @@ const CelTable: FC<Props> = (props: Props) => {
     case typeCel.TEXT:
       return (
         <td
-          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${className} sm:text-sm text-xs text-center leading-5`}
+          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${className ? className : ""} sm:text-sm text-xs text-center leading-5`}
         >
           {value}
         </td>
@@ -35,7 +35,7 @@ const CelTable: FC<Props> = (props: Props) => {
     case typeCel.DATE:
       return (
         <td
-          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${className} text-center text-blue-900 sm:text-sm text-xs leading-5`}
+          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${className ? className : ""} text-center text-blue-900 sm:text-sm text-xs leading-5`}
         >
           {getDateTime(value)}
         </td>
@@ -44,11 +44,11 @@ const CelTable: FC<Props> = (props: Props) => {
     case typeCel.LINK:
       return (
         <td className="px-6 py-4 whitespace-no-wrap border-b">
-          <div className="flex items-center">
+          <div className="flex items-center justify-center">
             <Link
               target="_blank"
               href={href ? href : "/"}
-              className={`sm:text-sm text-xs leading-5 text-gray-800 ${className} text-center font-medium`}
+              className={`block sm:text-sm text-xs leading-5 text-gray-800 ${className ? className : ""} text-center font-medium`}
             >
               {value}
             </Link>
@@ -120,7 +120,7 @@ const CelTable: FC<Props> = (props: Props) => {
           <ButtonCheck
             name="public"
             width="w-fit mx-auto"
-            isChecked={checked}
+            isChecked={checked as boolean}
             id={id}
             onGetChecked={onGetChecked}
           />

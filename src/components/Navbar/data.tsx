@@ -18,9 +18,27 @@ const listBody: itemNav[] = [
     icon: <RxDashboard />,
   },
   {
-    name: "Categories",
-    path: "/categories",
-    icon: <AiOutlineShoppingCart />
+    name: "Catalog",
+    path: "/",
+    icon: <AiOutlineShoppingCart />,
+    children: [
+      {
+        name: "Categories",
+        path: "/categories",
+      },
+      {
+        name: "Products",
+        path: "/products",
+      },
+      {
+        name: "Attributes",
+        path: "/attributes",
+      },
+      {
+        name: "Coupons",
+        path: "/coupons",
+      }
+    ],
   },
   {
     name: "Orders",
@@ -32,7 +50,6 @@ const listBody: itemNav[] = [
     path: "/customer",
     icon: <HiOutlineUsers />,
   },
-  
 ];
 
 const listSetting: itemNav[] = [

@@ -17,6 +17,8 @@ const colHeadOrder: string[] = [
   "Created Date",
   "",
 ];
+
+// header table for order detail
 const colHeaderOrderDetail: string[] = [
   "NO",
   "Product",
@@ -25,4 +27,13 @@ const colHeaderOrderDetail: string[] = [
   "Amout",
 ];
 
-export { colHeadCategory, colHeadOrder, colHeaderOrderDetail };
+// header table for attribute
+const colHeaderAttribute: string[] = [
+  "Code",
+  "Name",
+  "Published",
+  "Created Date",
+  "",
+];
+
+export { colHeadCategory, colHeadOrder, colHeaderOrderDetail, colHeaderAttribute };

@@ -13,7 +13,6 @@ import { IProductData } from "~/interface/product";
 
 import Search from "~/components/Search";
 import Table from "~/components/Table";
-import Pagination from "~/components/Pagination";
 import { deleteImageInSever } from "~/helper/handleImage";
 import { productStatus } from "~/components/Table/statusCel";
 import CelTable from "~/components/Table/CelTable";
@@ -30,6 +29,7 @@ const initData: IDataTable = {
   slug: "",
   thumbnail: "",
   createdAt: "",
+  publish: true
 };
 
 const CategoryItem = (props: Props) => {
@@ -54,7 +54,7 @@ const CategoryItem = (props: Props) => {
 
     try {
       const response = await axiosGet(
-        `/product/getAllProductsInCategory/${id}`
+        `/products/category/${id}`
       );
 
       if (response.status === 200) {
@@ -97,7 +97,7 @@ const CategoryItem = (props: Props) => {
 
       try {
         await deleteImageInSever(item.thumbnail);
-        await axiosDelete(`/product/${item._id}`);
+        await axiosDelete(`/products/${item._id}`);
         setShowPopup(false);
         handleGetData();
         toast.success("Success delete product", {
@@ -116,7 +116,7 @@ const CategoryItem = (props: Props) => {
   const handleSearch = async (text: string) => {
     setLoading(true);
     try {
-      const response = await axiosGet(`/product/search?search=${text}`);
+      const response = await axiosGet(`/products/search?search=${text}`);
 
       if (response.status === 200) {
         if (response.payload.length === 0) {
