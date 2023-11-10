@@ -8,7 +8,7 @@ interface IAttribute {
   _id?: string;
   code: string;
   name: string;
-  variants?: IVariant[];
+  variants?: IVariant[] | string[];
   public: boolean;
   createdAt?: string;
   updateAt?: string;

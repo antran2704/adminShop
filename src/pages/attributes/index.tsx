@@ -9,8 +9,6 @@ import { typeCel } from "~/enums";
 
 import { IAttribute } from "~/interface";
 
-import { deleteImageInSever } from "~/helper/handleImage";
-
 import Search from "~/components/Search";
 import Table from "~/components/Table";
 import Pagination from "~/components/Pagination";
@@ -207,7 +205,7 @@ const AttributesPage = () => {
 
         <div className="flex items-center gap-2">
           <Link
-            href={"/create/category"}
+            href={"/create/attribute"}
             className="flex items-center font-medium text-white bg-success px-3 py-2 rounded-md gap-1"
           >
             <IoIosAdd className=" text-2xl" />
@@ -233,7 +231,6 @@ const AttributesPage = () => {
                 className="hover:bg-slate-100 border-b border-gray-300"
               >
                 <CelTable type={typeCel.TEXT} value={item.code} />
-
                 <CelTable
                   type={typeCel.LINK}
                   value={item.name}

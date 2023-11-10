@@ -8,6 +8,7 @@ interface Props {
   width?: string;
   name: string;
   type: string;
+  placeholder?: string;
   value?: string;
   error?: boolean
   readonly?: boolean;
@@ -16,14 +17,14 @@ interface Props {
   getNumber?: (name: string, value: number) => void;
 }
 const FieldAdd: FC<Props> = (props: Props) => {
-  const { title, width, name, type, value, readonly = false, error, getValue, getNumber } =
+  const { title, width, name, placeholder, type, value, readonly = false, error, getValue, getNumber } =
     props;
 
   const handleChangeValue = (
     e: FormEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const name = e.currentTarget.name;
-    let value = e.currentTarget.value;
+    const value = e.currentTarget.value;
 
     if (getValue) {
       getValue(name, value);
@@ -32,7 +33,7 @@ const FieldAdd: FC<Props> = (props: Props) => {
 
   const handleChangeNumberValue = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name;
-    let value = e.target.value;
+    const value = e.target.value;
 
     const valid = handleCheckValidNumber(value);
 
@@ -57,6 +58,7 @@ const FieldAdd: FC<Props> = (props: Props) => {
           required
           name={name}
           value={value}
+          placeholder={placeholder}
           readOnly={readonly}
           onInput={handleChangeValue}
           type="text"
@@ -69,6 +71,7 @@ const FieldAdd: FC<Props> = (props: Props) => {
           required
           name={name}
           value={value}
+          placeholder={placeholder}
           onInput={handleChangeNumberValue}
           type="text"
           className="w-full rounded-md px-2 py-1 border-2 focus:border-[#4f46e5] outline-none"
@@ -81,7 +84,7 @@ const FieldAdd: FC<Props> = (props: Props) => {
           name={name}
           value={value}
           onInput={handleChangeValue}
-          placeholder="Description about product..."
+          placeholder={placeholder}
           cols={30}
           rows={6}
         ></textarea>

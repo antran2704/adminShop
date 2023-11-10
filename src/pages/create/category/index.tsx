@@ -18,6 +18,7 @@ import Input from "~/components/Input";
 import Tree from "~/components/Tree";
 import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
+import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 
 const initData: IDataCategory = {
   parent_id: null,
@@ -57,7 +58,8 @@ const CreateCategoryPage = () => {
 
   const changeValue = (name: string, value: string) => {
     if (fieldsCheck.includes(name)) {
-      removeFieldCheck(name);
+      const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
+      setFieldsCheck(newFieldsCheck);
     }
     setData({ ...data, [name]: value });
   };
@@ -98,14 +100,7 @@ const CreateCategoryPage = () => {
   };
 
   const checkData = (data: any) => {
-    let fields = [];
-
-    for (const item of data) {
-      if (item.value.length === 0 || !item.value) {
-        fields.push(item.name);
-      }
-    }
-
+    let fields = handleCheckFields(data);
     setFieldsCheck(fields);
     router.push(`#${fields[0]}`);
     return fields;
@@ -170,13 +165,13 @@ const CreateCategoryPage = () => {
       });
 
       if (payload.status === 201) {
-        toast.success("Success add category", {
+        toast.success("Success create category", {
           position: toast.POSITION.TOP_RIGHT,
         });
         router.push("/categories");
       }
     } catch (error) {
-      toast.error("Error in add category", {
+      toast.error("Error in create category", {
         position: toast.POSITION.TOP_RIGHT,
       });
       console.log(error);

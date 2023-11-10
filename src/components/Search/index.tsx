@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { FC, memo, useState, useEffect, ChangeEvent } from "react";
+import { FC, memo, KeyboardEvent, ChangeEvent } from "react";
 import useDebounce from "~/hooks/useDebounce";
 
 interface Props {
@@ -39,6 +39,13 @@ const Search: FC<Props> = (props: Props) => {
   //     }
   //   }, [debouncedValue]);
 
+  const onKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
+    const key = e.key;
+    if (key === "Enter") {
+      onFillter();
+    }
+  }
+
   return (
     <div
       className={`flex flex-wrap items-end min-h-10 my-5 gap-5`}
@@ -48,6 +55,7 @@ const Search: FC<Props> = (props: Props) => {
         type="text"
         name="search"
         onChange={onSearch}
+        onKeyUp={onKeyUp}
         className={`lg:w-4/12 md:w-6/12 w-full h-10 border rounded-md focus:outline-none text-xxs lg:text-base text-[#343a40] px-5 bg-transparent`}
         placeholder={placeholder ? placeholder : "Search..."}
       />
