@@ -208,7 +208,7 @@ const EditCategoryPage = (props: Props) => {
   }, []);
 
   return (
-    <FormLayout onSubmit={handleOnSubmit}>
+    <FormLayout title={`Edit category ${data.title ? data.title : ""}`} backLink="/categories" onSubmit={handleOnSubmit}>
       <Fragment>
         <div>
           <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">

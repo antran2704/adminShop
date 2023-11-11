@@ -3,20 +3,21 @@ import { FC,memo, useState } from "react";
 interface Props {
   id?: string;
   title?: string;
+  data?: any;
   name: string;
   isChecked: boolean;
   width?: string;
   onChange?: (name: string, status: boolean) => void;
-  onGetChecked?: (id: string, status: boolean) => void;
+  onGetChecked?: (id: string, status: boolean, data?: any) => void;
 }
 
 const ButtonCheck: FC<Props> = (props: Props) => {
-  const { id, title, name, isChecked, width, onGetChecked, onChange } = props;
+  const { id, title, name, isChecked, width, data, onGetChecked, onChange } = props;
   const [check, setCheck] = useState<boolean>(isChecked);
 
   const handleButtonValue = () => {
     if (id && onGetChecked) {
-      onGetChecked(id, !check);
+      onGetChecked(id, !check, data);
     }
 
     if (name && onChange) {

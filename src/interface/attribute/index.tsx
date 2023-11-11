@@ -1,7 +1,7 @@
 interface IVariant {
   _id: string;
   name: string;
-  status: boolean;
+  public: boolean;
 }
 
 interface IAttribute {

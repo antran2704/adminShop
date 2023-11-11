@@ -211,7 +211,7 @@ const CreateCategoryPage = () => {
   }, []);
 
   return (
-    <FormLayout onSubmit={handleOnSubmit}>
+    <FormLayout title="Create category" backLink="/categories" onSubmit={handleOnSubmit}>
       <div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">
           <Input

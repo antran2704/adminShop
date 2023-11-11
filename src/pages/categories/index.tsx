@@ -2,13 +2,8 @@ import Link from "next/link";
 import { useState, useEffect, Fragment, useCallback, ChangeEvent } from "react";
 import { toast } from "react-toastify";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
-import { IoIosAdd } from "react-icons/io";
 
-import {
-  axiosDelete,
-  axiosGet,
-  axiosPatch,
-} from "~/ultils/configAxios";
+import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
 import { typeCel } from "~/enums";
 
 import { IDataCategory } from "~/interface/category";
@@ -17,11 +12,10 @@ import { deleteImageInSever } from "~/helper/handleImage";
 
 import Search from "~/components/Search";
 import Table from "~/components/Table";
-import Pagination from "~/components/Pagination";
 import CelTable from "~/components/Table/CelTable";
 import { colHeadCategory as colHeadTable } from "~/components/Table/colHeadTable";
-import Popup from "~/components/Popup";
 import { IPagination } from "~/interface/pagination";
+import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
 interface ISelectCategory {
   id: string;
@@ -40,7 +34,6 @@ const initPagination: IPagination = {
   pageSize: 0,
 };
 
-// Title for tabel
 const CategoriesPage = () => {
   const [categories, setCategories] = useState<IDataCategory[]>([]);
   const [message, setMessage] = useState<string | null>(null);
@@ -49,7 +42,7 @@ const CategoriesPage = () => {
   const [selectItem, setSelectItem] = useState<ISelectCategory | null>(null);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
   const [fillter, setFillter] = useState(initFilter);
-  
+
   const onReset = useCallback(() => {
     setFillter(initFilter);
     handleGetData();
@@ -108,7 +101,7 @@ const CategoriesPage = () => {
     title: string,
     thumbnail: string
   ) => {
-    console.log(parent_id)
+    console.log(parent_id);
     setSelectItem({ id, parent_id, title, thumbnail });
     handlePopup();
   };
@@ -211,7 +204,7 @@ const CategoriesPage = () => {
 
     try {
       await deleteImageInSever(selectItem.thumbnail);
-      await axiosDelete(`/category/${selectItem.id}`);
+      await axiosDelete(`/categories/${selectItem.id}`);
       setShowPopup(false);
       handleGetData();
       toast.success("Success delete category", {
@@ -230,21 +223,19 @@ const CategoriesPage = () => {
   }, []);
 
   return (
-    <section className="py-5 px-5">
-      <div className="flex items-center justify-between gap-5">
-        <h1 className="lg:text-2xl text-xl font-bold">Categories</h1>
-
-        <div className="flex items-center gap-2">
-          <Link
-            href={"/create/category"}
-            className="flex items-center font-medium text-white bg-success px-3 py-2 rounded-md gap-1"
-          >
-            <IoIosAdd className=" text-2xl" />
-            Create category
-          </Link>
-        </div>
-      </div>
-
+    <ShowItemsLayout
+      title="Categories"
+      titleCreate="Create category"
+      link="/create/category"
+      selectItem={{
+        title: selectItem?.title ? selectItem.title : "",
+        id: selectItem?.id || null,
+      }}
+      pagination={pagination}
+      handleDelete={handleDeleteCategory}
+      showPopup={showPopup}
+      handlePopup={handlePopup}
+    >
       <Fragment>
         <Search
           search={fillter.search}
@@ -306,35 +297,8 @@ const CategoriesPage = () => {
             ))}
           </Fragment>
         </Table>
-        {pagination.totalItems > pagination.pageSize && (
-          <Pagination pagination={pagination} />
-        )}
       </Fragment>
-
-      {showPopup && (
-        <Popup title="Form" show={showPopup} onClose={handlePopup}>
-          <div>
-            <p className="text-lg">
-              Do you want delete category <strong>{selectItem?.title}</strong>
-            </p>
-            <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-2 lg:gap-5 gap-2">
-              <button
-                onClick={handlePopup}
-                className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"
-              >
-                Cancle
-              </button>
-              <button
-                onClick={handleDeleteCategory}
-                className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </Popup>
-      )}
-    </section>
+    </ShowItemsLayout>
   );
 };
 

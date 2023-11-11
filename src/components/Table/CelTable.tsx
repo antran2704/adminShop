@@ -8,19 +8,20 @@ interface Props {
   id?: string;
   type: typeCel;
   value?: string;
+  data?: any;
   className?: string;
   href?: string;
   status?: string;
   checked?: boolean;
   icon?: ReactNode;
   onChangeStatus?: void;
-  onGetChecked?: (id: string, status: boolean) => void;
+  onGetChecked?: (id: string, status: boolean, data?: any) => void;
   onClick?(): void;
   children?: JSX.Element;
 }
 
 const CelTable: FC<Props> = (props: Props) => {
-  const {id, type, value = "", className, href, status, checked, icon, onChangeStatus, onClick, onGetChecked, children} = props;
+  const {id, type, value = "", className, data, href, status, checked, icon, onChangeStatus, onClick, onGetChecked, children} = props;
 
   switch (type) {
     case typeCel.TEXT:
@@ -120,6 +121,7 @@ const CelTable: FC<Props> = (props: Props) => {
           <ButtonCheck
             name="public"
             width="w-fit mx-auto"
+            data={data}
             isChecked={checked as boolean}
             id={id}
             onGetChecked={onGetChecked}

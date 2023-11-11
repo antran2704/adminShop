@@ -1,19 +1,20 @@
+import { GetServerSideProps } from "next";
 import Link from "next/link";
-import { useState, useEffect, Fragment, useCallback, ChangeEvent } from "react";
+import { ParsedUrlQuery } from "querystring";
+import { useState, useEffect, Fragment, useCallback } from "react";
 import { toast } from "react-toastify";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 
 import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
 import { typeCel } from "~/enums";
 
-import { IAttribute } from "~/interface";
+import { IAttribute, IVariant } from "~/interface";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
-import Search from "~/components/Search";
 import Table from "~/components/Table";
 import CelTable from "~/components/Table/CelTable";
-import { colHeaderAttribute as colHeadTable } from "~/components/Table/colHeadTable";
+import { colHeaderAttributeValue as colHeadTable } from "~/components/Table/colHeadTable";
 import { IPagination } from "~/interface/pagination";
 
 interface ISelectAttribute {
@@ -26,50 +27,42 @@ const initSelect: ISelectAttribute = {
   title: "",
 };
 
-const initFilter = {
-  search: "",
-};
-
 const initPagination: IPagination = {
   currentPage: 1,
   totalItems: 0,
   pageSize: 0,
 };
 
-// Title for tabel
-const AttributesPage = () => {
-  const [attributes, setAttribute] = useState<IAttribute[]>([]);
+interface Props {
+  query: ParsedUrlQuery;
+}
+
+const AttributeValuesPage = (props: Props) => {
+  const { query } = props;
+  const { id } = query;
+
+  const [attributes, setAttribute] = useState<IVariant[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectItem, setSelectItem] = useState<ISelectAttribute>(initSelect);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [fillter, setFiller] = useState(initFilter);
 
-  const onReset = useCallback(() => {
-    setFiller(initFilter);
-    handleGetData();
-  }, [fillter, attributes]);
-
-  const onChangeSearch = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      const name = e.target.name;
-
-      setFiller({ ...fillter, [name]: value });
-    },
-    [fillter, attributes]
-  );
-
-  const onChangePublic = async (id: string, status: boolean) => {
-    if (!id) {
+  const onChangePublic = async (
+    children_id: string,
+    status: boolean,
+    data: any = null
+  ) => {
+    if (!children_id) {
       toast.error("False change public", {
         position: toast.POSITION.TOP_RIGHT,
       });
     }
 
     try {
-      const payload = await axiosPatch(`/variants/${id}`, {
+      const payload = await axiosPatch(`/variants/child/${id}`, {
+        children_id,
+        ...data,
         public: status,
       });
 
@@ -104,25 +97,25 @@ const AttributesPage = () => {
     setLoading(true);
 
     try {
-      const response = await axiosGet("/variants");
+      const response = await axiosGet(`/variants/${id}`);
       if (response.status === 200) {
-        if (response.payload.length === 0) {
+        if (response.payload.variants.length === 0) {
           setAttribute([]);
-          setMessage("No attribute");
+          setMessage("No attribute value");
           setLoading(false);
           return;
         }
-
-        const data: IAttribute[] = response.payload.map((item: IAttribute) => {
-          return {
-            _id: item._id,
-            name: item.name,
-            code: item.code,
-            public: item.public,
-            createdAt: item.createdAt,
-          };
-        });
-        setPagination(response.pagination);
+        console.log(response);
+        const data: IVariant[] = response.payload.variants.map(
+          (item: IVariant) => {
+            return {
+              _id: item._id,
+              name: item.name,
+              public: item.public,
+            };
+          }
+        );
+        // setPagination(response.pagination);
         setAttribute(data);
         setLoading(false);
       }
@@ -133,60 +126,27 @@ const AttributesPage = () => {
     }
   };
 
-  const handleGetDataByFillter = useCallback(async () => {
-    setMessage(null);
-    setLoading(true);
-
-    try {
-      const response = await axiosGet(
-        `/variants/search?search=${fillter.search}`
-      );
-      if (response.status === 200) {
-        if (response.payload.length === 0) {
-          setAttribute([]);
-          setMessage("No attribute");
-          setLoading(false);
-          return;
-        }
-
-        const data: IAttribute[] = response.payload.map((item: IAttribute) => {
-          return {
-            _id: item._id,
-            name: item.name,
-            code: item.code,
-            public: item.public,
-            createdAt: item.createdAt,
-          };
-        });
-        setPagination(response.pagination);
-        setAttribute(data);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.log(error);
-      setMessage("Error in server");
-      setLoading(false);
-    }
-  }, [fillter]);
-
   const handleDeleteAttribute = useCallback(async () => {
     if (!selectItem) {
       setShowPopup(false);
-      toast.error("False delete attribute", {
+      toast.error("False delete attribute value", {
         position: toast.POSITION.TOP_RIGHT,
       });
       return;
     }
 
     try {
-      await axiosDelete(`/variants/${selectItem.id}`);
+      await axiosPatch(`/variants/child/delete`, {
+        parent_id: id,
+        children_id: selectItem.id,
+      });
       setShowPopup(false);
       handleGetData();
-      toast.success("Success delete attribute", {
+      toast.success("Success delete attribute value", {
         position: toast.POSITION.TOP_RIGHT,
       });
     } catch (error) {
-      toast.error("Error delete attribute", {
+      toast.error("Error delete attribute value", {
         position: toast.POSITION.TOP_RIGHT,
       });
       console.log(error);
@@ -199,8 +159,8 @@ const AttributesPage = () => {
 
   return (
     <ShowItemsLayout
-      title="Attributes"
-      titleCreate="Create attribute"
+      title="Attribute Values"
+      titleCreate="Add value"
       link="/create/attribute"
       selectItem={{
         title: selectItem?.title ? selectItem.title : "",
@@ -212,39 +172,25 @@ const AttributesPage = () => {
       handlePopup={handlePopup}
     >
       <Fragment>
-        <Search
-          search={fillter.search}
-          onReset={onReset}
-          onSearch={onChangeSearch}
-          onFillter={handleGetDataByFillter}
-          placeholder="Search by attribute name..."
-        />
-
         <Table colHeadTabel={colHeadTable} message={message} loading={loading}>
           <Fragment>
-            {attributes.map((item: IAttribute) => (
+            {attributes.map((item: IVariant) => (
               <tr
                 key={item._id}
                 className="hover:bg-slate-100 border-b border-gray-300"
               >
-                <CelTable type={typeCel.TEXT} value={item.code} />
-                <CelTable
-                  type={typeCel.LINK}
-                  value={item.name}
-                  href={`/edit/attributes/${item._id}`}
-                  className="hover:text-primary"
-                />
+                <CelTable type={typeCel.TEXT} value={item.name} />
                 <CelTable
                   id={item._id as string}
                   type={typeCel.PUBLIC}
+                  data={item}
                   checked={item.public}
                   onGetChecked={onChangePublic}
                 />
-                <CelTable type={typeCel.DATE} value={item.createdAt} />
                 <CelTable type={typeCel.GROUP}>
                   <div className="flex items-center justify-end gap-2">
                     <Link
-                      href={`/attributes/${item._id}`}
+                      href={`/edit/category/${item._id}`}
                       className="block w-fit px-3 py-2 border-blue-700 border-2 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
                     >
                       <AiOutlineEdit className="text-xl w-fit" />
@@ -272,4 +218,12 @@ const AttributesPage = () => {
   );
 };
 
-export default AttributesPage;
+export default AttributeValuesPage;
+
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+  return {
+    props: {
+      query,
+    },
+  };
+};
