@@ -5,10 +5,10 @@ import { useState, useEffect, Fragment, useCallback } from "react";
 import { toast } from "react-toastify";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 
-import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
-import { typeCel } from "~/enums";
+import { axiosGet, axiosPatch, axiosPost } from "~/ultils/configAxios";
+import { typeCel, typeInput } from "~/enums";
 
-import { IAttribute, IVariant } from "~/interface";
+import { INewVariant, IVariant } from "~/interface";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
@@ -16,15 +16,25 @@ import Table from "~/components/Table";
 import CelTable from "~/components/Table/CelTable";
 import { colHeaderAttributeValue as colHeadTable } from "~/components/Table/colHeadTable";
 import { IPagination } from "~/interface/pagination";
+import PopupForm from "~/components/Popup/PopupForm";
+import Input from "~/components/Input";
+import ButtonCheck from "~/components/Button/ButtonCheck";
 
 interface ISelectAttribute {
   id: string | null;
   title: string;
+  public: boolean;
 }
 
 const initSelect: ISelectAttribute = {
   id: null,
   title: "",
+  public: true,
+};
+
+const initNewVariant: INewVariant = {
+  name: "",
+  public: true,
 };
 
 const initPagination: IPagination = {
@@ -45,8 +55,47 @@ const AttributeValuesPage = (props: Props) => {
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [showFormUpdate, setShowFormUpdate] = useState<boolean>(false);
+  const [showFormCreate, setShowFormCreate] = useState<boolean>(false);
+  const [newVarinat, setNewVariant] = useState<INewVariant>(initNewVariant);
   const [selectItem, setSelectItem] = useState<ISelectAttribute>(initSelect);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
+
+  const changePublic = useCallback(
+    (name: string, value: boolean) => {
+      setSelectItem({ ...selectItem, [name]: value });
+    },
+    [selectItem]
+  );
+
+  const changePublicNewVariant = useCallback(
+    (name: string, value: boolean) => {
+      setNewVariant({ ...newVarinat, [name]: value });
+    },
+    [newVarinat]
+  );
+
+  const changeValue = useCallback(
+    (name: string, value: string) => {
+      // if (fieldsCheck.includes(name)) {
+      //   const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
+      //   setFieldsCheck(newFieldsCheck);
+      // }
+      setSelectItem({ ...selectItem, [name]: value });
+    },
+    [selectItem]
+  );
+
+  const changeValueNewVariant = useCallback(
+    (name: string, value: string) => {
+      // if (fieldsCheck.includes(name)) {
+      //   const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
+      //   setFieldsCheck(newFieldsCheck);
+      // }
+      setNewVariant({ ...newVarinat, [name]: value });
+    },
+    [newVarinat]
+  );
 
   const onChangePublic = async (
     children_id: string,
@@ -67,9 +116,38 @@ const AttributeValuesPage = (props: Props) => {
       });
 
       if (payload.status === 201) {
+        handleGetData();
         toast.success("Success updated attribute", {
           position: toast.POSITION.TOP_RIGHT,
         });
+      }
+    } catch (error) {
+      toast.error("Please try again", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!selectItem.id) {
+      toast.error("False change public", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+
+    try {
+      const payload = await axiosPatch(`/variants/child/${id}`, {
+        children_id: selectItem.id,
+        name: selectItem.title,
+        public: selectItem.public,
+      });
+
+      if (payload.status === 201) {
+        toast.success("Success updated attribute", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        handleGetData();
+        handlePopupFormUpdate();
       }
     } catch (error) {
       toast.error("Please try again", {
@@ -85,11 +163,30 @@ const AttributeValuesPage = (props: Props) => {
 
   const handlePopup = () => {
     if (showPopup) {
-      console.log("close");
       setSelectItem(initSelect);
     }
 
     setShowPopup(!showPopup);
+  };
+
+  const handlePopupFormUpdate = (data?: ISelectAttribute | null) => {
+    if (showFormUpdate) {
+      setSelectItem(initSelect);
+    }
+
+    if (!showFormUpdate && data) {
+      setSelectItem(data);
+    }
+
+    setShowFormUpdate(!showFormUpdate);
+  };
+
+  const handlePopupFormCreate = () => {
+    if (showFormCreate) {
+      setNewVariant(initNewVariant);
+    }
+
+    setShowFormCreate(!showFormCreate);
   };
 
   const handleGetData = async () => {
@@ -105,7 +202,7 @@ const AttributeValuesPage = (props: Props) => {
           setLoading(false);
           return;
         }
-        console.log(response);
+
         const data: IVariant[] = response.payload.variants.map(
           (item: IVariant) => {
             return {
@@ -153,6 +250,27 @@ const AttributeValuesPage = (props: Props) => {
     }
   }, [selectItem]);
 
+  const handleAddVarinat = async () => {
+    try {
+      const payload = await axiosPost(`variants/child/${id}`, {
+        name: newVarinat.name,
+        public: newVarinat.public,
+      });
+
+      if (payload.status === 201) {
+        handlePopupFormCreate();
+        handleGetData();
+        toast.success("Success add attribute value", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+    } catch (error) {
+      toast.error("Add attribute value failed", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+  };
+
   useEffect(() => {
     handleGetData();
   }, []);
@@ -161,11 +279,11 @@ const AttributeValuesPage = (props: Props) => {
     <ShowItemsLayout
       title="Attribute Values"
       titleCreate="Add value"
-      link="/create/attribute"
       selectItem={{
         title: selectItem?.title ? selectItem.title : "",
         id: selectItem?.id || null,
       }}
+      onCreate={handlePopupFormCreate}
       pagination={pagination}
       handleDelete={handleDeleteAttribute}
       showPopup={showPopup}
@@ -189,18 +307,25 @@ const AttributeValuesPage = (props: Props) => {
                 />
                 <CelTable type={typeCel.GROUP}>
                   <div className="flex items-center justify-end gap-2">
-                    <Link
-                      href={`/edit/category/${item._id}`}
+                    <button
+                      onClick={() =>
+                        handlePopupFormUpdate({
+                          id: item._id as string,
+                          title: item.name,
+                          public: item.public,
+                        })
+                      }
                       className="block w-fit px-3 py-2 border-blue-700 border-2 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
                     >
                       <AiOutlineEdit className="text-xl w-fit" />
-                    </Link>
+                    </button>
 
                     <button
                       onClick={() =>
                         onSelectDeleteItem({
                           id: item._id as string,
                           title: item.name,
+                          public: item.public,
                         })
                       }
                       className="block w-fit px-3 py-2 border-error border-2 text-error rounded transition duration-300 hover:bg-error hover:text-white focus:outline-none"
@@ -213,6 +338,102 @@ const AttributeValuesPage = (props: Props) => {
             ))}
           </Fragment>
         </Table>
+
+        {/* Popup Form for update */}
+        <PopupForm
+          title="Update Attribute Value"
+          description="Update your attribute values and necessary information from here"
+          show={showFormUpdate}
+          onClose={handlePopupFormUpdate}
+        >
+          <Fragment>
+            {selectItem && selectItem.id && (
+              <div className="flex flex-col justify-between h-full">
+                <div className="w-full flex flex-col px-5 gap-5">
+                  <Input
+                    title="Attribute Title"
+                    width="w-full"
+                    value={selectItem.title}
+                    name="title"
+                    type={typeInput.input}
+                    getValue={changeValue}
+                    placeholder="Color or Size or Material"
+                  />
+
+                  <ButtonCheck
+                    title="Public"
+                    name="public"
+                    width="w-fit"
+                    isChecked={selectItem.public}
+                    onChange={changePublic}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between p-5 mt-5 border-t gap-5">
+                  <button
+                    onClick={() => handlePopupFormUpdate()}
+                    className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
+                  >
+                    Cancle
+                  </button>
+                  <button
+                    onClick={handleUpdate}
+                    className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
+                  >
+                    Update
+                  </button>
+                </div>
+              </div>
+            )}
+          </Fragment>
+        </PopupForm>
+
+        {/* Popup Form for add value */}
+        <PopupForm
+          title="Add Attribute Value"
+          description="Add your attribute values and necessary information from here"
+          show={showFormCreate}
+          onClose={handlePopupFormCreate}
+        >
+          <Fragment>
+            <div className="flex flex-col justify-between h-full">
+              <div className="w-full flex flex-col px-5 gap-5">
+                <Input
+                  title="Attribute Title"
+                  width="w-full"
+                  name="name"
+                  type={typeInput.input}
+                  value={newVarinat.name}
+                  getValue={changeValueNewVariant}
+                  placeholder="Color or Size or Material"
+                />
+
+                <ButtonCheck
+                  title="Public"
+                  name="public"
+                  width="w-fit"
+                  isChecked={newVarinat.public}
+                  onChange={changePublicNewVariant}
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-5 mt-5 border-t gap-5">
+                <button
+                  onClick={() => handlePopupFormCreate()}
+                  className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
+                >
+                  Cancle
+                </button>
+                <button
+                  onClick={handleAddVarinat}
+                  className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          </Fragment>
+        </PopupForm>
       </Fragment>
     </ShowItemsLayout>
   );

@@ -11,13 +11,14 @@ interface Props {
   children: JSX.Element;
   title: string;
   titleCreate: string;
-  link: string;
+  link?: string;
   pagination?: IPagination;
   showPopup: boolean;
   selectItem: {
     title: string;
     id: string | null;
   };
+  onCreate?: () => void;
   handlePopup: () => void;
   handleDelete: () => void;
 }
@@ -35,6 +36,7 @@ const ShowItemsLayout = (props: Props) => {
     },
     showPopup = false,
     selectItem,
+    onCreate,
     handlePopup,
     handleDelete,
   } = props;
@@ -45,13 +47,21 @@ const ShowItemsLayout = (props: Props) => {
         <h1 className="lg:text-2xl text-xl font-bold">{title}</h1>
 
         <div className="flex items-center gap-2">
-          <Link
+          {link && <Link
             href={link}
             className="flex items-center font-medium text-white bg-success px-3 py-2 rounded-md gap-1"
           >
             <IoIosAdd className=" text-2xl" />
             {titleCreate}
-          </Link>
+          </Link>}
+
+          {!link && <button
+            onClick={onCreate}
+            className="flex items-center font-medium text-white bg-success px-3 py-2 rounded-md gap-1"
+          >
+            <IoIosAdd className=" text-2xl" />
+            {titleCreate}
+          </button>}
         </div>
       </div>
 
@@ -67,7 +77,7 @@ const ShowItemsLayout = (props: Props) => {
         <Popup title="Form" show={showPopup} onClose={handlePopup}>
           <div>
             <p className="text-lg">
-              Do you want delete <strong>{selectItem?.title}</strong>
+              Do you want delete {title.toLowerCase()} <strong>{selectItem?.title}</strong>
             </p>
             <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-2 lg:gap-5 gap-2">
               <button

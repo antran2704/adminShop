@@ -4,6 +4,8 @@ interface IVariant {
   public: boolean;
 }
 
+type INewVariant = Omit<IVariant, "_id">
+
 interface IAttribute {
   _id?: string;
   code: string;
@@ -14,4 +16,4 @@ interface IAttribute {
   updateAt?: string;
 }
 
-export type { IVariant, IAttribute };
+export type { IVariant, IAttribute, INewVariant };
