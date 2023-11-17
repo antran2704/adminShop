@@ -231,7 +231,7 @@ const AttributesPage = () => {
                 <CelTable
                   type={typeCel.LINK}
                   value={item.name}
-                  href={`/edit/attributes/${item._id}`}
+                  href={`/attributes/${item._id}`}
                   className="hover:text-primary"
                 />
                 <CelTable

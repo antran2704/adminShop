@@ -4,9 +4,11 @@ export enum typeCel {
   LINK = "link",
   STATUS = "status",
   THUMBNAIL = "thumbnail",
+  SELECT_IMAGE = "select_image",
   AVATAR = "avatar",
   BUTTON = "button",
   BUTTON_LINK = "buttonLink",
   GROUP = "group",
-  PUBLIC = "public"
+  PUBLIC = "public",
+  INPUT = "input",
 }

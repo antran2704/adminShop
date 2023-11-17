@@ -3,9 +3,12 @@ import { FC, ReactNode } from "react";
 import { typeCel } from "~/enums";
 import { getDateTime } from "~/helper/datetimeFormat";
 import ButtonCheck from "../Button/ButtonCheck";
+import Input from "../Input";
+import SelectImage from "../Image/SelectImage";
 
 interface Props {
   id?: string;
+  name?: string;
   type: typeCel;
   value?: string;
   data?: any;
@@ -13,21 +16,41 @@ interface Props {
   href?: string;
   status?: string;
   checked?: boolean;
+  placeholder?: string;
   icon?: ReactNode;
   onChangeStatus?: void;
   onGetChecked?: (id: string, status: boolean, data?: any) => void;
+  onChangeInput?: (name: string, value: string, id?: string) => void;
   onClick?(): void;
   children?: JSX.Element;
 }
 
 const CelTable: FC<Props> = (props: Props) => {
-  const {id, type, value = "", className, data, href, status, checked, icon, onChangeStatus, onClick, onGetChecked, children} = props;
+  const {
+    id,
+    type,
+    value = "",
+    name,
+    className,
+    data,
+    href,
+    status,
+    checked,
+    icon,
+    placeholder,
+    onChangeInput,
+    onClick,
+    onGetChecked,
+    children,
+  } = props;
 
   switch (type) {
     case typeCel.TEXT:
       return (
         <td
-          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${className ? className : ""} sm:text-sm text-xs text-center leading-5`}
+          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${
+            className ? className : ""
+          } sm:text-sm text-xs text-center leading-5`}
         >
           {value}
         </td>
@@ -36,9 +59,27 @@ const CelTable: FC<Props> = (props: Props) => {
     case typeCel.DATE:
       return (
         <td
-          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${className ? className : ""} text-center text-blue-900 sm:text-sm text-xs leading-5`}
+          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${
+            className ? className : ""
+          } text-center text-blue-900 sm:text-sm text-xs leading-5`}
         >
           {getDateTime(value)}
+        </td>
+      );
+
+    case typeCel.INPUT:
+      return (
+        <td
+          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${
+            className ? className : ""
+          } text-center text-blue-900 sm:text-sm text-xs leading-5`}
+        >
+          <Input
+            name={name as string}
+            placeholder={placeholder}
+            type="input"
+            getValue={onChangeInput}
+          />
         </td>
       );
 
@@ -49,7 +90,9 @@ const CelTable: FC<Props> = (props: Props) => {
             <Link
               target="_blank"
               href={href ? href : "/"}
-              className={`block sm:text-sm text-xs leading-5 text-gray-800 ${className ? className : ""} text-center font-medium`}
+              className={`block sm:text-sm text-xs leading-5 text-gray-800 ${
+                className ? className : ""
+              } text-center font-medium`}
             >
               {value}
             </Link>
@@ -70,6 +113,17 @@ const CelTable: FC<Props> = (props: Props) => {
               className="w-full h-full object-cover object-center"
             />
           </Link>
+        </td>
+      );
+
+    case typeCel.SELECT_IMAGE:
+      return (
+        <td
+          className={`px-6 py-4 sm:text-sm text-xs leading-5 text-gray-800 ${
+            className ? className : ""
+          } text-center font-medium`}
+        >
+          <SelectImage className={className} thumbnailUrl={null} images={[]}/>
         </td>
       );
 
@@ -97,11 +151,7 @@ const CelTable: FC<Props> = (props: Props) => {
       );
 
     case typeCel.GROUP:
-      return (
-        <td className="px-6 py-4">
-          {children}
-        </td>
-      );
+      return <td className="px-6 py-4">{children}</td>;
 
     case typeCel.BUTTON_LINK:
       return (

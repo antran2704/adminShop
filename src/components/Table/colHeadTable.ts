@@ -37,10 +37,25 @@ const colHeaderAttribute: string[] = [
 ];
 
 // header table for attribute value
-const colHeaderAttributeValue: string[] = [
-  "Name",
+const colHeaderAttributeValue: string[] = ["Name", "Published", ""];
+
+// header table for product
+const colHeaderProduct: string[] = [
+  "Product Name",
+  "Category",
+  "Price",
+  "Sale Price",
+  "Inventory",
+  "Status",
   "Published",
-  "",
+  "Action",
 ];
 
-export { colHeadCategory, colHeadOrder, colHeaderOrderDetail, colHeaderAttribute, colHeaderAttributeValue };
+export {
+  colHeadCategory,
+  colHeadOrder,
+  colHeaderOrderDetail,
+  colHeaderAttribute,
+  colHeaderAttributeValue,
+  colHeaderProduct,
+};

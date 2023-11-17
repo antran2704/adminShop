@@ -51,6 +51,7 @@ export type {
   IThumbnailUrl,
   IOption,
   IDataCategory,
+  IParentCategory,
   ICategorySelect,
   IObjectCategory,
   IBreadcrumb,

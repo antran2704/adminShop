@@ -1,5 +1,5 @@
 import { GetServerSideProps } from "next";
-import Link from "next/link";
+import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import { useState, useEffect, Fragment, useCallback } from "react";
 import { toast } from "react-toastify";
@@ -9,6 +9,7 @@ import { axiosGet, axiosPatch, axiosPost } from "~/ultils/configAxios";
 import { typeCel, typeInput } from "~/enums";
 
 import { INewVariant, IVariant } from "~/interface";
+import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
@@ -51,6 +52,8 @@ const AttributeValuesPage = (props: Props) => {
   const { query } = props;
   const { id } = query;
 
+  const router = useRouter();
+
   const [attributes, setAttribute] = useState<IVariant[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -60,6 +63,8 @@ const AttributeValuesPage = (props: Props) => {
   const [newVarinat, setNewVariant] = useState<INewVariant>(initNewVariant);
   const [selectItem, setSelectItem] = useState<ISelectAttribute>(initSelect);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
+
+  const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
 
   const changePublic = useCallback(
     (name: string, value: boolean) => {
@@ -77,10 +82,10 @@ const AttributeValuesPage = (props: Props) => {
 
   const changeValue = useCallback(
     (name: string, value: string) => {
-      // if (fieldsCheck.includes(name)) {
-      //   const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
-      //   setFieldsCheck(newFieldsCheck);
-      // }
+      if (fieldsCheck.includes(name)) {
+        const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
+        setFieldsCheck(newFieldsCheck);
+      }
       setSelectItem({ ...selectItem, [name]: value });
     },
     [selectItem]
@@ -88,10 +93,10 @@ const AttributeValuesPage = (props: Props) => {
 
   const changeValueNewVariant = useCallback(
     (name: string, value: string) => {
-      // if (fieldsCheck.includes(name)) {
-      //   const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
-      //   setFieldsCheck(newFieldsCheck);
-      // }
+      if (fieldsCheck.includes(name)) {
+        const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
+        setFieldsCheck(newFieldsCheck);
+      }
       setNewVariant({ ...newVarinat, [name]: value });
     },
     [newVarinat]
@@ -135,6 +140,21 @@ const AttributeValuesPage = (props: Props) => {
       });
     }
 
+    const fields = checkData([
+      {
+        name: "title",
+        value: selectItem.title
+      }
+    ]);
+
+    if (fields.length > 0) {
+      toast.error("Please input fields", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      return;
+    }
+
     try {
       const payload = await axiosPatch(`/variants/child/${id}`, {
         children_id: selectItem.id,
@@ -159,6 +179,13 @@ const AttributeValuesPage = (props: Props) => {
   const onSelectDeleteItem = (item: ISelectAttribute) => {
     setSelectItem(item);
     handlePopup();
+  };
+
+  const checkData = (data: any) => {
+    let fields = handleCheckFields(data);
+    setFieldsCheck(fields);
+    router.push(`#${fields[0]}`);
+    return fields;
   };
 
   const handlePopup = () => {
@@ -251,6 +278,21 @@ const AttributeValuesPage = (props: Props) => {
   }, [selectItem]);
 
   const handleAddVarinat = async () => {
+    const fields = checkData([
+      {
+        name: "name",
+        value: newVarinat.name
+      }
+    ]);
+
+    if (fields.length > 0) {
+      toast.error("Please input fields", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      return;
+    }
+
     try {
       const payload = await axiosPost(`variants/child/${id}`, {
         name: newVarinat.name,
@@ -355,6 +397,7 @@ const AttributeValuesPage = (props: Props) => {
                     width="w-full"
                     value={selectItem.title}
                     name="title"
+                    error={fieldsCheck.includes("title")}
                     type={typeInput.input}
                     getValue={changeValue}
                     placeholder="Color or Size or Material"
@@ -405,6 +448,7 @@ const AttributeValuesPage = (props: Props) => {
                   type={typeInput.input}
                   value={newVarinat.name}
                   getValue={changeValueNewVariant}
+                  error={fieldsCheck.includes("name")}
                   placeholder="Color or Size or Material"
                 />
 

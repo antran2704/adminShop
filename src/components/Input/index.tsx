@@ -4,27 +4,43 @@ import handleCheckValidNumber from "~/helper/checkNumber";
 import { typeInput } from "~/enums";
 
 interface Props {
-  title: string;
+  id?: string | null;
+  title?: string;
   width?: string;
   name: string;
   type: string;
   placeholder?: string;
   value?: string;
-  error?: boolean
+  error?: boolean;
   readonly?: boolean;
   onClick?: () => void;
-  getValue?: (name: string, value: string) => void;
+  getValue?: (name: string, value: string, id?: string) => void;
   getNumber?: (name: string, value: number) => void;
 }
 const FieldAdd: FC<Props> = (props: Props) => {
-  const { title, width, name, placeholder, type, value, readonly = false, error, getValue, getNumber } =
-    props;
+  const {
+    id,
+    title,
+    width,
+    name,
+    placeholder,
+    type,
+    value,
+    readonly = false,
+    error,
+    getValue,
+    getNumber,
+  } = props;
 
   const handleChangeValue = (
     e: FormEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const name = e.currentTarget.name;
     const value = e.currentTarget.value;
+
+    if (getValue && id) {
+      getValue(name, value, id);
+    }
 
     if (getValue) {
       getValue(name, value);
@@ -49,9 +65,14 @@ const FieldAdd: FC<Props> = (props: Props) => {
 
   return (
     <div className={`${width ? width : "w-full"}`}>
-      <span id={name} className="block text-base text-[#1E1E1E] font-medium mb-1">
-        {title}
-      </span>
+      {title && (
+        <span
+          id={name}
+          className="block text-base text-[#1E1E1E] font-medium mb-1"
+        >
+          {title}
+        </span>
+      )}
 
       {type === typeInput.input && (
         <input
@@ -62,7 +83,9 @@ const FieldAdd: FC<Props> = (props: Props) => {
           readOnly={readonly}
           onInput={handleChangeValue}
           type="text"
-          className={`w-full rounded-md px-2 py-1 border-2 ${error && 'border-error'} focus:border-[#4f46e5] outline-none`}
+          className={`w-full rounded-md px-2 py-1 border-2 ${
+            error && "border-error"
+          } focus:border-[#4f46e5] outline-none`}
         />
       )}
 
@@ -80,7 +103,9 @@ const FieldAdd: FC<Props> = (props: Props) => {
 
       {type === typeInput.textarea && (
         <textarea
-          className={`w-full rounded-md px-2 py-1 border-2  ${error && 'border-error'} focus:border-[#4f46e5] outline-none`}
+          className={`w-full rounded-md px-2 py-1 border-2  ${
+            error && "border-error"
+          } focus:border-[#4f46e5] outline-none`}
           name={name}
           value={value}
           onInput={handleChangeValue}

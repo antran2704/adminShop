@@ -1,42 +1,80 @@
-import { IThumbnail } from "../image";
+import { IParentCategory } from "../category";
 
-interface IOption {
+interface IOptionProduct {
+  code: string;
   name: string;
-  status: boolean;
+  values: [
+    {
+      label: string;
+      _id: string;
+    }
+  ];
 }
 
-interface IListOption {
+interface ISpecificationsProduct {
+  name: String;
+  attributes: [
+    {
+      name: String;
+      value: String;
+    }
+  ];
+}
+
+interface IVariantProduct {
+  id: string | null;
+  product_id: string;
   title: string;
-  list: IOption[];
-}
-
-interface ITypeProduct {
-  _id: string | null;
-  title: string | null;
-}
-
-interface ICategory extends ITypeProduct {
-  options: string | null;
+  barcode: string;
+  available: boolean;
+  price: number;
+  promotion_price: number;
+  sku: string | null;
+  option1: string | null;
+  option2: string | null;
+  option3: string | null;
+  options: [{ type: String }];
+  thumbnail_url: string | null;
+  url: string | null;
+  inventory_quantity: number;
+  sold: number;
+  public: boolean;
 }
 
 interface IProductData {
-  _id?: string | null;
+  _id: string | null;
   title: string;
-  category?: ICategory | null;
-  slug?: string;
-  type: ITypeProduct[] | [];
+  category: IParentCategory;
+  slug: string;
+  type: [];
   shortDescription: string;
   description: string;
   price: number;
   promotionPrice: number | null;
-  quantity: number;
-  thumbnail: IThumbnail;
-  gallery: IThumbnail[];
+  options: IOptionProduct;
+  inventory: number;
+  thumbnail: string;
+  gallery: string[];
   brand: string | null;
-  options: IListOption[];
   hotProduct: boolean | false;
-  status: boolean | true;
-  createdAt?: string;
+  public: boolean | true;
+  specifications: ISpecificationsProduct;
+  viewer: number;
+  rate: number;
+  variants: IVariantProduct[];
+  createdAt: string;
 }
 
-export type { IOption, IListOption, ITypeProduct, IProductData, ICategory };
+type IProductHome = Pick<
+  IProductData,
+  | "_id"
+  | "title"
+  | "public"
+  | "price"
+  | "promotionPrice"
+  | "inventory"
+  | "category"
+  | "thumbnail"
+>;
+
+export type { IProductData, IProductHome, IVariantProduct, IOptionProduct };
