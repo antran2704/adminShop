@@ -1,3 +1,5 @@
+import { GetServerSideProps } from "next";
+import { ParsedUrlQuery } from "querystring";
 import Link from "next/link";
 import { useState, useEffect, Fragment, useCallback, ChangeEvent } from "react";
 import { toast } from "react-toastify";
@@ -34,41 +36,48 @@ const initPagination: IPagination = {
   pageSize: 0,
 };
 
-const CategoriesPage = () => {
+interface Props {
+  query: ParsedUrlQuery;
+}
+
+const CategoriesPage = (props: Props) => {
+  const { query } = props;
+  const currentPage = query.page ? query.page : 1;
+  
   const [categories, setCategories] = useState<IDataCategory[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectItem, setSelectItem] = useState<ISelectCategory | null>(null);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [fillter, setFillter] = useState(initFilter);
+  const [filter, setFilter] = useState(initFilter);
 
   const onReset = useCallback(() => {
-    setFillter(initFilter);
+    setFilter(initFilter);
     handleGetData();
-  }, [fillter, categories]);
+  }, [filter, categories]);
 
   const onChangeSearch = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       const name = e.target.name;
 
-      setFillter({ ...fillter, [name]: value });
+      setFilter({ ...filter, [name]: value });
     },
-    [fillter, categories]
+    [filter, categories]
   );
 
   const onSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     const name = e.target.name;
 
-    setFillter({ ...fillter, [name]: value });
+    setFilter({ ...filter, [name]: value });
   };
 
   const onSelectDate = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const name = e.target.name;
-    setFillter({ ...fillter, [name]: value });
+    setFilter({ ...filter, [name]: value });
   };
 
   const onChangePublish = async (id: string, status: boolean) => {
@@ -101,7 +110,6 @@ const CategoriesPage = () => {
     title: string,
     thumbnail: string
   ) => {
-    console.log(parent_id);
     setSelectItem({ id, parent_id, title, thumbnail });
     handlePopup();
   };
@@ -120,7 +128,7 @@ const CategoriesPage = () => {
     setLoading(true);
 
     try {
-      const response = await axiosGet("/categories");
+      const response = await axiosGet(`/categories?page=${currentPage}`);
       if (response.status === 200) {
         if (response.payload.length === 0) {
           setCategories([]);
@@ -150,6 +158,9 @@ const CategoriesPage = () => {
       console.log(error);
       setMessage("Error in server");
       setLoading(false);
+      toast.error("Error in server, please try again", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     }
   };
 
@@ -159,7 +170,7 @@ const CategoriesPage = () => {
 
     try {
       const response = await axiosGet(
-        `/categories/search?search=${fillter.search}`
+        `/categories/search?search=${filter.search}&page=${currentPage}`
       );
       if (response.status === 200) {
         if (response.payload.length === 0) {
@@ -189,9 +200,12 @@ const CategoriesPage = () => {
     } catch (error) {
       console.log(error);
       setMessage("Error in server");
+      toast.error("Error in server, please try again", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
       setLoading(false);
     }
-  }, [fillter]);
+  }, [filter]);
 
   const handleDeleteCategory = useCallback(async () => {
     if (!selectItem || !selectItem.id) {
@@ -238,7 +252,7 @@ const CategoriesPage = () => {
     >
       <Fragment>
         <Search
-          search={fillter.search}
+          search={filter.search}
           onReset={onReset}
           onSearch={onChangeSearch}
           onFillter={handleGetDataByFillter}
@@ -303,3 +317,11 @@ const CategoriesPage = () => {
 };
 
 export default CategoriesPage;
+
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+  return {
+    props: {
+      query,
+    },
+  };
+};

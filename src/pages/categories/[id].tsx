@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ParsedUrlQuery } from "querystring";
 import { GetServerSideProps } from "next";
 import { useState, useEffect, useCallback, Fragment } from "react";
 import { toast } from "react-toastify";
@@ -20,7 +21,7 @@ import { colHeadCategory as colHeadTable } from "~/components/Table/colHeadTable
 import Popup from "~/components/Popup";
 
 interface Props {
-  query: any;
+  query: ParsedUrlQuery;
 }
 
 const initData: IDataTable = {

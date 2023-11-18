@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { GetServerSideProps } from "next";
+import { ParsedUrlQuery } from "querystring";
 import { useState, useEffect, Fragment, useCallback, ChangeEvent } from "react";
 import { toast } from "react-toastify";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
@@ -36,8 +38,15 @@ const initPagination: IPagination = {
   pageSize: 0,
 };
 
+interface Props {
+  query: ParsedUrlQuery;
+}
+
 // Title for tabel
-const AttributesPage = () => {
+const AttributesPage = (props: Props) => {
+  const { query } = props;
+  const currentPage = query.page ? query.page : 1;
+
   const [attributes, setAttribute] = useState<IAttribute[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -104,7 +113,7 @@ const AttributesPage = () => {
     setLoading(true);
 
     try {
-      const response = await axiosGet("/variants");
+      const response = await axiosGet(`/variants?page=${currentPage}`);
       if (response.status === 200) {
         if (response.payload.length === 0) {
           setAttribute([]);
@@ -139,7 +148,7 @@ const AttributesPage = () => {
 
     try {
       const response = await axiosGet(
-        `/variants/search?search=${fillter.search}`
+        `/variants/search?search=${fillter.search}&page=${currentPage}`
       );
       if (response.status === 200) {
         if (response.payload.length === 0) {
@@ -273,3 +282,11 @@ const AttributesPage = () => {
 };
 
 export default AttributesPage;
+
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+  return {
+    props: {
+      query,
+    },
+  };
+};

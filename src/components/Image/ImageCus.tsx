@@ -11,10 +11,10 @@ const ImageCus = (props: Props) => {
   const imageRef = useRef<HTMLImageElement>(null);
 
   async function loadImage(e: HTMLImageElement) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       e.onload = () => resolve(e);
       e.onerror = () => {
-        reject((e.src = "/no_image.jpg"));
+        e.src = "/no_image.jpg";
       };
 
       if (e.complete) {
