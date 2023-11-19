@@ -8,27 +8,19 @@ import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
 import { typeCel } from "~/enums";
 
-import { IPagination } from "~/interface/pagination";
-import { IProductHome } from "~/interface/product";
+import { IFilter, IPagination, IProductHome, IDataCategory } from "~/interface";
 import { ISelectItem } from "~/components/Select/SelectItem/interfaces";
-import { IDataCategory } from "~/interface/category";
 
 import Search from "~/components/Search";
-import Table from "~/components/Table";
-import CelTable from "~/components/Table/CelTable";
+import { Table, CelTable } from "~/components/Table";
 import { colHeaderProduct as colHeadTable } from "~/components/Table/colHeadTable";
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 import SelectItem from "~/components/Select/SelectItem";
 import ImageCus from "~/components/Image/ImageCus";
-import NoResult from "~/components/NoResult";
 
 interface ISelectProduct {
   id: string | null;
   title: string;
-}
-
-interface IFilterProduct {
-  [x: string]: string;
 }
 
 const initPagination: IPagination = {
@@ -59,7 +51,7 @@ const ProductPage = (props: Props) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [filter, setFilter] = useState<IFilterProduct | null>(null);
+  const [filter, setFilter] = useState<IFilter | null>(null);
 
   const onChangeSearch = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -81,7 +73,7 @@ const ProductPage = (props: Props) => {
     [filter]
   );
 
-  const handleGetDataByFillter = useCallback(async () => {
+  const handleGetDataByFilter = useCallback(async () => {
     setMessage(null);
     setLoading(true);
 
@@ -254,7 +246,7 @@ const ProductPage = (props: Props) => {
 
       if (response.status === 201) {
         if (filter) {
-          handleGetDataByFillter();
+          handleGetDataByFilter();
         } else {
           handleGetData();
         }
@@ -291,7 +283,7 @@ const ProductPage = (props: Props) => {
           search={filter?.search ? filter.search : ""}
           onReset={onReset}
           onSearch={onChangeSearch}
-          onFillter={handleGetDataByFillter}
+          onFilter={handleGetDataByFilter}
           placeholder="Search by product name..."
         >
           <SelectItem
@@ -304,88 +296,81 @@ const ProductPage = (props: Props) => {
           />
         </Search>
 
-          <Table
-            colHeadTabel={colHeadTable}
-            message={message}
-            loading={loading}
-          >
-            <Fragment>
-              {products.map((product: IProductHome) => (
-                <tr
-                  key={product._id}
-                  className="hover:bg-slate-100 border-b border-gray-300"
-                >
-                  <CelTable type={typeCel.GROUP}>
-                    <div className="flex items-center justify-center gap-2">
-                      <ImageCus
-                        title="product image"
-                        src={product.thumbnail}
-                        className="min-w-[32px] w-8 h-8 rounded-full"
-                      />
-                      <p className="text-sm font-medium">{product.title}</p>
-                    </div>
-                  </CelTable>
-                  <CelTable
-                    type={typeCel.TEXT}
-                    value={product.category ? product.category.title : "Home"}
-                  />
-                  <CelTable
-                    type={typeCel.TEXT}
-                    value={product.price.toString()}
-                  />
-                  <CelTable
-                    type={typeCel.TEXT}
-                    value={
-                      product.promotionPrice
-                        ? product.promotionPrice.toString()
-                        : "0"
-                    }
-                  />
-                  <CelTable
-                    type={typeCel.TEXT}
-                    value={product.inventory.toString()}
-                  />
-                  <CelTable
-                    type={typeCel.STATUS}
-                    status="bg-success"
-                    value={"selling"}
-                  />
-                  <CelTable
-                    id={product._id as string}
-                    type={typeCel.PUBLIC}
-                    checked={product.public}
-                    onGetChecked={onChangePublic}
-                  />
-                  <CelTable type={typeCel.GROUP}>
-                    <div className="flex items-center justify-center gap-2">
-                      <Link
-                        href={`/`}
-                        className="block w-fit px-3 py-2 border-blue-700 border-2 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
-                      >
-                        <AiOutlineEdit className="text-xl w-fit" />
-                      </Link>
+        <Table colHeadTabel={colHeadTable} message={message} loading={loading}>
+          <Fragment>
+            {products.map((product: IProductHome) => (
+              <tr
+                key={product._id}
+                className="hover:bg-slate-100 border-b border-gray-300"
+              >
+                <CelTable type={typeCel.GROUP}>
+                  <div className="flex items-center justify-center gap-2">
+                    <ImageCus
+                      title="product image"
+                      src={product.thumbnail}
+                      className="min-w-[32px] w-8 h-8 rounded-full"
+                    />
+                    <p className="text-sm font-medium">{product.title}</p>
+                  </div>
+                </CelTable>
+                <CelTable
+                  type={typeCel.TEXT}
+                  value={product.category ? product.category.title : "Home"}
+                />
+                <CelTable
+                  type={typeCel.TEXT}
+                  value={product.price.toString()}
+                />
+                <CelTable
+                  type={typeCel.TEXT}
+                  value={
+                    product.promotionPrice
+                      ? product.promotionPrice.toString()
+                      : "0"
+                  }
+                />
+                <CelTable
+                  type={typeCel.TEXT}
+                  value={product.inventory.toString()}
+                />
+                <CelTable
+                  type={typeCel.STATUS}
+                  status="bg-success"
+                  value={"selling"}
+                />
+                <CelTable
+                  id={product._id as string}
+                  type={typeCel.PUBLIC}
+                  checked={product.public}
+                  onGetChecked={onChangePublic}
+                />
+                <CelTable type={typeCel.GROUP}>
+                  <div className="flex items-center justify-center gap-2">
+                    <Link
+                      href={`/`}
+                      className="block w-fit px-3 py-2 border-blue-700 border-2 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
+                    >
+                      <AiOutlineEdit className="text-xl w-fit" />
+                    </Link>
 
-                      <button
-                        onClick={() => {
-                          if (!showPopup) {
-                            onSelectProduct(
-                              product._id as string,
-                              product.title
-                            );
-                          }
+                    <button
+                      onClick={() => {
+                        if (!showPopup) {
+                          onSelectProduct(product._id as string, product.title);
+                        }
 
-                          handlePopup();
-                        }}
-                        className="block w-fit px-3 py-2 border-error border-2 text-error rounded transition duration-300 hover:bg-error hover:text-white focus:outline-none"
-                      >
-                        <AiOutlineDelete className="text-xl" />
-                      </button>
-                    </div>
-                  </CelTable>
-                </tr>
-              ))}
-            </Fragment>
-          </Table>
+                        handlePopup();
+                      }}
+                      className="block w-fit px-3 py-2 border-error border-2 text-error rounded transition duration-300 hover:bg-error hover:text-white focus:outline-none"
+                    >
+                      <AiOutlineDelete className="text-xl" />
+                    </button>
+                  </div>
+                </CelTable>
+              </tr>
+            ))}
+          </Fragment>
+        </Table>
       </Fragment>
     </ShowItemsLayout>
   );

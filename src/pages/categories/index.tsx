@@ -6,18 +6,18 @@ import { toast } from "react-toastify";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 
 import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
+
+import ShowItemsLayout from "~/layouts/ShowItemsLayout";
+
 import { typeCel } from "~/enums";
 
-import { IDataCategory } from "~/interface/category";
+import { IFilter, IDataCategory, IPagination } from "~/interface";
 
 import { deleteImageInSever } from "~/helper/handleImage";
 
 import Search from "~/components/Search";
-import Table from "~/components/Table";
-import CelTable from "~/components/Table/CelTable";
+import { Table, CelTable } from "~/components/Table";
 import { colHeadCategory as colHeadTable } from "~/components/Table/colHeadTable";
-import { IPagination } from "~/interface/pagination";
-import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
 interface ISelectCategory {
   id: string;
@@ -25,10 +25,6 @@ interface ISelectCategory {
   title: string;
   thumbnail: string;
 }
-
-const initFilter = {
-  search: "",
-};
 
 const initPagination: IPagination = {
   currentPage: 1,
@@ -43,17 +39,17 @@ interface Props {
 const CategoriesPage = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? query.page : 1;
-  
+
   const [categories, setCategories] = useState<IDataCategory[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectItem, setSelectItem] = useState<ISelectCategory | null>(null);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [filter, setFilter] = useState(initFilter);
+  const [filter, setFilter] = useState<IFilter | null>(null);
 
   const onReset = useCallback(() => {
-    setFilter(initFilter);
+    setFilter(null);
     handleGetData();
   }, [filter, categories]);
 
@@ -66,19 +62,6 @@ const CategoriesPage = (props: Props) => {
     },
     [filter, categories]
   );
-
-  const onSelect = (e: ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    const name = e.target.name;
-
-    setFilter({ ...filter, [name]: value });
-  };
-
-  const onSelectDate = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const name = e.target.name;
-    setFilter({ ...filter, [name]: value });
-  };
 
   const onChangePublish = async (id: string, status: boolean) => {
     if (!id) {
@@ -116,7 +99,6 @@ const CategoriesPage = (props: Props) => {
 
   const handlePopup = () => {
     if (showPopup) {
-      console.log("close");
       setSelectItem(null);
     }
 
@@ -164,13 +146,13 @@ const CategoriesPage = (props: Props) => {
     }
   };
 
-  const handleGetDataByFillter = useCallback(async () => {
+  const handleGetDataByFilter = useCallback(async () => {
     setMessage(null);
     setLoading(true);
 
     try {
       const response = await axiosGet(
-        `/categories/search?search=${filter.search}&page=${currentPage}`
+        `/categories/search?search=${filter?.search || ""}&page=${currentPage}`
       );
       if (response.status === 200) {
         if (response.payload.length === 0) {
@@ -220,7 +202,13 @@ const CategoriesPage = (props: Props) => {
       await deleteImageInSever(selectItem.thumbnail);
       await axiosDelete(`/categories/${selectItem.id}`);
       setShowPopup(false);
-      handleGetData();
+
+      if (filter) {
+        handleGetDataByFilter();
+      } else {
+        handleGetData();
+      }
+
       toast.success("Success delete category", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -252,10 +240,10 @@ const CategoriesPage = (props: Props) => {
     >
       <Fragment>
         <Search
-          search={filter.search}
+          search={filter?.search || ""}
           onReset={onReset}
           onSearch={onChangeSearch}
-          onFillter={handleGetDataByFillter}
+          onFilter={handleGetDataByFilter}
           placeholder="Search by category name..."
         />
 

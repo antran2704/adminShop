@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { memo, useState, useEffect, Fragment } from "react";
-import { IPagination } from "~/interface/pagination";
+import { IPagination } from "~/interface";
 
 interface Props {
   pagination: IPagination;

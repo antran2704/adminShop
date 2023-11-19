@@ -5,19 +5,22 @@ import { toast } from "react-toastify";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 import { axiosGet, axiosPatch } from "~/ultils/configAxios";
+import generalBreadcrumbs from "~/helper/generateBreadcrumb";
+import { deleteImageInSever, uploadImageOnServer } from "~/helper/handleImage";
 
 import {
   IThumbnailUrl,
   IDataCategory,
   ICategorySelect,
+  IObjectCategory,
 } from "~/interface/category";
 import { typeInput } from "~/enums";
-import { deleteImageInSever, uploadImageOnServer } from "~/helper/handleImage";
 import FormLayout from "~/layouts/FormLayout";
 import Input from "~/components/Input";
 import Tree from "~/components/Tree";
 import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
+import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 
 const initData: IDataCategory = {
   _id: null,
@@ -35,10 +38,11 @@ interface Props {
 const EditCategoryPage = (props: Props) => {
   const router = useRouter();
   const { query } = props;
-
+  const [title, setTitle] = useState<string | null>(null);
   const [data, setData] = useState<IDataCategory>(initData);
-  const [categories, setCategories] = useState({});
+  const [categories, setCategories] = useState<IObjectCategory>({});
   const [categoriesParent, setCategoriesParent] = useState([]);
+  const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
   const [categorySelect, setCategorySelect] = useState<ICategorySelect>({
     title: null,
     node_id: null,
@@ -56,6 +60,11 @@ const EditCategoryPage = (props: Props) => {
   };
 
   const changeValue = (name: string, value: string) => {
+    if (fieldsCheck.includes(name)) {
+      const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
+      setFieldsCheck(newFieldsCheck);
+    }
+
     setData({ ...data, [name]: value });
   };
 
@@ -69,8 +78,42 @@ const EditCategoryPage = (props: Props) => {
     }
   };
 
+  const checkData = (data: any) => {
+    let fields = handleCheckFields(data);
+    setFieldsCheck(fields);
+    router.push(`#${fields[0]}`);
+    return fields;
+  };
+
   const handleOnSubmit = async () => {
+    const fields = checkData([
+      {
+        name: "title",
+        value: data.title,
+      },
+      {
+        name: "description",
+        value: data.description,
+      },
+      {
+        name: "thumbnail",
+        value: thumbnailUrl.url,
+      },
+    ]);
+
+    if (fields.length > 0) {
+      toast.error("Please input fields", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      return;
+    }
+
     let payload;
+    let breadcrumbs: string[] = generalBreadcrumbs(
+      categorySelect.node_id || null,
+      categories
+    );
     let sendData = {
       title: data.title,
       description: data.description,
@@ -79,6 +122,7 @@ const EditCategoryPage = (props: Props) => {
       thumbnail: data.thumbnail,
       public: data.public,
       parent_id: categorySelect.node_id,
+      breadcrumbs,
     };
 
     setLoading(true);
@@ -116,7 +160,8 @@ const EditCategoryPage = (props: Props) => {
         toast.success("Success updated category", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        router.back();
+        setLoading(false);
+        router.push("/categories");
       }
     } catch (error) {
       toast.error("Error in add category", {
@@ -147,7 +192,7 @@ const EditCategoryPage = (props: Props) => {
           thumbnail: data.payload.thumbnail,
           public: data.payload.public,
         });
-
+        setTitle(data.payload.title);
         setThumbnailUrl({ ...thumbnailUrl, url: data.payload.thumbnail });
         setCategorySelect({
           node_id,
@@ -208,12 +253,17 @@ const EditCategoryPage = (props: Props) => {
   }, []);
 
   return (
-    <FormLayout title={`Edit category ${data.title ? data.title : ""}`} backLink="/categories" onSubmit={handleOnSubmit}>
+    <FormLayout
+      title={`Edit category ${title ? title : ""}`}
+      backLink="/categories"
+      onSubmit={handleOnSubmit}
+    >
       <Fragment>
         <div>
           <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">
             <Input
               title="Title"
+              error={fieldsCheck.includes("title")}
               width="lg:w-2/4 w-full"
               value={data.title}
               name="title"
@@ -228,6 +278,7 @@ const EditCategoryPage = (props: Props) => {
               width="lg:w-2/4 w-full"
               value={data.description}
               name="description"
+              error={fieldsCheck.includes("description")}
               type={typeInput.textarea}
               getValue={changeValue}
             />
@@ -260,6 +311,7 @@ const EditCategoryPage = (props: Props) => {
 
           <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
             <Thumbnail
+              error={fieldsCheck.includes("thumbnail")}
               thumbnailUrl={thumbnailUrl.url}
               onChange={uploadThumbnail}
             />

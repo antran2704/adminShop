@@ -7,8 +7,7 @@ import { typeCel } from "~/enums";
 
 import { orderStatus } from "~/components/Table/statusCel";
 
-import Table from "~/components/Table";
-import CelTable from "~/components/Table/CelTable";
+import { Table, CelTable } from "~/components/Table";
 import { IOrder } from "~/interface/order";
 import Pagination from "~/components/Pagination";
 import { IPagination } from "~/interface/pagination";
@@ -52,7 +51,9 @@ const TableOrder: FC<Props> = (props: Props) => {
         </Fragment>
       </Table>
 
-      {pagination.totalItems > pagination.pageSize && <Pagination pagination={pagination} />}
+      {pagination.totalItems > pagination.pageSize && (
+        <Pagination pagination={pagination} />
+      )}
     </Fragment>
   );
 };

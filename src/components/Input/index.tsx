@@ -10,6 +10,8 @@ interface Props {
   name: string;
   type: string;
   placeholder?: string;
+  cols?: number;
+  rows?: number;
   value?: string;
   error?: boolean;
   readonly?: boolean;
@@ -26,6 +28,8 @@ const FieldAdd: FC<Props> = (props: Props) => {
     placeholder,
     type,
     value,
+    cols = 30,
+    rows = 6,
     readonly = false,
     error,
     getValue,
@@ -110,8 +114,8 @@ const FieldAdd: FC<Props> = (props: Props) => {
           value={value}
           onInput={handleChangeValue}
           placeholder={placeholder}
-          cols={30}
-          rows={6}
+          cols={cols}
+          rows={rows}
         ></textarea>
       )}
     </div>

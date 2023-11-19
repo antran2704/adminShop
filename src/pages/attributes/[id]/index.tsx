@@ -13,8 +13,7 @@ import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
-import Table from "~/components/Table";
-import CelTable from "~/components/Table/CelTable";
+import {Table, CelTable} from "~/components/Table";
 import { colHeaderAttributeValue as colHeadTable } from "~/components/Table/colHeadTable";
 import { IPagination } from "~/interface/pagination";
 import PopupForm from "~/components/Popup/PopupForm";

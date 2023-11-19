@@ -4,143 +4,351 @@ import { toast } from "react-toastify";
 
 import { axiosGet, axiosPost } from "~/ultils/configAxios";
 
-import { ICategory, ITypeProduct, IListOption } from "~/interface/product";
-
 import {
-  uploadGalleryOnServer,
-  uploadImageOnServer,
-} from "~/helper/handleImage";
+  IThumbnailUrl,
+  IDataCategory,
+  ICategorySelect,
+  IObjectCategory,
+} from "~/interface/category";
+import { typeInput } from "~/enums";
+import { uploadImageOnServer } from "~/helper/handleImage";
+import FormLayout from "~/layouts/FormLayout";
+import Input from "~/components/Input";
+import Tree from "~/components/Tree";
+import Thumbnail from "~/components/Image/Thumbnail";
+import ButtonCheck from "~/components/Button/ButtonCheck";
+import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
+import Gallery from "~/components/Image/Gallery";
+import MultipleValue from "~/components/Input/MultipleValue";
 
-import HandleLayout from "~/layouts/ProductLayout/HandleLayout";
-import { IThumbnail } from "~/interface/image";
-
-interface IData {
-  title: string;
-  description: string;
-  shortDescription: string;
-}
-
-const data: IData = {
+const initData: IDataCategory = {
+  parent_id: null,
   title: "",
   description: "",
-  shortDescription: "",
+  meta_title: "",
+  meta_description: "",
+  public: true,
+  slug: null,
+  thumbnail: null,
+  breadcrumbs: [],
+  childrens: [],
 };
 
-const selectCategory: ICategory = {
-  _id: null,
-  options: null,
-  title: null,
-};
-
-const thumbnail: IThumbnail = {
-  source: {},
-  urlBase64: "",
-};
-
-const gallery: IThumbnail[] = [];
-
-const productType: ITypeProduct[] = [];
-const options: IListOption[] = [];
-
-const price: number = 0;
-const promotionPrice: number | null = null;
-const quantity: number = 0;
-
-const status: boolean = true;
-
-const AddProductPage = () => {
+const CreateProductPage = () => {
   const router = useRouter();
-  const [categories, setCategories] = useState<ICategory[]>([]);
 
-  const getCategories = async () => {
-    try {
-      const data = await axiosGet("/product/getCategories");
+  const [data, setData] = useState<IDataCategory>(initData);
+  const [categories, setCategories] = useState<IObjectCategory>({});
+  const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
+  const [categoriesParent, setCategoriesParent] = useState([]);
+  const [categorySelect, setCategorySelect] = useState<ICategorySelect>({
+    title: null,
+    node_id: null,
+  });
+  const [mutipleCategories, setMultipleCategories] = useState<string[]>([]);
 
-      if (data.status === 200) {
-        setCategories(data.payload);
+  const [thumbnailUrl, setThumbnailUrl] = useState<IThumbnailUrl>({
+    source: {},
+    url: "",
+  });
+
+  const onSelectCategory = (title: string | null, node_id: string | null) => {
+    const isExit = mutipleCategories.some((category) => category === title);
+
+    if (isExit) {
+      toast.info("Oh, category is exited", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      return;
+    }
+
+    setCategorySelect({ title, node_id });
+    setMultipleCategories([...mutipleCategories, title as string]);
+  };
+
+  const changeMultipleCategories = (name: string, values: string[]) => {
+    if (fieldsCheck.includes(name)) {
+      const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
+      setFieldsCheck(newFieldsCheck);
+    }
+    setMultipleCategories(values);
+  };
+
+  const changeValue = (name: string, value: string) => {
+    if (fieldsCheck.includes(name)) {
+      const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
+      setFieldsCheck(newFieldsCheck);
+    }
+    setData({ ...data, [name]: value });
+  };
+
+  const changePublic = (name: string, value: boolean) => {
+    setData({ ...data, [name]: value });
+  };
+
+  const uploadThumbnail = (source: object, url: string) => {
+    if (source && url) {
+      if (fieldsCheck.includes("thumbnail")) {
+        removeFieldCheck("thumbnail");
       }
-    } catch (error) {
-      console.log(error);
+
+      setThumbnailUrl({ source, url });
+      setData({ ...data, thumbnail: url });
     }
   };
 
-  const onSubmit = async (
-    currentData: any,
-    currentThumbnail: IThumbnail,
-    currentGallery: IThumbnail[]
+  const generalBreadcrumbs = (
+    node_id: string | null,
+    breadcrumbs: string[]
   ) => {
-    const handleUploadThumbnail = async () => {
-      const formData: FormData = new FormData();
-      const source: any = currentThumbnail.source;
-      formData.append("thumbnail", source);
+    if (!node_id) return;
 
-      const payload = await uploadImageOnServer(
-        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/uploadThumbnail`,
+    const item = categories[node_id];
+
+    generalBreadcrumbs(item.parent_id, breadcrumbs);
+    breadcrumbs.push(item._id as string);
+    return breadcrumbs;
+  };
+
+  const removeFieldCheck = (name: string) => {
+    const newFieldsCheck = fieldsCheck.filter(
+      (field: string) => field !== name
+    );
+    setFieldsCheck(newFieldsCheck);
+  };
+
+  const checkData = (data: any) => {
+    let fields = handleCheckFields(data);
+    setFieldsCheck(fields);
+    router.push(`#${fields[0]}`);
+    return fields;
+  };
+
+  const handleOnSubmit = async () => {
+    const formData: FormData = new FormData();
+    const source: any = thumbnailUrl.source;
+    formData.append("thumbnail", source);
+    let breadcrumbs: string[] = [];
+    const fields = checkData([
+      {
+        name: "title",
+        value: data.title,
+      },
+      {
+        name: "description",
+        value: data.description,
+      },
+      {
+        name: "thumbnail",
+        value: thumbnailUrl.url,
+      },
+    ]);
+
+    if (fields.length > 0) {
+      toast.error("Please input fields", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      return;
+    }
+
+    try {
+      const imagePayload = await uploadImageOnServer(
+        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/categories/uploadThumbnail`,
         formData
       );
 
-      return payload;
-    };
-
-    try {
-      const thumbailPayload = await handleUploadThumbnail();
-      const formGallery: FormData = new FormData();
-      console.log(currentGallery);
-
-      for (let i = 0; i < currentGallery.length; i++) {
-        const source: any = currentGallery[i].source;
-        formGallery.append("gallery", source);
+      if (imagePayload.status !== 201) {
+        return toast.error("Error in upload thumbail for category", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       }
 
-      const galleryPayload = await uploadGalleryOnServer(
-        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/product/uploadGallery`,
-        formGallery
-      );
+      // if (categorySelect.node_id) {
+      //   breadcrumbs = generalBreadcrumbs(
+      //     categorySelect.node_id,
+      //     []
+      //   ) as string[];
+      // }
 
-      if (thumbailPayload.status === 200 && galleryPayload.status === 200) {
-        const sendData = {
-          ...currentData,
-          thumbnail: thumbailPayload.payload.thumbnail,
-          gallery: galleryPayload.payload.gallery,
-        };
+      const payload = await axiosPost("/categories", {
+        title: data.title,
+        description: data.description,
+        meta_title: data.title,
+        meta_description: data.description,
+        // parent_id: categorySelect.node_id,
+        thumbnail: imagePayload.payload,
+        public: data.public,
+        breadcrumbs,
+      });
 
-        const response = await axiosPost("/product", sendData)
-
-        if (response.status === 200) {
-          toast.success("Success add product", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-          router.back();
-        }
+      if (payload.status === 201) {
+        toast.success("Success create category", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        router.push("/categories");
       }
     } catch (error) {
-      toast.error("Error add product", {
+      toast.error("Error in create category", {
         position: toast.POSITION.TOP_RIGHT,
       });
       console.log(error);
     }
   };
 
+  const handleGetCategories = async () => {
+    let data: IObjectCategory = {};
+    try {
+      const response = await axiosGet("categories");
+
+      for (const item of response.payload) {
+        const { _id, parent_id, title, childrens, slug } = item;
+        data[_id] = { _id, parent_id, title, childrens, slug };
+      }
+
+      setCategories(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleGetCategoriesParent = async () => {
+    try {
+      const response = await axiosGet("categories/parent");
+      const data = response.payload.map((item: any) => item._id);
+
+      setCategoriesParent(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    getCategories();
+    handleGetCategories();
+    handleGetCategoriesParent();
   }, []);
 
   return (
-    <HandleLayout
-      data={data}
-      categories={categories}
-      selectCategory={selectCategory}
-      productType={productType}
-      price={price}
-      promotionPrice={promotionPrice}
-      thumbnail={thumbnail}
-      gallery={gallery}
-      quantity={quantity}
-      options={options}
-      status={status}
-      onSubmit={onSubmit}
-    />
+    <FormLayout
+      title="Create Product"
+      backLink="/products"
+      onSubmit={handleOnSubmit}
+    >
+      <div>
+        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">
+          <Input
+            title="Title"
+            width="lg:w-2/4 w-full"
+            value={data.title}
+            error={fieldsCheck.includes("title")}
+            name="title"
+            placeholder="Input product name..."
+            type={typeInput.input}
+            getValue={changeValue}
+          />
+        </div>
+
+        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
+          <Input
+            title="Short description"
+            width="lg:w-2/4 w-full"
+            error={fieldsCheck.includes("short_description")}
+            value={data.description}
+            name="short_description"
+            placeholder="Input short description about product"
+            type={typeInput.textarea}
+            rows={2}
+            getValue={changeValue}
+          />
+        </div>
+
+        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
+          <Input
+            title="Description"
+            width="lg:w-2/4 w-full"
+            error={fieldsCheck.includes("description")}
+            value={data.description}
+            name="description"
+            placeholder="Input description about product"
+            type={typeInput.textarea}
+            getValue={changeValue}
+          />
+        </div>
+
+        <div className="w-full mt-5">
+          <MultipleValue
+            title="Categories"
+            width="lg:w-2/4 w-full"
+            items={mutipleCategories}
+            name="categories"
+            placeholder="Please select a category or categories"
+            readonly={true}
+            error={fieldsCheck.includes("categories")}
+            getAttributes={changeMultipleCategories}
+          />
+
+          <div>
+            {categoriesParent.length > 0 &&
+              Object.keys(categories).length > 0 && (
+                <Tree
+                  categories={categories}
+                  categoriesParent={categoriesParent}
+                  node_id="Home"
+                  parent_id={null}
+                  categorySelect={categorySelect}
+                  onSelect={onSelectCategory}
+                />
+              )}
+          </div>
+        </div>
+
+        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+          <Thumbnail
+            error={fieldsCheck.includes("thumbnail")}
+            thumbnailUrl={thumbnailUrl.url}
+            onChange={uploadThumbnail}
+          />
+
+          <Gallery gallery={[]} onChange={() => {}} onDelete={() => {}} />
+        </div>
+
+        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+          <Input
+            title="Price"
+            width="lg:w-2/4 w-full"
+            error={fieldsCheck.includes("price")}
+            value={"0"}
+            name="price"
+            placeholder="Price"
+            type={typeInput.number}
+            getValue={changeValue}
+          />
+
+          <Input
+            title="Promotion Price"
+            width="lg:w-2/4 w-full"
+            error={fieldsCheck.includes("price")}
+            value={"0"}
+            name="price"
+            placeholder="Price"
+            type={typeInput.number}
+            getValue={changeValue}
+          />
+        </div>
+
+        <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
+          <ButtonCheck
+            title="Public"
+            name="public"
+            width="w-fit"
+            isChecked={data.public}
+            onChange={changePublic}
+          />
+        </div>
+      </div>
+    </FormLayout>
   );
 };
 
-export default AddProductPage;
+export default CreateProductPage;

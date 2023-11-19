@@ -10,7 +10,7 @@ import {
   ICategorySelect,
   IObjectCategory,
   IBreadcrumb,
-} from "~/interface/category";
+} from "~/interface";
 import { typeInput } from "~/enums";
 import { uploadImageOnServer } from "~/helper/handleImage";
 import FormLayout from "~/layouts/FormLayout";
@@ -19,6 +19,7 @@ import Tree from "~/components/Tree";
 import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
+import generalBreadcrumbs from "~/helper/generateBreadcrumb";
 
 const initData: IDataCategory = {
   parent_id: null,
@@ -44,8 +45,6 @@ const CreateCategoryPage = () => {
     title: null,
     node_id: null,
   });
-
-  console.log(fieldsCheck);
 
   const [thumbnailUrl, setThumbnailUrl] = useState<IThumbnailUrl>({
     source: {},
@@ -79,19 +78,6 @@ const CreateCategoryPage = () => {
     }
   };
 
-  const generalBreadcrumbs = (
-    node_id: string | null,
-    breadcrumbs: string[]
-  ) => {
-    if (!node_id) return;
-
-    const item = categories[node_id];
-
-    generalBreadcrumbs(item.parent_id, breadcrumbs);
-    breadcrumbs.push(item._id as string);
-    return breadcrumbs;
-  };
-
   const removeFieldCheck = (name: string) => {
     const newFieldsCheck = fieldsCheck.filter(
       (field: string) => field !== name
@@ -110,7 +96,7 @@ const CreateCategoryPage = () => {
     const formData: FormData = new FormData();
     const source: any = thumbnailUrl.source;
     formData.append("thumbnail", source);
-    let breadcrumbs: string[] = [];
+
     const fields = checkData([
       {
         name: "title",
@@ -146,12 +132,10 @@ const CreateCategoryPage = () => {
         });
       }
 
-      if (categorySelect.node_id) {
-        breadcrumbs = generalBreadcrumbs(
-          categorySelect.node_id,
-          []
-        ) as string[];
-      }
+      let breadcrumbs: string[] = generalBreadcrumbs(
+        categorySelect.node_id || null,
+        categories
+      );
 
       const payload = await axiosPost("/categories", {
         title: data.title,
@@ -211,7 +195,11 @@ const CreateCategoryPage = () => {
   }, []);
 
   return (
-    <FormLayout title="Create category" backLink="/categories" onSubmit={handleOnSubmit}>
+    <FormLayout
+      title="Create category"
+      backLink="/categories"
+      onSubmit={handleOnSubmit}
+    >
       <div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">
           <Input

@@ -8,18 +8,20 @@ interface Props {
   placeholder?: string;
   items: string[];
   error?: boolean;
+  readonly?: boolean;
   onClick?: () => void;
   getAttributes: (name: string, values: string[]) => void;
 }
 
 const MultipleValue = (props: Props) => {
-  const { title, width, name, placeholder, items, error, getAttributes } = props;
+  const { title, width, name, placeholder, items, error, readonly = false, getAttributes } = props;
 
-  const [values, setValues] = useState<string[]>(items);
   const [text, setText] = useState<string>("");
   const [message, setMessage] = useState<string | null>(null);
 
   const handleAddValue = (e: KeyboardEvent<HTMLInputElement>) => {
+    if(readonly) return;
+
     const key = e.key;
     if (key === "Enter") {
       const value = e.currentTarget.value;
@@ -29,11 +31,17 @@ const MultipleValue = (props: Props) => {
         return;
       }
 
-      const newValues = [...values, value];
+      const isExit = items.some(item => item === value);
+
+      if(isExit) {
+        setMessage("Oh, value is exited!");
+        return;
+      }
+
+      const newValues = [...items, value];
 
       setText("");
       setMessage(null);
-      setValues(newValues);
       getAttributes(name, newValues);
     }
   };
@@ -51,9 +59,8 @@ const MultipleValue = (props: Props) => {
   };
 
   const handleDeleteValue = (name: string) => {
-    const items = values.filter((value) => value !== name);
-    setValues(items);
-    getAttributes(name, items)
+    const values = items.filter((value) => value !== name);
+    getAttributes(name, values)
   };
 
   return (
@@ -71,7 +78,7 @@ const MultipleValue = (props: Props) => {
         } focus:border-[#4f46e5] outline-none gap-2`}
       >
         <ul className="flex flex-wrap items-center gap-2">
-          {values.map((value: string, index: number) => (
+          {items.map((value: string, index: number) => (
             <li
               key={index}
               className="flex items-center text-sm text-desc px-3 py-1 bg-slate-200 opacity-90 hover:opacity-100 rounded gap-2"
@@ -90,6 +97,7 @@ const MultipleValue = (props: Props) => {
           id={name}
           value={text}
           name={name}
+          readOnly={readonly}
           placeholder={placeholder}
           onKeyUp={handleAddValue}
           onChange={onChange}

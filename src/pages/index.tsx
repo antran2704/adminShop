@@ -13,8 +13,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
-import Table from "~/components/Table";
-import CelTable from "~/components/Table/CelTable";
+import {Table, CelTable} from "~/components/Table";
 
 import { typeCel } from "~/enums";
 import Link from "next/link";

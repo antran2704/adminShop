@@ -7,7 +7,7 @@ interface IOption {
   title: string;
 }
 
-interface IBreadcrumb {
+interface IBreadcrumbCategory {
   label: string;
   url_path: string;
 }
@@ -28,7 +28,7 @@ interface IDataCategory {
   meta_description?: string;
   public: boolean;
   thumbnail: string | null;
-  breadcrumbs?: IBreadcrumb[] | [];
+  breadcrumbs?: IBreadcrumbCategory[] | [];
   createdAt?: string;
 }
 
@@ -54,5 +54,5 @@ export type {
   IParentCategory,
   ICategorySelect,
   IObjectCategory,
-  IBreadcrumb,
+  IBreadcrumbCategory,
 };

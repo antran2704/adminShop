@@ -8,15 +8,13 @@ import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
 import { typeCel } from "~/enums";
 
-import { IAttribute } from "~/interface";
+import { IAttribute, IFilter, IPagination } from "~/interface";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
 import Search from "~/components/Search";
-import Table from "~/components/Table";
-import CelTable from "~/components/Table/CelTable";
+import { Table, CelTable } from "~/components/Table";
 import { colHeaderAttribute as colHeadTable } from "~/components/Table/colHeadTable";
-import { IPagination } from "~/interface/pagination";
 
 interface ISelectAttribute {
   id: string | null;
@@ -26,10 +24,6 @@ interface ISelectAttribute {
 const initSelect: ISelectAttribute = {
   id: null,
   title: "",
-};
-
-const initFilter = {
-  search: "",
 };
 
 const initPagination: IPagination = {
@@ -53,21 +47,21 @@ const AttributesPage = (props: Props) => {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectItem, setSelectItem] = useState<ISelectAttribute>(initSelect);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [fillter, setFiller] = useState(initFilter);
+  const [filter, setFilter] = useState<IFilter | null>(null);
 
   const onReset = useCallback(() => {
-    setFiller(initFilter);
+    setFilter(null);
     handleGetData();
-  }, [fillter, attributes]);
+  }, [filter, attributes]);
 
   const onChangeSearch = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       const name = e.target.name;
 
-      setFiller({ ...fillter, [name]: value });
+      setFilter({ ...filter, [name]: value });
     },
-    [fillter, attributes]
+    [filter, attributes]
   );
 
   const onChangePublic = async (id: string, status: boolean) => {
@@ -142,13 +136,13 @@ const AttributesPage = (props: Props) => {
     }
   };
 
-  const handleGetDataByFillter = useCallback(async () => {
+  const handleGetDataByFilter = useCallback(async () => {
     setMessage(null);
     setLoading(true);
 
     try {
       const response = await axiosGet(
-        `/variants/search?search=${fillter.search}&page=${currentPage}`
+        `/variants/search?search=${filter?.search || ""}&page=${currentPage}`
       );
       if (response.status === 200) {
         if (response.payload.length === 0) {
@@ -176,7 +170,7 @@ const AttributesPage = (props: Props) => {
       setMessage("Error in server");
       setLoading(false);
     }
-  }, [fillter]);
+  }, [filter]);
 
   const handleDeleteAttribute = useCallback(async () => {
     if (!selectItem) {
@@ -190,7 +184,13 @@ const AttributesPage = (props: Props) => {
     try {
       await axiosDelete(`/variants/${selectItem.id}`);
       setShowPopup(false);
-      handleGetData();
+
+      if (filter) {
+        handleGetDataByFilter();
+      } else {
+        handleGetData();
+      }
+
       toast.success("Success delete attribute", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -222,10 +222,10 @@ const AttributesPage = (props: Props) => {
     >
       <Fragment>
         <Search
-          search={fillter.search}
+          search={filter?.search || ""}
           onReset={onReset}
           onSearch={onChangeSearch}
-          onFillter={handleGetDataByFillter}
+          onFilter={handleGetDataByFilter}
           placeholder="Search by attribute name..."
         />
 

@@ -1,18 +1,17 @@
 import { useRouter } from "next/router";
 import { FC, memo, KeyboardEvent, ChangeEvent } from "react";
-import useDebounce from "~/hooks/useDebounce";
 
 interface Props {
   placeholder?: string;
   search: string;
   children?: JSX.Element;
   onReset: () => void;
-  onFillter: () => void;
+  onFilter: () => void;
   onSearch: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 const Search: FC<Props> = (props: Props) => {
-  const { search, placeholder, children, onReset, onSearch, onFillter } = props;
+  const { search, placeholder, children, onReset, onSearch, onFilter } = props;
   
   const router = useRouter();
   const currentSearch = router.query.search;
@@ -42,7 +41,7 @@ const Search: FC<Props> = (props: Props) => {
   const onKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     const key = e.key;
     if (key === "Enter") {
-      onFillter();
+      onFilter();
     }
   }
 
@@ -63,7 +62,7 @@ const Search: FC<Props> = (props: Props) => {
       {children}
 
       <button
-      onClick={onFillter}
+      onClick={onFilter}
         className={`flex items-center justify-center h-10 text-lg text-white bg-primary font-medium px-8 py-1 rounded-md`}
       >
         Fillter
