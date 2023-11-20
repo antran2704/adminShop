@@ -45,25 +45,29 @@ interface IProductData {
   _id: string | null;
   title: string;
   category: IParentCategory;
+  categories: IParentCategory[];
   slug: string;
   type: [];
   shortDescription: string;
   description: string;
   price: number;
   promotionPrice: number | null;
-  options: IOptionProduct;
+  options: IOptionProduct[];
   inventory: number;
-  thumbnail: string;
+  thumbnail: string | null;
   gallery: string[];
   brand: string | null;
   hotProduct: boolean | false;
   public: boolean | true;
-  specifications: ISpecificationsProduct;
+  specifications: ISpecificationsProduct[];
   viewer: number;
   rate: number;
   variants: IVariantProduct[];
+  breadcrumbs: string[];
   createdAt: string;
 }
+
+type ICreateProduct = Omit<IProductData, "_id" | "viewer" | "rate" | "slug" | "type" | "createdAt">
 
 type IProductHome = Pick<
   IProductData,
@@ -77,4 +81,4 @@ type IProductHome = Pick<
   | "thumbnail"
 >;
 
-export type { IProductData, IProductHome, IVariantProduct, IOptionProduct };
+export type { IProductData, IProductHome, IVariantProduct, IOptionProduct, ICreateProduct };

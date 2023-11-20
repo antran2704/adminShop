@@ -2,6 +2,10 @@
 import { IDataTable, IDataCelTable } from "./table";
 export type { IDataTable, IDataCelTable };
 
+// Interface of Select
+import { ISelectItem } from "./Select";
+export type { ISelectItem };
+
 // Interface of Attribute
 import { IVariant, IAttribute, INewVariant } from "./attribute";
 export type { IVariant, IAttribute, INewVariant };
@@ -45,8 +49,9 @@ import {
   IProductHome,
   IVariantProduct,
   IOptionProduct,
+  ICreateProduct
 } from "./product";
-export type { IProductData, IProductHome, IVariantProduct, IOptionProduct };
+export type { IProductData, IProductHome, IVariantProduct, IOptionProduct, ICreateProduct };
 
 // Interface of Breadcrumb
 import { IBreadcrumb } from "./breadcrum";

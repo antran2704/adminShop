@@ -1,3 +1,5 @@
+import { ISelectItem } from "../Select";
+
 interface IVariant {
   _id: string;
   name: string;
@@ -10,7 +12,7 @@ interface IAttribute {
   _id?: string;
   code: string;
   name: string;
-  variants?: IVariant[] | string[];
+  variants?: IVariant[] | ISelectItem[];
   public: boolean;
   createdAt?: string;
   updateAt?: string;

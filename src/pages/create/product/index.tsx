@@ -6,12 +6,13 @@ import { axiosGet, axiosPost } from "~/ultils/configAxios";
 
 import {
   IThumbnailUrl,
-  IDataCategory,
   ICategorySelect,
   IObjectCategory,
-} from "~/interface/category";
+  ICreateProduct,
+  ISelectItem,
+} from "~/interface";
 import { typeInput } from "~/enums";
-import { uploadImageOnServer } from "~/helper/handleImage";
+import { deleteImageInSever, uploadImageOnServer } from "~/helper/handleImage";
 import FormLayout from "~/layouts/FormLayout";
 import Input from "~/components/Input";
 import Tree from "~/components/Tree";
@@ -20,24 +21,32 @@ import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Gallery from "~/components/Image/Gallery";
 import MultipleValue from "~/components/Input/MultipleValue";
+import { SelectItem } from "~/components/Select";
 
-const initData: IDataCategory = {
-  parent_id: null,
+const initData: ICreateProduct = {
   title: "",
   description: "",
-  meta_title: "",
-  meta_description: "",
+  shortDescription: "",
+  category: { _id: null, title: "" },
+  categories: [],
+  price: 0,
+  promotionPrice: 0,
+  inventory: 0,
   public: true,
-  slug: null,
   thumbnail: null,
+  gallery: [],
+  brand: null,
+  hotProduct: false,
+  options: [],
   breadcrumbs: [],
-  childrens: [],
+  specifications: [],
+  variants: [],
 };
 
 const CreateProductPage = () => {
   const router = useRouter();
 
-  const [data, setData] = useState<IDataCategory>(initData);
+  const [product, setProduct] = useState<ICreateProduct>(initData);
   const [categories, setCategories] = useState<IObjectCategory>({});
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
   const [categoriesParent, setCategoriesParent] = useState([]);
@@ -45,15 +54,33 @@ const CreateProductPage = () => {
     title: null,
     node_id: null,
   });
-  const [mutipleCategories, setMultipleCategories] = useState<string[]>([]);
+
+  const [mutipleCategories, setMultipleCategories] = useState<ISelectItem[]>(
+    []
+  );
+  const [defaultCategory, setDefaultCategory] = useState<string | null>(null);
 
   const [thumbnailUrl, setThumbnailUrl] = useState<IThumbnailUrl>({
     source: {},
     url: "",
   });
 
+  const [gallery, setGallery] = useState<string[]>([]);
+
+  const [loadingGallery, setLoadingGallery] = useState<boolean>(false);
+
   const onSelectCategory = (title: string | null, node_id: string | null) => {
-    const isExit = mutipleCategories.some((category) => category === title);
+    if (!node_id) {
+      toast.info("Choose another Home category ", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      return;
+    }
+
+    const isExit = mutipleCategories.some(
+      (category) => category.title === title
+    );
 
     if (isExit) {
       toast.info("Oh, category is exited", {
@@ -63,11 +90,13 @@ const CreateProductPage = () => {
       return;
     }
 
+    const newItem: ISelectItem = { id: node_id, title: title as string };
+
     setCategorySelect({ title, node_id });
-    setMultipleCategories([...mutipleCategories, title as string]);
+    setMultipleCategories([...mutipleCategories, newItem]);
   };
 
-  const changeMultipleCategories = (name: string, values: string[]) => {
+  const changeMultipleCategories = (name: string, values: ISelectItem[]) => {
     if (fieldsCheck.includes(name)) {
       const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
       setFieldsCheck(newFieldsCheck);
@@ -75,16 +104,20 @@ const CreateProductPage = () => {
     setMultipleCategories(values);
   };
 
+  const onSelectDefaultCategory = (value: string) => {
+    setDefaultCategory(value);
+  };
+
   const changeValue = (name: string, value: string) => {
     if (fieldsCheck.includes(name)) {
       const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
       setFieldsCheck(newFieldsCheck);
     }
-    setData({ ...data, [name]: value });
+    setProduct({ ...product, [name]: value });
   };
 
   const changePublic = (name: string, value: boolean) => {
-    setData({ ...data, [name]: value });
+    setProduct({ ...product, [name]: value });
   };
 
   const uploadThumbnail = (source: object, url: string) => {
@@ -94,7 +127,48 @@ const CreateProductPage = () => {
       }
 
       setThumbnailUrl({ source, url });
-      setData({ ...data, thumbnail: url });
+      setProduct({ ...product, thumbnail: url });
+    }
+  };
+
+  const onUploadGallery = async (source: File) => {
+    const formData: FormData = new FormData();
+    formData.append("image", source);
+    setLoadingGallery(true);
+
+    try {
+      const { status, payload } = await uploadImageOnServer(
+        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/products/uploadImage`,
+        formData
+      );
+
+      if (status === 201) {
+        setGallery([...gallery, payload]);
+        setLoadingGallery(false);
+      }
+    } catch (error) {
+      toast.error("Upload image failed", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      setLoadingGallery(false);
+      console.log(error);
+    }
+  };
+
+  const onRemoveGallary = async (url: string) => {
+    try {
+      const payload = await deleteImageInSever(url);
+
+      if (payload.status === 201) {
+        const newGallery = gallery.filter((image) => image !== url);
+        setGallery(newGallery);
+      }
+    } catch (error) {
+      toast.error("Remove image failed", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      console.log(error);
     }
   };
 
@@ -133,11 +207,11 @@ const CreateProductPage = () => {
     const fields = checkData([
       {
         name: "title",
-        value: data.title,
+        value: product.title,
       },
       {
         name: "description",
-        value: data.description,
+        value: product.description,
       },
       {
         name: "thumbnail",
@@ -155,12 +229,12 @@ const CreateProductPage = () => {
 
     try {
       const imagePayload = await uploadImageOnServer(
-        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/categories/uploadThumbnail`,
+        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/products/uploadThumbnail`,
         formData
       );
 
       if (imagePayload.status !== 201) {
-        return toast.error("Error in upload thumbail for category", {
+        return toast.error("Error in upload thumbail for product", {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
@@ -173,13 +247,13 @@ const CreateProductPage = () => {
       // }
 
       const payload = await axiosPost("/categories", {
-        title: data.title,
-        description: data.description,
-        meta_title: data.title,
-        meta_description: data.description,
+        title: product.title,
+        description: product.description,
+        meta_title: product.title,
+        meta_description: product.description,
         // parent_id: categorySelect.node_id,
         thumbnail: imagePayload.payload,
-        public: data.public,
+        public: product.public,
         breadcrumbs,
       });
 
@@ -230,17 +304,13 @@ const CreateProductPage = () => {
   }, []);
 
   return (
-    <FormLayout
-      title="Create Product"
-      backLink="/products"
-      onSubmit={handleOnSubmit}
-    >
+    <FormLayout title="Create Product" backLink="/products" onSubmit={() => {}}>
       <div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">
           <Input
             title="Title"
             width="lg:w-2/4 w-full"
-            value={data.title}
+            value={product.title}
             error={fieldsCheck.includes("title")}
             name="title"
             placeholder="Input product name..."
@@ -254,7 +324,7 @@ const CreateProductPage = () => {
             title="Short description"
             width="lg:w-2/4 w-full"
             error={fieldsCheck.includes("short_description")}
-            value={data.description}
+            value={product.description}
             name="short_description"
             placeholder="Input short description about product"
             type={typeInput.textarea}
@@ -268,7 +338,7 @@ const CreateProductPage = () => {
             title="Description"
             width="lg:w-2/4 w-full"
             error={fieldsCheck.includes("description")}
-            value={data.description}
+            value={product.description}
             name="description"
             placeholder="Input description about product"
             type={typeInput.textarea}
@@ -304,13 +374,30 @@ const CreateProductPage = () => {
         </div>
 
         <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+          <SelectItem
+            width="lg:w-2/4 w-full"
+            title="Default category"
+            name="category"
+            value={defaultCategory ? defaultCategory : ""}
+            onSelect={onSelectDefaultCategory}
+            data={mutipleCategories}
+          />
+        </div>
+
+        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
           <Thumbnail
             error={fieldsCheck.includes("thumbnail")}
             thumbnailUrl={thumbnailUrl.url}
             onChange={uploadThumbnail}
           />
 
-          <Gallery gallery={[]} onChange={() => {}} onDelete={() => {}} />
+          <Gallery
+            gallery={gallery}
+            loading={loadingGallery}
+            limited={6}
+            onChange={onUploadGallery}
+            onDelete={onRemoveGallary}
+          />
         </div>
 
         <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
@@ -342,7 +429,7 @@ const CreateProductPage = () => {
             title="Public"
             name="public"
             width="w-fit"
-            isChecked={data.public}
+            isChecked={product.public}
             onChange={changePublic}
           />
         </div>

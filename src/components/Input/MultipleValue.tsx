@@ -1,26 +1,37 @@
 import { useState, ChangeEvent, KeyboardEvent, memo } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { AiOutlineClose } from "react-icons/ai";
+import { ISelectItem } from "~/interface";
 
 interface Props {
   title: string;
   width?: string;
   name: string;
   placeholder?: string;
-  items: string[];
+  items: ISelectItem[];
   error?: boolean;
   readonly?: boolean;
   onClick?: () => void;
-  getAttributes: (name: string, values: string[]) => void;
+  getAttributes: (name: string, values: ISelectItem[]) => void;
 }
 
 const MultipleValue = (props: Props) => {
-  const { title, width, name, placeholder, items, error, readonly = false, getAttributes } = props;
+  const {
+    title,
+    width,
+    name,
+    placeholder,
+    items,
+    error,
+    readonly = false,
+    getAttributes,
+  } = props;
 
   const [text, setText] = useState<string>("");
   const [message, setMessage] = useState<string | null>(null);
 
   const handleAddValue = (e: KeyboardEvent<HTMLInputElement>) => {
-    if(readonly) return;
+    if (readonly) return;
 
     const key = e.key;
     if (key === "Enter") {
@@ -31,17 +42,24 @@ const MultipleValue = (props: Props) => {
         return;
       }
 
-      const isExit = items.some(item => item === value);
+      const isExit = items.some((item) => item.title === value);
 
-      if(isExit) {
+      if (isExit) {
         setMessage("Oh, value is exited!");
         return;
       }
 
-      const newValues = [...items, value];
+      if (message) {
+        setMessage(null);
+      }
+
+      const newItem = {
+        id: uuidv4(),
+        title: value,
+      };
+      const newValues = [...items, newItem];
 
       setText("");
-      setMessage(null);
       getAttributes(name, newValues);
     }
   };
@@ -54,13 +72,16 @@ const MultipleValue = (props: Props) => {
       return;
     }
 
-    setMessage(null);
+    if (message) {
+      setMessage(null);
+    }
+
     setText(value);
   };
 
-  const handleDeleteValue = (name: string) => {
-    const values = items.filter((value) => value !== name);
-    getAttributes(name, values)
+  const handleDeleteValue = (id: string) => {
+    const values = items.filter((value) => value.id !== id);
+    getAttributes(name, values);
   };
 
   return (
@@ -78,14 +99,14 @@ const MultipleValue = (props: Props) => {
         } focus:border-[#4f46e5] outline-none gap-2`}
       >
         <ul className="flex flex-wrap items-center gap-2">
-          {items.map((value: string, index: number) => (
+          {items.map((value: ISelectItem, index: number) => (
             <li
               key={index}
               className="flex items-center text-sm text-desc px-3 py-1 bg-slate-200 opacity-90 hover:opacity-100 rounded gap-2"
             >
-              <span>{value}</span>
+              <span>{value.title}</span>
               <AiOutlineClose
-                onClick={() => handleDeleteValue(value)}
+                onClick={() => handleDeleteValue(value.id as string)}
                 className="text-sm min-w-[14px] cursor-pointer mt-1"
               />
             </li>

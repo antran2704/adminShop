@@ -1,5 +1,6 @@
 import { FC, ChangeEvent, memo } from "react";
 import { IoAdd } from "react-icons/io5";
+import { toast } from "react-toastify";
 import { uploadImage } from "~/helper/handleImage";
 
 interface Props {
@@ -15,10 +16,22 @@ const Thumbnail: FC<Props> = (props: Props) => {
   const hanldeChangeThumbnail = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      if (/^image\//.test(file.type)) {
+      if (file && /^image\//.test(file.type)) {
+        if (file.size > 500000) {
+          toast.error("File size is larger than 500000 bytes", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+
+          return;
+        }
+
         const source: File = file;
         const url: string = uploadImage(e.target);
         onChange(source, url);
+      } else {
+        toast.error("Only upload file type image", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       }
     }
   };
@@ -37,7 +50,7 @@ const Thumbnail: FC<Props> = (props: Props) => {
           error ? "border-error" : ""
         } ${
           className ? className : "h-[400px]"
-        } rounded-md border-2 cursor-pointer overflow-hidden`}
+        } rounded-md border-2 border-dashed cursor-pointer overflow-hidden`}
       >
         {!thumbnailUrl && (
           <>

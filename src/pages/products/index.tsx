@@ -9,7 +9,7 @@ import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
 import { typeCel } from "~/enums";
 
 import { IFilter, IPagination, IProductHome, IDataCategory } from "~/interface";
-import { ISelectItem } from "~/components/Select/SelectItem/interfaces";
+import { ISelectItem } from "~/components/Select/interfaces";
 
 import Search from "~/components/Search";
 import { Table, CelTable } from "~/components/Table";

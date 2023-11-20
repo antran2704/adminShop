@@ -1,5 +1,5 @@
 import { FC, memo, ChangeEvent } from "react";
-import { ISelectItem } from "./interfaces";
+import { ISelectItem } from "~/interface";
 
 interface Props {
   title?: string;
@@ -7,12 +7,17 @@ interface Props {
   name: string;
   placeholder?: string;
   value: string;
-  data: ISelectItem[] | [];
-  onSelect: (e: ChangeEvent<HTMLSelectElement>) => void;
+  data: ISelectItem[];
+  onSelect: (value: string) => void;
 }
 
 const SelectItem: FC<Props> = (props: Props) => {
   const { width, title, data, placeholder, value, name, onSelect } = props;
+
+  const onSelectItem = (e: ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    onSelect(value);
+  }
 
   return (
     <div className={`${width ? width : "w-full"} h-full`}>
@@ -66,7 +71,7 @@ const SelectItem: FC<Props> = (props: Props) => {
       <select
         value={value}
         name={name}
-        onChange={onSelect}
+        onChange={onSelectItem}
         className="w-full min-h-[40px] rounded-md px-2 py-1 border-2 focus:border-[#4f46e5]"
       >
         {placeholder && (
@@ -77,7 +82,7 @@ const SelectItem: FC<Props> = (props: Props) => {
 
         {data.length > 0 &&
           data.map((item: ISelectItem) => (
-            <option key={item.id} value={item.id}>
+            <option key={item.id} value={item.id as string}>
               {item.title}
             </option>
           ))}

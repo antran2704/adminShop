@@ -1,4 +1,4 @@
-import { Router, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { useState, useCallback } from "react";
 import { toast } from "react-toastify";
 
@@ -7,7 +7,7 @@ import Input from "~/components/Input";
 import { typeInput } from "~/enums";
 import FormLayout from "~/layouts/FormLayout";
 
-import { IAttribute } from "~/interface";
+import { IAttribute, ISelectItem } from "~/interface";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import MultipleValue from "~/components/Input/MultipleValue";
 import { axiosPost } from "~/ultils/configAxios";
@@ -33,7 +33,7 @@ const CreateAttributePage = () => {
   );
 
   const changeVariants = useCallback(
-    (name: string, values: string[]) => {
+    (name: string, values: ISelectItem[]) => {
       if (fieldsCheck.includes(name)) {
         const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
         setFieldsCheck(newFieldsCheck);
@@ -61,8 +61,8 @@ const CreateAttributePage = () => {
     return fields;
   };
 
-  const generateAttributes = (attributes: string[]) => {
-    return attributes.map((attribute) => ({ name: attribute, publish: true }));
+  const generateAttributes = (attributes: ISelectItem[]) => {
+    return attributes.map((attribute) => ({ name: attribute.title, publish: true }));
   };
 
   const handleOnSubmit = async () => {
@@ -93,7 +93,7 @@ const CreateAttributePage = () => {
       const payload = await axiosPost("/variants", {
         name: data.name,
         code: data.code,
-        variants: generateAttributes(data.variants as string[]),
+        variants: generateAttributes(data.variants as ISelectItem[]),
         public: data.public,
       });
 
@@ -143,7 +143,7 @@ const CreateAttributePage = () => {
           <MultipleValue
             title="Variants"
             width="lg:w-2/4 w-full"
-            items={data.variants as string[]}
+            items={data.variants as ISelectItem[]}
             name="variants"
             placeholder="Press enter to add variant"
             error={fieldsCheck.includes("variants")}
