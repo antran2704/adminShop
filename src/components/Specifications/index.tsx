@@ -48,7 +48,6 @@ const Specifications = (props: Props) => {
   };
 
   const onAddSpecification = () => {
-    console.log("add spe")
     const fields = checkData([
       {
         name: "name",

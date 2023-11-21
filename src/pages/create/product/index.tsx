@@ -63,6 +63,7 @@ const CreateProductPage = () => {
   const [defaultCategory, setDefaultCategory] = useState<string | null>(null);
 
   const [thumbnail, setThumbnail] = useState<string | null>(null);
+
   const [gallery, setGallery] = useState<string[]>([]);
 
   const [specifications, setSpecifications] = useState<

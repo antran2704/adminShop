@@ -39,6 +39,7 @@ const FieldAdd: FC<Props> = (props: Props) => {
     getNumber,
   } = props;
 
+
   const handleChangeValue = (
     e: FormEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -73,7 +74,6 @@ const FieldAdd: FC<Props> = (props: Props) => {
   const onKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     const key = e.key;
     if (key === "Enter" && onEnter) {
-      console.log("enter")
       onEnter();
     }
   };
