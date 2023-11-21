@@ -9,7 +9,7 @@ import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
 import { typeCel } from "~/enums";
 
 import { IFilter, IPagination, IProductHome, IDataCategory } from "~/interface";
-import { ISelectItem } from "~/components/Select/interfaces";
+import { ISelectItem } from "~/interface";
 
 import Search from "~/components/Search";
 import { Table, CelTable } from "~/components/Table";
@@ -64,10 +64,7 @@ const ProductPage = (props: Props) => {
   );
 
   const onSelect = useCallback(
-    (e: ChangeEvent<HTMLSelectElement>) => {
-      const value = e.target.value;
-      const name = e.target.name;
-
+    (value: string, name: string) => {
       setFilter({ ...filter, [name]: value });
     },
     [filter]
@@ -307,7 +304,7 @@ const ProductPage = (props: Props) => {
                   <div className="flex items-center justify-center gap-2">
                     <ImageCus
                       title="product image"
-                      src={product.thumbnail}
+                      src={product.thumbnail as string}
                       className="min-w-[32px] w-8 h-8 rounded-full"
                     />
                     <p className="text-sm font-medium">{product.title}</p>

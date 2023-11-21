@@ -4,14 +4,15 @@ import { toast } from "react-toastify";
 import { uploadImage } from "~/helper/handleImage";
 
 interface Props {
-  thumbnailUrl: string | null;
+  url: string | null;
   className?: string;
   error?: boolean;
-  onChange: (source: File, urlBase64: string) => void;
+  loading: boolean;
+  onChange: (source: File, urlBase64?: string) => void;
 }
 
 const Thumbnail: FC<Props> = (props: Props) => {
-  const { thumbnailUrl, className, error, onChange } = props;
+  const { url, className, loading, error, onChange } = props;
 
   const hanldeChangeThumbnail = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -52,17 +53,21 @@ const Thumbnail: FC<Props> = (props: Props) => {
           className ? className : "h-[400px]"
         } rounded-md border-2 border-dashed cursor-pointer overflow-hidden`}
       >
-        {!thumbnailUrl && (
+        {loading && (
+          <p className="text-base font-medium text-center">Loading...</p>
+        )}
+        {!url && !loading && (
           <>
             <IoAdd className="md:text-6xl text-4xl" />
-            <h3 className="text-lg font-medium text-center">Click to upload</h3>
+            <p className="text-base font-medium text-center">Click to upload</p>
           </>
         )}
-        {thumbnailUrl && (
-          <img src={thumbnailUrl} alt="thumbnail" className="w-full h-full" />
+        {url && !loading && (
+          <img src={url} alt="thumbnail" className="w-full h-full" />
         )}
         <input
           onChange={hanldeChangeThumbnail}
+          disabled={loading}
           type="file"
           id="thumbnail_input"
           name="thumbnail_input"

@@ -7,6 +7,7 @@ interface Props {
   gallery: string[];
   limited?: number;
   loading: boolean;
+  error?: boolean;
   className?: string;
   onChange: (source: File) => void;
   onDelete: (url: string) => void;
@@ -18,6 +19,7 @@ const Gallery: FC<Props> = (props: Props) => {
     limited = 1,
     className = "w-[120px] h-[120px]",
     loading,
+    error,
     onChange,
     onDelete,
   } = props;
@@ -83,6 +85,8 @@ const Gallery: FC<Props> = (props: Props) => {
           <label
             htmlFor="gallery"
             className={`flex flex-col items-center justify-center ${
+              error ? "border-error" : ""
+            } ${
               className ? className : ""
             } rounded-md border-2 border-dashed cursor-pointer overflow-hidden`}
           >

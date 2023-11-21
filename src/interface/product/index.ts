@@ -51,7 +51,7 @@ interface IProductData {
   shortDescription: string;
   description: string;
   price: number;
-  promotionPrice: number | null;
+  promotionPrice: number;
   options: IOptionProduct[];
   inventory: number;
   thumbnail: string | null;

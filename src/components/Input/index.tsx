@@ -36,6 +36,7 @@ const FieldAdd: FC<Props> = (props: Props) => {
     getNumber,
   } = props;
 
+
   const handleChangeValue = (
     e: FormEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -101,7 +102,9 @@ const FieldAdd: FC<Props> = (props: Props) => {
           placeholder={placeholder}
           onInput={handleChangeNumberValue}
           type="text"
-          className="w-full rounded-md px-2 py-1 border-2 focus:border-[#4f46e5] outline-none"
+          className={`w-full rounded-md px-2 py-1 border-2 ${
+            error && "border-error"
+          } focus:border-[#4f46e5] outline-none`}
         />
       )}
 

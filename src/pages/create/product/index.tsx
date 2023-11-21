@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
 
 import { axiosGet, axiosPost } from "~/ultils/configAxios";
@@ -22,6 +22,7 @@ import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Gallery from "~/components/Image/Gallery";
 import MultipleValue from "~/components/Input/MultipleValue";
 import { SelectItem } from "~/components/Select";
+import generalBreadcrumbs from "~/helper/generateBreadcrumb";
 
 const initData: ICreateProduct = {
   title: "",
@@ -60,13 +61,11 @@ const CreateProductPage = () => {
   );
   const [defaultCategory, setDefaultCategory] = useState<string | null>(null);
 
-  const [thumbnailUrl, setThumbnailUrl] = useState<IThumbnailUrl>({
-    source: {},
-    url: "",
-  });
+  const [thumbnail, setThumbnail] = useState<string | null>(null);
 
   const [gallery, setGallery] = useState<string[]>([]);
 
+  const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
   const [loadingGallery, setLoadingGallery] = useState<boolean>(false);
 
   const onSelectCategory = (title: string | null, node_id: string | null) => {
@@ -104,93 +103,137 @@ const CreateProductPage = () => {
     setMultipleCategories(values);
   };
 
-  const onSelectDefaultCategory = (value: string) => {
-    setDefaultCategory(value);
-  };
+  const onSelectDefaultCategory = useCallback(
+    (value: string) => {
+      setDefaultCategory(value);
+    },
+    [mutipleCategories, defaultCategory]
+  );
 
-  const changeValue = (name: string, value: string) => {
-    if (fieldsCheck.includes(name)) {
-      const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
-      setFieldsCheck(newFieldsCheck);
-    }
-    setProduct({ ...product, [name]: value });
-  };
+  const changeValue = useCallback(
+    (name: string, value: string) => {
+      if (fieldsCheck.includes(name)) {
+        const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
+        setFieldsCheck(newFieldsCheck);
+      }
+      setProduct({ ...product, [name]: value });
+    },
+    [product]
+  );
+
+  const changePrice = useCallback(
+    (name: string, value: number) => {
+      if (name === "promotionPrice" && product.price <= value) {
+        setFieldsCheck([...fieldsCheck, "promotionPrice"]);
+        toast.error("Promotion price must less than default price", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+
+        return;
+      }
+
+      if (fieldsCheck.includes(name)) {
+        const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
+        setFieldsCheck(newFieldsCheck);
+      }
+      setProduct({ ...product, [name]: value });
+    },
+    [product]
+  );
 
   const changePublic = (name: string, value: boolean) => {
     setProduct({ ...product, [name]: value });
   };
 
-  const uploadThumbnail = (source: object, url: string) => {
-    if (source && url) {
-      if (fieldsCheck.includes("thumbnail")) {
-        removeFieldCheck("thumbnail");
+  const uploadThumbnail = useCallback(
+    async (source: File) => {
+      if (source) {
+        if (fieldsCheck.includes("thumbnail")) {
+          const newFieldsCheck = handleRemoveCheck(fieldsCheck, "thumbnail");
+          setFieldsCheck(newFieldsCheck);
+          ("thumbnail");
+        }
+
+        const formData: FormData = new FormData();
+        formData.append("image", source);
+        setLoadingThumbnail(true);
+
+        try {
+          const { status, payload } = await uploadImageOnServer(
+            `${process.env.NEXT_PUBLIC_ENDPOINT_API}/products/uploadImage`,
+            formData
+          );
+
+          if (status === 201) {
+            setThumbnail(payload);
+            setLoadingThumbnail(false);
+          }
+        } catch (error) {
+          toast.error("Upload thumbnail failed", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          setLoadingThumbnail(false);
+          console.log(error);
+        }
       }
+    },
+    [thumbnail, loadingThumbnail]
+  );
 
-      setThumbnailUrl({ source, url });
-      setProduct({ ...product, thumbnail: url });
-    }
-  };
+  const onUploadGallery = useCallback(
+    async (source: File) => {
+      if (source) {
+        if (fieldsCheck.includes("gallery")) {
+          const newFieldsCheck = handleRemoveCheck(fieldsCheck, "gallery");
+          setFieldsCheck(newFieldsCheck);
+          ("gallery");
+        }
 
-  const onUploadGallery = async (source: File) => {
-    const formData: FormData = new FormData();
-    formData.append("image", source);
-    setLoadingGallery(true);
+        const formData: FormData = new FormData();
+        formData.append("image", source);
+        setLoadingGallery(true);
 
-    try {
-      const { status, payload } = await uploadImageOnServer(
-        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/products/uploadImage`,
-        formData
-      );
+        try {
+          const { status, payload } = await uploadImageOnServer(
+            `${process.env.NEXT_PUBLIC_ENDPOINT_API}/products/uploadImage`,
+            formData
+          );
 
-      if (status === 201) {
-        setGallery([...gallery, payload]);
-        setLoadingGallery(false);
+          if (status === 201) {
+            setGallery([...gallery, payload]);
+            setLoadingGallery(false);
+          }
+        } catch (error) {
+          toast.error("Upload image failed", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          setLoadingGallery(false);
+          console.log(error);
+        }
       }
-    } catch (error) {
-      toast.error("Upload image failed", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setLoadingGallery(false);
-      console.log(error);
-    }
-  };
+    },
+    [gallery, loadingGallery]
+  );
 
-  const onRemoveGallary = async (url: string) => {
-    try {
-      const payload = await deleteImageInSever(url);
+  const onRemoveGallary = useCallback(
+    async (url: string) => {
+      try {
+        const payload = await deleteImageInSever(url);
 
-      if (payload.status === 201) {
-        const newGallery = gallery.filter((image) => image !== url);
-        setGallery(newGallery);
+        if (payload.status === 201) {
+          const newGallery = gallery.filter((image) => image !== url);
+          setGallery(newGallery);
+        }
+      } catch (error) {
+        toast.error("Remove image failed", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+
+        console.log(error);
       }
-    } catch (error) {
-      toast.error("Remove image failed", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-
-      console.log(error);
-    }
-  };
-
-  const generalBreadcrumbs = (
-    node_id: string | null,
-    breadcrumbs: string[]
-  ) => {
-    if (!node_id) return;
-
-    const item = categories[node_id];
-
-    generalBreadcrumbs(item.parent_id, breadcrumbs);
-    breadcrumbs.push(item._id as string);
-    return breadcrumbs;
-  };
-
-  const removeFieldCheck = (name: string) => {
-    const newFieldsCheck = fieldsCheck.filter(
-      (field: string) => field !== name
-    );
-    setFieldsCheck(newFieldsCheck);
-  };
+    },
+    [gallery, loadingGallery]
+  );
 
   const checkData = (data: any) => {
     let fields = handleCheckFields(data);
@@ -200,22 +243,30 @@ const CreateProductPage = () => {
   };
 
   const handleOnSubmit = async () => {
-    const formData: FormData = new FormData();
-    const source: any = thumbnailUrl.source;
-    formData.append("thumbnail", source);
-    let breadcrumbs: string[] = [];
     const fields = checkData([
       {
         name: "title",
         value: product.title,
       },
       {
+        name: "shortDescription",
+        value: product.shortDescription,
+      },
+      {
         name: "description",
         value: product.description,
       },
       {
+        name: "categories",
+        value: mutipleCategories,
+      },
+      {
         name: "thumbnail",
-        value: thumbnailUrl.url,
+        value: thumbnail,
+      },
+      {
+        name: "gallery",
+        value: gallery,
       },
     ]);
 
@@ -228,43 +279,43 @@ const CreateProductPage = () => {
     }
 
     try {
-      const imagePayload = await uploadImageOnServer(
-        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/products/uploadThumbnail`,
-        formData
-      );
-
-      if (imagePayload.status !== 201) {
-        return toast.error("Error in upload thumbail for product", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+      let breadcrumbs: string[] = [];
+      if (defaultCategory) {
+        breadcrumbs = generalBreadcrumbs(defaultCategory, categories);
+      } else {
+        breadcrumbs = generalBreadcrumbs(mutipleCategories[0].id, categories);
       }
 
-      // if (categorySelect.node_id) {
-      //   breadcrumbs = generalBreadcrumbs(
-      //     categorySelect.node_id,
-      //     []
-      //   ) as string[];
-      // }
+      const categoriesProduct = mutipleCategories.map(
+        (category: ISelectItem) => {
+          return category.id;
+        }
+      );
 
-      const payload = await axiosPost("/categories", {
+      const payload = await axiosPost("/products", {
         title: product.title,
         description: product.description,
         meta_title: product.title,
         meta_description: product.description,
-        // parent_id: categorySelect.node_id,
-        thumbnail: imagePayload.payload,
-        public: product.public,
+        thumbnail,
+        gallery,
+        category: defaultCategory,
+        categories: categoriesProduct,
         breadcrumbs,
+        price: product.price,
+        promotionPrice: product.promotionPrice,
+        inventory: product.inventory,
+        public: product.public,
       });
 
       if (payload.status === 201) {
-        toast.success("Success create category", {
+        toast.success("Success create product", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        router.push("/categories");
+        router.push("/products");
       }
     } catch (error) {
-      toast.error("Error in create category", {
+      toast.error("Error in create product", {
         position: toast.POSITION.TOP_RIGHT,
       });
       console.log(error);
@@ -304,7 +355,11 @@ const CreateProductPage = () => {
   }, []);
 
   return (
-    <FormLayout title="Create Product" backLink="/products" onSubmit={() => {}}>
+    <FormLayout
+      title="Create Product"
+      backLink="/products"
+      onSubmit={handleOnSubmit}
+    >
       <div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">
           <Input
@@ -323,9 +378,9 @@ const CreateProductPage = () => {
           <Input
             title="Short description"
             width="lg:w-2/4 w-full"
-            error={fieldsCheck.includes("short_description")}
-            value={product.description}
-            name="short_description"
+            error={fieldsCheck.includes("shortDescription")}
+            value={product.shortDescription}
+            name="shortDescription"
             placeholder="Input short description about product"
             type={typeInput.textarea}
             rows={2}
@@ -387,13 +442,15 @@ const CreateProductPage = () => {
         <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
           <Thumbnail
             error={fieldsCheck.includes("thumbnail")}
-            thumbnailUrl={thumbnailUrl.url}
+            url={thumbnail}
+            loading={loadingThumbnail}
             onChange={uploadThumbnail}
           />
 
           <Gallery
             gallery={gallery}
             loading={loadingGallery}
+            error={fieldsCheck.includes("gallery")}
             limited={6}
             onChange={onUploadGallery}
             onDelete={onRemoveGallary}
@@ -405,22 +462,30 @@ const CreateProductPage = () => {
             title="Price"
             width="lg:w-2/4 w-full"
             error={fieldsCheck.includes("price")}
-            value={"0"}
+            value={product.price.toString()}
             name="price"
-            placeholder="Price"
             type={typeInput.number}
-            getValue={changeValue}
+            getNumber={changePrice}
           />
 
           <Input
             title="Promotion Price"
             width="lg:w-2/4 w-full"
-            error={fieldsCheck.includes("price")}
-            value={"0"}
-            name="price"
-            placeholder="Price"
+            value={product.promotionPrice.toString()}
+            error={fieldsCheck.includes("promotionPrice")}
+            name="promotionPrice"
             type={typeInput.number}
-            getValue={changeValue}
+            getNumber={changePrice}
+          />
+
+          <Input
+            title="Inventory"
+            width="lg:w-2/4 w-full"
+            value={product.inventory.toString()}
+            error={fieldsCheck.includes("inventory")}
+            name="inventory"
+            type={typeInput.number}
+            getNumber={changePrice}
           />
         </div>
 
