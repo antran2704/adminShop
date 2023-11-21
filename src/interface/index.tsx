@@ -49,9 +49,11 @@ import {
   IProductHome,
   IVariantProduct,
   IOptionProduct,
-  ICreateProduct
+  ICreateProduct,
+  ISpecificationsProduct,
+  ISpecificationAttributes
 } from "./product";
-export type { IProductData, IProductHome, IVariantProduct, IOptionProduct, ICreateProduct };
+export type { IProductData, IProductHome, IVariantProduct, IOptionProduct, ICreateProduct, ISpecificationsProduct, ISpecificationAttributes };
 
 // Interface of Breadcrumb
 import { IBreadcrumb } from "./breadcrum";

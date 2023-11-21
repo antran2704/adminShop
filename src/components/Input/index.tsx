@@ -1,5 +1,5 @@
-import { FC, ChangeEvent, FormEvent, memo } from "react";
-import handleCheckValidNumber from "~/helper/checkNumber";
+import { FC, ChangeEvent, FormEvent, KeyboardEvent, memo } from "react";
+import handleCheckValidNumber from "~/helper/number";
 
 import { typeInput } from "~/enums";
 
@@ -15,7 +15,8 @@ interface Props {
   value?: string;
   error?: boolean;
   readonly?: boolean;
-  onClick?: () => void;
+  enableEnter?: boolean;
+  onEnter?: () => void;
   getValue?: (name: string, value: string, id?: string) => void;
   getNumber?: (name: string, value: number) => void;
 }
@@ -31,7 +32,9 @@ const FieldAdd: FC<Props> = (props: Props) => {
     cols = 30,
     rows = 6,
     readonly = false,
+    enableEnter = false,
     error,
+    onEnter,
     getValue,
     getNumber,
   } = props;
@@ -53,17 +56,25 @@ const FieldAdd: FC<Props> = (props: Props) => {
 
   const handleChangeNumberValue = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name;
-    const value = e.target.value;
+    const value = Number(e.target.value);
 
     const valid = handleCheckValidNumber(value);
 
     if (name && getNumber) {
       if (valid) {
-        getNumber(name, Number(value));
+        getNumber(name, value);
       }
       if (Number(value) <= 0) {
         getNumber(name, 0);
       }
+    }
+  };
+
+  const onKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
+    const key = e.key;
+    if (key === "Enter" && onEnter) {
+      console.log("enter")
+      onEnter();
     }
   };
 
@@ -85,6 +96,11 @@ const FieldAdd: FC<Props> = (props: Props) => {
           value={value}
           placeholder={placeholder}
           readOnly={readonly}
+          onKeyUp={(e) => {
+            if (enableEnter) {
+              onKeyUp(e);
+            }
+          }}
           onInput={handleChangeValue}
           type="text"
           className={`w-full rounded-md px-2 py-1 border-2 ${
@@ -101,7 +117,9 @@ const FieldAdd: FC<Props> = (props: Props) => {
           placeholder={placeholder}
           onInput={handleChangeNumberValue}
           type="text"
-          className="w-full rounded-md px-2 py-1 border-2 focus:border-[#4f46e5] outline-none"
+          className={`w-full rounded-md px-2 py-1 border-2 ${
+            error && "border-error"
+          } focus:border-[#4f46e5] outline-none`}
         />
       )}
 

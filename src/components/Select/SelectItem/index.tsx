@@ -8,7 +8,7 @@ interface Props {
   placeholder?: string;
   value: string;
   data: ISelectItem[];
-  onSelect: (value: string) => void;
+  onSelect: (value: string, name: string) => void;
 }
 
 const SelectItem: FC<Props> = (props: Props) => {
@@ -16,7 +16,8 @@ const SelectItem: FC<Props> = (props: Props) => {
 
   const onSelectItem = (e: ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
-    onSelect(value);
+    const name = e.target.name;
+    onSelect(value, name);
   }
 
   return (

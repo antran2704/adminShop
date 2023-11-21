@@ -11,14 +11,15 @@ interface IOptionProduct {
   ];
 }
 
+interface ISpecificationAttributes {
+  id: string;
+  [name: string]: string;
+}
+
 interface ISpecificationsProduct {
+  id: string;
   name: String;
-  attributes: [
-    {
-      name: String;
-      value: String;
-    }
-  ];
+  attributes: ISpecificationAttributes[];
 }
 
 interface IVariantProduct {
@@ -51,7 +52,7 @@ interface IProductData {
   shortDescription: string;
   description: string;
   price: number;
-  promotionPrice: number | null;
+  promotionPrice: number;
   options: IOptionProduct[];
   inventory: number;
   thumbnail: string | null;
@@ -67,7 +68,10 @@ interface IProductData {
   createdAt: string;
 }
 
-type ICreateProduct = Omit<IProductData, "_id" | "viewer" | "rate" | "slug" | "type" | "createdAt">
+type ICreateProduct = Omit<
+  IProductData,
+  "_id" | "viewer" | "rate" | "slug" | "type" | "createdAt"
+>;
 
 type IProductHome = Pick<
   IProductData,
@@ -81,4 +85,12 @@ type IProductHome = Pick<
   | "thumbnail"
 >;
 
-export type { IProductData, IProductHome, IVariantProduct, IOptionProduct, ICreateProduct };
+export type {
+  IProductData,
+  IProductHome,
+  IVariantProduct,
+  IOptionProduct,
+  ISpecificationsProduct,
+  ICreateProduct,
+  ISpecificationAttributes
+};

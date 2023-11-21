@@ -1,8 +1,7 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment, useCallback } from "react";
 import { toast } from "react-toastify";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 import { axiosGet, axiosPatch } from "~/ultils/configAxios";
 import generalBreadcrumbs from "~/helper/generateBreadcrumb";
@@ -21,6 +20,7 @@ import Tree from "~/components/Tree";
 import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
+import Loading from "~/components/Loading";
 
 const initData: IDataCategory = {
   _id: null,
@@ -48,12 +48,10 @@ const EditCategoryPage = (props: Props) => {
     node_id: null,
   });
 
-  const [thumbnailUrl, setThumbnailUrl] = useState<IThumbnailUrl>({
-    source: {},
-    url: "",
-  });
+  const [thumbnail, setThumbnail] = useState<string | null>(null);
+  const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true)
 
   const onSelectCategory = (title: string | null, node_id: string | null) => {
     setCategorySelect({ title, node_id });
@@ -72,11 +70,40 @@ const EditCategoryPage = (props: Props) => {
     setData({ ...data, [name]: value });
   };
 
-  const uploadThumbnail = (source: object, url: string) => {
-    if (source && url) {
-      setThumbnailUrl({ source, url });
-    }
-  };
+  const uploadThumbnail = useCallback(
+    async (source: File) => {
+      if (source) {
+        if (fieldsCheck.includes("thumbnail")) {
+          const newFieldsCheck = handleRemoveCheck(fieldsCheck, "thumbnail");
+          setFieldsCheck(newFieldsCheck);
+          ("thumbnail");
+        }
+
+        const formData: FormData = new FormData();
+        formData.append("thumbnail", source);
+        setLoadingThumbnail(true);
+
+        try {
+          const { status, payload } = await uploadImageOnServer(
+            `${process.env.NEXT_PUBLIC_ENDPOINT_API}/categories/uploadThumbnail`,
+            formData
+          );
+
+          if (status === 201) {
+            setThumbnail(payload);
+            setLoadingThumbnail(false);
+          }
+        } catch (error) {
+          toast.error("Upload thumbnail failed", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+          setLoadingThumbnail(false);
+          console.log(error);
+        }
+      }
+    },
+    [thumbnail]
+  );
 
   const checkData = (data: any) => {
     let fields = handleCheckFields(data);
@@ -97,7 +124,7 @@ const EditCategoryPage = (props: Props) => {
       },
       {
         name: "thumbnail",
-        value: thumbnailUrl.url,
+        value: thumbnail,
       },
     ]);
 
@@ -109,7 +136,6 @@ const EditCategoryPage = (props: Props) => {
       return;
     }
 
-    let payload;
     let breadcrumbs: string[] = generalBreadcrumbs(
       categorySelect.node_id || null,
       categories
@@ -119,7 +145,7 @@ const EditCategoryPage = (props: Props) => {
       description: data.description,
       meta_title: data.title,
       meta_description: data.description,
-      thumbnail: data.thumbnail,
+      thumbnail,
       public: data.public,
       parent_id: categorySelect.node_id,
       breadcrumbs,
@@ -128,7 +154,7 @@ const EditCategoryPage = (props: Props) => {
     setLoading(true);
 
     try {
-      if (data.thumbnail !== thumbnailUrl.url) {
+      if (data.thumbnail !== thumbnail) {
         const deleteImagePayload = await deleteImageInSever(
           data.thumbnail as string
         );
@@ -138,23 +164,11 @@ const EditCategoryPage = (props: Props) => {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
-
-        const formData = new FormData();
-        const source: Blob = thumbnailUrl.source as Blob;
-        formData.append("thumbnail", source);
-
-        const uploadImage = await uploadImageOnServer(
-          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/categories/uploadThumbnail`,
-          formData
-        );
-
-        payload = await axiosPatch(`/categories/${data._id}`, {
-          ...sendData,
-          thumbnail: uploadImage.payload,
-        });
-      } else {
-        payload = await axiosPatch(`/categories/${data._id}`, { ...sendData });
       }
+
+      const payload = await axiosPatch(`/categories/${data._id}`, {
+        ...sendData,
+      });
 
       if (payload.status === 201) {
         toast.success("Success updated category", {
@@ -193,7 +207,7 @@ const EditCategoryPage = (props: Props) => {
           public: data.payload.public,
         });
         setTitle(data.payload.title);
-        setThumbnailUrl({ ...thumbnailUrl, url: data.payload.thumbnail });
+        setThumbnail(data.payload.thumbnail);
         setCategorySelect({
           node_id,
           title,
@@ -312,7 +326,8 @@ const EditCategoryPage = (props: Props) => {
           <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
             <Thumbnail
               error={fieldsCheck.includes("thumbnail")}
-              thumbnailUrl={thumbnailUrl.url}
+              url={thumbnail}
+              loading={loadingThumbnail}
               onChange={uploadThumbnail}
             />
           </div>
@@ -330,11 +345,7 @@ const EditCategoryPage = (props: Props) => {
           </div>
         </div>
 
-        {loading && (
-          <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black opacity-60 z-50">
-            <AiOutlineLoading3Quarters className="spinner text-5xl text-white" />
-          </div>
-        )}
+        {loading && <Loading />}
       </Fragment>
     </FormLayout>
   );

@@ -46,10 +46,8 @@ const CreateCategoryPage = () => {
     node_id: null,
   });
 
-  const [thumbnailUrl, setThumbnailUrl] = useState<IThumbnailUrl>({
-    source: {},
-    url: "",
-  });
+  const [thumbnail, setThumbnail] = useState<string | null>(null);
+  const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
 
   const onSelectCategory = (title: string | null, node_id: string | null) => {
     setCategorySelect({ title, node_id });
@@ -67,22 +65,36 @@ const CreateCategoryPage = () => {
     setData({ ...data, [name]: value });
   };
 
-  const uploadThumbnail = (source: object, url: string) => {
-    if (source && url) {
+  const uploadThumbnail = async (source: File) => {
+    if (source) {
       if (fieldsCheck.includes("thumbnail")) {
-        removeFieldCheck("thumbnail");
+        const newFieldsCheck = handleRemoveCheck(fieldsCheck, "thumbnail");
+        setFieldsCheck(newFieldsCheck);
+        ("thumbnail");
       }
 
-      setThumbnailUrl({ source, url });
-      setData({ ...data, thumbnail: url });
-    }
-  };
+      const formData: FormData = new FormData();
+      formData.append("thumbnail", source);
+      setLoadingThumbnail(true);
 
-  const removeFieldCheck = (name: string) => {
-    const newFieldsCheck = fieldsCheck.filter(
-      (field: string) => field !== name
-    );
-    setFieldsCheck(newFieldsCheck);
+      try {
+        const { status, payload } = await uploadImageOnServer(
+          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/categories/uploadThumbnail`,
+          formData
+        );
+
+        if (status === 201) {
+          setThumbnail(payload);
+          setLoadingThumbnail(false);
+        }
+      } catch (error) {
+        toast.error("Upload thumbnail failed", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setLoadingThumbnail(false);
+        console.log(error);
+      }
+    }
   };
 
   const checkData = (data: any) => {
@@ -93,10 +105,6 @@ const CreateCategoryPage = () => {
   };
 
   const handleOnSubmit = async () => {
-    const formData: FormData = new FormData();
-    const source: any = thumbnailUrl.source;
-    formData.append("thumbnail", source);
-
     const fields = checkData([
       {
         name: "title",
@@ -108,7 +116,7 @@ const CreateCategoryPage = () => {
       },
       {
         name: "thumbnail",
-        value: thumbnailUrl.url,
+        value: thumbnail,
       },
     ]);
 
@@ -121,17 +129,6 @@ const CreateCategoryPage = () => {
     }
 
     try {
-      const imagePayload = await uploadImageOnServer(
-        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/categories/uploadThumbnail`,
-        formData
-      );
-
-      if (imagePayload.status !== 201) {
-        return toast.error("Error in upload thumbail for category", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
-
       let breadcrumbs: string[] = generalBreadcrumbs(
         categorySelect.node_id || null,
         categories
@@ -143,7 +140,7 @@ const CreateCategoryPage = () => {
         meta_title: data.title,
         meta_description: data.description,
         parent_id: categorySelect.node_id,
-        thumbnail: imagePayload.payload,
+        thumbnail,
         public: data.public,
         breadcrumbs,
       });
@@ -253,7 +250,8 @@ const CreateCategoryPage = () => {
         <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
           <Thumbnail
             error={fieldsCheck.includes("thumbnail")}
-            thumbnailUrl={thumbnailUrl.url}
+            url={thumbnail}
+            loading={loadingThumbnail}
             onChange={uploadThumbnail}
           />
         </div>
