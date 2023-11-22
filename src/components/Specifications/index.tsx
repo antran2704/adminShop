@@ -22,7 +22,7 @@ const initNewSpecification = {
 const Specifications = (props: Props) => {
   const { className, specifications, onUpdate } = props;
 
-  const [showPopup, setShowPopup] = useState<boolean>(true);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
   
   const [newSpecification, setNewSpecification] =

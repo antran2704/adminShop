@@ -83,7 +83,7 @@ const SelectItem: FC<Props> = (props: Props) => {
 
         {data.length > 0 &&
           data.map((item: ISelectItem) => (
-            <option key={item.id} value={item.id as string}>
+            <option key={item._id} value={item._id as string}>
               {item.title}
             </option>
           ))}

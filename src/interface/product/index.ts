@@ -47,7 +47,7 @@ interface IProductData {
   title: string;
   category: IParentCategory;
   categories: IParentCategory[];
-  slug: string;
+  slug?: string;
   type: [];
   shortDescription: string;
   description: string;
@@ -65,7 +65,7 @@ interface IProductData {
   rate: number;
   variants: IVariantProduct[];
   breadcrumbs: string[];
-  createdAt: string;
+  createdAt?: string;
 }
 
 type ICreateProduct = Omit<

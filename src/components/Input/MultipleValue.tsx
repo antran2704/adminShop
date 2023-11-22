@@ -54,7 +54,7 @@ const MultipleValue = (props: Props) => {
       }
 
       const newItem = {
-        id: uuidv4(),
+        _id: uuidv4(),
         title: value,
       };
       const newValues = [...items, newItem];
@@ -80,7 +80,7 @@ const MultipleValue = (props: Props) => {
   };
 
   const handleDeleteValue = (id: string) => {
-    const values = items.filter((value) => value.id !== id);
+    const values = items.filter((value) => value._id !== id);
     getAttributes(name, values);
   };
 
@@ -106,7 +106,7 @@ const MultipleValue = (props: Props) => {
             >
               <span>{value.title}</span>
               <AiOutlineClose
-                onClick={() => handleDeleteValue(value.id as string)}
+                onClick={() => handleDeleteValue(value._id as string)}
                 className="text-sm min-w-[14px] cursor-pointer mt-1"
               />
             </li>

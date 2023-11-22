@@ -1,5 +1,5 @@
 interface ISelectItem {
-    id: string | null;
+    _id: string | null;
     title: string;
   }
   

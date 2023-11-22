@@ -2,6 +2,7 @@ import { FC, ChangeEvent, memo } from "react";
 import { IoAdd } from "react-icons/io5";
 import { toast } from "react-toastify";
 import { uploadImage } from "~/helper/handleImage";
+import ImageCus from "./ImageCus";
 
 interface Props {
   url: string | null;
@@ -63,7 +64,7 @@ const Thumbnail: FC<Props> = (props: Props) => {
           </>
         )}
         {url && !loading && (
-          <img src={url} alt="thumbnail" className="w-full h-full" />
+          <ImageCus src={url} title="Thumbanil" className="w-full h-full" />
         )}
         <input
           onChange={hanldeChangeThumbnail}

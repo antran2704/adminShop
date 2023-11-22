@@ -94,12 +94,16 @@ const CreateProductPage = () => {
       return;
     }
 
+    if(!defaultCategory) {
+      setDefaultCategory(node_id)
+    }
+
     if (fieldsCheck.includes("categories")) {
       const newFieldsCheck = handleRemoveCheck(fieldsCheck, "categories");
       setFieldsCheck(newFieldsCheck);
     }
 
-    const newItem: ISelectItem = { id: node_id, title: title as string };
+    const newItem: ISelectItem = { _id: node_id, title: title as string };
 
     setCategorySelect({ title, node_id });
     setMultipleCategories([...mutipleCategories, newItem]);
@@ -285,18 +289,19 @@ const CreateProductPage = () => {
       if (defaultCategory) {
         breadcrumbs = generalBreadcrumbs(defaultCategory, categories);
       } else {
-        breadcrumbs = generalBreadcrumbs(mutipleCategories[0].id, categories);
+        breadcrumbs = generalBreadcrumbs(mutipleCategories[0]._id, categories);
       }
 
       const categoriesProduct = mutipleCategories.map(
         (category: ISelectItem) => {
-          return category.id;
+          return category._id;
         }
       );
 
       const payload = await axiosPost("/products", {
         title: product.title,
         description: product.description,
+        shortDescription: product.shortDescription,
         meta_title: product.title,
         meta_description: product.description,
         thumbnail,
@@ -304,6 +309,7 @@ const CreateProductPage = () => {
         category: defaultCategory,
         categories: categoriesProduct,
         breadcrumbs,
+        specifications,
         price: product.price,
         promotionPrice: product.promotionPrice,
         inventory: product.inventory,

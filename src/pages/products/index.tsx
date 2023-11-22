@@ -200,7 +200,7 @@ const ProductPage = (props: Props) => {
         const data: ISelectItem[] = response.payload.map(
           (item: IDataCategory) => {
             return {
-              id: item._id,
+              _id: item._id,
               title: item.title,
             };
           }
@@ -344,7 +344,7 @@ const ProductPage = (props: Props) => {
                 <CelTable type={typeCel.GROUP}>
                   <div className="flex items-center justify-center gap-2">
                     <Link
-                      href={`/`}
+                      href={`/edit/product/${product._id}`}
                       className="block w-fit px-3 py-2 border-blue-700 border-2 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
                     >
                       <AiOutlineEdit className="text-xl w-fit" />
