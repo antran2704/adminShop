@@ -13,6 +13,8 @@ import {
   ISpecificationsProduct,
   IProductData,
   IParentCategory,
+  IAttribute,
+  IVariant,
 } from "~/interface";
 import { typeInput } from "~/enums";
 import { deleteImageInSever, uploadImageOnServer } from "~/helper/handleImage";
@@ -58,6 +60,23 @@ const initData: IProductData = {
   rate: 0,
 };
 
+interface IObjAttibute {
+  [key: string]: IAttribute;
+}
+
+interface IObjectSelectAttribute {
+  [key: string]: ISelectItem[];
+}
+
+interface ICompination {
+  [key: string]: string[];
+}
+
+const test: ICompination = {
+  color: ["xanh", "vang", "do"],
+  size: ["S", "M"],
+};
+
 interface Props {
   query: ParsedUrlQuery;
 }
@@ -92,17 +111,108 @@ const ProductEditPage = (props: Props) => {
     ISpecificationsProduct[]
   >([]);
 
-  const [attributes, setAtrributes] = useState({});
-  const [dataAtts, setDataAtts] = useState<ISelectItem[]>([]);
+  const [compination, setCompination] = useState<ICompination>({});
+  const [attributes, setAtrributes] = useState<IObjAttibute>({});
+  const [showAttributes, setShowAttributes] = useState<IObjectSelectAttribute>(
+    {}
+  );
+  const [selectAttributes, setSelectAttributes] =
+    useState<IObjectSelectAttribute>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
   const [loadingGallery, setLoadingGallery] = useState<boolean>(false);
 
   const onSelectTag = (value: TYPE_TAG) => {
+    // if (value === TYPE_TAG.COMPINATION && Object.keys(attributes).length === 0) {
+    //   handleGetAttributes();
+    // }
+
     setTag(value);
   };
 
-  const onSelectAttribute = () => {};
+  const selectAll = (items: ISelectItem[], key: string) => {
+    const select = selectAttributes;
+
+    if (key === "default") {
+      const currentShowAttributes = showAttributes;
+      Object.keys(attributes).forEach((key: string) => {
+        const attribute: IAttribute = attributes[key];
+        if (items.length > 0) {
+          currentShowAttributes[attribute.code] = [];
+
+          attribute.variants.forEach((item: IVariant) => {
+            currentShowAttributes[attribute.code].push({
+              _id: item._id,
+              title: item.name,
+            });
+          });
+        } else {
+          delete currentShowAttributes[attribute.code];
+        }
+      });
+    }
+    select[key] = items;
+    setSelectAttributes({ ...select });
+  };
+
+  const removeSelect = (items: ISelectItem[], id: string, key: string) => {
+    const select = selectAttributes;
+
+    if (key === "default") {
+      const currentShowAttributes = showAttributes;
+      const item: IAttribute = attributes[id];
+
+      select[item.code] = [];
+      delete currentShowAttributes[item.code];
+    }
+
+    select[key] = items;
+    setSelectAttributes({ ...select });
+  };
+
+  const selectAttribute = (item: ISelectItem, key: string) => {
+    const select = selectAttributes;
+    const currentShowAttributes = showAttributes;
+
+    if (key === "default") {
+      if (Object.keys(showAttributes).length >= 4) {
+        toast.error("Maximum select attribute", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+
+        return;
+      }
+
+      const { variants, code } = attributes[item._id as string];
+      currentShowAttributes[code] = [];
+
+      for (const variant of variants) {
+        const { _id, name } = variant as IVariant;
+        currentShowAttributes[code].push({ _id, title: name });
+      }
+    }
+    select[key].push(item);
+    setShowAttributes(currentShowAttributes);
+    setSelectAttributes({ ...select });
+  };
+
+  const getCompination = () => {
+    const selects = selectAttributes;
+    const result: ICompination = {};
+
+    for (const key of Object.keys(selects)) {
+      if (key !== "default" && selects[key].length > 0) {
+        result[key] = [];
+        const items = selects[key];
+
+        for (const item of items) {
+          result[key].push(item.title);
+        }
+      }
+    }
+
+    return result;
+  };
 
   const onSelectCategory = (title: string | null, node_id: string | null) => {
     if (!node_id) {
@@ -445,21 +555,46 @@ const ProductEditPage = (props: Props) => {
   };
 
   const handleGetAttributes = async () => {
+    setLoading(true);
+
     try {
       const { status, payload } = await axiosGet(`/variants`);
 
       if (status === 200) {
-        let attributesPayload: any = {};
+        let attributesPayload: IObjAttibute = {};
+        let showAttributesDefault: IObjectSelectAttribute = { default: [] };
+        let selectAttributesDefault: IObjectSelectAttribute = { default: [] };
 
         for (const item of payload) {
-          const { _id, name, variants } = item;
-          attributesPayload[`${_id}`] = { _id, name, variants };
+          const {
+            _id,
+            name,
+            variants,
+            code,
+            public: status,
+          } = item as IAttribute;
+
+          attributesPayload[`${_id}`] = {
+            _id,
+            name,
+            variants,
+            code,
+            public: status,
+          };
+
+          showAttributesDefault["default"].push({ _id, title: name });
+          selectAttributesDefault[code] = [];
         }
 
+        setSelectAttributes(selectAttributesDefault);
+        setShowAttributes(showAttributesDefault);
         setAtrributes(attributesPayload);
+
+        setLoading(false);
       }
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   };
 
@@ -495,6 +630,33 @@ const ProductEditPage = (props: Props) => {
     handleGetCategories();
     handleGetCategoriesParent();
     handleGetAttributes();
+
+    const result:any = [];
+
+    const generateVariants = (keys: string[], variant: any, index: number) => {
+      if (index > keys.length - 1) {
+        console.log(variant)
+        result.push(variant);
+        return;
+      }
+
+      const key = keys[index];
+      const items = test[key];
+
+      items.forEach((item) => {
+        variant[`option${index + 1}`] = item;
+        const a = variant
+        generateVariants(keys, a, index + 1);
+      });
+    };
+
+    generateVariants(
+      ["color", "size"],
+      { options: [], option1: "", option2: "", option3: "" },
+      0
+    );
+
+    console.log("result:::", result);
   }, []);
 
   return (
@@ -676,17 +838,35 @@ const ProductEditPage = (props: Props) => {
         )}
 
         {tag === TYPE_TAG.COMPINATION && (
-          <div className="grid grid-cols-4 gap-5">
-            {/* <SelectMutipleItem
-              title="Select Atrribute"
-              onSelect={() => {}}
-              onDelete={() => {}}
-            />
-            <SelectMutipleItem
-              title="Select Atrribute"
-              onSelect={() => {}}
-              onDelete={() => {}}
-            /> */}
+          <div>
+            <div className="grid grid-cols-4 gap-5">
+              {Object.keys(showAttributes || {}).map((key: any) => (
+                <SelectMutipleItem
+                  key={key}
+                  title={`Select ${key === "default" ? "Atrribute" : key}`}
+                  data={showAttributes[key]}
+                  name={key}
+                  selectItem={selectAttribute}
+                  removeItem={removeSelect}
+                  selectAll={selectAll}
+                  selects={selectAttributes[key] || []}
+                />
+              ))}
+            </div>
+
+            <div className="flex items-center justify-end mt-5 gap-5">
+              {Object.keys(showAttributes).length > 1 && (
+                <button
+                  onClick={getCompination}
+                  className="text-sm bg-success text-white px-5 py-2 rounded-md"
+                >
+                  Generate Variants
+                </button>
+              )}
+              <button className="text-sm bg-success text-white px-5 py-2 rounded-md">
+                Clear Variants
+              </button>
+            </div>
           </div>
         )}
       </Fragment>

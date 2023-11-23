@@ -1,6 +1,10 @@
 import { FC, useState, useRef, memo, useEffect } from "react";
 
-import { MdKeyboardArrowUp, MdKeyboardArrowDown } from "react-icons/md";
+import {
+  MdKeyboardArrowUp,
+  MdKeyboardArrowDown,
+  MdOutlineClose,
+} from "react-icons/md";
 import { ISelectItem } from "~/interface";
 
 interface Props {
@@ -8,40 +12,23 @@ interface Props {
   className?: string;
   data: ISelectItem[];
   selects: ISelectItem[];
-  // types: ITypeProduct[];
-  onSelectItem: (items: ISelectItem[]) => void;
+  name: string;
+  selectItem: (items: ISelectItem, key: string) => void;
+  selectAll: (items: ISelectItem[], key: string) => void;
+  removeItem: (items: ISelectItem[], id: string, key: string) => void;
 }
 
-const initData: ISelectItem[] = [
-  {
-    _id: "1",
-    title: "Item 1",
-  },
-  {
-    _id: "2",
-    title: "Item 2",
-  },
-  {
-    _id: "3",
-    title: "Item 3",
-  },
-  {
-    _id: "4",
-    title: "Item 4",
-  },
-  {
-    _id: "5",
-    title: "Item 5",
-  },
-  {
-    _id: "6",
-    title: "Item 6",
-  },
-];
-
 const SelectMultipleItem: FC<Props> = (props: Props) => {
-  const { title, className, data, selects, onSelectItem } = props;
-
+  const {
+    title,
+    className,
+    data,
+    selects,
+    name,
+    selectItem,
+    selectAll,
+    removeItem,
+  } = props;
   const divRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLUListElement>(null);
 
@@ -51,24 +38,27 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
 
   const onSelect = (select: ISelectItem) => {
     const isExit = selects.some((item: ISelectItem) => item._id === select._id);
-
     if (!isExit) {
-      onSelectItem([...selects, select]);
+      selectItem(select, name);
     } else {
       const newSelect = selects.filter(
         (item: ISelectItem) => item._id !== select._id
       );
-      onSelectItem(newSelect);
+      removeItem(newSelect, select._id as string, name);
     }
   };
 
   const onSelectAll = () => {
     if (selects.length !== data.length) {
-      onSelectItem([...data]);
+      selectAll([...data], name);
     } else {
-      onSelectItem([]);
+      selectAll([], name);
     }
   };
+
+  const onClearAll = () => {
+    selectAll([], name);
+  }
 
   useEffect(() => {
     if (divRef.current && popupRef.current) {
@@ -117,9 +107,11 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
               Please select item...
             </p>
           )}
-
-          {show && <MdKeyboardArrowUp className="ml-auto w-10 h-7" />}
-          {!show && <MdKeyboardArrowDown className="ml-auto w-10 h-7" />}
+          <div className="flex items-center gap-2">
+              {selects.length > 0 && <MdOutlineClose onClick={onClearAll} className="ml-auto w-5 h-7" />}
+              {show && <MdKeyboardArrowUp className="ml-auto w-6 h-7" />}
+              {!show && <MdKeyboardArrowDown className="ml-auto w-6 h-7" />}
+          </div>
         </div>
 
         <ul
@@ -130,14 +122,16 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
               : "opacity-0 pointer-events-none"
           } scroll left-0 w-full max-h-[160px] bg-white border-2 rounded-md overflow-y-auto shadow-md transition-all ease-linear duration-200 z-10`}
         >
-          <li
-            onClick={onSelectAll}
-            className={`w-full text-base ${
-              selects.length === data.length ? "bg-[#4f46e5] text-white" : ""
-            } px-5 py-1 border-b-2 cursor-pointer transition-all ease-linear duration-100`}
-          >
-            Select All
-          </li>
+          {name !== "default" && (
+            <li
+              onClick={onSelectAll}
+              className={`w-full text-base ${
+                selects.length === data.length ? "bg-gray-200" : ""
+              } px-5 py-1 border-b-2 border-gray-300 cursor-pointer transition-all ease-linear duration-100`}
+            >
+              Select All
+            </li>
+          )}
 
           {data.map((item: ISelectItem) => (
             <li
@@ -146,7 +140,7 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
               className={`w-full text-base ${
                 selects.find(
                   (select: ISelectItem) => select._id === item._id
-                ) && "bg-[#4f46e5] text-white"
+                ) && "bg-gray-200"
               } px-5 py-1 cursor-pointer transition-all ease-linear duration-100`}
             >
               {item.title}

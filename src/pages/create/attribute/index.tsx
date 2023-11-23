@@ -13,6 +13,7 @@ import MultipleValue from "~/components/Input/MultipleValue";
 import { axiosPost } from "~/ultils/configAxios";
 
 const initData: IAttribute = {
+  _id: "",
   code: "",
   name: "",
   public: true,

@@ -9,10 +9,10 @@ interface IVariant {
 type INewVariant = Omit<IVariant, "_id">
 
 interface IAttribute {
-  _id?: string;
+  _id: string;
   code: string;
   name: string;
-  variants?: IVariant[] | ISelectItem[];
+  variants: IVariant[] | ISelectItem[];
   public: boolean;
   createdAt?: string;
   updateAt?: string;
