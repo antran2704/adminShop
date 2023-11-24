@@ -34,7 +34,7 @@ interface IVariantProduct {
   option1: string | null;
   option2: string | null;
   option3: string | null;
-  options: [{ type: String }];
+  options: string[];
   thumbnail_url: string | null;
   url: string | null;
   inventory_quantity: number;

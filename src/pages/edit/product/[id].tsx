@@ -15,6 +15,7 @@ import {
   IParentCategory,
   IAttribute,
   IVariant,
+  IVariantProduct,
 } from "~/interface";
 import { typeInput } from "~/enums";
 import { deleteImageInSever, uploadImageOnServer } from "~/helper/handleImage";
@@ -72,9 +73,26 @@ interface ICompination {
   [key: string]: string[];
 }
 
-const test: ICompination = {
-  color: ["xanh", "vang", "do"],
-  size: ["S", "M"],
+const compination: ICompination = {};
+
+const initVariant: IVariantProduct = {
+  id: null,
+  product_id: "",
+  title: "",
+  barcode: "",
+  available: true,
+  price: 0,
+  promotion_price: 0,
+  sku: null,
+  option1: null,
+  option2: null,
+  option3: null,
+  options: [],
+  thumbnail_url: null,
+  url: null,
+  inventory_quantity: 0,
+  sold: 0,
+  public: true,
 };
 
 interface Props {
@@ -111,7 +129,7 @@ const ProductEditPage = (props: Props) => {
     ISpecificationsProduct[]
   >([]);
 
-  const [compination, setCompination] = useState<ICompination>({});
+  const [variants, setVariants] = useState<IVariantProduct[]>([]);
   const [attributes, setAtrributes] = useState<IObjAttibute>({});
   const [showAttributes, setShowAttributes] = useState<IObjectSelectAttribute>(
     {}
@@ -121,6 +139,17 @@ const ProductEditPage = (props: Props) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
   const [loadingGallery, setLoadingGallery] = useState<boolean>(false);
+
+  const [selectIndex, setSelectIndex] = useState<number | null>(null);
+
+  const onSetSelectIndex = (value: number | null) => {
+    console.log(value);
+    if (value === selectIndex) {
+      setSelectIndex(null);
+    } else {
+      setSelectIndex(value);
+    }
+  };
 
   const onSelectTag = (value: TYPE_TAG) => {
     // if (value === TYPE_TAG.COMPINATION && Object.keys(attributes).length === 0) {
@@ -194,6 +223,63 @@ const ProductEditPage = (props: Props) => {
     select[key].push(item);
     setShowAttributes(currentShowAttributes);
     setSelectAttributes({ ...select });
+  };
+
+  const onGenerateVariants = () => {
+    const compination = getCompination();
+    const keys = Object.keys(compination);
+
+    if (keys.length === 0) {
+      toast.error("Please select attribute", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      return;
+    }
+
+    const result = handleGenerateVariants(
+      compination,
+      keys,
+      initVariant,
+      [],
+      0
+    );
+
+    setVariants(result);
+    console.log(result);
+  };
+
+  const handleGenerateVariants = (
+    compination: ICompination,
+    keys: string[],
+    variant: IVariantProduct,
+    result: IVariantProduct[],
+    index: number
+  ) => {
+    if (index > keys.length - 1) {
+      variant.title = `${product.title} ${variant.options.join(" / ")}`;
+      result.push(variant);
+      return result;
+    }
+    const key = keys[index];
+    const items = compination[key];
+    const optionKey =
+      index === 0 ? "option1" : index === 1 ? "option2" : "option3";
+
+    for (const item of items) {
+      variant[optionKey] = item;
+      const newVariants = handleGenerateVariants(
+        compination,
+        keys,
+        { ...variant, options: [...variant.options, item] },
+        result,
+        index + 1
+      );
+
+      result = newVariants;
+    }
+
+    return result;
   };
 
   const getCompination = () => {
@@ -630,33 +716,6 @@ const ProductEditPage = (props: Props) => {
     handleGetCategories();
     handleGetCategoriesParent();
     handleGetAttributes();
-
-    const result:any = [];
-
-    const generateVariants = (keys: string[], variant: any, index: number) => {
-      if (index > keys.length - 1) {
-        console.log(variant)
-        result.push(variant);
-        return;
-      }
-
-      const key = keys[index];
-      const items = test[key];
-
-      items.forEach((item) => {
-        variant[`option${index + 1}`] = item;
-        const a = variant
-        generateVariants(keys, a, index + 1);
-      });
-    };
-
-    generateVariants(
-      ["color", "size"],
-      { options: [], option1: "", option2: "", option3: "" },
-      0
-    );
-
-    console.log("result:::", result);
   }, []);
 
   return (
@@ -840,32 +899,47 @@ const ProductEditPage = (props: Props) => {
         {tag === TYPE_TAG.COMPINATION && (
           <div>
             <div className="grid grid-cols-4 gap-5">
-              {Object.keys(showAttributes || {}).map((key: any) => (
-                <SelectMutipleItem
-                  key={key}
-                  title={`Select ${key === "default" ? "Atrribute" : key}`}
-                  data={showAttributes[key]}
-                  name={key}
-                  selectItem={selectAttribute}
-                  removeItem={removeSelect}
-                  selectAll={selectAll}
-                  selects={selectAttributes[key] || []}
-                />
-              ))}
+              {Object.keys(showAttributes || {}).map(
+                (key: any, index: number) => (
+                  <SelectMutipleItem
+                    key={key}
+                    title={`Select ${key === "default" ? "Atrribute" : key}`}
+                    data={showAttributes[key]}
+                    show={selectIndex === index ? true : false}
+                    name={key}
+                    selectItem={selectAttribute}
+                    selectIndex={index}
+                    onSetSelectIndex={onSetSelectIndex}
+                    removeItem={removeSelect}
+                    selectAll={selectAll}
+                    selects={selectAttributes[key] || []}
+                  />
+                )
+              )}
+
+              <div
+                onClick={() => setSelectIndex(null)}
+                className={`fixed ${
+                  selectIndex !== null ? "block" : "hidden"
+                } top-0 left-0 bottom-0 right-0 bg-transparent z-10`}
+              ></div>
             </div>
 
             <div className="flex items-center justify-end mt-5 gap-5">
               {Object.keys(showAttributes).length > 1 && (
-                <button
-                  onClick={getCompination}
-                  className="text-sm bg-success text-white px-5 py-2 rounded-md"
-                >
-                  Generate Variants
-                </button>
+                <Fragment>
+                  <button
+                    onClick={onGenerateVariants}
+                    className="text-sm bg-success text-white px-5 py-2 rounded-md"
+                  >
+                    Generate Variants
+                  </button>
+
+                  <button className="text-sm bg-success text-white px-5 py-2 rounded-md">
+                    Clear Variants
+                  </button>
+                </Fragment>
               )}
-              <button className="text-sm bg-success text-white px-5 py-2 rounded-md">
-                Clear Variants
-              </button>
             </div>
           </div>
         )}

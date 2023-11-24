@@ -13,6 +13,9 @@ interface Props {
   data: ISelectItem[];
   selects: ISelectItem[];
   name: string;
+  selectIndex: number;
+  show: boolean;
+  onSetSelectIndex: (value: number | null) => void;
   selectItem: (items: ISelectItem, key: string) => void;
   selectAll: (items: ISelectItem[], key: string) => void;
   removeItem: (items: ISelectItem[], id: string, key: string) => void;
@@ -25,16 +28,15 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
     data,
     selects,
     name,
+    show,
+    selectIndex,
+    onSetSelectIndex,
     selectItem,
     selectAll,
     removeItem,
   } = props;
   const divRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLUListElement>(null);
-
-  // const [data, setData] = useState<ISelectItem[]>(initData);
-  // const [selects, setSelects] = useState<ISelectItem[]>([]);
-  const [show, setShow] = useState(false);
 
   const onSelect = (select: ISelectItem) => {
     const isExit = selects.some((item: ISelectItem) => item._id === select._id);
@@ -67,30 +69,30 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
     }
   }, [show]);
   return (
-    <div className={`${className ? className : ""}`}>
+    <div className={`${className ? className : "realtive z-20"}`}>
       <span className="block text-base text-[#1E1E1E] font-medium mb-1">
         {title}
       </span>
       {/* layout to close list select item */}
-      <div
+      {/* <div
         onClick={() => setShow(!show)}
         className={`fixed ${
           show ? "block" : "hidden"
         } top-0 left-0 bottom-0 right-0 bg-transparent z-10`}
-      ></div>
+      ></div> */}
 
       <div
         ref={divRef}
         className={`relative flex items-center w-full min-h-[36px] rounded-md px-2 py-1 ${
           show && "border-[#4f46e5]"
-        } border-2 outline-none cursor-pointer`}
+        } border-2 outline-none cursor-pointer z-10`}
       >
         <div
-          onClick={() => setShow(!show)}
+          onClick={() => onSetSelectIndex(selectIndex)}
           className="flex items-center w-full justify-between gap-5"
         >
           {selects.length > 0 && selects.length < data.length && (
-            <p className="w-full line-clamp-1 gap-2">
+            <p className="w-full line-clamp-1 select-none gap-2">
               {selects.map(
                 (item: ISelectItem, index: number) =>
                   `${item.title} ${index + 1 <= selects.length - 1 ? "," : ""}`
@@ -99,11 +101,11 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
           )}
 
           {selects.length === data.length && (
-            <p className="w-full line-clamp-1 gap-2">All items selected</p>
+            <p className="w-full line-clamp-1 select-none gap-2">All items selected</p>
           )}
 
           {selects.length === 0 && (
-            <p className="w-full text-gray-400 line-clamp-1 gap-2">
+            <p className="w-full text-gray-400 line-clamp-1 select-none gap-2">
               Please select item...
             </p>
           )}
