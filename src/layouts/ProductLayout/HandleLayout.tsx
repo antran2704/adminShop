@@ -21,7 +21,7 @@ import { deleteGallery } from "~/helper/handleImage";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 
 import SelectItem from "~/components/Select/SelectItem";
-import SelectMutipleItem from "~/components/Select/SelectMutipleItem";
+import SelectMutipleItem from "~/components/Select/SelectMutiple";
 
 interface IData {
   title: string;

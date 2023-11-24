@@ -1,8 +1,10 @@
 import { GetServerSideProps } from "next";
+import { ParsedUrlQuery } from "querystring";
 import { useRouter } from "next/router";
 import { useState, useEffect, useCallback, Fragment } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
-import { ParsedUrlQuery } from "querystring";
+import { AiOutlineDelete } from "react-icons/ai";
 
 import { axiosGet, axiosPatch } from "~/ultils/configAxios";
 
@@ -17,20 +19,25 @@ import {
   IVariant,
   IVariantProduct,
 } from "~/interface";
-import { typeInput } from "~/enums";
+
+import { typeCel, typeInput } from "~/enums";
 import { deleteImageInSever, uploadImageOnServer } from "~/helper/handleImage";
+import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
+import generalBreadcrumbs from "~/helper/generateBreadcrumb";
+
 import FormLayout from "~/layouts/FormLayout";
 import Input from "~/components/Input";
 import Tree from "~/components/Tree";
 import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
-import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Gallery from "~/components/Image/Gallery";
 import MultipleValue from "~/components/Input/MultipleValue";
-import { SelectItem, SelectMutipleItem } from "~/components/Select";
-import generalBreadcrumbs from "~/helper/generateBreadcrumb";
+import { SelectItem, SelectMutipleWrap } from "~/components/Select";
+import { colHeaderVariants as colHeadTable } from "~/components/Table/colHeadTable";
 import Specifications from "~/components/Specifications";
 import Loading from "~/components/Loading";
+import { CelTable, Table } from "~/components/Table";
+import ImageCus from "~/components/Image/ImageCus";
 
 enum TYPE_TAG {
   BASIC_INFOR = "basic_infor",
@@ -73,10 +80,10 @@ interface ICompination {
   [key: string]: string[];
 }
 
-const compination: ICompination = {};
+// const compination: ICompination = {};
 
 const initVariant: IVariantProduct = {
-  id: null,
+  _id: null,
   product_id: "",
   title: "",
   barcode: "",
@@ -88,9 +95,9 @@ const initVariant: IVariantProduct = {
   option2: null,
   option3: null,
   options: [],
-  thumbnail_url: null,
+  thumbnail: null,
   url: null,
-  inventory_quantity: 0,
+  inventory: 0,
   sold: 0,
   public: true,
 };
@@ -104,7 +111,7 @@ const ProductEditPage = (props: Props) => {
   const { id } = query;
   const router = useRouter();
 
-  const [tag, setTag] = useState<string>(TYPE_TAG.COMPINATION);
+  const [tag, setTag] = useState<string>(TYPE_TAG.BASIC_INFOR);
 
   const [product, setProduct] = useState<IProductData>(initData);
   const [title, setTitle] = useState<string | null>(null);
@@ -140,21 +147,10 @@ const ProductEditPage = (props: Props) => {
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
   const [loadingGallery, setLoadingGallery] = useState<boolean>(false);
 
-  const [selectIndex, setSelectIndex] = useState<number | null>(null);
-
-  const onSetSelectIndex = (value: number | null) => {
-    console.log(value);
-    if (value === selectIndex) {
-      setSelectIndex(null);
-    } else {
-      setSelectIndex(value);
-    }
-  };
-
   const onSelectTag = (value: TYPE_TAG) => {
-    // if (value === TYPE_TAG.COMPINATION && Object.keys(attributes).length === 0) {
-    //   handleGetAttributes();
-    // }
+    if (value === TYPE_TAG.COMPINATION && Object.keys(attributes).length === 0) {
+      handleGetAttributes();
+    }
 
     setTag(value);
   };
@@ -225,6 +221,10 @@ const ProductEditPage = (props: Props) => {
     setSelectAttributes({ ...select });
   };
 
+  const onClearVariants = () => {
+    setVariants([]);
+  }
+
   const onGenerateVariants = () => {
     const compination = getCompination();
     const keys = Object.keys(compination);
@@ -246,7 +246,6 @@ const ProductEditPage = (props: Props) => {
     );
 
     setVariants(result);
-    console.log(result);
   };
 
   const handleGenerateVariants = (
@@ -258,7 +257,9 @@ const ProductEditPage = (props: Props) => {
   ) => {
     if (index > keys.length - 1) {
       variant.title = `${product.title} ${variant.options.join(" / ")}`;
+      variant._id = uuidv4();
       result.push(variant);
+
       return result;
     }
     const key = keys[index];
@@ -711,6 +712,35 @@ const ProductEditPage = (props: Props) => {
     }
   };
 
+  const onChangeValueVariant = (name: string, value: string, index: number) => {
+    console.log(value);
+    const currentVariants: IVariantProduct[] = variants;
+    const newVariant = { ...currentVariants[index], [name]: value };
+    currentVariants[index] = newVariant;
+
+    setVariants([...currentVariants]);
+  };
+
+  const onChangeNumberVariant = (
+    name: string,
+    value: number,
+    index: number
+  ) => {
+    const currentVariants: IVariantProduct[] = variants;
+    const newVariant = { ...currentVariants[index], [name]: value };
+    currentVariants[index] = newVariant;
+
+    setVariants([...currentVariants]);
+  };
+
+  // const onChangeThumbnailVariant = (name: string, value: string, index: number) => {
+  //   const currentVariants: IVariantProduct[] = variants;
+  //   const newVariant = { ...currentVariants[index], [name]: value };
+  //   currentVariants[index] = newVariant;
+
+  //   setVariants([...currentVariants]);
+  // }
+
   useEffect(() => {
     handleGetData();
     handleGetCategories();
@@ -898,49 +928,124 @@ const ProductEditPage = (props: Props) => {
 
         {tag === TYPE_TAG.COMPINATION && (
           <div>
-            <div className="grid grid-cols-4 gap-5">
-              {Object.keys(showAttributes || {}).map(
-                (key: any, index: number) => (
-                  <SelectMutipleItem
-                    key={key}
-                    title={`Select ${key === "default" ? "Atrribute" : key}`}
-                    data={showAttributes[key]}
-                    show={selectIndex === index ? true : false}
-                    name={key}
-                    selectItem={selectAttribute}
-                    selectIndex={index}
-                    onSetSelectIndex={onSetSelectIndex}
-                    removeItem={removeSelect}
-                    selectAll={selectAll}
-                    selects={selectAttributes[key] || []}
-                  />
-                )
-              )}
-
-              <div
-                onClick={() => setSelectIndex(null)}
-                className={`fixed ${
-                  selectIndex !== null ? "block" : "hidden"
-                } top-0 left-0 bottom-0 right-0 bg-transparent z-10`}
-              ></div>
-            </div>
+            <SelectMutipleWrap
+              data={showAttributes}
+              selects={selectAttributes}
+              selectItem={selectAttribute}
+              removeItem={removeSelect}
+              selectAll={selectAll}
+            />
 
             <div className="flex items-center justify-end mt-5 gap-5">
               {Object.keys(showAttributes).length > 1 && (
-                <Fragment>
-                  <button
-                    onClick={onGenerateVariants}
-                    className="text-sm bg-success text-white px-5 py-2 rounded-md"
-                  >
-                    Generate Variants
-                  </button>
-
-                  <button className="text-sm bg-success text-white px-5 py-2 rounded-md">
-                    Clear Variants
-                  </button>
-                </Fragment>
+                <button
+                  onClick={onGenerateVariants}
+                  className="text-sm bg-success text-white px-5 py-2 rounded-md"
+                >
+                  Generate Variants
+                </button>
+              )}
+              {variants.length > 0 && (
+                <button onClick={onClearVariants} className="text-sm bg-success text-white px-5 py-2 rounded-md">
+                  Clear Variants
+                </button>
               )}
             </div>
+
+            {variants.length > 0 && (
+              <div className="mt-5">
+                <Table
+                  colHeadTabel={colHeadTable}
+                  message={""}
+                  loading={loading}
+                >
+                  <Fragment>
+                    {variants.map((variant: IVariantProduct, index: number) => (
+                      <tr
+                        key={variant._id}
+                        className="hover:bg-slate-100 border-b border-gray-300"
+                      >
+                        <CelTable
+                          type={typeCel.SELECT_IMAGE}
+                          images={gallery}
+                          name="thumbnail"
+                          thumbnailUrl={variant.thumbnail}
+                          onChangeImage={(name: string, value: string) =>
+                            onChangeValueVariant(name, value, index)
+                          }
+                        />
+
+                        <CelTable
+                          type={typeCel.TEXT}
+                          value={variant.title}
+                          name="title"
+                        />
+                        <CelTable
+                          type={typeCel.INPUT}
+                          placeholder="SKU"
+                          className="min-w-[140px]"
+                          name="sku"
+                          value={(variant.sku as string) || ""}
+                          onChangeInput={(name: string, value: string) =>
+                            onChangeValueVariant(name, value, index)
+                          }
+                        />
+                        <CelTable
+                          type={typeCel.INPUT}
+                          className="min-w-[140px]"
+                          placeholder="Barcode"
+                          name="barcode"
+                          value={variant.barcode || ""}
+                          onChangeInput={(name: string, value: string) =>
+                            onChangeValueVariant(name, value, index)
+                          }
+                        />
+                        <CelTable
+                          type={typeCel.INPUT_NUMBER}
+                          placeholder="Price"
+                          className="min-w-[140px]"
+                          name="price"
+                          value={variant.price.toString()}
+                          onChangeInputNumber={(name: string, value: number) =>
+                            onChangeNumberVariant(name, value, index)
+                          }
+                        />
+                        <CelTable
+                          type={typeCel.INPUT_NUMBER}
+                          placeholder="Promotion Price"
+                          className="min-w-[140px]"
+                          name="promotion_price"
+                          value={variant.promotion_price.toString()}
+                          onChangeInputNumber={(name: string, value: number) =>
+                            onChangeNumberVariant(name, value, index)
+                          }
+                        />
+                        <CelTable
+                          type={typeCel.INPUT_NUMBER}
+                          placeholder="Inventory"
+                          className="min-w-[140px]"
+                          name="inventory"
+                          value={variant.inventory.toString()}
+                          onChangeInputNumber={(name: string, value: number) =>
+                            onChangeNumberVariant(name, value, index)
+                          }
+                        />
+                        <CelTable type={typeCel.GROUP}>
+                          <div className="flex items-center justify-center gap-2">
+                            <button
+                              onClick={() => {}}
+                              className="block w-fit px-3 py-2 border-error border-2 text-error rounded transition duration-300 hover:bg-error hover:text-white focus:outline-none"
+                            >
+                              <AiOutlineDelete className="text-xl" />
+                            </button>
+                          </div>
+                        </CelTable>
+                      </tr>
+                    ))}
+                  </Fragment>
+                </Table>
+              </div>
+            )}
           </div>
         )}
       </Fragment>

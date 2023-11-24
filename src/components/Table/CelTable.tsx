@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FC, ReactNode } from "react";
-import { typeCel } from "~/enums";
+import { typeCel, typeInput } from "~/enums";
 import { getDateTime } from "~/helper/datetimeFormat";
 import ButtonCheck from "../Button/ButtonCheck";
 import Input from "../Input";
@@ -18,9 +18,13 @@ interface Props {
   checked?: boolean;
   placeholder?: string;
   icon?: ReactNode;
+  thumbnailUrl?: string | null;
+  images?: string[];
   onChangeStatus?: void;
   onGetChecked?: (id: string, status: boolean, data?: any) => void;
+  onChangeImage?: (name: string, value: string) => void;
   onChangeInput?: (name: string, value: string, id?: string) => void;
+  onChangeInputNumber?: (name: string, value: number, id?: string) => void;
   onClick?(): void;
   children?: JSX.Element;
 }
@@ -38,7 +42,11 @@ const CelTable: FC<Props> = (props: Props) => {
     checked,
     icon,
     placeholder,
+    thumbnailUrl = null,
+    images = [],
+    onChangeImage,
     onChangeInput,
+    onChangeInputNumber,
     onClick,
     onGetChecked,
     children,
@@ -75,10 +83,30 @@ const CelTable: FC<Props> = (props: Props) => {
           } text-center text-blue-900 sm:text-sm text-xs leading-5`}
         >
           <Input
+            id={id}
             name={name as string}
             placeholder={placeholder}
-            type="input"
+            value={value}
+            type={typeInput.input}
             getValue={onChangeInput}
+          />
+        </td>
+      );
+
+    case typeCel.INPUT_NUMBER:
+      return (
+        <td
+          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${
+            className ? className : ""
+          } text-center text-blue-900 sm:text-sm text-xs leading-5`}
+        >
+          <Input
+            id={id}
+            name={name as string}
+            value={value}
+            placeholder={placeholder}
+            type={typeInput.number}
+            getNumber={onChangeInputNumber}
           />
         </td>
       );
@@ -123,7 +151,13 @@ const CelTable: FC<Props> = (props: Props) => {
             className ? className : ""
           } text-center font-medium`}
         >
-          <SelectImage className={className} thumbnailUrl={null} images={[]}/>
+          <SelectImage
+            className={className}
+            onChange={onChangeImage}
+            name={name}
+            url={thumbnailUrl}
+            images={images}
+          />
         </td>
       );
 

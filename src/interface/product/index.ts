@@ -23,7 +23,7 @@ interface ISpecificationsProduct {
 }
 
 interface IVariantProduct {
-  id: string | null;
+  _id: string | null;
   product_id: string;
   title: string;
   barcode: string;
@@ -35,9 +35,9 @@ interface IVariantProduct {
   option2: string | null;
   option3: string | null;
   options: string[];
-  thumbnail_url: string | null;
+  thumbnail: string | null;
   url: string | null;
-  inventory_quantity: number;
+  inventory: number;
   sold: number;
   public: boolean;
 }

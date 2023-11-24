@@ -85,17 +85,8 @@ const Navbar: FC = () => {
           show
             ? "opacity-60 pointer-events-auto"
             : "opacity-0 pointer-events-none"
-        } transition-all ease-linear duration-200 z-10`}
+        } transition-all ease-linear duration-200 z-50`}
       ></div>
-      {/* <div
-        style={{ backgroundColor: "rgba(37, 40, 54, 0.8)" }}
-        className="fixed xl:hidden block max-h-[70px] top-0 left-0 right-0 p-5 backdrop-blur z-10"
-      >
-        <HiBars3BottomRight
-          onClick={handeShow}
-          className="text-3xl text-white ml-auto cursor-pointer"
-        />
-      </div> */}
     </>
   );
 };

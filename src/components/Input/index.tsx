@@ -18,7 +18,7 @@ interface Props {
   enableEnter?: boolean;
   onEnter?: () => void;
   getValue?: (name: string, value: string, id?: string) => void;
-  getNumber?: (name: string, value: number) => void;
+  getNumber?: (name: string, value: number, id?: string) => void;
 }
 const FieldAdd: FC<Props> = (props: Props) => {
   const {

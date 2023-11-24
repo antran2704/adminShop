@@ -11,4 +11,5 @@ export enum typeCel {
   GROUP = "group",
   PUBLIC = "public",
   INPUT = "input",
+  INPUT_NUMBER = "input_number",
 }

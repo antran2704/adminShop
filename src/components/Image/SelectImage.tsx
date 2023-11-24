@@ -2,29 +2,23 @@ import { useState } from "react";
 import Popup from "../Popup";
 
 interface Props {
-  thumbnailUrl: string | null;
+  url: string | null;
+  name?: string;
   images: string[];
+  onChange?: (name: string, value: string) => void;
   className?: string;
 }
 
-const initImages: string[] = [
-  "https://images.unsplash.com/photo-1682687221323-6ce2dbc803ab?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  "https://images.unsplash.com/photo-1700087531475-a1cb6e8e68c1?q=80&w=1881&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  "https://images.unsplash.com/photo-1682687982046-e5e46906bc6e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  "https://images.unsplash.com/photo-1699138837938-86bbe20393bc?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  "https://images.unsplash.com/photo-1682687221323-6ce2dbc803ab?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  "https://images.unsplash.com/photo-1700087531475-a1cb6e8e68c1?q=80&w=1881&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  "https://images.unsplash.com/photo-1682687982046-e5e46906bc6e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-];
-
 const SelectImage = (props: Props) => {
-  const { thumbnailUrl, className, images = initImages } = props;
-  const [image, setImage] = useState<string | null>(null);
+  const { url, className, images, name, onChange } = props;
   const [open, setOpen] = useState<boolean>(false);
   const [show, setShow] = useState<boolean>(false);
 
   const onSelectImage = (url: string) => {
-    setImage(url);
+    if (onChange) {
+      onChange(name as string, url);
+    }
+    
     handleOpenModal();
   };
 
@@ -33,21 +27,23 @@ const SelectImage = (props: Props) => {
   };
 
   const handleShowImage = () => {
-    if (image) {
+    if (url) {
       setShow(!show);
     }
   };
 
   return (
-    <div>
+    <div className="flex flex-col items-center">
       <div
-        className={`${className ? className : ""} ${image ? "cursor-pointer" : "cursor-default"} rounded-full overflow-hidden`}
+        className={`${className ? className : "w-10 h-10"} ${
+          url ? "cursor-pointer" : "cursor-default"
+        } rounded-full overflow-hidden`}
         onClick={handleShowImage}
       >
         <img
           src={
-            image
-              ? image
+            url
+              ? url
               : "https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg"
           }
           alt="thumbnail"
@@ -57,10 +53,11 @@ const SelectImage = (props: Props) => {
       <button onClick={handleOpenModal} className="text-sm">
         Change
       </button>
+      
       {open && (
         <Popup title="Select image" show={open} onClose={handleOpenModal}>
           <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-3">
-            {initImages.map((image: string, index: number) => (
+            {images.map((image: string, index: number) => (
               <button
                 key={index}
                 onClick={() => onSelectImage(image)}
@@ -76,10 +73,13 @@ const SelectImage = (props: Props) => {
         </Popup>
       )}
 
-      {show && image && (
+      {show && url && (
         <Popup title="Image" show={show} onClose={handleShowImage}>
-          <div className="md:w-3/4 w-full mx-auto min-h-[400px] rounded-lg overflow-hidden">
-            <img src={image} className="h-full w-full object-cover object-center" />
+          <div className="md:w-3/4 w-full mx-auto pb-5 overflow-hidden">
+            <img
+              src={url}
+              className="h-full w-full object-contain object-center rounded-lg"
+            />
           </div>
         </Popup>
       )}

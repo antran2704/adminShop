@@ -51,6 +51,17 @@ const colHeaderProduct: string[] = [
   "Action",
 ];
 
+const colHeaderVariants: string[] = [
+  "Image",
+  "Compination",
+  "SKU",
+  "Barcode",
+  "Price",
+  "Promotion Price",
+  "Inventory",
+  "Action"
+];
+
 export {
   colHeadCategory,
   colHeadOrder,
@@ -58,4 +69,5 @@ export {
   colHeaderAttribute,
   colHeaderAttributeValue,
   colHeaderProduct,
+  colHeaderVariants
 };

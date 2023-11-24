@@ -60,7 +60,7 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
 
   const onClearAll = () => {
     selectAll([], name);
-  }
+  };
 
   useEffect(() => {
     if (divRef.current && popupRef.current) {
@@ -101,7 +101,9 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
           )}
 
           {selects.length === data.length && (
-            <p className="w-full line-clamp-1 select-none gap-2">All items selected</p>
+            <p className="w-full line-clamp-1 select-none gap-2">
+              All items selected
+            </p>
           )}
 
           {selects.length === 0 && (
@@ -110,9 +112,14 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
             </p>
           )}
           <div className="flex items-center gap-2">
-              {selects.length > 0 && <MdOutlineClose onClick={onClearAll} className="ml-auto w-5 h-7" />}
-              {show && <MdKeyboardArrowUp className="ml-auto w-6 h-7" />}
-              {!show && <MdKeyboardArrowDown className="ml-auto w-6 h-7" />}
+            {selects.length > 0 && (
+              <MdOutlineClose
+                onClick={onClearAll}
+                className="ml-auto w-5 h-7"
+              />
+            )}
+            {show && <MdKeyboardArrowUp className="ml-auto w-6 h-7" />}
+            {!show && <MdKeyboardArrowDown className="ml-auto w-6 h-7" />}
           </div>
         </div>
 
