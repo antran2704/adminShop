@@ -18,13 +18,13 @@ interface ISpecificationAttributes {
 
 interface ISpecificationsProduct {
   id: string;
-  name: String;
+  name: string;
   attributes: ISpecificationAttributes[];
 }
 
 interface IVariantProduct {
   _id: string | null;
-  product_id: string;
+  // product_id: string;
   title: string;
   barcode: string;
   available: boolean;

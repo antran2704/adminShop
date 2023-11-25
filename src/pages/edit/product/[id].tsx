@@ -37,7 +37,7 @@ import { colHeaderVariants as colHeadTable } from "~/components/Table/colHeadTab
 import Specifications from "~/components/Specifications";
 import Loading from "~/components/Loading";
 import { CelTable, Table } from "~/components/Table";
-import ImageCus from "~/components/Image/ImageCus";
+import Popup from "~/components/Popup";
 
 enum TYPE_TAG {
   BASIC_INFOR = "basic_infor",
@@ -84,7 +84,7 @@ interface ICompination {
 
 const initVariant: IVariantProduct = {
   _id: null,
-  product_id: "",
+  // product_id: "",
   title: "",
   barcode: "",
   available: true,
@@ -143,13 +143,33 @@ const ProductEditPage = (props: Props) => {
   );
   const [selectAttributes, setSelectAttributes] =
     useState<IObjectSelectAttribute>({});
+  console.log(showAttributes);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
   const [loadingGallery, setLoadingGallery] = useState<boolean>(false);
 
+  const [selectVariant, setSelectVariant] = useState<ISelectItem | null>(null);
+  const [showPopupVariant, setPopupVariant] = useState<boolean>(false);
+
+  const [showPopupClearVariants, setShowClearVariants] =
+    useState<boolean>(false);
+
+  const onShowPopupVariant = (variant: IVariantProduct | null = null) => {
+    if (variant) {
+      setSelectVariant({ _id: variant._id as string, title: variant.title });
+    } else {
+      setSelectVariant(null);
+    }
+
+    setPopupVariant(!showPopupVariant);
+  };
+
   const onSelectTag = (value: TYPE_TAG) => {
-    if (value === TYPE_TAG.COMPINATION && Object.keys(attributes).length === 0) {
-      handleGetAttributes();
+    if (value === TYPE_TAG.COMPINATION) {
+      if (Object.keys(attributes).length === 0) {
+        handleGetAttributes();
+      }
+      setVariants(product.variants);
     }
 
     setTag(value);
@@ -160,11 +180,12 @@ const ProductEditPage = (props: Props) => {
 
     if (key === "default") {
       const currentShowAttributes = showAttributes;
-      Object.keys(attributes).forEach((key: string) => {
-        const attribute: IAttribute = attributes[key];
-        if (items.length > 0) {
-          currentShowAttributes[attribute.code] = [];
+      Object.keys(attributes).forEach((id: string) => {
+        const attribute: IAttribute = attributes[id];
+        console.log(attribute);
+        currentShowAttributes[attribute.code] = [];
 
+        if (items.length > 0) {
           attribute.variants.forEach((item: IVariant) => {
             currentShowAttributes[attribute.code].push({
               _id: item._id,
@@ -172,12 +193,17 @@ const ProductEditPage = (props: Props) => {
             });
           });
         } else {
+          select[attribute.code] = [];
           delete currentShowAttributes[attribute.code];
         }
+
+        setShowAttributes({ ...currentShowAttributes });
       });
     }
     select[key] = items;
     setSelectAttributes({ ...select });
+    console.log("select", select);
+    console.log("items", items);
   };
 
   const removeSelect = (items: ISelectItem[], id: string, key: string) => {
@@ -223,7 +249,7 @@ const ProductEditPage = (props: Props) => {
 
   const onClearVariants = () => {
     setVariants([]);
-  }
+  };
 
   const onGenerateVariants = () => {
     const compination = getCompination();
@@ -467,11 +493,12 @@ const ProductEditPage = (props: Props) => {
     [gallery, loadingGallery]
   );
 
-  const onUpdateSpecifications = (
-    newSpecifications: ISpecificationsProduct[]
-  ) => {
-    setSpecifications(newSpecifications);
-  };
+  const onUpdateSpecifications = useCallback(
+    (newSpecifications: ISpecificationsProduct[]) => {
+      setSpecifications(newSpecifications);
+    },
+    [specifications]
+  );
 
   const checkData = (data: any) => {
     let fields = handleCheckFields(data);
@@ -526,6 +553,11 @@ const ProductEditPage = (props: Props) => {
         }
       );
 
+      const variations = variants.map(({ _id, ...rest }: IVariantProduct) => ({
+        ...rest,
+      }));
+      console.log(variations);
+
       const payload = await axiosPatch(`/products/${id}`, {
         title: product.title,
         description: product.description,
@@ -542,6 +574,7 @@ const ProductEditPage = (props: Props) => {
         promotionPrice: product.promotionPrice,
         inventory: product.inventory,
         public: product.public,
+        variations,
       });
 
       if (payload.status === 201) {
@@ -713,7 +746,6 @@ const ProductEditPage = (props: Props) => {
   };
 
   const onChangeValueVariant = (name: string, value: string, index: number) => {
-    console.log(value);
     const currentVariants: IVariantProduct[] = variants;
     const newVariant = { ...currentVariants[index], [name]: value };
     currentVariants[index] = newVariant;
@@ -733,19 +765,18 @@ const ProductEditPage = (props: Props) => {
     setVariants([...currentVariants]);
   };
 
-  // const onChangeThumbnailVariant = (name: string, value: string, index: number) => {
-  //   const currentVariants: IVariantProduct[] = variants;
-  //   const newVariant = { ...currentVariants[index], [name]: value };
-  //   currentVariants[index] = newVariant;
-
-  //   setVariants([...currentVariants]);
-  // }
+  const onRemoveVariant = (id: string) => {
+    const newVariants = variants.filter(
+      (variant: IVariantProduct) => variant._id !== id
+    );
+    setVariants(newVariants);
+    setPopupVariant(false);
+  };
 
   useEffect(() => {
     handleGetData();
     handleGetCategories();
     handleGetCategoriesParent();
-    handleGetAttributes();
   }, []);
 
   return (
@@ -945,10 +976,50 @@ const ProductEditPage = (props: Props) => {
                   Generate Variants
                 </button>
               )}
+
               {variants.length > 0 && (
-                <button onClick={onClearVariants} className="text-sm bg-success text-white px-5 py-2 rounded-md">
-                  Clear Variants
-                </button>
+                <Fragment>
+                  <button
+                    onClick={() =>
+                      setShowClearVariants(!showPopupClearVariants)
+                    }
+                    className="text-sm bg-success text-white px-5 py-2 rounded-md"
+                  >
+                    Clear Variants
+                  </button>
+
+                  {showPopupClearVariants && (
+                    <Popup
+                      title="Variants"
+                      show={showPopupClearVariants}
+                      onClose={() =>
+                        setShowClearVariants(!showPopupClearVariants)
+                      }
+                    >
+                      <div>
+                        <p className="text-lg">
+                          Do you want clear all variants
+                        </p>
+                        <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
+                          <button
+                            onClick={() =>
+                              setShowClearVariants(!showPopupClearVariants)
+                            }
+                            className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"
+                          >
+                            Cancle
+                          </button>
+                          <button
+                            onClick={onClearVariants}
+                            className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </Popup>
+                  )}
+                </Fragment>
               )}
             </div>
 
@@ -1033,7 +1104,7 @@ const ProductEditPage = (props: Props) => {
                         <CelTable type={typeCel.GROUP}>
                           <div className="flex items-center justify-center gap-2">
                             <button
-                              onClick={() => {}}
+                              onClick={() => onShowPopupVariant(variant)}
                               className="block w-fit px-3 py-2 border-error border-2 text-error rounded transition duration-300 hover:bg-error hover:text-white focus:outline-none"
                             >
                               <AiOutlineDelete className="text-xl" />
@@ -1045,6 +1116,37 @@ const ProductEditPage = (props: Props) => {
                   </Fragment>
                 </Table>
               </div>
+            )}
+
+            {showPopupVariant && selectVariant && (
+              <Popup
+                title="Variant"
+                show={showPopupVariant}
+                onClose={() => onShowPopupVariant(null)}
+              >
+                <div>
+                  <p className="text-lg">
+                    Do you want delete variant
+                    <strong>{" " + selectVariant.title}</strong>
+                  </p>
+                  <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
+                    <button
+                      onClick={() => onShowPopupVariant()}
+                      className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"
+                    >
+                      Cancle
+                    </button>
+                    <button
+                      onClick={() =>
+                        onRemoveVariant(selectVariant?._id as string)
+                      }
+                      className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </Popup>
             )}
           </div>
         )}

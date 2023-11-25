@@ -1,18 +1,28 @@
-import { Fragment, useState } from "react";
-import { toast } from "react-toastify";
+import { Fragment, memo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AiOutlineCloseCircle, AiOutlinePlus } from "react-icons/ai";
 
 import { typeInput } from "~/enums";
 import Input from "../Input";
-import { ISpecificationAttributes, ISpecificationsProduct } from "~/interface";
+import {
+  ISelectItem,
+  ISpecificationAttributes,
+  ISpecificationsProduct,
+} from "~/interface";
+
 import PopupForm from "../Popup/PopupForm";
+import Popup from "../Popup";
+
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 
 interface Props {
   className?: string;
   specifications: ISpecificationsProduct[];
   onUpdate: (newSpecifications: ISpecificationsProduct[]) => void;
+}
+
+interface ISelectAttribute extends ISelectItem {
+  index: number;
 }
 
 const initNewSpecification = {
@@ -22,11 +32,49 @@ const initNewSpecification = {
 const Specifications = (props: Props) => {
   const { className, specifications, onUpdate } = props;
 
+  const [selectSpecification, setSelectSpecification] =
+    useState<ISelectItem | null>(null);
+  const [showPopupSpecification, setPopupSpecification] =
+    useState<boolean>(false);
+
+  const [selectAttribute, setSelectAttribute] =
+    useState<ISelectAttribute | null>(null);
+  const [showPopupAttribute, setPopupAttribute] = useState<boolean>(false);
+
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
-  
+
   const [newSpecification, setNewSpecification] =
     useState(initNewSpecification);
+
+  const onShowPopupSpecification = (
+    specification: ISelectItem | null = null
+  ) => {
+    if (specification) {
+      setSelectSpecification({
+        _id: specification._id as string,
+        title: specification.title,
+      });
+    } else {
+      setSelectSpecification(null);
+    }
+
+    setPopupSpecification(!showPopupSpecification);
+  };
+
+  const onShowPopupAttribute = (attribute: ISelectAttribute | null = null) => {
+    if (attribute) {
+      setSelectAttribute({
+        _id: attribute._id as string,
+        title: attribute.title,
+        index: attribute.index,
+      });
+    } else {
+      setSelectAttribute(null);
+    }
+
+    setPopupAttribute(!showPopupAttribute);
+  };
 
   const handleShowPopup = () => {
     setShowPopup(!showPopup);
@@ -103,6 +151,7 @@ const Specifications = (props: Props) => {
     );
 
     onUpdate([...newSpecifications]);
+    setPopupSpecification(false);
   };
 
   const onRemoveAttribute = (
@@ -118,6 +167,7 @@ const Specifications = (props: Props) => {
     );
 
     onUpdate([...newSpecifications]);
+    setPopupAttribute(false);
   };
 
   return (
@@ -143,7 +193,12 @@ const Specifications = (props: Props) => {
             <div className="flex items-center justify-between px-4 pb-2 mb-5 border-b-2 gap-5">
               <p className="text-base font-medium">{specification.name}</p>
               <button
-                onClick={() => onRemoveSpecification(specification.id)}
+                onClick={() =>
+                  onShowPopupSpecification({
+                    _id: specification.id,
+                    title: specification.name,
+                  })
+                }
                 className="flex items-center justify-end text-base text-right font-medium text-error gap-2"
               >
                 Remove
@@ -192,7 +247,11 @@ const Specifications = (props: Props) => {
 
                     <button
                       onClick={() =>
-                        onRemoveAttribute(attribute.id, specificationIndex)
+                        onShowPopupAttribute({
+                          _id: attribute.id,
+                          title: attribute.name,
+                          index: specificationIndex,
+                        })
                       }
                       className="flex items-center justify-center text-sm rounded-full"
                     >
@@ -203,13 +262,13 @@ const Specifications = (props: Props) => {
               )}
 
               <div className="flex items-center justify-end ">
-                  <button
-                    onClick={() => onAddAtribute(specificationIndex)}
-                    className="flex items-center text-base text-right font-medium text-primary gap-2"
-                  >
-                    <AiOutlinePlus />
-                    Attribute
-                  </button>
+                <button
+                  onClick={() => onAddAtribute(specificationIndex)}
+                  className="flex items-center text-base text-right font-medium text-primary gap-2"
+                >
+                  <AiOutlinePlus />
+                  Attribute
+                </button>
               </div>
             </ul>
           </div>
@@ -256,8 +315,70 @@ const Specifications = (props: Props) => {
           </div>
         </Fragment>
       </PopupForm>
+
+      {showPopupSpecification && selectSpecification && (
+        <Popup
+          title="Specification"
+          show={showPopupSpecification}
+          onClose={() => onShowPopupSpecification(null)}
+        >
+          <div>
+            <p className="text-lg">
+              Do you want delete specification
+              <strong>{" " + selectSpecification.title}</strong>
+            </p>
+            <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
+              <button
+                onClick={() => onShowPopupSpecification(null)}
+                className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"
+              >
+                Cancle
+              </button>
+              <button
+                onClick={() =>
+                  onRemoveSpecification(selectSpecification._id as string)
+                }
+                className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </Popup>
+      )}
+
+      {showPopupAttribute && selectAttribute && (
+        <Popup
+          title="Attribute"
+          show={showPopupAttribute}
+          onClose={() => onShowPopupAttribute(null)}
+        >
+          <div>
+            <p className="text-lg">
+              Do you want delete attribute
+              <strong>{" " + selectAttribute.title}</strong>
+            </p>
+            <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
+              <button
+                onClick={() => onShowPopupAttribute(null)}
+                className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"
+              >
+                Cancle
+              </button>
+              <button
+                onClick={() =>
+                  onRemoveAttribute(selectAttribute._id as string, selectAttribute.index)
+                }
+                className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </Popup>
+      )}
     </div>
   );
 };
 
-export default Specifications;
+export default memo(Specifications);

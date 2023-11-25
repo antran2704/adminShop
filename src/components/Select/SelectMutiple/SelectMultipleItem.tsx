@@ -69,18 +69,11 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
     }
   }, [show]);
   return (
-    <div className={`${className ? className : "realtive z-20"}`}>
+    <div className={`realtive  ${className ? className : ""} ${show ? "z-[21]" : "z-20"}`}>
       <span className="block text-base text-[#1E1E1E] font-medium mb-1">
         {title}
       </span>
-      {/* layout to close list select item */}
-      {/* <div
-        onClick={() => setShow(!show)}
-        className={`fixed ${
-          show ? "block" : "hidden"
-        } top-0 left-0 bottom-0 right-0 bg-transparent z-10`}
-      ></div> */}
-
+     
       <div
         ref={divRef}
         className={`relative flex items-center w-full min-h-[36px] rounded-md px-2 py-1 ${
@@ -127,9 +120,9 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
           ref={popupRef}
           className={`absolute ${
             show
-              ? "opacity-100 pointer-events-auto"
+              ? "opacity-100 pointer-events-auto z-50"
               : "opacity-0 pointer-events-none"
-          } scroll left-0 w-full max-h-[160px] bg-white border-2 rounded-md overflow-y-auto shadow-md transition-all ease-linear duration-200 z-10`}
+          } scroll left-0 w-full max-h-[160px] bg-white border-2 rounded-md overflow-y-auto shadow-md transition-all ease-linear duration-200`}
         >
           {name !== "default" && (
             <li
