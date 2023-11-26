@@ -4,6 +4,7 @@ export enum typeCel {
   LINK = "link",
   STATUS = "status",
   THUMBNAIL = "thumbnail",
+  SELECT = "select",
   SELECT_IMAGE = "select_image",
   AVATAR = "avatar",
   BUTTON = "button",

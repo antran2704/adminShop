@@ -1,15 +1,40 @@
-import { FC, Fragment, memo } from "react";
+import { FC, Fragment, memo, SetStateAction } from "react";
 import NoResult from "../NoResult";
 
 interface Props {
   children: JSX.Element;
   colHeadTabel: string[];
+  items: any[];
+  selects: string[];
+  setSelects: (value: SetStateAction<string[]>) => void
+  isSelected?: boolean;
+  selectAll: boolean;
   message: string | null;
   loading: boolean;
 }
 
 const Table: FC<Props> = (props: Props) => {
-  const { children, colHeadTabel, message, loading } = props;
+  const {
+    children,
+    colHeadTabel,
+    items,
+    selects,
+    message,
+    loading,
+    isSelected = false,
+    selectAll = false,
+    setSelects,
+  } = props;
+
+  const onSelectCheckBoxAll = () => {
+    if (selects.length === items.length) {
+      setSelects([]);
+    } else {
+      const newItems = items.map((item: any) => item._id);
+      setSelects(newItems as string[]);
+    }
+  };
+
   return (
     <Fragment>
       <div className="scrollHidden overflow-x-auto">
@@ -17,12 +42,23 @@ const Table: FC<Props> = (props: Props) => {
           <table className="min-w-full">
             <thead className="bg-[#f4f5f7]">
               <tr>
+                {selectAll && items.length > 0 && (
+                  <th className="px-6 py-3 border-b border-gray-300 leading-4 tracking-wider">
+                    <input
+                      onChange={onSelectCheckBoxAll}
+                      checked={isSelected}
+                      type="checkbox"
+                    />
+                  </th>
+                )}
                 {colHeadTabel.map((item: string, index: number) => (
                   <th
                     key={index}
-                    className="text-sm text-[#707275] text-center font-medium px-6 py-3 border-b border-gray-300 leading-4 tracking-wider"
+                    className="border-b border-gray-300 leading-4 tracking-wider"
                   >
-                    {item}
+                    <p className="text-sm text-[#707275] font-medium px-6 py-3">
+                      {item}
+                    </p>
                   </th>
                 ))}
               </tr>

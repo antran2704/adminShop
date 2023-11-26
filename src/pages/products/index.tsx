@@ -41,17 +41,32 @@ interface Props {
 const ProductPage = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? query.page : 1;
-
   const [categories, setCategories] = useState<ISelectItem[]>([]);
   const [products, setProducts] = useState<IProductHome[]>([]);
   const [selectProduct, setSelectProduct] =
     useState<ISelectProduct>(initSelectProduct);
 
+  const [selectProducts, setSelectProducts] = useState<string[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
   const [filter, setFilter] = useState<IFilter | null>(null);
+
+  const onSelectCheckBox = useCallback(
+    (id: string) => {
+      const isExit = selectProducts.find((select: string) => select === id);
+      if (isExit) {
+        const newSelects = selectProducts.filter(
+          (select: string) => select !== id
+        );
+        setSelectProducts(newSelects);
+      } else {
+        setSelectProducts([...selectProducts, id]);
+      }
+    },
+    [selectProducts]
+  );
 
   const onChangeSearch = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -260,9 +275,12 @@ const ProductPage = (props: Props) => {
   };
 
   useEffect(() => {
-    handleGetData();
     handleGetCategories();
   }, []);
+
+  useEffect(() => {
+    handleGetData();
+  }, [currentPage]);
 
   return (
     <ShowItemsLayout
@@ -293,33 +311,56 @@ const ProductPage = (props: Props) => {
           />
         </Search>
 
-        <Table colHeadTabel={colHeadTable} message={message} loading={loading}>
+        <Table
+          items={products}
+          selects={selectProducts}
+          setSelects={setSelectProducts}
+          selectAll={true}
+          isSelected={selectProducts.length === products.length ? true : false}
+          colHeadTabel={colHeadTable}
+          message={message}
+          loading={loading}
+        >
           <Fragment>
             {products.map((product: IProductHome) => (
               <tr
                 key={product._id}
                 className="hover:bg-slate-100 border-b border-gray-300"
               >
+                <CelTable
+                  type={typeCel.SELECT}
+                  isSelected={
+                    selectProducts.includes(product._id as string)
+                      ? true
+                      : false
+                  }
+                  onSelectCheckBox={() =>
+                    onSelectCheckBox(product._id as string)
+                  }
+                />
                 <CelTable type={typeCel.GROUP}>
-                  <div className="flex items-center justify-center gap-2">
+                  <div className="flex items-center gap-2">
                     <ImageCus
                       title="product image"
                       src={product.thumbnail as string}
                       className="min-w-[32px] w-8 h-8 rounded-full"
                     />
-                    <p className="text-sm font-medium">{product.title}</p>
+                    <p className="text-sm font-medium whitespace-nowrap">{product.title}</p>
                   </div>
                 </CelTable>
                 <CelTable
                   type={typeCel.TEXT}
+                  center={true}
                   value={product.category ? product.category.title : "Home"}
                 />
                 <CelTable
                   type={typeCel.TEXT}
+                  center={true}
                   value={product.price.toString()}
                 />
                 <CelTable
                   type={typeCel.TEXT}
+                  center={true}
                   value={
                     product.promotionPrice
                       ? product.promotionPrice.toString()
@@ -328,12 +369,13 @@ const ProductPage = (props: Props) => {
                 />
                 <CelTable
                   type={typeCel.TEXT}
+                  center={true}
                   value={product.inventory.toString()}
                 />
                 <CelTable
                   type={typeCel.STATUS}
-                  status="bg-success"
-                  value={"selling"}
+                  status={product.inventory > 0 ? "bg-success" : "bg-error"}
+                  value={product.inventory > 0 ? "Selling" : "Sold out"}
                 />
                 <CelTable
                   id={product._id as string}

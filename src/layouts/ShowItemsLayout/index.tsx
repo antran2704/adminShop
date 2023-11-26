@@ -79,7 +79,7 @@ const ShowItemsLayout = (props: Props) => {
             <p className="text-lg">
               Do you want delete {title.toLowerCase()} <strong>{selectItem?.title}</strong>
             </p>
-            <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-2 lg:gap-5 gap-2">
+            <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
               <button
                 onClick={handlePopup}
                 className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"

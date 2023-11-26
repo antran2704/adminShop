@@ -41,12 +41,29 @@ const CategoriesPage = (props: Props) => {
   const currentPage = query.page ? query.page : 1;
 
   const [categories, setCategories] = useState<IDataCategory[]>([]);
+  const [selectCategories, setSelectCategories] = useState<string[]>([]);
+
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectItem, setSelectItem] = useState<ISelectCategory | null>(null);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
   const [filter, setFilter] = useState<IFilter | null>(null);
+
+  const onSelectCheckBox = useCallback(
+    (id: string) => {
+      const isExit = selectCategories.find((select: string) => select === id);
+      if (isExit) {
+        const newSelects = selectCategories.filter(
+          (select: string) => select !== id
+        );
+        setSelectCategories(newSelects);
+      } else {
+        setSelectCategories([...selectCategories, id]);
+      }
+    },
+    [selectCategories]
+  );
 
   const onReset = useCallback(() => {
     setFilter(null);
@@ -247,13 +264,35 @@ const CategoriesPage = (props: Props) => {
           placeholder="Search by category name..."
         />
 
-        <Table colHeadTabel={colHeadTable} message={message} loading={loading}>
+        <Table
+          items={categories}
+          selects={selectCategories}
+          setSelects={setSelectCategories}
+          selectAll={true}
+          isSelected={
+            selectCategories.length === categories.length ? true : false
+          }
+          colHeadTabel={colHeadTable}
+          message={message}
+          loading={loading}
+        >
           <Fragment>
             {categories.map((item: IDataCategory) => (
               <tr
                 key={item._id}
                 className="hover:bg-slate-100 border-b border-gray-300"
               >
+                <CelTable
+                  type={typeCel.SELECT}
+                  isSelected={
+                    selectCategories.includes(item._id as string)
+                      ? true
+                      : false
+                  }
+                  onSelectCheckBox={() =>
+                    onSelectCheckBox(item._id as string)
+                  }
+                />
                 <CelTable
                   type={typeCel.LINK}
                   value={item.title}

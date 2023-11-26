@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, memo } from "react";
 import { typeCel, typeInput } from "~/enums";
 import { getDateTime } from "~/helper/datetimeFormat";
 import ButtonCheck from "../Button/ButtonCheck";
@@ -16,11 +16,14 @@ interface Props {
   href?: string;
   status?: string;
   checked?: boolean;
+  center?: boolean;
+  isSelected?: boolean;
   placeholder?: string;
   icon?: ReactNode;
   thumbnailUrl?: string | null;
   images?: string[];
   onChangeStatus?: void;
+  onSelectCheckBox?: () => void;
   onGetChecked?: (id: string, status: boolean, data?: any) => void;
   onChangeImage?: (name: string, value: string) => void;
   onChangeInput?: (name: string, value: string, id?: string) => void;
@@ -40,10 +43,13 @@ const CelTable: FC<Props> = (props: Props) => {
     href,
     status,
     checked,
+    center = false,
+    isSelected = false,
     icon,
     placeholder,
     thumbnailUrl = null,
     images = [],
+    onSelectCheckBox,
     onChangeImage,
     onChangeInput,
     onChangeInputNumber,
@@ -58,7 +64,9 @@ const CelTable: FC<Props> = (props: Props) => {
         <td
           className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${
             className ? className : ""
-          } sm:text-sm text-xs text-center leading-5`}
+          } sm:text-sm text-xs ${
+            center ? "text-center" : "text-start"
+          } leading-5`}
         >
           {value}
         </td>
@@ -69,7 +77,9 @@ const CelTable: FC<Props> = (props: Props) => {
         <td
           className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${
             className ? className : ""
-          } text-center text-blue-900 sm:text-sm text-xs leading-5`}
+          } ${
+            center ? "text-center" : "text-start"
+          } text-blue-900 sm:text-sm text-xs leading-5`}
         >
           {getDateTime(value)}
         </td>
@@ -80,7 +90,9 @@ const CelTable: FC<Props> = (props: Props) => {
         <td
           className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${
             className ? className : ""
-          } text-center text-blue-900 sm:text-sm text-xs leading-5`}
+          } ${
+            center ? "text-center" : "text-start"
+          } text-blue-900 sm:text-sm text-xs leading-5`}
         >
           <Input
             id={id}
@@ -98,7 +110,9 @@ const CelTable: FC<Props> = (props: Props) => {
         <td
           className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${
             className ? className : ""
-          } text-center text-blue-900 sm:text-sm text-xs leading-5`}
+          } ${
+            center ? "text-center" : "text-start"
+          } text-blue-900 sm:text-sm text-xs leading-5`}
         >
           <Input
             id={id}
@@ -120,7 +134,7 @@ const CelTable: FC<Props> = (props: Props) => {
               href={href ? href : "/"}
               className={`block sm:text-sm text-xs leading-5 text-gray-800 ${
                 className ? className : ""
-              } text-center font-medium`}
+              } ${center ? "text-center" : "text-start"} font-medium`}
             >
               {value}
             </Link>
@@ -144,12 +158,21 @@ const CelTable: FC<Props> = (props: Props) => {
         </td>
       );
 
+    case typeCel.SELECT:
+      return (
+        <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 leading-5">
+          <div className="flex items-center justify-center">
+            <input checked={isSelected} type="checkbox" onChange={onSelectCheckBox} id={id} />
+          </div>
+        </td>
+      );
+
     case typeCel.SELECT_IMAGE:
       return (
         <td
           className={`px-6 py-4 sm:text-sm text-xs leading-5 text-gray-800 ${
             className ? className : ""
-          } text-center font-medium`}
+          } ${center ? "text-center" : "text-start"} font-medium`}
         >
           <SelectImage
             className={className}
@@ -163,9 +186,9 @@ const CelTable: FC<Props> = (props: Props) => {
 
     case typeCel.STATUS:
       return (
-        <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 sm:text-sm text-xs leading-5">
+        <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 leading-5">
           <p
-            className={`w-fit font-medium text-white ${status} capitalize mx-auto px-5 py-2 rounded-lg`}
+            className={`w-fit font-medium text-white text-xs ${status} capitalize mx-auto px-5 py-2 rounded-lg whitespace-nowrap`}
           >
             {value}
           </p>
@@ -217,4 +240,4 @@ const CelTable: FC<Props> = (props: Props) => {
   }
 };
 
-export default CelTable;
+export default memo(CelTable);

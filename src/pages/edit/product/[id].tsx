@@ -143,7 +143,7 @@ const ProductEditPage = (props: Props) => {
   );
   const [selectAttributes, setSelectAttributes] =
     useState<IObjectSelectAttribute>({});
-  console.log(showAttributes);
+
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
   const [loadingGallery, setLoadingGallery] = useState<boolean>(false);
@@ -202,8 +202,6 @@ const ProductEditPage = (props: Props) => {
     }
     select[key] = items;
     setSelectAttributes({ ...select });
-    console.log("select", select);
-    console.log("items", items);
   };
 
   const removeSelect = (items: ISelectItem[], id: string, key: string) => {
@@ -620,10 +618,19 @@ const ProductEditPage = (props: Props) => {
       } = payload;
 
       if (status === 200) {
-        const defaultCategoryPayload: IParentCategory = {
-          _id: category._id,
-          title: category.title,
-        };
+        let defaultCategoryPayload: IParentCategory | null = null;
+
+        if (category) {
+          defaultCategoryPayload = {
+            _id: category._id,
+            title: category.title,
+          };
+        } else if(categories.length > 0) {
+          defaultCategoryPayload = {
+            _id: categories[0]._id,
+            title: categories[0].title,
+          };
+        }
 
         const multipleCategoriesPayload: ISelectItem[] = categories.map(
           (category: IParentCategory) => ({
@@ -637,7 +644,9 @@ const ProductEditPage = (props: Props) => {
           title,
           description,
           shortDescription,
-          category: defaultCategoryPayload,
+          category: defaultCategoryPayload
+            ? defaultCategoryPayload
+            : initData.category,
           categories: multipleCategoriesPayload,
           thumbnail,
           gallery,
@@ -658,7 +667,7 @@ const ProductEditPage = (props: Props) => {
 
         setProduct(productData);
         setTitle(title);
-        setDefaultCategory(defaultCategoryPayload._id);
+        setDefaultCategory(defaultCategoryPayload ? defaultCategoryPayload._id : null);
         setMultipleCategories(multipleCategoriesPayload);
         setThumbnail(thumbnail);
         setGallery(gallery);
@@ -667,6 +676,7 @@ const ProductEditPage = (props: Props) => {
 
       setLoading(false);
     } catch (error) {
+      console.log(error);
       toast.error("Error server, please try again", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -738,7 +748,6 @@ const ProductEditPage = (props: Props) => {
     try {
       const response = await axiosGet("categories/parent");
       const data = response.payload.map((item: any) => item._id);
-
       setCategoriesParent(data);
     } catch (error) {
       console.log(error);

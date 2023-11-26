@@ -10,7 +10,6 @@ const Pagination = (props: Props) => {
   const router = useRouter();
   const { pagination } = props;
   const [totalPages, setTotalPages] = useState<number[]>([]);
-  
   const onPagination = (page: number) => {
     router.replace({
       query: { ...router.query, page },
@@ -46,7 +45,6 @@ const Pagination = (props: Props) => {
 
   return (
     <Fragment>
-      {/* {pagination && pagination.totalItems > pagination.pageSize && ( */}
       <div className="flex lg:flex-row flex-col-reverse items-center justify-between py-5 work-sans gap-2">
         <div>
           <p className="flex items-center text-sm leading-5 text-blue-700 gap-1">
@@ -139,7 +137,6 @@ const Pagination = (props: Props) => {
           </div>
         </div>
       </div>
-      {/* )} */}
     </Fragment>
   );
 };
