@@ -38,6 +38,7 @@ import Specifications from "~/components/Specifications";
 import Loading from "~/components/Loading";
 import { CelTable, Table } from "~/components/Table";
 import Popup from "~/components/Popup";
+import { ButtonDelete } from "~/components/Button";
 
 enum TYPE_TAG {
   BASIC_INFOR = "basic_infor",
@@ -236,8 +237,11 @@ const ProductEditPage = (props: Props) => {
       currentShowAttributes[code] = [];
 
       for (const variant of variants) {
-        const { _id, name } = variant as IVariant;
-        currentShowAttributes[code].push({ _id, title: name });
+        const { _id, name, public: available } = variant as IVariant;
+
+        if (available) {
+          currentShowAttributes[code].push({ _id, title: name });
+        }
       }
     }
     select[key].push(item);
@@ -625,7 +629,7 @@ const ProductEditPage = (props: Props) => {
             _id: category._id,
             title: category.title,
           };
-        } else if(categories.length > 0) {
+        } else if (categories.length > 0) {
           defaultCategoryPayload = {
             _id: categories[0]._id,
             title: categories[0].title,
@@ -667,7 +671,9 @@ const ProductEditPage = (props: Props) => {
 
         setProduct(productData);
         setTitle(title);
-        setDefaultCategory(defaultCategoryPayload ? defaultCategoryPayload._id : null);
+        setDefaultCategory(
+          defaultCategoryPayload ? defaultCategoryPayload._id : null
+        );
         setMultipleCategories(multipleCategoriesPayload);
         setThumbnail(thumbnail);
         setGallery(gallery);
@@ -688,7 +694,7 @@ const ProductEditPage = (props: Props) => {
     setLoading(true);
 
     try {
-      const { status, payload } = await axiosGet(`/variants`);
+      const { status, payload } = await axiosGet(`/attributes/available`);
 
       if (status === 200) {
         let attributesPayload: IObjAttibute = {};
@@ -1111,14 +1117,9 @@ const ProductEditPage = (props: Props) => {
                           }
                         />
                         <CelTable type={typeCel.GROUP}>
-                          <div className="flex items-center justify-center gap-2">
-                            <button
-                              onClick={() => onShowPopupVariant(variant)}
-                              className="block w-fit px-3 py-2 border-error border-2 text-error rounded transition duration-300 hover:bg-error hover:text-white focus:outline-none"
-                            >
-                              <AiOutlineDelete className="text-xl" />
-                            </button>
-                          </div>
+                          <ButtonDelete
+                            onClick={() => onShowPopupVariant(variant)}
+                          />
                         </CelTable>
                       </tr>
                     ))}

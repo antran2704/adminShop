@@ -7,7 +7,7 @@ module.exports = {
         primary: "#418efd",
         text: "#1E1E1E",
         desc: "#333333",
-        success: "#71be34",
+        success: "#10b981",
         warn: "#ffb702",
         error: "#ff623d",
         pending: "#ffb702",

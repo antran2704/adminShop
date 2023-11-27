@@ -49,17 +49,17 @@ const ShowItemsLayout = (props: Props) => {
         <div className="flex items-center gap-2">
           {link && <Link
             href={link}
-            className="flex items-center font-medium text-white bg-success px-3 py-2 rounded-md gap-1"
+            className="flex items-center font-medium md:text-base text-sm text-white bg-success px-3 py-2 rounded-md gap-1"
           >
-            <IoIosAdd className=" text-2xl" />
+            <IoIosAdd className="md:text-2xl text-xl" />
             {titleCreate}
           </Link>}
 
           {!link && <button
             onClick={onCreate}
-            className="flex items-center font-medium text-white bg-success px-3 py-2 rounded-md gap-1"
+            className="flex items-center font-medium md:text-base text-sm text-white bg-success px-3 py-2 rounded-md gap-1"
           >
-            <IoIosAdd className=" text-2xl" />
+            <IoIosAdd className="md:text-2xl text-xl" />
             {titleCreate}
           </button>}
         </div>
@@ -74,7 +74,7 @@ const ShowItemsLayout = (props: Props) => {
       </Fragment>
 
       {showPopup && selectItem.id && (
-        <Popup title="Form" show={showPopup} onClose={handlePopup}>
+        <Popup title="Confirm Delete" show={showPopup} onClose={handlePopup}>
           <div>
             <p className="text-lg">
               Do you want delete {title.toLowerCase()} <strong>{selectItem?.title}</strong>
@@ -82,13 +82,13 @@ const ShowItemsLayout = (props: Props) => {
             <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
               <button
                 onClick={handlePopup}
-                className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"
+                className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-70 hover:opacity-100 rounded-md transition-cus"
               >
                 Cancle
               </button>
               <button
                 onClick={handleDelete}
-                className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
+                className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-70 hover:opacity-100 rounded-md"
               >
                 Delete
               </button>

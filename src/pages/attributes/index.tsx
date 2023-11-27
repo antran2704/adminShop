@@ -1,9 +1,7 @@
-import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { useState, useEffect, Fragment, useCallback, ChangeEvent } from "react";
 import { toast } from "react-toastify";
-import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 
 import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
 import { typeCel } from "~/enums";
@@ -15,6 +13,7 @@ import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 import Search from "~/components/Search";
 import { Table, CelTable } from "~/components/Table";
 import { colHeaderAttribute as colHeadTable } from "~/components/Table/colHeadTable";
+import { ButtonDelete, ButtonEdit } from "~/components/Button";
 
 interface ISelectAttribute {
   id: string | null;
@@ -42,12 +41,29 @@ const AttributesPage = (props: Props) => {
   const currentPage = query.page ? query.page : 1;
 
   const [attributes, setAttribute] = useState<IAttribute[]>([]);
+  const [selectAttributes, setSelectAttributes] = useState<string[]>([]);
+
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectItem, setSelectItem] = useState<ISelectAttribute>(initSelect);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
   const [filter, setFilter] = useState<IFilter | null>(null);
+
+  const onSelectCheckBox = useCallback(
+    (id: string) => {
+      const isExit = selectAttributes.find((select: string) => select === id);
+      if (isExit) {
+        const newSelects = selectAttributes.filter(
+          (select: string) => select !== id
+        );
+        setSelectAttributes(newSelects);
+      } else {
+        setSelectAttributes([...selectAttributes, id]);
+      }
+    },
+    [selectAttributes]
+  );
 
   const onReset = useCallback(() => {
     setFilter(null);
@@ -72,7 +88,7 @@ const AttributesPage = (props: Props) => {
     }
 
     try {
-      const payload = await axiosPatch(`/variants/${id}`, {
+      const payload = await axiosPatch(`/attributes/${id}`, {
         public: status,
       });
 
@@ -107,7 +123,7 @@ const AttributesPage = (props: Props) => {
     setLoading(true);
 
     try {
-      const response = await axiosGet(`/variants?page=${currentPage}`);
+      const response = await axiosGet(`/attributes?page=${currentPage}`);
       if (response.status === 200) {
         if (response.payload.length === 0) {
           setAttribute([]);
@@ -142,7 +158,7 @@ const AttributesPage = (props: Props) => {
 
     try {
       const response = await axiosGet(
-        `/variants/search?search=${filter?.search || ""}&page=${currentPage}`
+        `/attributes/search?search=${filter?.search || ""}&page=${currentPage}`
       );
       if (response.status === 200) {
         if (response.payload.length === 0) {
@@ -182,7 +198,7 @@ const AttributesPage = (props: Props) => {
     }
 
     try {
-      await axiosDelete(`/variants/${selectItem.id}`);
+      await axiosDelete(`/attributes/${selectItem.id}`);
       setShowPopup(false);
 
       if (filter) {
@@ -229,14 +245,32 @@ const AttributesPage = (props: Props) => {
           placeholder="Search by attribute name..."
         />
 
-        <Table colHeadTabel={colHeadTable} message={message} loading={loading}>
+        <Table
+          items={attributes}
+          selects={selectAttributes}
+          setSelects={setSelectAttributes}
+          selectAll={true}
+          isSelected={
+            selectAttributes.length === attributes.length ? true : false
+          }
+          colHeadTabel={colHeadTable}
+          message={message}
+          loading={loading}
+        >
           <Fragment>
             {attributes.map((item: IAttribute) => (
               <tr
                 key={item._id}
                 className="hover:bg-slate-100 border-b border-gray-300"
               >
-                <CelTable type={typeCel.TEXT} value={item.code} />
+                <CelTable
+                  type={typeCel.SELECT}
+                  isSelected={
+                    selectAttributes.includes(item._id as string) ? true : false
+                  }
+                  onSelectCheckBox={() => onSelectCheckBox(item._id as string)}
+                />
+                <CelTable type={typeCel.TEXT} center={true} value={item.code} />
                 <CelTable
                   type={typeCel.LINK}
                   value={item.name}
@@ -249,27 +283,23 @@ const AttributesPage = (props: Props) => {
                   checked={item.public}
                   onGetChecked={onChangePublic}
                 />
-                <CelTable type={typeCel.DATE} value={item.createdAt} />
+                <CelTable
+                  type={typeCel.DATE}
+                  center={true}
+                  value={item.createdAt}
+                />
                 <CelTable type={typeCel.GROUP}>
                   <div className="flex items-center justify-end gap-2">
-                    <Link
-                      href={`/attributes/${item._id}`}
-                      className="block w-fit px-3 py-2 border-blue-700 border-2 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
-                    >
-                      <AiOutlineEdit className="text-xl w-fit" />
-                    </Link>
+                    <ButtonEdit link={`/attributes/${item._id}`} />
 
-                    <button
+                    <ButtonDelete
                       onClick={() =>
                         onSelectDeleteItem({
                           id: item._id as string,
                           title: item.name,
                         })
                       }
-                      className="block w-fit px-3 py-2 border-error border-2 text-error rounded transition duration-300 hover:bg-error hover:text-white focus:outline-none"
-                    >
-                      <AiOutlineDelete className="text-xl" />
-                    </button>
+                    />
                   </div>
                 </CelTable>
               </tr>

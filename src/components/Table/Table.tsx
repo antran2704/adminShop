@@ -4,11 +4,11 @@ import NoResult from "../NoResult";
 interface Props {
   children: JSX.Element;
   colHeadTabel: string[];
-  items: any[];
-  selects: string[];
-  setSelects: (value: SetStateAction<string[]>) => void
+  items?: any[];
+  selects?: string[];
+  setSelects?: (value: SetStateAction<string[]>) => void
   isSelected?: boolean;
-  selectAll: boolean;
+  selectAll?: boolean;
   message: string | null;
   loading: boolean;
 }
@@ -17,8 +17,8 @@ const Table: FC<Props> = (props: Props) => {
   const {
     children,
     colHeadTabel,
-    items,
-    selects,
+    items = [],
+    selects = [],
     message,
     loading,
     isSelected = false,
@@ -27,6 +27,8 @@ const Table: FC<Props> = (props: Props) => {
   } = props;
 
   const onSelectCheckBoxAll = () => {
+    if(!setSelects) return;
+
     if (selects.length === items.length) {
       setSelects([]);
     } else {

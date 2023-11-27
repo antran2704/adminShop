@@ -15,7 +15,7 @@ import { deleteImageInSever } from "~/helper/handleImage";
 
 import Search from "~/components/Search";
 import { Table, CelTable } from "~/components/Table";
-import { colHeadCategory as colHeadTable } from "~/components/Table/colHeadTable";
+import { colHeaderCoupon as colHeadTable } from "~/components/Table/colHeadTable";
 import { ButtonDelete, ButtonEdit } from "~/components/Button";
 
 interface ISelectCategory {
@@ -35,7 +35,7 @@ interface Props {
   query: ParsedUrlQuery;
 }
 
-const CategoriesPage = (props: Props) => {
+const CouponsPage = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? query.page : 1;
 
@@ -242,9 +242,9 @@ const CategoriesPage = (props: Props) => {
 
   return (
     <ShowItemsLayout
-      title="Categories"
-      titleCreate="Create category"
-      link="/create/category"
+      title="Coupons"
+      titleCreate="Create Coupons"
+      link="/"
       selectItem={{
         title: selectItem?.title ? selectItem.title : "",
         id: selectItem?.id || null,
@@ -260,69 +260,59 @@ const CategoriesPage = (props: Props) => {
           onReset={onReset}
           onSearch={onChangeSearch}
           onFilter={handleGetDataByFilter}
-          placeholder="Search by category name..."
+          placeholder="Search by coupon code/name..."
         />
 
         <Table
-          items={categories}
-          selects={selectCategories}
-          setSelects={setSelectCategories}
-          selectAll={true}
-          isSelected={
-            selectCategories.length === categories.length ? true : false
-          }
+          //   items={categories}
+          //   selects={selectCategories}
+          //   setSelects={setSelectCategories}
+          //   selectAll={true}
+          //   isSelected={
+          //     selectCategories.length === categories.length ? true : false
+          //   }
           colHeadTabel={colHeadTable}
           message={message}
           loading={loading}
         >
           <Fragment>
-            {categories.map((item: IDataCategory) => (
-              <tr
-                key={item._id}
-                className="hover:bg-slate-100 border-b border-gray-300"
-              >
-                <CelTable
+            <tr className="hover:bg-slate-100 border-b border-gray-300">
+              {/* <CelTable
                   type={typeCel.SELECT}
                   isSelected={
                     selectCategories.includes(item._id as string) ? true : false
                   }
                   onSelectCheckBox={() => onSelectCheckBox(item._id as string)}
+                /> */}
+              <CelTable
+                type={typeCel.LINK}
+                value={"Summer Gift Voucher"}
+                className="whitespace-nowrap"
+                href={`/edit/coupon`}
+              />
+              <CelTable type={typeCel.TEXT} className="whitespace-nowrap" value={"Code-123"} center={true}/>
+              <CelTable type={typeCel.TEXT} value={"90%"} center={true} />
+              <CelTable
+                //   id={item._id as string}
+                type={typeCel.PUBLIC}
+                checked={true}
+                onGetChecked={() => {}}
+              />
+              <CelTable type={typeCel.DATE} className="whitespace-nowrap" value={"Nov 27, 2023"} />
+              <CelTable type={typeCel.DATE} className="whitespace-nowrap" value={"Oct 19, 2023"} />
+              <CelTable
+                  type={typeCel.STATUS}
+                  status={"bg-success"}
+                  value={"Active" }
                 />
-                <CelTable
-                  type={typeCel.LINK}
-                  value={item.title}
-                  href={`/edit/category/${item._id}`}
-                />
-                <CelTable
-                  type={typeCel.THUMBNAIL}
-                  value={item.thumbnail as string}
-                  href={`/edit/category/${item._id}`}
-                />
-                <CelTable
-                  id={item._id as string}
-                  type={typeCel.PUBLIC}
-                  checked={item.public}
-                  onGetChecked={onChangePublish}
-                />
-                <CelTable type={typeCel.DATE} center={true} value={item.createdAt} />
-                <CelTable type={typeCel.GROUP}>
-                  <div className="flex items-center justify-end gap-2">
-                    <ButtonEdit link={`/edit/category/${item._id}`} />
+              <CelTable type={typeCel.GROUP}>
+                <div className="flex items-center justify-center gap-2">
+                  <ButtonEdit link={`/edit/coupon`} />
 
-                    <ButtonDelete
-                      onClick={() =>
-                        onSelectDeleteItem(
-                          item._id as string,
-                          item.parent_id as string,
-                          item.title,
-                          item.thumbnail as string
-                        )
-                      }
-                    />
-                  </div>
-                </CelTable>
-              </tr>
-            ))}
+                  <ButtonDelete onClick={() => {}} />
+                </div>
+              </CelTable>
+            </tr>
           </Fragment>
         </Table>
       </Fragment>
@@ -330,7 +320,7 @@ const CategoriesPage = (props: Props) => {
   );
 };
 
-export default CategoriesPage;
+export default CouponsPage;
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

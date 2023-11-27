@@ -1,9 +1,7 @@
-import Link from "next/link";
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { useState, useEffect, Fragment, useCallback, ChangeEvent } from "react";
 import { toast } from "react-toastify";
-import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 
 import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
 import { typeCel } from "~/enums";
@@ -17,6 +15,7 @@ import { colHeaderProduct as colHeadTable } from "~/components/Table/colHeadTabl
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 import SelectItem from "~/components/Select/SelectItem";
 import ImageCus from "~/components/Image/ImageCus";
+import { ButtonDelete, ButtonEdit } from "~/components/Button";
 
 interface ISelectProduct {
   id: string | null;
@@ -345,7 +344,9 @@ const ProductPage = (props: Props) => {
                       src={product.thumbnail as string}
                       className="min-w-[32px] w-8 h-8 rounded-full"
                     />
-                    <p className="text-sm font-medium whitespace-nowrap">{product.title}</p>
+                    <p className="text-sm font-medium whitespace-nowrap">
+                      {product.title}
+                    </p>
                   </div>
                 </CelTable>
                 <CelTable
@@ -385,14 +386,9 @@ const ProductPage = (props: Props) => {
                 />
                 <CelTable type={typeCel.GROUP}>
                   <div className="flex items-center justify-center gap-2">
-                    <Link
-                      href={`/edit/product/${product._id}`}
-                      className="block w-fit px-3 py-2 border-blue-700 border-2 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
-                    >
-                      <AiOutlineEdit className="text-xl w-fit" />
-                    </Link>
+                    <ButtonEdit link={`/edit/product/${product._id}`} />
 
-                    <button
+                    <ButtonDelete
                       onClick={() => {
                         if (!showPopup) {
                           onSelectProduct(product._id as string, product.title);
@@ -400,10 +396,7 @@ const ProductPage = (props: Props) => {
 
                         handlePopup();
                       }}
-                      className="block w-fit px-3 py-2 border-error border-2 text-error rounded transition duration-300 hover:bg-error hover:text-white focus:outline-none"
-                    >
-                      <AiOutlineDelete className="text-xl" />
-                    </button>
+                    />
                   </div>
                 </CelTable>
               </tr>

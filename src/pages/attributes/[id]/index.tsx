@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import { useState, useEffect, Fragment, useCallback } from "react";
 import { toast } from "react-toastify";
-import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 
 import { axiosGet, axiosPatch, axiosPost } from "~/ultils/configAxios";
 import { typeCel, typeInput } from "~/enums";
@@ -13,12 +12,13 @@ import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
-import {Table, CelTable} from "~/components/Table";
+import { Table, CelTable } from "~/components/Table";
 import { colHeaderAttributeValue as colHeadTable } from "~/components/Table/colHeadTable";
 import { IPagination } from "~/interface/pagination";
 import PopupForm from "~/components/Popup/PopupForm";
 import Input from "~/components/Input";
 import ButtonCheck from "~/components/Button/ButtonCheck";
+import { ButtonDelete, ButtonEdit } from "~/components/Button";
 
 interface ISelectAttribute {
   id: string | null;
@@ -113,7 +113,7 @@ const AttributeValuesPage = (props: Props) => {
     }
 
     try {
-      const payload = await axiosPatch(`/variants/child/${id}`, {
+      const payload = await axiosPatch(`/attributes/child/${id}`, {
         children_id,
         ...data,
         public: status,
@@ -142,8 +142,8 @@ const AttributeValuesPage = (props: Props) => {
     const fields = checkData([
       {
         name: "title",
-        value: selectItem.title
-      }
+        value: selectItem.title,
+      },
     ]);
 
     if (fields.length > 0) {
@@ -155,7 +155,7 @@ const AttributeValuesPage = (props: Props) => {
     }
 
     try {
-      const payload = await axiosPatch(`/variants/child/${id}`, {
+      const payload = await axiosPatch(`/attributes/child/${id}`, {
         children_id: selectItem.id,
         name: selectItem.title,
         public: selectItem.public,
@@ -220,7 +220,7 @@ const AttributeValuesPage = (props: Props) => {
     setLoading(true);
 
     try {
-      const response = await axiosGet(`/variants/${id}`);
+      const response = await axiosGet(`/attributes/${id}`);
       if (response.status === 200) {
         if (response.payload.variants.length === 0) {
           setAttribute([]);
@@ -259,7 +259,7 @@ const AttributeValuesPage = (props: Props) => {
     }
 
     try {
-      await axiosPatch(`/variants/child/delete`, {
+      await axiosPatch(`/attributes/child/delete`, {
         parent_id: id,
         children_id: selectItem.id,
       });
@@ -280,8 +280,8 @@ const AttributeValuesPage = (props: Props) => {
     const fields = checkData([
       {
         name: "name",
-        value: newVarinat.name
-      }
+        value: newVarinat.name,
+      },
     ]);
 
     if (fields.length > 0) {
@@ -338,7 +338,7 @@ const AttributeValuesPage = (props: Props) => {
                 key={item._id}
                 className="hover:bg-slate-100 border-b border-gray-300"
               >
-                <CelTable type={typeCel.TEXT} value={item.name} />
+                <CelTable type={typeCel.TEXT} center={true} value={item.name} />
                 <CelTable
                   id={item._id as string}
                   type={typeCel.PUBLIC}
@@ -348,7 +348,7 @@ const AttributeValuesPage = (props: Props) => {
                 />
                 <CelTable type={typeCel.GROUP}>
                   <div className="flex items-center justify-end gap-2">
-                    <button
+                    <ButtonEdit
                       onClick={() =>
                         handlePopupFormUpdate({
                           id: item._id as string,
@@ -356,12 +356,9 @@ const AttributeValuesPage = (props: Props) => {
                           public: item.public,
                         })
                       }
-                      className="block w-fit px-3 py-2 border-blue-700 border-2 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
-                    >
-                      <AiOutlineEdit className="text-xl w-fit" />
-                    </button>
+                    />
 
-                    <button
+                    <ButtonDelete
                       onClick={() =>
                         onSelectDeleteItem({
                           id: item._id as string,
@@ -369,10 +366,7 @@ const AttributeValuesPage = (props: Props) => {
                           public: item.public,
                         })
                       }
-                      className="block w-fit px-3 py-2 border-error border-2 text-error rounded transition duration-300 hover:bg-error hover:text-white focus:outline-none"
-                    >
-                      <AiOutlineDelete className="text-xl" />
-                    </button>
+                    />
                   </div>
                 </CelTable>
               </tr>

@@ -79,7 +79,7 @@ const CelTable: FC<Props> = (props: Props) => {
             className ? className : ""
           } ${
             center ? "text-center" : "text-start"
-          } text-blue-900 sm:text-sm text-xs leading-5`}
+          } text-blue-900 sm:text-sm text-xs whitespace-nowrap leading-5`}
         >
           {getDateTime(value)}
         </td>

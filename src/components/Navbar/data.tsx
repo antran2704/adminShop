@@ -1,5 +1,5 @@
 import { AiOutlineSetting, AiOutlineShoppingCart } from "react-icons/ai";
-import { BiLogOut } from "react-icons/bi";
+import { BiLogOut, BiCategoryAlt } from "react-icons/bi";
 import { RxDashboard } from "react-icons/rx";
 import { ReactNode } from "react";
 import { HiOutlineUsers } from "react-icons/hi2";
@@ -20,7 +20,7 @@ const listBody: itemNav[] = [
   {
     name: "Catalog",
     path: "/",
-    icon: <AiOutlineShoppingCart />,
+    icon: <BiCategoryAlt />,
     children: [
       {
         name: "Categories",
@@ -43,7 +43,7 @@ const listBody: itemNav[] = [
   {
     name: "Orders",
     path: "/orders",
-    icon: <RxDashboard />,
+    icon: <AiOutlineShoppingCart />,
   },
   {
     name: "Customers",

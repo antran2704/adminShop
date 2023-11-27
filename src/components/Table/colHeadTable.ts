@@ -4,7 +4,7 @@ const colHeadCategory: string[] = [
   "Thumnail",
   "Publish",
   "Created Date",
-  "",
+  "Action",
 ];
 
 // header table for orders
@@ -15,7 +15,7 @@ const colHeadOrder: string[] = [
   "Phone",
   "Status",
   "Created Date",
-  "",
+  "Action",
 ];
 
 // header table for order detail
@@ -33,7 +33,7 @@ const colHeaderAttribute: string[] = [
   "Name",
   "Published",
   "Created Date",
-  "",
+  "Action",
 ];
 
 // header table for attribute value
@@ -62,6 +62,18 @@ const colHeaderVariants: string[] = [
   "Action"
 ];
 
+// header table for coupon
+const colHeaderCoupon: string[] = [
+  "Name",
+  "Code",
+  "Discount",
+  "Published",
+  "Start Date",
+  "End Date",
+  "Status",
+  "Action"
+];
+
 export {
   colHeadCategory,
   colHeadOrder,
@@ -69,5 +81,6 @@ export {
   colHeaderAttribute,
   colHeaderAttributeValue,
   colHeaderProduct,
-  colHeaderVariants
+  colHeaderVariants,
+  colHeaderCoupon
 };

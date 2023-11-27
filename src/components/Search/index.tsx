@@ -47,7 +47,7 @@ const Search: FC<Props> = (props: Props) => {
 
   return (
     <div
-      className={`flex flex-wrap items-end min-h-10 my-5 gap-5`}
+      className={`flex flex-wrap items-end min-h-10 mt-5 mb-10 gap-5`}
     >
       <input
         value={search}
@@ -61,18 +61,20 @@ const Search: FC<Props> = (props: Props) => {
 
       {children}
 
-      <button
-      onClick={onFilter}
-        className={`flex items-center justify-center h-10 text-lg text-white bg-primary font-medium px-8 py-1 rounded-md`}
-      >
-        Fillter
-      </button>
-      <button
-        onClick={onReset}
-        className={`flex items-center justify-center h-10 text-lg text-text bg-[#e5e7eb] font-medium px-8 py-1 rounded-md`}
-      >
-        Reset
-      </button>
+      <div className="md:w-fit w-full flex md:flex-row flex-col items-center md:gap-5 gap-2">
+        <button
+        onClick={onFilter}
+          className={`flex md:w-fit w-full items-center justify-center h-10 text-lg text-white bg-primary font-medium px-8 py-1 rounded-md`}
+        >
+          Fillter
+        </button>
+        <button
+          onClick={onReset}
+          className={`flex md:w-fit w-full items-center justify-center h-10 text-lg text-text bg-[#e5e7eb] font-medium px-8 py-1 rounded-md`}
+        >
+          Reset
+        </button>
+      </div>
     </div>
   );
 };
