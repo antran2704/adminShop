@@ -51,9 +51,21 @@ import {
   IOptionProduct,
   ICreateProduct,
   ISpecificationsProduct,
-  ISpecificationAttributes
+  ISpecificationAttributes,
 } from "./product";
-export type { IProductData, IProductHome, IVariantProduct, IOptionProduct, ICreateProduct, ISpecificationsProduct, ISpecificationAttributes };
+export type {
+  IProductData,
+  IProductHome,
+  IVariantProduct,
+  IOptionProduct,
+  ICreateProduct,
+  ISpecificationsProduct,
+  ISpecificationAttributes,
+};
+
+// Interface of Coupon
+import { ICoupon, ICouponHome, ICouponCreate } from "./coupon";
+export type { ICoupon, ICouponHome, ICouponCreate };
 
 // Interface of Breadcrumb
 import { IBreadcrumb } from "./breadcrum";

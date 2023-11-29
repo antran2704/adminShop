@@ -16,6 +16,7 @@ import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 import SelectItem from "~/components/Select/SelectItem";
 import ImageCus from "~/components/Image/ImageCus";
 import { ButtonDelete, ButtonEdit } from "~/components/Button";
+import Link from "next/link";
 
 interface ISelectProduct {
   id: string | null;
@@ -344,9 +345,9 @@ const ProductPage = (props: Props) => {
                       src={product.thumbnail as string}
                       className="min-w-[32px] w-8 h-8 rounded-full"
                     />
-                    <p className="text-sm font-medium whitespace-nowrap">
+                    <Link href={`/edit/product/${product._id}`} className="text-sm font-medium whitespace-nowrap">
                       {product.title}
-                    </p>
+                    </Link>
                   </div>
                 </CelTable>
                 <CelTable

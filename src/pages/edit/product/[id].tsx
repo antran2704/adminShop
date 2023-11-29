@@ -801,7 +801,7 @@ const ProductEditPage = (props: Props) => {
       onSubmit={handleOnSubmit}
     >
       <Fragment>
-        <div className="flex items-center mb-5 gap-2">
+        <div className="flex items-center py-5 gap-2">
           <button
             onClick={() => onSelectTag(TYPE_TAG.BASIC_INFOR)}
             className={`text-lg ${

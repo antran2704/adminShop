@@ -2,15 +2,25 @@ import { ChangeEvent, FC } from "react";
 
 interface Props {
   title?: string;
-  width?: string;
+  className?: string;
   name: string;
-  onSelect: (e: ChangeEvent<HTMLInputElement>) => void;
+  value: string;
+  error?: boolean;
+  onSelect: (name: string, value: string) => void;
 }
 
 const SelectDate: FC<Props> = (props: Props) => {
-  const { width, title, name, onSelect } = props;
+  const { className, title, name, value, error, onSelect } = props;
+
+  const onSelectDate = (e: ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.name;
+    const value = e.target.value;
+
+    onSelect(name, value);
+  };
+
   return (
-    <div className={`${width ? width : "w-full"} h-full`}>
+    <div className={`${className ? className : "w-full"} h-full`}>
       {title && (
         <span className="block text-base text-[#1E1E1E] font-medium mb-1">
           {title}
@@ -18,10 +28,13 @@ const SelectDate: FC<Props> = (props: Props) => {
       )}
 
       <input
-        type="date"
+        type="datetime-local"
         name={name}
-        onChange={onSelect}
-        className="w-full min-h-[40px] rounded-md px-2 py-1 border-2 focus:border-[#4f46e5]"
+        value={value}
+        onChange={onSelectDate}
+        className={`w-full min-h-[40px] ${
+          error && "border-error"
+        } rounded-md px-2 py-1 border-2 focus:border-[#4f46e5]`}
       />
     </div>
   );

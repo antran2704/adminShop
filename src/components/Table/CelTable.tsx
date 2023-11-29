@@ -128,17 +128,15 @@ const CelTable: FC<Props> = (props: Props) => {
     case typeCel.LINK:
       return (
         <td className="px-6 py-4 whitespace-no-wrap border-b">
-          <div className="flex items-center justify-center">
-            <Link
-              target="_blank"
-              href={href ? href : "/"}
-              className={`block sm:text-sm text-xs leading-5 text-gray-800 ${
-                className ? className : ""
-              } ${center ? "text-center" : "text-start"} font-medium`}
-            >
-              {value}
-            </Link>
-          </div>
+          <Link
+            target="_blank"
+            href={href ? href : "/"}
+            className={`block sm:text-sm text-xs leading-5 text-gray-800 ${
+              className ? className : ""
+            } ${center ? "text-center" : "text-start"} font-medium`}
+          >
+            {value}
+          </Link>
         </td>
       );
 
@@ -162,7 +160,12 @@ const CelTable: FC<Props> = (props: Props) => {
       return (
         <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 leading-5">
           <div className="flex items-center justify-center">
-            <input checked={isSelected} type="checkbox" onChange={onSelectCheckBox} id={id} />
+            <input
+              checked={isSelected}
+              type="checkbox"
+              onChange={onSelectCheckBox}
+              id={id}
+            />
           </div>
         </td>
       );

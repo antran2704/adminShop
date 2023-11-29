@@ -369,7 +369,7 @@ const CreateProductPage = () => {
       onSubmit={handleOnSubmit}
     >
       <div>
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">
+        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
           <Input
             title="Title"
             width="lg:w-2/4 w-full"
@@ -458,7 +458,6 @@ const CreateProductPage = () => {
           <Gallery
             gallery={gallery}
             loading={loadingGallery}
-            // error={fieldsCheck.includes("gallery")}
             limited={6}
             onChange={onUploadGallery}
             onDelete={onRemoveGallary}

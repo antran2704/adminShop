@@ -23,7 +23,7 @@ const Gallery: FC<Props> = (props: Props) => {
     onChange,
     onDelete,
   } = props;
-  
+
   const [selectImage, setSelect] = useState<string | null>(null);
 
   const hanldeChangeGallery = (e: ChangeEvent<HTMLInputElement>) => {
