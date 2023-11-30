@@ -120,7 +120,7 @@ const CouponsPage = (props: Props) => {
 
     try {
       const response = await axiosGet(
-        `/discounts?page=${currentPage}&discount_name=1&discount_public=1&discount_type=1&discount_code=1&discount_value=1&discount_active=1&discount_start_date=1&discount_end_date=1`
+        `/discounts?page=${currentPage}&discount_name=1&discount_public=1&discount_type=1&discount_thumbnail=1&discount_code=1&discount_value=1&discount_active=1&discount_start_date=1&discount_end_date=1`
       );
       if (response.status === 200) {
         if (response.payload.length === 0) {
@@ -129,7 +129,6 @@ const CouponsPage = (props: Props) => {
           setLoading(false);
           return;
         }
-        console.log(response.payload);
         setPagination(response.pagination);
         setCoupons(response.payload);
         setLoading(false);
@@ -152,7 +151,7 @@ const CouponsPage = (props: Props) => {
       const response = await axiosGet(
         `/discounts/search?search=${
           filter?.search || ""
-        }&discount_name=1&discount_public=1&discount_code=1&discount_value=1&discount_type=1&discount_active=1&discount_start_date=1&discount_end_date=1&page=${currentPage}`
+        }&discount_name=1&discount_public=1&discount_code=1&discount_value=1&discount_type=1&discount_thumbnail=1&discount_active=1&discount_start_date=1&discount_end_date=1&page=${currentPage}`
       );
 
       if (response.status === 200) {
@@ -265,7 +264,7 @@ const CouponsPage = (props: Props) => {
                       className="min-w-[32px] w-8 h-8 rounded-full"
                     />
                     <Link
-                      href={`/`}
+                      href={`/edit/coupon/${item._id}`}
                       className="text-sm font-medium whitespace-nowrap"
                     >
                       {item.discount_name}
@@ -320,7 +319,7 @@ const CouponsPage = (props: Props) => {
                 />
                 <CelTable type={typeCel.GROUP}>
                   <div className="flex items-center justify-center gap-2">
-                    <ButtonEdit link={`/edit/coupon`} />
+                    <ButtonEdit link={`/edit/coupon/${item._id}`} />
 
                     <ButtonDelete
                       onClick={() =>

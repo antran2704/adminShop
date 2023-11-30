@@ -1,5 +1,7 @@
+import { GetServerSideProps } from "next";
+import { ParsedUrlQuery } from "querystring";
 import { useRouter } from "next/router";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { toast } from "react-toastify";
 
 import ButtonCheck from "~/components/Button/ButtonCheck";
@@ -7,14 +9,20 @@ import Input from "~/components/Input";
 import { EDicount_type, EDiscount_applies, typeInput } from "~/enums";
 import FormLayout from "~/layouts/FormLayout";
 
-import { ICouponCreate } from "~/interface";
+import { ICoupon } from "~/interface";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
-import { axiosPost } from "~/ultils/configAxios";
+import { axiosGet, axiosPatch, axiosPost } from "~/ultils/configAxios";
 import Thumbnail from "~/components/Image/Thumbnail";
 import { uploadImageOnServer } from "~/helper/handleImage";
 import { SelectDate, SelectTag } from "~/components/Select";
+import Loading from "~/components/Loading";
 
-const initData: ICouponCreate = {
+interface Props {
+  query: ParsedUrlQuery;
+}
+
+const initData: ICoupon = {
+  _id: "",
   discount_code: "",
   discount_name: "",
   discount_value: 0,
@@ -29,12 +37,17 @@ const initData: ICouponCreate = {
   discount_thumbnail: null,
   discount_active: true,
   discount_public: true,
+  discount_used_count: 0,
+  discount_user_used: [],
 };
 
-const CreateCouponPage = () => {
+const EditCouponPage = (props: Props) => {
+  const { query } = props;
+  const { id } = query;
+
   const router = useRouter();
 
-  const [data, setData] = useState<ICouponCreate>(initData);
+  const [data, setData] = useState<ICoupon>(initData);
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
 
   const [discountType, setDiscountType] = useState<EDicount_type>(
@@ -43,6 +56,8 @@ const CreateCouponPage = () => {
 
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
+
+  const [loading, setLoading] = useState(true);
 
   const changePublic = useCallback(
     (name: string, value: boolean) => {
@@ -74,7 +89,11 @@ const CreateCouponPage = () => {
   );
 
   const onSelectDate = (name: string, value: string) => {
-    if (name === "discount_start_date" && new Date() > new Date(value)) {
+    if (
+      name === "discount_start_date" &&
+      (new Date() > new Date(value) ||
+        new Date(value) > new Date(data.discount_end_date))
+    ) {
       toast.info("Start date must be greater than the current time!!!", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -132,8 +151,12 @@ const CreateCouponPage = () => {
 
   const checkData = (data: any) => {
     let fields = handleCheckFields(data);
-    setFieldsCheck(fields);
-    router.push(`#${fields[0]}`);
+
+    if (fields.length > 0) {
+      setFieldsCheck(fields);
+      router.push(`#${fields[0]}`);
+    }
+
     return fields;
   };
 
@@ -169,7 +192,82 @@ const CreateCouponPage = () => {
     }
   };
 
+  const covertDate = (timestamps: string) => {
+    const value = new Date(timestamps);
+    const year = value.getFullYear();
+    const month =
+      value.getMonth() + 1 < 10
+        ? `0${value.getMonth() + 1}`
+        : value.getMonth() + 1;
+    const date = value.getDate() < 10 ? `0${value.getDate()}` : value.getDate();
+    const hours =
+      value.getHours() < 10 ? `0${value.getHours()}` : value.getHours();
+    const minutes =
+      value.getMinutes() < 10 ? `0${value.getMinutes()}` : value.getMinutes();
+    console.log(`${year}-${month}-${date}T${hours}:${minutes}`);
+    return `${year}-${month}-${date}T${hours}:${minutes}`;
+  };
+
+  const handleGetData = async () => {
+    setLoading(true);
+
+    try {
+      const data = await axiosGet(`/discounts/id/${id}`);
+      if (data.status === 200) {
+        const {
+          _id,
+          discount_active,
+          discount_applies,
+          discount_code,
+          discount_name,
+          discount_max_uses,
+          discount_value,
+          discount_min_value,
+          discount_per_user,
+          discount_public,
+          discount_start_date,
+          discount_end_date,
+          discount_thumbnail,
+          discount_type,
+          discount_used_count,
+          discount_user_used,
+          discount_product_ids,
+        } = data.payload;
+
+        setData({
+          _id,
+          discount_active,
+          discount_applies,
+          discount_code,
+          discount_name,
+          discount_max_uses,
+          discount_value,
+          discount_min_value,
+          discount_per_user,
+          discount_public,
+          discount_start_date: covertDate(discount_start_date),
+          discount_end_date: covertDate(discount_end_date),
+          discount_thumbnail,
+          discount_type,
+          discount_used_count,
+          discount_user_used,
+          discount_product_ids,
+        });
+        setThumbnail(discount_thumbnail);
+        setDiscountType(discount_type);
+        setLoading(false);
+      }
+    } catch (error) {
+      toast.error("Error server, please try again", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      setLoading(false);
+    }
+  };
+
   const handleOnSubmit = async () => {
+    setLoading(true);
+
     const fields = checkData([
       {
         name: "discount_name",
@@ -209,34 +307,39 @@ const CreateCouponPage = () => {
       toast.error("Please input fields", {
         position: toast.POSITION.TOP_RIGHT,
       });
-
+      setLoading(false);
       return;
     }
 
     try {
-      const payload = await axiosPost("/discounts", {
+      const payload = await axiosPatch(`/discounts/${id}`, {
         ...data,
         discount_thumbnail: thumbnail,
         discount_type: discountType,
       });
 
       if (payload.status === 201) {
-        toast.success("Success create coupon", {
+        toast.success("Success update coupon", {
           position: toast.POSITION.TOP_RIGHT,
         });
         router.push("/coupons");
       }
     } catch (error) {
-      toast.error("Error in create coupon", {
+      toast.error("Error in update coupon", {
         position: toast.POSITION.TOP_RIGHT,
       });
+      setLoading(false);
       console.log(error);
     }
   };
 
+  useEffect(() => {
+    handleGetData();
+  }, []);
+
   return (
     <FormLayout
-      title="Create coupon"
+      title="Edit coupon"
       backLink="/coupons"
       onSubmit={handleOnSubmit}
     >
@@ -399,9 +502,19 @@ const CreateCouponPage = () => {
             onChange={changePublic}
           />
         </div>
+
+        {loading && <Loading />}
       </div>
     </FormLayout>
   );
 };
 
-export default CreateCouponPage;
+export default EditCouponPage;
+
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+  return {
+    props: {
+      query,
+    },
+  };
+};

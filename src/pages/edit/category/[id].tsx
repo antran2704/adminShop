@@ -51,7 +51,7 @@ const EditCategoryPage = (props: Props) => {
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
 
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
 
   const onSelectCategory = (title: string | null, node_id: string | null) => {
     setCategorySelect({ title, node_id });
@@ -186,7 +186,9 @@ const EditCategoryPage = (props: Props) => {
   };
 
   const handleGetData = async () => {
+    setLoading(true);
     const id = query.id;
+    
     try {
       const data = await axiosGet(`/categories/id/${id}`);
 
