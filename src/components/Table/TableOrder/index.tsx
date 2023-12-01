@@ -43,7 +43,6 @@ const TableOrder: FC<Props> = (props: Props) => {
               <CelTable
                 type={typeCel.BUTTON_LINK}
                 href={`/orders/${order._id}`}
-                value={""}
                 icon={<AiOutlineEdit className="text-xl w-fit" />}
               />
             </tr>

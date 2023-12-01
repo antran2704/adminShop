@@ -1,10 +1,12 @@
+import { memo } from "react";
+
 interface Props {
   title: string;
   value: string;
   currentSelect: string;
   className?: string;
   size: "L" | "M" | "S";
-  onSelect: () => void;
+  onSelect: (value: string) => void;
 }
 
 const SIZE = {
@@ -23,10 +25,9 @@ const SelectTag = (props: Props) => {
     onSelect,
   } = props;
 
-
   return (
     <button
-      onClick={onSelect}
+      onClick={() => onSelect(value)}
       className={`${SIZE[size]} ${className ? className : ""} ${
         value === currentSelect ? "text-success border-success" : ""
       }  font-medium px-4 py-1 border-2 rounded-lg`}
@@ -36,4 +37,4 @@ const SelectTag = (props: Props) => {
   );
 };
 
-export default SelectTag;
+export default memo(SelectTag);

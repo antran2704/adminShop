@@ -22,6 +22,7 @@ const colHeadOrder: string[] = [
 const colHeaderOrderDetail: string[] = [
   "NO",
   "Product",
+  "Options",
   "Quantity",
   "Price",
   "Amout",

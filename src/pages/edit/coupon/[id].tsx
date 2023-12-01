@@ -144,9 +144,9 @@ const EditCouponPage = (props: Props) => {
     setData({ ...data, [name]: value });
   };
 
-  const onSelectDiscountType = (name: string, value: EDicount_type) => {
-    setDiscountType(value);
-    setData({ ...data, [name]: 0 });
+  const onSelectDiscountType = (value: string) => {
+    setDiscountType(value as EDicount_type);
+    setData({ ...data, discount_value: 0 });
   };
 
   const checkData = (data: any) => {
@@ -373,12 +373,14 @@ const EditCouponPage = (props: Props) => {
             title="Start date"
             className="lg:w-1/2 w-full"
             name="discount_start_date"
+            type="datetime-local"
             value={data.discount_start_date}
             error={fieldsCheck.includes("discount_start_date")}
             onSelect={onSelectDate}
           />
           <SelectDate
             title="End date"
+            type="datetime-local"
             className={`lg:w-1/2 w-full ${
               data.discount_start_date.length > 0
                 ? "pointer-events-auto"
@@ -400,12 +402,7 @@ const EditCouponPage = (props: Props) => {
               <SelectTag
                 title="Percentage"
                 size="M"
-                onSelect={() =>
-                  onSelectDiscountType(
-                    "discount_value",
-                    EDicount_type.PERCENTAGE
-                  )
-                }
+                onSelect={onSelectDiscountType}
                 value={EDicount_type.PERCENTAGE}
                 currentSelect={discountType}
               />
@@ -413,12 +410,7 @@ const EditCouponPage = (props: Props) => {
               <SelectTag
                 title="Fixed Amount"
                 size="M"
-                onSelect={() =>
-                  onSelectDiscountType(
-                    "discount_value",
-                    EDicount_type.FIXED_AMOUNT
-                  )
-                }
+                onSelect={onSelectDiscountType}
                 value={EDicount_type.FIXED_AMOUNT}
                 currentSelect={discountType}
               />

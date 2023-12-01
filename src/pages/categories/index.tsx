@@ -76,7 +76,7 @@ const CategoriesPage = (props: Props) => {
 
       setFilter({ ...filter, [name]: value });
     },
-    [filter, categories]
+    [filter]
   );
 
   const onChangePublish = async (id: string, status: boolean) => {

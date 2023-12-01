@@ -1,14 +1,14 @@
 import { IParentCategory } from "../category";
 
+interface IValueOption {
+  label: string;
+  _id?: string;
+}
+
 interface IOptionProduct {
   code: string;
   name: string;
-  values: [
-    {
-      label: string;
-      _id: string;
-    }
-  ];
+  values: IValueOption[];
 }
 
 interface ISpecificationAttributes {
@@ -24,7 +24,7 @@ interface ISpecificationsProduct {
 
 interface IVariantProduct {
   _id: string | null;
-  // product_id: string;
+  product_id: string;
   title: string;
   barcode: string;
   available: boolean;
@@ -92,5 +92,6 @@ export type {
   IOptionProduct,
   ISpecificationsProduct,
   ICreateProduct,
-  ISpecificationAttributes
+  ISpecificationAttributes,
+  IValueOption,
 };

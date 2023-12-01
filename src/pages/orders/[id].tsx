@@ -20,13 +20,12 @@ import { currencyFormat } from "../../helper/currencyFormat";
 import options from "./optionCancle";
 
 import { IOrder, statusOrder, IItemOrder } from "~/interface/order";
-import { typeCel, typeButton } from "~/enums";
+import { typeCel } from "~/enums";
 
-import Table from "~/components/Table";
-import CelTable from "~/components/Table/CelTable";
+import { Table } from "~/components/Table";
+import { CelTable } from "~/components/Table";
 
-import { colHeaderOrderDetail } from "~/components/Table/colHeadTable";
-import Button from "~/components/Button";
+import { colHeaderOrderDetail as colHeadTable } from "~/components/Table/colHeadTable";
 import Popup from "~/components/Popup";
 
 const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {
@@ -37,7 +36,6 @@ const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {
 const OrderDetail = () => {
   const router: NextRouter = useRouter();
   const orderId = router.query.id;
-
   const noteRef = useRef<HTMLTextAreaElement>(null);
 
   const [data, setData] = useState<IOrder | null>(null);
@@ -77,7 +75,7 @@ const OrderDetail = () => {
     try {
       let payload;
       if (status === statusOrder.success) {
-        payload = await axiosPatch(`order/status/${orderId}`, {
+        payload = await axiosPatch(`orders/status/${orderId}`, {
           status: statusOrder.success,
         });
 
@@ -85,7 +83,7 @@ const OrderDetail = () => {
       }
 
       if (status === statusOrder.cancle) {
-        payload = await axiosPatch(`order/status/${orderId}`, {
+        payload = await axiosPatch(`orders/status/${orderId}`, {
           status: statusOrder.cancle,
           note: noteRef.current ? noteRef.current.value : null,
           cancleContent: cancle,
@@ -111,8 +109,8 @@ const OrderDetail = () => {
 
   const getDataOrder = async (id: string) => {
     try {
-      const response = await axiosGet(`/order/${id}`);
-      console.log(response)
+      const response = await axiosGet(`/orders/${id}`);
+      console.log(response);
       if (response.status === 200) {
         setData(response.payload);
       }
@@ -144,15 +142,15 @@ const OrderDetail = () => {
           </li>
           <li className="flex items-start justify-start text-base mt-1 gap-1">
             <h3 className="font-medium capitalize">Name:</h3>
-            <p className="text-[#707275]">{data.name}</p>
+            <p className="text-[#707275]">{data.user_infor.name}</p>
           </li>
           <li className="flex items-start justify-start text-base mt-1 gap-1">
             <h3 className="font-medium capitalize">Email:</h3>
-            <p className="text-[#707275]">{data.email}</p>
+            <p className="text-[#707275]">{data.user_infor.email}</p>
           </li>
           <li className="flex items-start justify-start text-base mt-1 gap-1">
             <h3 className="font-medium capitalize">Address:</h3>
-            <p className="text-[#707275]">{data.address}</p>
+            <p className="text-[#707275]">{data.user_infor.address}</p>
           </li>
           <li className="flex items-start justify-start text-base mt-1 gap-1">
             <h3 className="font-medium capitalize">Date:</h3>
@@ -181,7 +179,7 @@ const OrderDetail = () => {
             <li className="flex items-start justify-start mt-5 text-base gap-1">
               <h3 className="font-medium capitalize">Change Status:</h3>
               <div className="flex items-center gap-3">
-                <Button
+                {/* <Button
                   title="Success"
                   type={typeButton.MEDIUM}
                   onClick={onShowSuccess}
@@ -192,7 +190,7 @@ const OrderDetail = () => {
                   type={typeButton.MEDIUM}
                   onClick={onShowCancle}
                   className="text-white bg-cancle opacity-80 hover:opacity-100"
-                />
+                /> */}
               </div>
             </li>
           )}
@@ -202,31 +200,40 @@ const OrderDetail = () => {
       {data && (
         <div className="my-5">
           <Table
-            colHeadTabel={colHeaderOrderDetail}
+            colHeadTabel={colHeadTable}
             message={message}
             loading={loading}
           >
             <Fragment>
               {data.items.map((item: IItemOrder, index: number) => (
-                <tr key={item.product._id} className="hover:bg-slate-100">
+                <tr key={item.product_id} className="hover:bg-slate-100">
                   <CelTable
+                    center={true}
                     type={typeCel.TEXT}
                     value={(index + 1).toString()}
                   />
                   <CelTable
                     type={typeCel.LINK}
-                    value={item.product.title}
+                    value={item.name}
                     href={item.linkProduct}
                   />
                   <CelTable
+                    center={true}
+                    type={typeCel.TEXT}
+                    value={item.options.join(" / ")}
+                  />
+                  <CelTable
+                    center={true}
                     type={typeCel.TEXT}
                     value={item.quantity.toString()}
                   />
                   <CelTable
+                    center={true}
                     type={typeCel.TEXT}
                     value={currencyFormat(item.price) + " VND"}
                   />
                   <CelTable
+                    center={true}
                     type={typeCel.TEXT}
                     value={currencyFormat(item.price * item.quantity) + " VND"}
                   />
@@ -328,7 +335,7 @@ const OrderDetail = () => {
             </div>
 
             <div className="flex items-center justify-between">
-              <Button
+              {/* <Button
                 title="Cancle"
                 type={typeButton.MEDIUM}
                 onClick={onShowCancle}
@@ -341,7 +348,7 @@ const OrderDetail = () => {
                 type={typeButton.MEDIUM}
                 onClick={() => hanldeChangeStatus(statusOrder.cancle)}
                 className="bg-success text-white"
-              />
+              /> */}
             </div>
           </div>
         </Popup>
@@ -354,7 +361,7 @@ const OrderDetail = () => {
           onClose={onShowSuccess}
         >
           <div className="flex items-center justify-between">
-            <Button
+            {/* <Button
               title="Cancle"
               type={typeButton.MEDIUM}
               onClick={onShowSuccess}
@@ -366,7 +373,7 @@ const OrderDetail = () => {
               type={typeButton.MEDIUM}
               onClick={() => hanldeChangeStatus(statusOrder.success)}
               className="bg-success text-white opacity-80 hover:opacity-100"
-            />
+            /> */}
           </div>
         </Popup>
       )}

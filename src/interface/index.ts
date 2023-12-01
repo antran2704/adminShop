@@ -52,6 +52,7 @@ import {
   ICreateProduct,
   ISpecificationsProduct,
   ISpecificationAttributes,
+  IValueOption
 } from "./product";
 export type {
   IProductData,
@@ -61,6 +62,7 @@ export type {
   ICreateProduct,
   ISpecificationsProduct,
   ISpecificationAttributes,
+  IValueOption
 };
 
 // Interface of Coupon

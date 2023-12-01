@@ -5,12 +5,13 @@ interface Props {
   className?: string;
   name: string;
   value: string;
+  type: "date" | "datetime-local";
   error?: boolean;
   onSelect: (name: string, value: string) => void;
 }
 
 const SelectDate: FC<Props> = (props: Props) => {
-  const { className, title, name, value, error, onSelect } = props;
+  const { className, title, name, type = "date", value, error, onSelect } = props;
 
   const onSelectDate = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name;
@@ -28,7 +29,7 @@ const SelectDate: FC<Props> = (props: Props) => {
       )}
 
       <input
-        type="datetime-local"
+        type={type}
         name={name}
         value={value}
         onChange={onSelectDate}

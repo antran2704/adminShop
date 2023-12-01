@@ -10,17 +10,17 @@ import { IPagination } from "~/interface/pagination";
 interface Props {
   children: JSX.Element;
   title: string;
-  titleCreate: string;
+  titleCreate?: string;
   link?: string;
   pagination?: IPagination;
-  showPopup: boolean;
-  selectItem: {
+  showPopup?: boolean;
+  selectItem?: {
     title: string;
     id: string | null;
   };
   onCreate?: () => void;
-  handlePopup: () => void;
-  handleDelete: () => void;
+  handlePopup?: () => void;
+  handleDelete?: () => void;
 }
 
 const ShowItemsLayout = (props: Props) => {
@@ -47,21 +47,25 @@ const ShowItemsLayout = (props: Props) => {
         <h1 className="lg:text-2xl text-xl font-bold">{title}</h1>
 
         <div className="flex items-center gap-2">
-          {link && <Link
-            href={link}
-            className="flex items-center font-medium md:text-base text-sm text-white bg-success px-3 py-2 rounded-md gap-1"
-          >
-            <IoIosAdd className="md:text-2xl text-xl" />
-            {titleCreate}
-          </Link>}
+          {link && (
+            <Link
+              href={link}
+              className="flex items-center font-medium md:text-base text-sm text-white bg-success px-3 py-2 rounded-md gap-1"
+            >
+              <IoIosAdd className="md:text-2xl text-xl" />
+              {titleCreate}
+            </Link>
+          )}
 
-          {!link && <button
-            onClick={onCreate}
-            className="flex items-center font-medium md:text-base text-sm text-white bg-success px-3 py-2 rounded-md gap-1"
-          >
-            <IoIosAdd className="md:text-2xl text-xl" />
-            {titleCreate}
-          </button>}
+          {!link && (
+            <button
+              onClick={onCreate}
+              className="flex items-center font-medium md:text-base text-sm text-white bg-success px-3 py-2 rounded-md gap-1"
+            >
+              <IoIosAdd className="md:text-2xl text-xl" />
+              {titleCreate}
+            </button>
+          )}
         </div>
       </div>
 
@@ -73,11 +77,12 @@ const ShowItemsLayout = (props: Props) => {
         )}
       </Fragment>
 
-      {showPopup && selectItem.id && (
+      {showPopup && selectItem?.id && handlePopup && (
         <Popup title="Confirm Delete" show={showPopup} onClose={handlePopup}>
           <div>
             <p className="text-lg">
-              Do you want delete {title.toLowerCase()} <strong>{selectItem?.title}</strong>
+              Do you want delete {title.toLowerCase()}{" "}
+              <strong>{selectItem?.title}</strong>
             </p>
             <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
               <button

@@ -4,9 +4,8 @@ import { useRouter } from "next/router";
 import { useState, useEffect, useCallback, Fragment } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
-import { AiOutlineDelete } from "react-icons/ai";
 
-import { axiosGet, axiosPatch } from "~/ultils/configAxios";
+import { axiosGet, axiosPatch, axiosPost } from "~/ultils/configAxios";
 
 import {
   ICategorySelect,
@@ -18,6 +17,8 @@ import {
   IAttribute,
   IVariant,
   IVariantProduct,
+  IOptionProduct,
+  IValueOption,
 } from "~/interface";
 
 import { typeCel, typeInput } from "~/enums";
@@ -81,11 +82,9 @@ interface ICompination {
   [key: string]: string[];
 }
 
-// const compination: ICompination = {};
-
 const initVariant: IVariantProduct = {
   _id: null,
-  // product_id: "",
+  product_id: "",
   title: "",
   barcode: "",
   available: true,
@@ -124,6 +123,8 @@ const ProductEditPage = (props: Props) => {
     node_id: null,
   });
 
+  const [optionsProduct, setOptionsProduct] = useState<IOptionProduct[]>([]);
+
   const [mutipleCategories, setMultipleCategories] = useState<ISelectItem[]>(
     []
   );
@@ -142,6 +143,7 @@ const ProductEditPage = (props: Props) => {
   const [showAttributes, setShowAttributes] = useState<IObjectSelectAttribute>(
     {}
   );
+
   const [selectAttributes, setSelectAttributes] =
     useState<IObjectSelectAttribute>({});
 
@@ -151,7 +153,7 @@ const ProductEditPage = (props: Props) => {
 
   const [selectVariant, setSelectVariant] = useState<ISelectItem | null>(null);
   const [showPopupVariant, setPopupVariant] = useState<boolean>(false);
-
+  
   const [showPopupClearVariants, setShowClearVariants] =
     useState<boolean>(false);
 
@@ -255,6 +257,7 @@ const ProductEditPage = (props: Props) => {
 
   const onGenerateVariants = () => {
     const compination = getCompination();
+    const options = getOptionsProduct();
     const keys = Object.keys(compination);
 
     if (keys.length === 0) {
@@ -273,6 +276,7 @@ const ProductEditPage = (props: Props) => {
       0
     );
 
+    setOptionsProduct(options);
     setVariants(result);
   };
 
@@ -286,6 +290,7 @@ const ProductEditPage = (props: Props) => {
     if (index > keys.length - 1) {
       variant.title = `${product.title} ${variant.options.join(" / ")}`;
       variant._id = uuidv4();
+      variant.product_id = id as string;
       result.push(variant);
 
       return result;
@@ -308,6 +313,28 @@ const ProductEditPage = (props: Props) => {
       result = newVariants;
     }
 
+    return result;
+  };
+
+  const getOptionsProduct = () => {
+    const selects = selectAttributes;
+    const result: IOptionProduct[] = [];
+
+    for (const item of selects["default"]) {
+      const attribute = attributes[item._id as string];
+      const variants = selects[attribute.code];
+      let values: IValueOption[] = [];
+
+      for (const variant of variants) {
+        values.push({ label: variant.title });
+      }
+
+      result.push({
+        code: attribute.code,
+        name: attribute.name,
+        values,
+      });
+    }
     return result;
   };
 
@@ -504,8 +531,10 @@ const ProductEditPage = (props: Props) => {
 
   const checkData = (data: any) => {
     let fields = handleCheckFields(data);
-    setFieldsCheck(fields);
-    router.push(`#${fields[0]}`);
+    if (fields.length > 0) {
+      setFieldsCheck(fields);
+      router.push(`#${fields[0]}`);
+    }
     return fields;
   };
 
@@ -555,10 +584,31 @@ const ProductEditPage = (props: Props) => {
         }
       );
 
-      const variations = variants.map(({ _id, ...rest }: IVariantProduct) => ({
-        ...rest,
-      }));
-      console.log(variations);
+      let variations_id: string[] = [];
+      let inventory: number = 0;
+
+      if (variants.length > 0) {
+        const variationsRes = await axiosPost("/variations", variants);
+
+        if (variationsRes.status !== 201) {
+          toast.error("Error in updated variations", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+
+          return;
+        }
+
+        variations_id = variationsRes.payload.map(
+          (item: IVariantProduct) => item._id
+        );
+
+        inventory = variationsRes.payload.reduce(
+          (total: number, item: IVariantProduct) => {
+            return total + item.inventory;
+          },
+          0
+        );
+      }
 
       const payload = await axiosPatch(`/products/${id}`, {
         title: product.title,
@@ -574,9 +624,10 @@ const ProductEditPage = (props: Props) => {
         specifications,
         price: product.price,
         promotionPrice: product.promotionPrice,
-        inventory: product.inventory,
+        inventory,
         public: product.public,
-        variations,
+        variations: variations_id,
+        options: optionsProduct,
       });
 
       if (payload.status === 201) {
@@ -666,11 +717,11 @@ const ProductEditPage = (props: Props) => {
           rate,
           viewer,
           brand,
-          variants: variations,
+          variants: variations ? variations : [],
         };
-
         setProduct(productData);
         setTitle(title);
+        setOptionsProduct(options);
         setDefaultCategory(
           defaultCategoryPayload ? defaultCategoryPayload._id : null
         );

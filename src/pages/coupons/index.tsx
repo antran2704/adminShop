@@ -17,6 +17,7 @@ import { colHeaderCoupon as colHeadTable } from "~/components/Table/colHeadTable
 import { ButtonDelete, ButtonEdit } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
 import Link from "next/link";
+import { SelectDate } from "~/components/Select";
 
 interface ISelectCoupon {
   id: string;
@@ -67,6 +68,13 @@ const CouponsPage = (props: Props) => {
     handleGetData();
   }, [filter, coupons]);
 
+  const onFilterByDate = useCallback(
+    (name: string, value: string) => {
+      setFilter({ ...filter, [name]: value });
+    },
+    [filter]
+  );
+
   const onChangeSearch = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -74,7 +82,7 @@ const CouponsPage = (props: Props) => {
 
       setFilter({ ...filter, [name]: value });
     },
-    [filter, coupons]
+    [filter]
   );
 
   const onChangePublish = async (id: string, status: boolean) => {
@@ -149,8 +157,10 @@ const CouponsPage = (props: Props) => {
 
     try {
       const response = await axiosGet(
-        `/discounts/search?search=${
-          filter?.search || ""
+        `/discounts/search?search=${filter?.search || ""}&start_date=${
+          filter?.start_date || ""
+        }&end_date=${
+          filter?.end_date || ""
         }&discount_name=1&discount_public=1&discount_code=1&discount_value=1&discount_type=1&discount_thumbnail=1&discount_active=1&discount_start_date=1&discount_end_date=1&page=${currentPage}`
       );
 
@@ -231,7 +241,26 @@ const CouponsPage = (props: Props) => {
           onSearch={onChangeSearch}
           onFilter={handleGetDataByFilter}
           placeholder="Search by coupon code/name..."
-        />
+        >
+          <Fragment>
+            <SelectDate
+              className="lg:w-3/12 md:w-4/12 w-full"
+              title="Start Date"
+              name="start_date"
+              value={filter?.start_date || ""}
+              type="date"
+              onSelect={onFilterByDate}
+            />
+            <SelectDate
+              className="lg:w-3/12 md:w-4/12 w-full"
+              title="End Date"
+              name="end_date"
+              value={filter?.end_date || ""}
+              type="date"
+              onSelect={onFilterByDate}
+            />
+          </Fragment>
+        </Search>
 
         <Table
           items={coupons}

@@ -77,7 +77,7 @@ const AttributesPage = (props: Props) => {
 
       setFilter({ ...filter, [name]: value });
     },
-    [filter, attributes]
+    [filter]
   );
 
   const onChangePublic = async (id: string, status: boolean) => {
