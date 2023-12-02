@@ -27,11 +27,20 @@ import { CelTable } from "~/components/Table";
 
 import { colHeaderOrderDetail as colHeadTable } from "~/components/Table/colHeadTable";
 import Popup from "~/components/Popup";
+import { ButtonClassic } from "~/components/Button";
+import Loading from "~/components/Loading";
 
 const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {
   loading: () => <p>Loading...</p>,
   ssr: false,
 });
+
+const BG_STATUS = {
+  pending: "bg-warn",
+  processing: "bg-primary",
+  delivered: "bg-success",
+  cancle: "bg-cancle",
+};
 
 const OrderDetail = () => {
   const router: NextRouter = useRouter();
@@ -41,19 +50,24 @@ const OrderDetail = () => {
   const [data, setData] = useState<IOrder | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [cancle, setCancle] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [showPrint, setShowPrint] = useState<boolean>(false);
   const [showCancle, setShowCancle] = useState<boolean>(false);
-  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [showDelivered, setShowDelivered] = useState<boolean>(false);
+  const [showProcessing, setShowProcessing] = useState<boolean>(false);
   const [disableBtnCancle, setDisableBtn] = useState<boolean>(true);
 
   const onShowCancle = useCallback(() => {
     setShowCancle(!showCancle);
   }, [showCancle]);
 
-  const onShowSuccess = useCallback(() => {
-    setShowSuccess(!showSuccess);
-  }, [showSuccess]);
+  const onShowDelivered = useCallback(() => {
+    setShowDelivered(!showDelivered);
+  }, [showDelivered]);
+
+  const onShowProcessing = useCallback(() => {
+    setShowProcessing(!showProcessing);
+  }, [showProcessing]);
 
   const onShow = (
     value: boolean,
@@ -72,14 +86,15 @@ const OrderDetail = () => {
   );
 
   const hanldeChangeStatus = async (status: statusOrder) => {
+    setLoading(true);
+
     try {
       let payload;
-      if (status === statusOrder.success) {
-        payload = await axiosPatch(`orders/status/${orderId}`, {
-          status: statusOrder.success,
-        });
 
-        onShowSuccess();
+      if (status === statusOrder.processing) {
+        payload = await axiosPatch(`orders/status/${orderId}`, {
+          status: statusOrder.processing,
+        });
       }
 
       if (status === statusOrder.cancle) {
@@ -88,15 +103,20 @@ const OrderDetail = () => {
           note: noteRef.current ? noteRef.current.value : null,
           cancleContent: cancle,
         });
-
-        onShowCancle();
       }
 
-      if (payload.status === 200) {
+      if (status === statusOrder.delivered) {
+        payload = await axiosPatch(`orders/status/${orderId}`, {
+          status: statusOrder.delivered,
+        });
+      }
+
+      if (payload.status === 201) {
         toast.success("Success change status order", {
           position: toast.POSITION.TOP_RIGHT,
         });
 
+        setLoading(false);
         getDataOrder(orderId as string);
       }
     } catch (error) {
@@ -104,18 +124,24 @@ const OrderDetail = () => {
       toast.error("Error change status order", {
         position: toast.POSITION.TOP_RIGHT,
       });
+      setLoading(false);
     }
   };
 
   const getDataOrder = async (id: string) => {
+    setLoading(true);
     try {
       const response = await axiosGet(`/orders/${id}`);
-      console.log(response);
       if (response.status === 200) {
         setData(response.payload);
       }
+      setLoading(false);
     } catch (error) {
       console.log(error);
+      toast.error("Error in server", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      setLoading(false);
     }
   };
 
@@ -159,7 +185,9 @@ const OrderDetail = () => {
           <li className="flex items-start justify-start text-base mt-1 gap-1">
             <h3 className="font-medium capitalize">Status:</h3>
             <p
-              className={`w-fit font-medium text-white text-xs bg-${data.status} capitalize px-5 py-2 rounded-md`}
+              className={`w-fit font-medium text-white text-xs ${
+                BG_STATUS[data.status]
+              } capitalize px-5 py-2 rounded-md`}
             >
               {data.status}
             </p>
@@ -176,21 +204,41 @@ const OrderDetail = () => {
           )}
 
           {data.status === statusOrder.pending && (
-            <li className="flex items-start justify-start mt-5 text-base gap-1">
+            <li className="flex items-center justify-start mt-5 text-base gap-1">
               <h3 className="font-medium capitalize">Change Status:</h3>
               <div className="flex items-center gap-3">
-                {/* <Button
-                  title="Success"
-                  type={typeButton.MEDIUM}
-                  onClick={onShowSuccess}
-                  className="text-white bg-success opacity-80 hover:opacity-100"
+                <ButtonClassic
+                  title="Processing"
+                  size="S"
+                  handleClick={onShowProcessing}
+                  className="bg-primary"
                 />
-                <Button
+                <ButtonClassic
                   title="Cancle"
-                  type={typeButton.MEDIUM}
-                  onClick={onShowCancle}
-                  className="text-white bg-cancle opacity-80 hover:opacity-100"
-                /> */}
+                  size="S"
+                  handleClick={onShowCancle}
+                  className="bg-cancle"
+                />
+              </div>
+            </li>
+          )}
+
+          {data.status === statusOrder.processing && (
+            <li className="flex items-center justify-start mt-5 text-base gap-1">
+              <h3 className="font-medium capitalize">Change Status:</h3>
+              <div className="flex items-center gap-3">
+                <ButtonClassic
+                  title="Delivered"
+                  size="S"
+                  handleClick={onShowDelivered}
+                  className="bg-success"
+                />
+                <ButtonClassic
+                  title="Cancle"
+                  size="S"
+                  handleClick={onShowCancle}
+                  className="bg-cancle"
+                />
               </div>
             </li>
           )}
@@ -335,48 +383,83 @@ const OrderDetail = () => {
             </div>
 
             <div className="flex items-center justify-between">
-              {/* <Button
+              <ButtonClassic
                 title="Cancle"
-                type={typeButton.MEDIUM}
-                onClick={onShowCancle}
-                className="bg-[#e6e6e6] text-black opacity-80 hover:opacity-100"
+                size="S"
+                handleClick={onShowCancle}
+                className="bg-error"
               />
 
-              <Button
+              <ButtonClassic
                 title="Accept"
                 disable={disableBtnCancle}
-                type={typeButton.MEDIUM}
-                onClick={() => hanldeChangeStatus(statusOrder.cancle)}
-                className="bg-success text-white"
-              /> */}
+                size="S"
+                handleClick={() => {
+                  onShowCancle();
+                  hanldeChangeStatus(statusOrder.cancle);
+                }}
+                className="bg-success"
+              />
             </div>
           </div>
         </Popup>
       )}
 
-      {showSuccess && (
+      {showDelivered && (
         <Popup
           title="Bạn có muốn hoàn thành đơn hàng này"
-          show={showSuccess}
-          onClose={onShowSuccess}
+          show={showDelivered}
+          onClose={onShowDelivered}
         >
           <div className="flex items-center justify-between">
-            {/* <Button
+            <ButtonClassic
               title="Cancle"
-              type={typeButton.MEDIUM}
-              onClick={onShowSuccess}
-              className="bg-[#e6e6e6] text-black opacity-80 hover:opacity-100"
+              size="S"
+              handleClick={onShowDelivered}
+              className="bg-error"
             />
 
-            <Button
+            <ButtonClassic
               title="Accept"
-              type={typeButton.MEDIUM}
-              onClick={() => hanldeChangeStatus(statusOrder.success)}
+              size="S"
+              handleClick={() => {
+                onShowDelivered();
+                hanldeChangeStatus(statusOrder.delivered);
+              }}
               className="bg-success text-white opacity-80 hover:opacity-100"
-            /> */}
+            />
           </div>
         </Popup>
       )}
+
+      {showProcessing && (
+        <Popup
+          title="Đang chuẩn bị đơn hàng"
+          show={showProcessing}
+          onClose={onShowProcessing}
+        >
+          <div className="flex items-center justify-between">
+            <ButtonClassic
+              title="Cancle"
+              size="S"
+              handleClick={onShowProcessing}
+              className="bg-error"
+            />
+
+            <ButtonClassic
+              title="Accept"
+              size="S"
+              handleClick={() => {
+                onShowProcessing();
+                hanldeChangeStatus(statusOrder.processing);
+              }}
+              className="bg-success text-white opacity-80 hover:opacity-100"
+            />
+          </div>
+        </Popup>
+      )}
+
+      {loading && <Loading />}
     </section>
   );
 };

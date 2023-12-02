@@ -141,17 +141,17 @@ const PDFDocument = (props: Props) => {
 
                 <View style={styles.wrapContent}>
                   <Text style={styles.title}>Name: </Text>
-                  <Text style={styles.content}>{data.name}</Text>
+                  <Text style={styles.content}>{data.user_infor.name}</Text>
                 </View>
 
                 <View style={styles.wrapContent}>
                   <Text style={styles.title}>Email: </Text>
-                  <Text style={styles.content}>{data.email}</Text>
+                  <Text style={styles.content}>{data.user_infor.email}</Text>
                 </View>
 
                 <View style={styles.wrapContent}>
                   <Text style={styles.title}>Address: </Text>
-                  <Text style={styles.content}>{data.address}</Text>
+                  <Text style={styles.content}>{data.user_infor.address}</Text>
                 </View>
 
                 <View style={styles.wrapContent}>
@@ -193,7 +193,7 @@ const PDFDocument = (props: Props) => {
                     {index + 1}
                   </Text>
                   <Text style={[styles.col, styles.textJustify]}>
-                    {item.product.title}
+                    {item.name}
                   </Text>
                   <Text style={[styles.col, styles.textCenter]}>
                     {item.quantity}

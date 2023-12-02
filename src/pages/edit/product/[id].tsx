@@ -143,7 +143,7 @@ const ProductEditPage = (props: Props) => {
   const [showAttributes, setShowAttributes] = useState<IObjectSelectAttribute>(
     {}
   );
-
+  console.log(variants);
   const [selectAttributes, setSelectAttributes] =
     useState<IObjectSelectAttribute>({});
 
@@ -153,7 +153,7 @@ const ProductEditPage = (props: Props) => {
 
   const [selectVariant, setSelectVariant] = useState<ISelectItem | null>(null);
   const [showPopupVariant, setPopupVariant] = useState<boolean>(false);
-  
+
   const [showPopupClearVariants, setShowClearVariants] =
     useState<boolean>(false);
 
@@ -172,7 +172,6 @@ const ProductEditPage = (props: Props) => {
       if (Object.keys(attributes).length === 0) {
         handleGetAttributes();
       }
-      setVariants(product.variants);
     }
 
     setTag(value);
@@ -729,6 +728,7 @@ const ProductEditPage = (props: Props) => {
         setThumbnail(thumbnail);
         setGallery(gallery);
         setSpecifications(specifications);
+        setVariants(variations);
       }
 
       setLoading(false);
@@ -919,6 +919,7 @@ const ProductEditPage = (props: Props) => {
                 width="lg:w-2/4 w-full"
                 items={mutipleCategories}
                 name="categories"
+                infor="Categories select must be different Home Category"
                 placeholder="Please select a category or categories"
                 readonly={true}
                 error={fieldsCheck.includes("categories")}
@@ -992,6 +993,8 @@ const ProductEditPage = (props: Props) => {
               <Input
                 title="Inventory"
                 width="lg:w-2/4 w-full"
+                readonly={variants.length > 0 ? true : false}
+                infor="If product have variations, you can't edit input"
                 value={product.inventory.toString()}
                 error={fieldsCheck.includes("inventory")}
                 name="inventory"

@@ -2,9 +2,11 @@ import { useState, ChangeEvent, KeyboardEvent, memo } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AiOutlineClose } from "react-icons/ai";
 import { ISelectItem } from "~/interface";
+import { TippyInfor } from "../Tippy";
 
 interface Props {
   title: string;
+  infor?: string | null;
   width?: string;
   name: string;
   placeholder?: string;
@@ -23,6 +25,7 @@ const MultipleValue = (props: Props) => {
     placeholder,
     items,
     error,
+    infor = null,
     readonly = false,
     getAttributes,
   } = props;
@@ -86,12 +89,16 @@ const MultipleValue = (props: Props) => {
 
   return (
     <div className={`${width ? width : "w-full"}`}>
-      <span
-        id={name}
-        className="block text-base text-[#1E1E1E] font-medium mb-1"
-      >
-        {title}
-      </span>
+      <div className="flex items-center mb-1 gap-2">
+        <span
+          id={name}
+          className="block text-base text-[#1E1E1E] font-medium"
+        >
+          {title}
+        </span>
+
+        {infor && <TippyInfor content={infor}/>}
+      </div>
 
       <div
         className={`flex items-center flex-wrap w-full rounded-md px-2 py-2 border-2 ${

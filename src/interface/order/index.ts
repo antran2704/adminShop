@@ -1,9 +1,9 @@
 import { ICoupon } from "../coupon";
-import { IProductData } from "../product";
 
 export enum statusOrder {
   pending = "pending",
-  success = "success",
+  processing = "processing",
+  delivered = "delivered",
   cancle = "cancle",
 }
 
