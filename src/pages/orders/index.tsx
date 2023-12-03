@@ -12,7 +12,9 @@ import { CelTable, Table } from "~/components/Table";
 import { typeCel } from "~/enums";
 import { orderStatus } from "~/components/Table/statusCel";
 import { ButtonEdit } from "~/components/Button";
-import { IFilter } from "~/interface";
+import { IFilter, ISelectItem } from "~/interface";
+import { SelectDate, SelectItem } from "~/components/Select";
+import { currencyFormat } from "~/helper/currencyFormat";
 
 interface Props {
   query: InferGetServerSidePropsType<typeof getServerSideProps>;
@@ -23,6 +25,36 @@ const initPagination: IPagination = {
   pageSize: 0,
   totalItems: 0,
 };
+
+const dataFilterStatus: ISelectItem[] = [
+  {
+    _id: "delivered",
+    title: "delivered",
+  },
+  {
+    _id: "pending",
+    title: "pending",
+  },
+  {
+    _id: "cancle",
+    title: "cancle",
+  },
+  {
+    _id: "processing",
+    title: "processing",
+  },
+];
+
+const dataFilterMethod: ISelectItem[] = [
+  {
+    _id: "cash",
+    title: "Cash",
+  },
+  {
+    _id: "card",
+    title: "Card",
+  },
+];
 
 const OrdersPage = (props: Props) => {
   const { query } = props;
@@ -44,6 +76,13 @@ const OrdersPage = (props: Props) => {
     [filter]
   );
 
+  const onSelect = useCallback(
+    (value: string, name: string) => {
+      setFilter({ ...filter, [name]: value });
+    },
+    [filter]
+  );
+
   const onReset = useCallback(() => {
     setFilter(null);
     handleGetData();
@@ -55,6 +94,10 @@ const OrdersPage = (props: Props) => {
       const response = await axiosGet(
         `${process.env.NEXT_PUBLIC_ENDPOINT_API}/orders/search?search=${
           filter?.search || ""
+        }&status=${filter?.status || ""}&payment_method=${
+          filter?.payment_method || ""
+        }&start_date=${filter?.start_date || ""}&end_date=${
+          filter?.end_date || ""
         }&page=${currentPage}`
       );
 
@@ -120,8 +163,44 @@ const OrdersPage = (props: Props) => {
           onReset={onReset}
           onSearch={onChangeSearch}
           onFilter={handleGetDataByFilter}
-          placeholder="Search by category name..."
-        />
+          placeholder="Search by customer name/order ID..."
+        >
+          <Fragment>
+            <SelectItem
+              width="lg:w-2/12 md:w-4/12 w-full"
+              placeholder="Status"
+              name="status"
+              value={filter?.status || ""}
+              data={dataFilterStatus}
+              onSelect={onSelect}
+            />
+            <SelectItem
+              width="lg:w-2/12 md:w-4/12 w-full"
+              placeholder="Payment Metohd"
+              name="payment_method"
+              value={filter?.payment_method || ""}
+              data={dataFilterMethod}
+              onSelect={onSelect}
+            />
+
+            <SelectDate
+              className="lg:w-2/12 md:w-4/12 w-full"
+              title="Start Date"
+              name="start_date"
+              value={filter?.start_date || ""}
+              type="date"
+              onSelect={onSelect}
+            />
+            <SelectDate
+              className="lg:w-2/12 md:w-4/12 w-full"
+              title="End Date"
+              name="end_date"
+              value={filter?.end_date || ""}
+              type="date"
+              onSelect={onSelect}
+            />
+          </Fragment>
+        </Search>
 
         <Table colHeadTabel={colHeadTable} message={message} loading={loading}>
           <Fragment>
@@ -130,17 +209,27 @@ const OrdersPage = (props: Props) => {
                 key={order._id}
                 className="hover:bg-slate-100 border-b border-gray-300"
               >
-                <CelTable type={typeCel.TEXT} value={order._id} />
-                <CelTable type={typeCel.TEXT} value={order.user_infor.name} />
                 <CelTable
-                  center={true}
                   type={typeCel.TEXT}
-                  value={order.user_infor.email}
+                  className="whitespace-nowrap"
+                  value={order.order_id}
+                  center={true}
+                />
+                <CelTable
+                  type={typeCel.TEXT}
+                  className="whitespace-nowrap"
+                  value={order.user_infor.name}
                 />
                 <CelTable
                   center={true}
                   type={typeCel.TEXT}
-                  value={order.user_infor.phoneNumber}
+                  className="capitalize"
+                  value={order.payment_method}
+                />
+                <CelTable
+                  center={true}
+                  type={typeCel.TEXT}
+                  value={`${currencyFormat(order.total)} VND`}
                 />
                 <CelTable
                   type={typeCel.STATUS}

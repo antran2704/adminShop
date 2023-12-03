@@ -9,10 +9,10 @@ const colHeadCategory: string[] = [
 
 // header table for orders
 const colHeadOrder: string[] = [
-  "ID",
+  "Order ID",
   "Name",
-  "Email",
-  "Phone",
+  "Method",
+  "Amout",
   "Status",
   "Created Date",
   "Action",

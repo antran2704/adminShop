@@ -4,9 +4,10 @@ const productStatus = {
 };
 
 const orderStatus = {
-  success: "bg-success",
+  delivered: "bg-success",
   pending: "bg-pending",
   cancle: "bg-cancle",
+  processing: "bg-primary"
 };
 
 export { productStatus, orderStatus };

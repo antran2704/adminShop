@@ -17,8 +17,9 @@ import { axiosGet, axiosPatch } from "~/ultils/configAxios";
 
 import { getDateTime } from "~/helper/datetimeFormat";
 import { currencyFormat } from "../../helper/currencyFormat";
-import options from "./optionCancle";
+import optionsCancle from "./optionCancle";
 
+import { IOptionCancle } from "./interface";
 import { IOrder, statusOrder, IItemOrder } from "~/interface/order";
 import { typeCel } from "~/enums";
 
@@ -31,7 +32,7 @@ import { ButtonClassic } from "~/components/Button";
 import Loading from "~/components/Loading";
 
 const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {
-  loading: () => <p>Loading...</p>,
+  loading: () => <Loading />,
   ssr: false,
 });
 
@@ -163,8 +164,8 @@ const OrderDetail = () => {
             Information
           </h2>
           <li className="flex items-center justify-start text-base mt-1 gap-1">
-            <h3 className="font-medium capitalize">Invoice ID:</h3>
-            <p className="text-[#707275]">{data._id}</p>
+            <h3 className="font-medium capitalize">Order ID:</h3>
+            <p className="text-[#707275]">{data.order_id}</p>
           </li>
           <li className="flex items-start justify-start text-base mt-1 gap-1">
             <h3 className="font-medium capitalize">Name:</h3>
@@ -182,7 +183,7 @@ const OrderDetail = () => {
             <h3 className="font-medium capitalize">Date:</h3>
             <p className="text-[#707275]">{getDateTime(data.createdAt)}</p>
           </li>
-          <li className="flex items-start justify-start text-base mt-1 gap-1">
+          <li className="flex items-start justify-start text-base mt-2 gap-1">
             <h3 className="font-medium capitalize">Status:</h3>
             <p
               className={`w-fit font-medium text-white text-xs ${
@@ -263,7 +264,7 @@ const OrderDetail = () => {
                   <CelTable
                     type={typeCel.LINK}
                     value={item.name}
-                    href={item.linkProduct}
+                    href={`/edit/product/${item.product_id}`}
                   />
                   <CelTable
                     center={true}
@@ -293,12 +294,12 @@ const OrderDetail = () => {
       )}
 
       {data && (
-        <div className="flex md:flex-row flex-col md:items-center items-start justify-between bg-[#f9fafb] p-5 border rounded-md gap-5">
+        <div className="flex md:flex-row flex-col md:items-start items-start justify-between bg-[#f9fafb] p-5 border rounded-md gap-5">
           <div>
             <h3 className="lg:text-lg  md:text-base text-sm font-medium uppercase">
               Payment method
             </h3>
-            <p className="md:text-base text-sm font-medium text-[#707275] mt-2">
+            <p className="md:text-base text-sm font-medium text-primary mt-2">
               Card
             </p>
           </div>
@@ -306,9 +307,32 @@ const OrderDetail = () => {
             <h3 className="lg:text-lg  md:text-base text-sm font-medium uppercase">
               Shipping cost
             </h3>
-            <p className="md:text-base text-sm font-medium text-[#707275] mt-2">
+            <p className="md:text-base text-sm font-medium text-primary mt-2">
               {currencyFormat(30000)} VND
             </p>
+          </div>
+          <div>
+            <h3 className="lg:text-lg  md:text-base text-sm font-medium uppercase">
+              Discount
+            </h3>
+            <ul>
+              <li className="flex items-center justify-between gap-2">
+                <p className="md:text-base text-sm font-medium text-[#707275] mt-2">
+                  Coupo Name:
+                </p>
+                <p className="md:text-base text-sm font-medium text-primary mt-2">
+                  SUMMER-123
+                </p>
+              </li>
+              <li className="flex items-center justify-between gap-2">
+                <p className="md:text-base text-sm font-medium text-[#707275] mt-2">
+                  Discount Value:
+                </p>
+                <p className="md:text-base text-sm font-medium text-primary mt-2">
+                  -{currencyFormat(30000)} VND
+                </p>
+              </li>
+            </ul>
           </div>
           <div>
             <h3 className="lg:text-lg  md:text-base text-sm font-medium uppercase">
@@ -332,11 +356,12 @@ const OrderDetail = () => {
 
         {showPrint && data && (
           <div className="fixed top-0 left-0 right-0 bottom-0 z-[9999]">
+            <div className="absolute w-full h-full bg-[#ffffffbf] backdrop-blur z-10"></div>
             <div
               onClick={() => onShow(showPrint, setShowPrint)}
-              className="absolute w-full h-full bg-black opacity-60 z-10"
+              className="absolute w-full h-full bg-black opacity-60 z-20"
             ></div>
-            <div className="absolute w-10/12 h-screen top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 z-20">
+            <div className="absolute w-10/12 h-screen top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 z-30">
               <PDFDocument data={data} />
             </div>
           </div>
@@ -349,7 +374,7 @@ const OrderDetail = () => {
             <fieldset>
               <legend className="sr-only">Countries</legend>
 
-              {options.map((option) => (
+              {optionsCancle.map((option: IOptionCancle) => (
                 <div key={option.id} className="flex items-center mb-4">
                   <input
                     id={option.id}

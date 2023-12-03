@@ -16,7 +16,7 @@ interface IItemOrder {
   promotion_price: number;
   price: number;
   quantity: number;
-  linkProduct: string;
+  link: string;
 }
 
 type ICouponOrder = Pick<ICoupon, "discount_name" | "discount_code">;
@@ -30,6 +30,7 @@ interface IUserInfor {
 
 interface IOrder {
   _id: string;
+  order_id: string;
   user_infor: IUserInfor;
   items: IItemOrder[];
   shipping_cost: number;
@@ -37,6 +38,7 @@ interface IOrder {
   total: number;
   discount_codes: ICouponOrder[];
   status: statusOrder;
+  payment_method: string;
   cancleContent?: string;
   note?: string;
   createdAt: string;

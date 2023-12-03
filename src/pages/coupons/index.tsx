@@ -69,7 +69,7 @@ const CouponsPage = (props: Props) => {
   }, [filter, coupons]);
 
   const onFilterByDate = useCallback(
-    (name: string, value: string) => {
+    (value: string, name: string) => {
       setFilter({ ...filter, [name]: value });
     },
     [filter]

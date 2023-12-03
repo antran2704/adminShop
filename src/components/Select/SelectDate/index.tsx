@@ -17,7 +17,7 @@ const SelectDate: FC<Props> = (props: Props) => {
     const name = e.target.name;
     const value = e.target.value;
 
-    onSelect(name, value);
+    onSelect(value, name);
   };
 
   return (
