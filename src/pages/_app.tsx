@@ -1,11 +1,24 @@
 import "~/styles/globals.scss";
 import type { AppProps } from "next/app";
-import DefaultLayout from "~/layouts";
+import { usePathname } from "next/navigation";
+import LAYOUT from "~/layouts";
 
 export default function App({ Component, pageProps }: AppProps) {
+  const pathName = usePathname();
+  let Layout;
+
+  switch (pathName) {
+    case "/login":
+      Layout = LAYOUT.LoginLayout;
+      break;
+
+    default:
+      Layout = LAYOUT.DefaultLayout;
+  }
+
   return (
-    <DefaultLayout>
+    <Layout>
       <Component {...pageProps} />
-    </DefaultLayout>
+    </Layout>
   );
 }

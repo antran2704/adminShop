@@ -304,7 +304,11 @@ const CategoriesPage = (props: Props) => {
                   checked={item.public}
                   onGetChecked={onChangePublish}
                 />
-                <CelTable type={typeCel.DATE} center={true} value={item.createdAt} />
+                <CelTable
+                  type={typeCel.DATE}
+                  center={true}
+                  value={item.createdAt}
+                />
                 <CelTable type={typeCel.GROUP}>
                   <div className="flex items-center justify-end gap-2">
                     <ButtonEdit link={`/edit/category/${item._id}`} />

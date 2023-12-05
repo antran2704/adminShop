@@ -52,7 +52,7 @@ import {
   ICreateProduct,
   ISpecificationsProduct,
   ISpecificationAttributes,
-  IValueOption
+  IValueOption,
 } from "./product";
 export type {
   IProductData,
@@ -62,7 +62,7 @@ export type {
   ICreateProduct,
   ISpecificationsProduct,
   ISpecificationAttributes,
-  IValueOption
+  IValueOption,
 };
 
 // Interface of Coupon
@@ -72,3 +72,7 @@ export type { ICoupon, ICouponHome, ICouponCreate };
 // Interface of Breadcrumb
 import { IBreadcrumb } from "./breadcrum";
 export type { IBreadcrumb };
+
+// AXIOS
+import { AxiosResponseError } from "./responseAxios";
+export type { AxiosResponseError };

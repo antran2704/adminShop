@@ -10,12 +10,14 @@ interface Props {
 
 const DefaultLayout: FC<Props> = ({ children }: Props) => {
   return (
-    <main>
-      <div className="flex items-start justify-between">
-        <Navbar />
-        <ToastContainer autoClose={5000} pauseOnFocusLoss={false} pauseOnHover={false}/>
-        <div className="w-full bg-white min-h-screen">{children}</div>
-      </div>
+    <main className="flex items-start justify-between bg-white">
+      <Navbar />
+      <ToastContainer
+        autoClose={5000}
+        pauseOnFocusLoss={false}
+        pauseOnHover={false}
+      />
+      <div className="w-full min-h-screen">{children}</div>
     </main>
   );
 };

@@ -60,7 +60,7 @@ const listSetting: itemNav[] = [
   },
   {
     name: "Logout",
-    path: "/logout",
+    path: "/login",
     icon: <BiLogOut />,
   },
 ];

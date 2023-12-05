@@ -91,7 +91,7 @@ const CreateAttributePage = () => {
     }
 
     try {
-      const payload = await axiosPost("/variants", {
+      const payload = await axiosPost("/attributes", {
         name: data.name,
         code: data.code,
         variants: generateAttributes(data.variants as ISelectItem[]),
