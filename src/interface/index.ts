@@ -74,5 +74,5 @@ import { IBreadcrumb } from "./breadcrum";
 export type { IBreadcrumb };
 
 // AXIOS
-import { AxiosResponseError } from "./responseAxios";
-export type { AxiosResponseError };
+import { AxiosResponseCus } from "./responseAxios";
+export type { AxiosResponseCus };

@@ -1,6 +1,13 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { useState, useEffect, Fragment, useCallback, ChangeEvent } from "react";
+import {
+  useState,
+  useEffect,
+  useContext,
+  Fragment,
+  useCallback,
+  ChangeEvent,
+} from "react";
 import { toast } from "react-toastify";
 
 import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
@@ -9,7 +16,12 @@ import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
 import { EDicount_type, typeCel } from "~/enums";
 
-import { IFilter, ICouponHome, IPagination } from "~/interface";
+import {
+  IFilter,
+  ICouponHome,
+  IPagination,
+  AxiosResponseCus,
+} from "~/interface";
 
 import Search from "~/components/Search";
 import { Table, CelTable } from "~/components/Table";
@@ -18,6 +30,10 @@ import { ButtonDelete, ButtonEdit } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
 import Link from "next/link";
 import { SelectDate } from "~/components/Select";
+import { useAppSelector } from "~/store/hooks";
+import { AuthContex, IAuthContext } from "~/layouts/DefaultLayout";
+import { AxiosError, AxiosResponse } from "axios";
+import { getCookies } from "cookies-next";
 
 interface ISelectCoupon {
   id: string;
@@ -37,6 +53,7 @@ interface Props {
 const CouponsPage = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? query.page : 1;
+  const { handleRefreshToken } = useContext<IAuthContext>(AuthContex);
 
   const [coupons, setCoupons] = useState<ICouponHome[]>([]);
   const [selectCoupons, setSelectCoupons] = useState<string[]>([]);
@@ -92,20 +109,60 @@ const CouponsPage = (props: Props) => {
       });
     }
 
+    const { accessToken, publicKey, apiKey } = getCookies();
+    if (!accessToken) return;
+
     try {
-      const payload = await axiosPatch(`/discounts/${id}`, {
-        discount_public: status,
-      });
+      const headers = {
+        Authorization: `Bear ${accessToken}`,
+        "public-key": `Key ${publicKey}`,
+        "x-api-key": `Key ${apiKey}`,
+      };
+
+      const payload = await axiosPatch(
+        `/discounts/${id}`,
+        {
+          discount_public: status,
+        },
+        { headers }
+      );
 
       if (payload.status === 201) {
         toast.success("Success updated discount", {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
-    } catch (error) {
-      toast.error("Please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+    } catch (err) {
+      const { code, response: responseErr } = err as AxiosError;
+
+      if (code === "ERR_NETWORK") {
+        toast.error("Please check your netword, try again", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setMessage("Error in server");
+        setLoading(false);
+        return;
+      }
+
+      const payload = responseErr as AxiosResponse;
+
+      if (payload.status === 500) {
+        toast.error("Server is busy, please try again", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setMessage("Error in server");
+        setLoading(false);
+        return;
+      }
+
+      if (payload.status === 400 && payload.data.message === "jwt expired") {
+        const refreshTokenRes =
+          (await handleRefreshToken()) as AxiosResponseCus;
+
+        if (refreshTokenRes.status === 200) {
+          onChangePublish(id, status);
+        }
+      }
     }
   };
 
@@ -114,22 +171,33 @@ const CouponsPage = (props: Props) => {
     handlePopup();
   };
 
-  const handlePopup = () => {
+  const handlePopup = useCallback(() => {
     if (showPopup) {
       setSelectItem(null);
     }
 
     setShowPopup(!showPopup);
-  };
+  }, [showPopup, selectItem]);
 
   const handleGetData = async () => {
+    const { accessToken, publicKey, apiKey } = getCookies();
+    if (!accessToken) return;
+
     setMessage(null);
     setLoading(true);
 
     try {
+      const headers = {
+        Authorization: `Bear ${accessToken}`,
+        "public-key": `Key ${publicKey}`,
+        "x-api-key": `Key ${apiKey}`,
+      };
+
       const response = await axiosGet(
-        `/discounts?page=${currentPage}&discount_name=1&discount_public=1&discount_type=1&discount_thumbnail=1&discount_code=1&discount_value=1&discount_active=1&discount_start_date=1&discount_end_date=1`
+        `/discounts?page=${currentPage}&discount_name=1&discount_public=1&discount_type=1&discount_thumbnail=1&discount_code=1&discount_value=1&discount_active=1&discount_start_date=1&discount_end_date=1`,
+        { headers }
       );
+
       if (response.status === 200) {
         if (response.payload.length === 0) {
           setCoupons([]);
@@ -141,27 +209,62 @@ const CouponsPage = (props: Props) => {
         setCoupons(response.payload);
         setLoading(false);
       }
-    } catch (error) {
-      console.log(error);
-      setMessage("Error in server");
-      setLoading(false);
-      toast.error("Error in server, please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+    } catch (err) {
+      const { code, response: responseErr } = err as AxiosError;
+
+      if (code === "ERR_NETWORK") {
+        toast.error("Please check your netword, try again", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setMessage("Error in server");
+        setLoading(false);
+        return;
+      }
+
+      const { status, data } = responseErr as AxiosResponse;
+
+      if (status === 500) {
+        toast.error("Server is busy, please try again", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setMessage("Error in server");
+        setLoading(false);
+        return;
+      }
+
+      if (status === 400 && data.message === "jwt expired") {
+        const refreshTokenRes =
+          (await handleRefreshToken()) as AxiosResponseCus;
+
+        if (refreshTokenRes.status === 200) {
+          handleGetData();
+        }
+      }
     }
   };
 
   const handleGetDataByFilter = useCallback(async () => {
+    const { accessToken, publicKey, apiKey } = getCookies();
+
+    if (!accessToken) return;
+
     setMessage(null);
     setLoading(true);
 
     try {
+      const headers = {
+        Authorization: `Bear ${accessToken}`,
+        "public-key": `Key ${publicKey}`,
+        "x-api-key": `Key ${apiKey}`,
+      };
+
       const response = await axiosGet(
         `/discounts/search?search=${filter?.search || ""}&start_date=${
           filter?.start_date || ""
         }&end_date=${
           filter?.end_date || ""
-        }&discount_name=1&discount_public=1&discount_code=1&discount_value=1&discount_type=1&discount_thumbnail=1&discount_active=1&discount_start_date=1&discount_end_date=1&page=${currentPage}`
+        }&discount_name=1&discount_public=1&discount_code=1&discount_value=1&discount_type=1&discount_thumbnail=1&discount_active=1&discount_start_date=1&discount_end_date=1&page=${currentPage}`,
+        { headers }
       );
 
       if (response.status === 200) {
@@ -176,13 +279,37 @@ const CouponsPage = (props: Props) => {
         setCoupons(response.payload);
         setLoading(false);
       }
-    } catch (error) {
-      console.log(error);
-      setMessage("Error in server");
-      toast.error("Error in server, please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setLoading(false);
+    } catch (err) {
+      const { code, response: responseErr } = err as AxiosError;
+
+      if (code === "ERR_NETWORK") {
+        toast.error("Please check your netword, try again", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setMessage("Error in server");
+        setLoading(false);
+        return;
+      }
+
+      const { status, data } = responseErr as AxiosResponse;
+
+      if (status === 500) {
+        toast.error("Server is busy, please try again", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setMessage("Error in server");
+        setLoading(false);
+        return;
+      }
+
+      if (status === 400 && data.message === "jwt expired") {
+        const refreshTokenRes =
+          (await handleRefreshToken()) as AxiosResponseCus;
+
+        if (refreshTokenRes.status === 200) {
+          handleGetDataByFilter();
+        }
+      }
     }
   }, [filter]);
 

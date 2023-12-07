@@ -1,6 +1,6 @@
-interface AxiosResponseError {
+interface AxiosResponseCus {
   status: number;
-  message: string;
+  data: any;
 }
 
-export type { AxiosResponseError };
+export type { AxiosResponseCus };

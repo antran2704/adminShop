@@ -8,12 +8,8 @@ const axiosGet = async (
   path: string,
   config?: AxiosRequestConfig | undefined
 ) => {
-  try {
-    const payload = await httpConfig.get(path, { ...config });
-    return payload.data;
-  } catch (error) {
-    console.error(error);
-  }
+  const payload = await httpConfig.get(path, { ...config });
+  return payload.data;
 };
 
 const axiosPost = async <T>(
@@ -25,24 +21,14 @@ const axiosPost = async <T>(
   return payload.data;
 };
 
-const axiosPatch = async <T>(path: string, data: T) => {
-  try {
-    const payload = await httpConfig.patch(path, data);
-
-    return payload.data;
-  } catch (error) {
-    console.error(error);
-  }
+const axiosPatch = async <T>(path: string, data: T, config?: AxiosRequestConfig | undefined) => {
+  const payload = await httpConfig.patch(path, data, { ...config });
+  return payload.data;
 };
 
-const axiosDelete = async (path: string) => {
-  try {
-    const payload = await httpConfig.delete(path);
-
+const axiosDelete = async (path: string, config?: AxiosRequestConfig | undefined) => {
+    const payload = await httpConfig.delete(path, { ...config });
     return payload.data;
-  } catch (error) {
-    console.error(error);
-  }
 };
 
 export { axiosGet, axiosPatch, axiosPost, axiosDelete };

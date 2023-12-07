@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC, useRef, useState } from "react";
+import { FC, useRef, useState, memo } from "react";
 import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 import { itemNav } from "./data";
 
@@ -92,4 +92,4 @@ const NavbarItem: FC<Props> = (props: Props) => {
   );
 };
 
-export default NavbarItem;
+export default memo(NavbarItem);

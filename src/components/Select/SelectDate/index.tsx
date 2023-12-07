@@ -1,4 +1,4 @@
-import { ChangeEvent, FC } from "react";
+import { ChangeEvent, FC, memo } from "react";
 
 interface Props {
   title?: string;
@@ -41,4 +41,4 @@ const SelectDate: FC<Props> = (props: Props) => {
   );
 };
 
-export default SelectDate;
+export default memo(SelectDate);

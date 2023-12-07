@@ -1,6 +1,13 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { useState, useEffect, Fragment, useCallback, ChangeEvent } from "react";
+import {
+  useState,
+  useEffect,
+  Fragment,
+  useCallback,
+  ChangeEvent,
+  useContext,
+} from "react";
 import { toast } from "react-toastify";
 
 import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
@@ -17,6 +24,7 @@ import SelectItem from "~/components/Select/SelectItem";
 import ImageCus from "~/components/Image/ImageCus";
 import { ButtonDelete, ButtonEdit } from "~/components/Button";
 import Link from "next/link";
+import { AuthContex, IAuthContext } from "~/layouts/DefaultLayout";
 
 interface ISelectProduct {
   id: string | null;
@@ -39,6 +47,8 @@ interface Props {
 }
 
 const ProductPage = (props: Props) => {
+  const { handleCheckLogin, handleRefreshToken } = useContext<IAuthContext>(AuthContex);
+
   const { query } = props;
   const currentPage = query.page ? query.page : 1;
   const [categories, setCategories] = useState<ISelectItem[]>([]);
@@ -345,7 +355,10 @@ const ProductPage = (props: Props) => {
                       src={product.thumbnail as string}
                       className="min-w-[32px] w-8 h-8 rounded-full"
                     />
-                    <Link href={`/edit/product/${product._id}`} className="text-sm font-medium whitespace-nowrap">
+                    <Link
+                      href={`/edit/product/${product._id}`}
+                      className="text-sm font-medium whitespace-nowrap"
+                    >
                       {product.title}
                     </Link>
                   </div>

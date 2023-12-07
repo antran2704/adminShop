@@ -12,7 +12,6 @@ interface Props {
 
 const Search: FC<Props> = (props: Props) => {
   const { search, placeholder, children, onReset, onSearch, onFilter } = props;
-  
   const router = useRouter();
   const currentSearch = router.query.search;
   //   const [search, setSearch] = useState<string | null>(null);

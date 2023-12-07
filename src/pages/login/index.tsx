@@ -1,11 +1,14 @@
 import axios, { AxiosError } from "axios";
+import { setCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { useState, ChangeEvent, FormEvent } from "react";
 import { toast } from "react-toastify";
 
 import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
-import { AxiosResponseError } from "~/interface";
+import { AxiosResponseCus } from "~/interface";
+import { useAppDispatch } from "~/store/hooks";
+import { login } from "~/store/slice";
 import { axiosPost } from "~/ultils/configAxios";
 
 interface IDataSend {
@@ -20,10 +23,13 @@ const initData: IDataSend = {
 
 const LoginPage = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<IDataSend>(initData);
   const [message, setMessage] = useState<string | null>(null);
+
+  console.log(data);
 
   const onChangeData = (e: ChangeEvent<HTMLInputElement>) => {
     if (message) {
@@ -46,10 +52,19 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const payload = await axiosPost("/users/login", data);
-      console.log(payload);
+      const { status, payload } = await axiosPost("/users/login", data);
 
-      if (payload.status === 200) {
+      if (status === 200) {
+        dispatch(login(payload));
+
+        setCookie("accessToken", payload.accessToken);
+
+        setCookie("publicKey", payload.publicKey);
+
+        setCookie("refreshToken", payload.refreshToken);
+
+        setCookie("apiKey", payload.apiKey);
+
         router.push("/");
       }
 
@@ -58,16 +73,19 @@ const LoginPage = () => {
       const error = err as AxiosError;
 
       if (axios.isAxiosError(error) && error?.response) {
-        if (error.response.status === 400) {
-          const erroMessage = error.response.data as AxiosResponseError;
-          setMessage(erroMessage.message);
+        const { status, data: responseErr } =
+          error.response as unknown as AxiosResponseCus;
+
+        if (status === 400) {
+          setMessage(responseErr.message);
         }
 
-        if (error.response.status === 401) {
+        if (status === 401) {
           setMessage("Email or Password incorrect");
+          setData({ ...data, password: null });
         }
 
-        if (error.response.status === 500) {
+        if (status === 500) {
           toast.error("Error in server, please try again", {
             position: toast.POSITION.TOP_RIGHT,
           });
@@ -80,12 +98,12 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="lg:min-w-[1000px] min-w-[600px] flex items-start bg-white rounded-lg shadow-xl overflow-hidden">
+    <div className="bg_login flex items-center justify-center h-screen">
+      <div className="lg:min-w-[1000px] md:w-4/6 sm:w-5/6 w-full flex items-start bg-white rounded-lg shadow-xl overflow-hidden">
         <div className="lg:block hidden">
           <ImageCus src="/login.png" title="Login" />
         </div>
-        <div className="lg:w-6/12 w-full px-10 pt-10 pb-20 ">
+        <div className="lg:w-6/12 w-full md:px-10 px-5 pt-10 pb-20 ">
           <h1 className="lg:text-3xl text-2xl w-fit font-medium mx-auto">
             Login
           </h1>
