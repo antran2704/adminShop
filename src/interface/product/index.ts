@@ -52,7 +52,7 @@ interface IProductData {
   shortDescription: string;
   description: string;
   price: number;
-  promotionPrice: number;
+  promotion_price: number;
   options: IOptionProduct[];
   inventory: number;
   thumbnail: string | null;
@@ -79,7 +79,7 @@ type IProductHome = Pick<
   | "title"
   | "public"
   | "price"
-  | "promotionPrice"
+  | "promotion_price"
   | "inventory"
   | "category"
   | "thumbnail"

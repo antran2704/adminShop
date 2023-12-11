@@ -120,7 +120,7 @@ const ProductPage = (props: Props) => {
               _id: item._id,
               title: item.title,
               price: item.price,
-              promotionPrice: item.promotionPrice,
+              promotion_price: item.promotion_price,
               inventory: item.inventory,
               category: item.category,
               thumbnail: item.thumbnail,
@@ -191,7 +191,7 @@ const ProductPage = (props: Props) => {
               _id: item._id,
               title: item.title,
               price: item.price,
-              promotionPrice: item.promotionPrice,
+              promotion_price: item.promotion_price,
               inventory: item.inventory,
               category: item.category,
               thumbnail: item.thumbnail,
@@ -377,8 +377,8 @@ const ProductPage = (props: Props) => {
                   type={typeCel.TEXT}
                   center={true}
                   value={
-                    product.promotionPrice
-                      ? product.promotionPrice.toString()
+                    product.promotion_price
+                      ? product.promotion_price.toString()
                       : "0"
                   }
                 />

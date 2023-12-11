@@ -24,6 +24,7 @@ import MultipleValue from "~/components/Input/MultipleValue";
 import { SelectItem } from "~/components/Select";
 import generalBreadcrumbs from "~/helper/generateBreadcrumb";
 import Specifications from "~/components/Specifications";
+import Loading from "~/components/Loading";
 
 const initData: ICreateProduct = {
   title: "",
@@ -70,6 +71,7 @@ const CreateProductPage = () => {
     ISpecificationsProduct[]
   >([]);
 
+  const [loading, setLoading] = useState<boolean>(false);
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
   const [loadingGallery, setLoadingGallery] = useState<boolean>(false);
 
@@ -93,9 +95,8 @@ const CreateProductPage = () => {
 
       return;
     }
-
-    if(!defaultCategory) {
-      setDefaultCategory(node_id)
+    if (!defaultCategory) {
+      setDefaultCategory(node_id);
     }
 
     if (fieldsCheck.includes("categories")) {
@@ -110,6 +111,17 @@ const CreateProductPage = () => {
   };
 
   const changeMultipleCategories = (name: string, values: ISelectItem[]) => {
+    if (values.length > 0) {
+      const isExit = values.some(
+        (value: ISelectItem) => value._id === defaultCategory
+      );
+
+      if (!isExit) {
+        setDefaultCategory(values[0]._id);
+      }
+    } else {
+      setDefaultCategory(null);
+    }
     setMultipleCategories(values);
   };
 
@@ -248,7 +260,10 @@ const CreateProductPage = () => {
   const checkData = (data: any) => {
     let fields = handleCheckFields(data);
     setFieldsCheck(fields);
-    router.push(`#${fields[0]}`);
+
+    if(fields.length > 0) {
+      router.push(`#${fields[0]}`);
+    }
     return fields;
   };
 
@@ -283,6 +298,8 @@ const CreateProductPage = () => {
 
       return;
     }
+
+    setLoading(true);
 
     try {
       let breadcrumbs: string[] = [];
@@ -322,11 +339,13 @@ const CreateProductPage = () => {
         });
         router.push("/products");
       }
+
+      setLoading(false)
     } catch (error) {
       toast.error("Error in create product", {
         position: toast.POSITION.TOP_RIGHT,
       });
-      console.log(error);
+      setLoading(false)
     }
   };
 
@@ -497,7 +516,10 @@ const CreateProductPage = () => {
         </div>
 
         <div className="lg:w-2/4 w-full flex flex-col mt-5 lg:gap-5 gap-3">
-          <Specifications specifications={specifications} onUpdate={onUpdateSpecifications}/>
+          <Specifications
+            specifications={specifications}
+            onUpdate={onUpdateSpecifications}
+          />
         </div>
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
@@ -509,6 +531,8 @@ const CreateProductPage = () => {
             onChange={changePublic}
           />
         </div>
+
+        {loading && <Loading />}
       </div>
     </FormLayout>
   );

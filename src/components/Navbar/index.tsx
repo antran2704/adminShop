@@ -41,7 +41,7 @@ const Navbar: FC = () => {
       <nav
         className={`xl:sticky fixed top-0 xl:left-0 ${
           show
-            ? "xl:w-3/12 md:w-6/12 sm:w-8/12 w-10/12 lg:px-5 pl-5 py-5 pb-10 lg:mr-5"
+            ? "xl:w-4/12 lg:w-5/12 md:w-6/12 sm:w-8/12 w-10/12 lg:px-5 pl-5 py-5 pb-10 lg:mr-5"
             : "w-0 mx-0 px-0 invisible"
         } h-screen bg-white rounded-tr-xl rounded-br-xl shadow-xl overflow-hidden transition-all ease-linear duration-200 z-[1000]`}
       >

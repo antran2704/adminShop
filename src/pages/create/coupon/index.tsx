@@ -132,8 +132,8 @@ const CreateCouponPage = () => {
 
   const checkData = (data: any) => {
     let fields = handleCheckFields(data);
+    setFieldsCheck(fields);
     if (fields.length > 0) {
-      setFieldsCheck(fields);
       router.push(`#${fields[0]}`);
     }
     return fields;

@@ -55,7 +55,7 @@ const initData: IProductData = {
   categories: [],
   type: [],
   price: 0,
-  promotionPrice: 0,
+  promotion_price: 0,
   inventory: 0,
   public: true,
   thumbnail: null,
@@ -143,7 +143,6 @@ const ProductEditPage = (props: Props) => {
   const [showAttributes, setShowAttributes] = useState<IObjectSelectAttribute>(
     {}
   );
-  console.log(variants);
   const [selectAttributes, setSelectAttributes] =
     useState<IObjectSelectAttribute>({});
 
@@ -392,6 +391,17 @@ const ProductEditPage = (props: Props) => {
   };
 
   const changeMultipleCategories = (name: string, values: ISelectItem[]) => {
+    if (values.length > 0) {
+      const isExit = values.some(
+        (value: ISelectItem) => value._id === defaultCategory
+      );
+
+      if (!isExit) {
+        setDefaultCategory(values[0]._id);
+      }
+    } else {
+      setDefaultCategory(null);
+    }
     setMultipleCategories(values);
   };
 
@@ -415,8 +425,8 @@ const ProductEditPage = (props: Props) => {
 
   const changePrice = useCallback(
     (name: string, value: number) => {
-      if (name === "promotionPrice" && product.price <= value) {
-        setFieldsCheck([...fieldsCheck, "promotionPrice"]);
+      if (name === "promotion_price" && product.price <= value) {
+        setFieldsCheck([...fieldsCheck, "promotion_price"]);
         toast.error("Promotion price must less than default price", {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -530,8 +540,8 @@ const ProductEditPage = (props: Props) => {
 
   const checkData = (data: any) => {
     let fields = handleCheckFields(data);
+    setFieldsCheck(fields);
     if (fields.length > 0) {
-      setFieldsCheck(fields);
       router.push(`#${fields[0]}`);
     }
     return fields;
@@ -607,6 +617,8 @@ const ProductEditPage = (props: Props) => {
           },
           0
         );
+      } else {
+        inventory = product.inventory;
       }
 
       const payload = await axiosPatch(`/products/${id}`, {
@@ -622,7 +634,7 @@ const ProductEditPage = (props: Props) => {
         breadcrumbs,
         specifications,
         price: product.price,
-        promotionPrice: product.promotionPrice,
+        promotion_price: product.promotion_price,
         inventory,
         public: product.public,
         variations: variations_id,
@@ -658,7 +670,7 @@ const ProductEditPage = (props: Props) => {
         thumbnail,
         gallery,
         price,
-        promotionPrice,
+        promotion_price,
         hotProduct,
         inventory,
         brand,
@@ -705,7 +717,7 @@ const ProductEditPage = (props: Props) => {
           thumbnail,
           gallery,
           price,
-          promotionPrice,
+          promotion_price,
           inventory,
           public: publicProduct,
           hotProduct,
@@ -983,9 +995,9 @@ const ProductEditPage = (props: Props) => {
               <Input
                 title="Promotion Price"
                 width="lg:w-2/4 w-full"
-                value={product.promotionPrice.toString()}
-                error={fieldsCheck.includes("promotionPrice")}
-                name="promotionPrice"
+                value={product.promotion_price.toString()}
+                error={fieldsCheck.includes("promotion_price")}
+                name="promotion_price"
                 type={typeInput.number}
                 getNumber={changePrice}
               />

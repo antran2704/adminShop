@@ -19,6 +19,7 @@ import PopupForm from "~/components/Popup/PopupForm";
 import Input from "~/components/Input";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { ButtonDelete, ButtonEdit } from "~/components/Button";
+import Loading from "~/components/Loading";
 
 interface ISelectAttribute {
   id: string | null;
@@ -55,7 +56,6 @@ const AttributeValuesPage = (props: Props) => {
 
   const [attributes, setAttribute] = useState<IVariant[]>([]);
   const [message, setMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [showFormUpdate, setShowFormUpdate] = useState<boolean>(false);
   const [showFormCreate, setShowFormCreate] = useState<boolean>(false);
@@ -64,6 +64,9 @@ const AttributeValuesPage = (props: Props) => {
   const [pagination, setPagination] = useState<IPagination>(initPagination);
 
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingTable, setLoadingTable] = useState<boolean>(true);
 
   const changePublic = useCallback(
     (name: string, value: boolean) => {
@@ -112,6 +115,7 @@ const AttributeValuesPage = (props: Props) => {
       });
     }
 
+    setLoading(true);
     try {
       const payload = await axiosPatch(`/attributes/child/${id}`, {
         children_id,
@@ -125,10 +129,12 @@ const AttributeValuesPage = (props: Props) => {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
+      setLoading(false);
     } catch (error) {
       toast.error("Please try again", {
         position: toast.POSITION.TOP_RIGHT,
       });
+      setLoading(false);
     }
   };
 
@@ -153,7 +159,7 @@ const AttributeValuesPage = (props: Props) => {
 
       return;
     }
-
+    setLoading(true);
     try {
       const payload = await axiosPatch(`/attributes/child/${id}`, {
         children_id: selectItem.id,
@@ -168,10 +174,13 @@ const AttributeValuesPage = (props: Props) => {
         handleGetData();
         handlePopupFormUpdate();
       }
+
+      setLoading(false);
     } catch (error) {
       toast.error("Please try again", {
         position: toast.POSITION.TOP_RIGHT,
       });
+      setLoading(false);
     }
   };
 
@@ -217,7 +226,7 @@ const AttributeValuesPage = (props: Props) => {
 
   const handleGetData = async () => {
     setMessage(null);
-    setLoading(true);
+    setLoadingTable(true);
 
     try {
       const response = await axiosGet(`/attributes/${id}`);
@@ -225,7 +234,7 @@ const AttributeValuesPage = (props: Props) => {
         if (response.payload.variants.length === 0) {
           setAttribute([]);
           setMessage("No attribute value");
-          setLoading(false);
+          setLoadingTable(false);
           return;
         }
 
@@ -240,12 +249,12 @@ const AttributeValuesPage = (props: Props) => {
         );
         // setPagination(response.pagination);
         setAttribute(data);
-        setLoading(false);
+        setLoadingTable(false);
       }
     } catch (error) {
       console.log(error);
       setMessage("Error in server");
-      setLoading(false);
+      setLoadingTable(false);
     }
   };
 
@@ -331,7 +340,11 @@ const AttributeValuesPage = (props: Props) => {
       handlePopup={handlePopup}
     >
       <Fragment>
-        <Table colHeadTabel={colHeadTable} message={message} loading={loading}>
+        <Table
+          colHeadTabel={colHeadTable}
+          message={message}
+          loading={loadingTable}
+        >
           <Fragment>
             {attributes.map((item: IVariant) => (
               <tr
@@ -471,6 +484,8 @@ const AttributeValuesPage = (props: Props) => {
             </div>
           </Fragment>
         </PopupForm>
+
+        {loading && <Loading />}
       </Fragment>
     </ShowItemsLayout>
   );

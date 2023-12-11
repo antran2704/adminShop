@@ -20,6 +20,7 @@ import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import generalBreadcrumbs from "~/helper/generateBreadcrumb";
+import Loading from "~/components/Loading";
 
 const initData: IDataCategory = {
   parent_id: null,
@@ -47,6 +48,8 @@ const CreateCategoryPage = () => {
   });
 
   const [thumbnail, setThumbnail] = useState<string | null>(null);
+
+  const [loading, setLoading] = useState<boolean>(false);
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
 
   const onSelectCategory = (title: string | null, node_id: string | null) => {
@@ -100,7 +103,9 @@ const CreateCategoryPage = () => {
   const checkData = (data: any) => {
     let fields = handleCheckFields(data);
     setFieldsCheck(fields);
-    router.push(`#${fields[0]}`);
+    if (fields.length > 0) {
+      router.push(`#${fields[0]}`);
+    }
     return fields;
   };
 
@@ -128,6 +133,8 @@ const CreateCategoryPage = () => {
       return;
     }
 
+    setLoading(true);
+
     try {
       let breadcrumbs: string[] = generalBreadcrumbs(
         categorySelect.node_id || null,
@@ -151,11 +158,13 @@ const CreateCategoryPage = () => {
         });
         router.push("/categories");
       }
+
+      setLoading(false);
     } catch (error) {
       toast.error("Error in create category", {
         position: toast.POSITION.TOP_RIGHT,
       });
-      console.log(error);
+      setLoading(false);
     }
   };
 
@@ -265,6 +274,8 @@ const CreateCategoryPage = () => {
             onChange={changePublic}
           />
         </div>
+
+        {loading && <Loading />}
       </div>
     </FormLayout>
   );

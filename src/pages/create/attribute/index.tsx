@@ -11,6 +11,7 @@ import { IAttribute, ISelectItem } from "~/interface";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import MultipleValue from "~/components/Input/MultipleValue";
 import { axiosPost } from "~/ultils/configAxios";
+import Loading from "~/components/Loading";
 
 const initData: IAttribute = {
   _id: "",
@@ -25,6 +26,8 @@ const CreateAttributePage = () => {
 
   const [data, setData] = useState<IAttribute>(initData);
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   const changePublic = useCallback(
     (name: string, value: boolean) => {
@@ -58,12 +61,17 @@ const CreateAttributePage = () => {
   const checkData = (data: any) => {
     let fields = handleCheckFields(data);
     setFieldsCheck(fields);
-    router.push(`#${fields[0]}`);
+    if (fields.length > 0) {
+      router.push(`#${fields[0]}`);
+    }
     return fields;
   };
 
   const generateAttributes = (attributes: ISelectItem[]) => {
-    return attributes.map((attribute) => ({ name: attribute.title, publish: true }));
+    return attributes.map((attribute) => ({
+      name: attribute.title,
+      publish: true,
+    }));
   };
 
   const handleOnSubmit = async () => {
@@ -90,6 +98,8 @@ const CreateAttributePage = () => {
       return;
     }
 
+    setLoading(true);
+
     try {
       const payload = await axiosPost("/attributes", {
         name: data.name,
@@ -104,16 +114,22 @@ const CreateAttributePage = () => {
         });
         router.push("/attributes");
       }
+
+      setLoading(false);
     } catch (error) {
       toast.error("Error in create attribute", {
         position: toast.POSITION.TOP_RIGHT,
       });
-      console.log(error);
+      setLoading(false);
     }
   };
 
   return (
-    <FormLayout title="Create attribute" backLink="/attributes" onSubmit={handleOnSubmit}>
+    <FormLayout
+      title="Create attribute"
+      backLink="/attributes"
+      onSubmit={handleOnSubmit}
+    >
       <div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">
           <Input
@@ -161,6 +177,8 @@ const CreateAttributePage = () => {
             onChange={changePublic}
           />
         </div>
+
+        {loading && <Loading />}
       </div>
     </FormLayout>
   );

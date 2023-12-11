@@ -29,8 +29,6 @@ const LoginPage = () => {
   const [data, setData] = useState<IDataSend>(initData);
   const [message, setMessage] = useState<string | null>(null);
 
-  console.log(data);
-
   const onChangeData = (e: ChangeEvent<HTMLInputElement>) => {
     if (message) {
       setMessage(null);
@@ -71,6 +69,12 @@ const LoginPage = () => {
       setLoading(false);
     } catch (err) {
       const error = err as AxiosError;
+
+      if(error.code === "ERR_NETWORK") {
+        toast.error("Error in server, please try again", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
 
       if (axios.isAxiosError(error) && error?.response) {
         const { status, data: responseErr } =

@@ -51,8 +51,8 @@ const Thumbnail: FC<Props> = (props: Props) => {
         className={`flex flex-col items-center justify-center w-full ${
           error ? "border-error" : ""
         } ${
-          className ? className : "h-[400px]"
-        } rounded-md border-2 border-dashed cursor-pointer overflow-hidden`}
+          className ? className : "min-h-[100px] min-w-[100px] max-h-[400px] max-w-[400px]"
+        } rounded-md border-2 ${!url ? 'border-dashed' : ""} cursor-pointer overflow-hidden`}
       >
         {loading && (
           <p className="text-base font-medium text-center">Loading...</p>
@@ -64,7 +64,7 @@ const Thumbnail: FC<Props> = (props: Props) => {
           </>
         )}
         {url && !loading && (
-          <ImageCus src={url} title="Thumbanil" className="w-full h-full" />
+          <ImageCus src={url} title="Thumbanil" className="w-full h-full object-contain object-center" />
         )}
         <input
           onChange={hanldeChangeThumbnail}

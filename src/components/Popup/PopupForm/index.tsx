@@ -16,7 +16,7 @@ const PopupForm = (props: Props) => {
     <div
       className={`fixed top-0 right-0 bottom-0 left-0 ${
         show ? "pointer-events-auto" : "pointer-events-none"
-      } z-[9999]`}
+      } z-[1000]`}
     >
       {show && <LayoutClose onClose={onClose} />}
 
