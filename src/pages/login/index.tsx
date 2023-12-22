@@ -50,7 +50,7 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const { status, payload } = await axiosPost("/users/login", data);
+      const { status, payload } = await axiosPost("/admin/login", data);
 
       if (status === 200) {
         dispatch(login(payload));
@@ -84,7 +84,7 @@ const LoginPage = () => {
           setMessage(responseErr.message);
         }
 
-        if (status === 401) {
+        if (status === 401 || status === 404) {
           setMessage("Email or Password incorrect");
           setData({ ...data, password: null });
         }
