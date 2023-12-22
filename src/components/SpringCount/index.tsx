@@ -18,7 +18,12 @@ const SpringCount = (props: Props) => {
       onUpdate(value) {
         if (ref.current) {
           const price = Number(value);
-          ref.current.textContent = `${new Intl.NumberFormat().format(price)} ${specialCharacter}`;
+
+          if(specialCharacter) {
+            ref.current.textContent = `${new Intl.NumberFormat().format(price)} ${specialCharacter}`;
+          } else {
+            ref.current.textContent = `${new Intl.NumberFormat().format(price)}`;
+          }
         }
       },
     });

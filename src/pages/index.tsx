@@ -1,6 +1,9 @@
-import { useState, useRef } from "react";
-import { animate, motion } from "framer-motion";
+import { useState } from "react";
 import { AiOutlineEdit, AiOutlineShoppingCart } from "react-icons/ai";
+import {
+  MdOutlineKeyboardDoubleArrowDown,
+  MdOutlineKeyboardDoubleArrowUp,
+} from "react-icons/md";
 import { BiCircleThreeQuarter } from "react-icons/bi";
 import {
   Chart as ChartJS,
@@ -13,7 +16,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
-import {Table, CelTable} from "~/components/Table";
+import { Table, CelTable } from "~/components/Table";
 
 import { typeCel } from "~/enums";
 import Link from "next/link";
@@ -46,6 +49,7 @@ const colHeadTable = ["Name", "Email", "Phone", "Status", "", ""];
 
 export default function Home() {
   const [message, setMessage] = useState<string | null>(null);
+  const [show, setShow] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
   const data = {
@@ -73,7 +77,7 @@ export default function Home() {
       </div>
       <div className="w-full lg:mb-10 mb-5">
         <h2 className="text-title mb-4">Dashboard Overview</h2>
-        <div className="flex lg:flex-row flex-col items-start justify-between h-full gap-10">
+        <div className="flex lg:flex-row flex-col-reverse items-start justify-between h-full gap-10">
           <div className="lg:w-7/12 w-full h-full bg-[#f4f7ff] rounded-xl p-5">
             <div>
               <SpringCount
@@ -86,37 +90,70 @@ export default function Home() {
             </div>
             <Bar options={options} data={data} />
           </div>
-          <div className="flex flex-col lg:w-5/12 w-full h-full gap-2">
-            <div className="w-full lg:h-[60%] bg-[#ecf3fe] px-5 py-10 rounded-xl">
-              <div className="flex items-center mb-3 gap-2">
+          <div className="relative lg:w-5/12 w-full mb-10">
+            <div
+              className={`grid md:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max ${
+                show ? "max-h-[2000px]" : "max-h-[580px]"
+              } gap-2 overflow-hidden transition-all ease-in-out duration-300`}
+            >
+              <div className="flex flex-col items-center w-full bg-[#ecf3fe] px-5 py-10 rounded-xl gap-2">
                 <BiCircleThreeQuarter className="text-4xl text-[#74aef8]" />
+                <p className="md:text-xl text-lg font-medium">Total today</p>
                 <SpringCount
-                  className="text-3xl font-bold"
+                  className="text-2xl font-bold"
                   from={0}
                   to={5433}
                   specialCharacter="K"
                 />
               </div>
-              <p className="text-lg font-medium">Total today</p>
-            </div>
-            <div className="flex item-start justify-between w-full lg:h-[40%] bg-[#eef8f3] px-5 py-10 rounded-xl gap-10">
-              <div>
-                <h3 className="text-xl font-bold mb-3">
-                  Orders today:
-                  <SpringCount
-                    from={0}
-                    to={23}
-                  />
-                </h3>
-                <Link
-                  href={"/orders"}
-                  className="w-fit font-medium text-white bg-[#71ce98] px-5 py-2 rounded-lg mx-auto"
-                >
-                  Detail
-                </Link>
+              <div className="flex flex-col items-center w-full bg-[#eef8f3] px-5 py-10 rounded-xl gap-2">
+                <AiOutlineShoppingCart className="text-4xl" />
+                <p className="md:text-xl text-lg font-medium">Orders today:</p>
+                <SpringCount className="text-2xl font-bold" from={0} to={33} />
               </div>
-              <AiOutlineShoppingCart className="text-3xl" />
+              <div className="flex flex-col items-center w-full bg-[#ecf3fe] px-5 py-10 rounded-xl gap-2">
+                <BiCircleThreeQuarter className="text-4xl text-[#74aef8]" />
+                <p className="md:text-xl text-lg font-medium">Total today</p>
+                <SpringCount
+                  className="text-2xl font-bold"
+                  from={0}
+                  to={5433}
+                  specialCharacter="K"
+                />
+              </div>
+              <div className="flex flex-col items-center w-full bg-[#eef8f3] px-5 py-10 rounded-xl gap-2">
+                <AiOutlineShoppingCart className="text-4xl" />
+                <p className="md:text-xl text-lg font-medium">Orders today:</p>
+                <SpringCount className="text-2xl font-bold" from={0} to={33} />
+              </div>
+              <div className="flex flex-col items-center w-full bg-[#ecf3fe] px-5 py-10 rounded-xl gap-2">
+                <BiCircleThreeQuarter className="text-4xl text-[#74aef8]" />
+                <p className="md:text-xl text-lg font-medium">Total today</p>
+                <SpringCount
+                  className="text-2xl font-bold"
+                  from={0}
+                  to={5433}
+                  specialCharacter="K"
+                />
+              </div>
+              <div className="flex flex-col items-center w-full bg-[#eef8f3] px-5 py-10 rounded-xl gap-2">
+                <AiOutlineShoppingCart className="text-4xl" />
+                <p className="md:text-xl text-lg font-medium">Orders today:</p>
+                <SpringCount className="text-2xl font-bold" from={0} to={33} />
+              </div>
             </div>
+
+            <button
+              onClick={() => setShow(!show)}
+              className="md:hidden block absolute -bottom-10 left-1/2 -translate-x-1/2"
+            >
+              {!show && (
+                <MdOutlineKeyboardDoubleArrowDown className="text-3xl text-primary" />
+              )}
+              {show && (
+                <MdOutlineKeyboardDoubleArrowUp className="text-3xl text-primary" />
+              )}
+            </button>
           </div>
         </div>
       </div>
