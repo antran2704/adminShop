@@ -22,7 +22,7 @@ const SpringCount = (props: Props) => {
           if(specialCharacter) {
             ref.current.textContent = `${new Intl.NumberFormat().format(price)} ${specialCharacter}`;
           } else {
-            ref.current.textContent = `${new Intl.NumberFormat().format(price)}`;
+            ref.current.textContent = new Intl.NumberFormat().format(price);
           }
         }
       },

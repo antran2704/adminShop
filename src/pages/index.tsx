@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AiOutlineEdit, AiOutlineShoppingCart } from "react-icons/ai";
 import {
   MdOutlineKeyboardDoubleArrowDown,
   MdOutlineKeyboardDoubleArrowUp,
 } from "react-icons/md";
-import { BiCircleThreeQuarter } from "react-icons/bi";
+import {
+  BiCircleThreeQuarter,
+  BiDollarCircle,
+  BiPackage,
+  BiAlarm,
+  BiMinusCircle,
+} from "react-icons/bi";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -21,6 +27,7 @@ import { Table, CelTable } from "~/components/Table";
 import { typeCel } from "~/enums";
 import Link from "next/link";
 import SpringCount from "~/components/SpringCount";
+import { axiosGet } from "~/ultils/configAxios";
 
 ChartJS.register(
   CategoryScale,
@@ -40,30 +47,85 @@ const options = {
     },
     title: {
       display: true,
-      text: "Chart.js Bar Chart2",
+      text: "Overview week",
     },
   },
 };
 
 const colHeadTable = ["Name", "Email", "Phone", "Status", "", ""];
 
+const getDate = (count: number = 0) => {
+  const newDate = new Date();
+  const date = newDate.getDate();
+
+  newDate.setDate(date - count);
+  return newDate.toLocaleDateString();
+};
+
+const data = {
+  labels: [
+    getDate(6),
+    getDate(5),
+    getDate(4),
+    getDate(3),
+    getDate(2),
+    getDate(1),
+    getDate(0),
+  ],
+  datasets: [
+    {
+      label: "Orders",
+      data: [1, 2, 30],
+      backgroundColor: "#418efd",
+      borderRadius: 10,
+      borderWidth: 0,
+    },
+  ],
+};
+
+interface IOverview {
+  total_orders: number;
+  pending_orders: number;
+  processing_orders: number;
+  delivered_orders: number;
+  cancle_orders: number;
+}
+
+const initOveviews: IOverview = {
+  total_orders: 0,
+  processing_orders: 0,
+  cancle_orders: 0,
+  delivered_orders: 0,
+  pending_orders: 0,
+};
+
 export default function Home() {
+  const [overviews, setOverviews] = useState<IOverview>(initOveviews);
+
   const [message, setMessage] = useState<string | null>(null);
   const [show, setShow] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingOverviews, setLoadingOvervies] = useState<boolean>(true);
 
-  const data = {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
-    datasets: [
-      {
-        label: "Dataset 1",
-        data: [1, 2, 30.2],
-        backgroundColor: "#418efd",
-        borderRadius: 10,
-        borderWidth: 0,
-      },
-    ],
+  const handleGetOverviews = async () => {
+    setLoadingOvervies(true);
+
+    try {
+      const { status, payload } = await axiosGet("/overviews/home");
+
+      if (status === 200) {
+        setOverviews(payload);
+      }
+      setLoadingOvervies(false);
+    } catch (error) {
+      console.log(error);
+      setLoadingOvervies(false);
+    }
   };
+
+  useEffect(() => {
+    handleGetOverviews();
+  }, []);
 
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
@@ -84,68 +146,91 @@ export default function Home() {
                 className="text-lg font-bold"
                 from={0}
                 to={4413954}
-                specialCharacter="$"
+                specialCharacter="VND"
               />
-              <span className="text-base text-[#b0b0b0]">Increase</span>
             </div>
             <Bar options={options} data={data} />
           </div>
           <div className="relative lg:w-5/12 w-full mb-10">
             <div
               className={`grid md:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max ${
-                show ? "max-h-[2000px]" : "max-h-[580px]"
+                show ? "max-h-[2000px]" : "max-h-[600px]"
               } gap-2 overflow-hidden transition-all ease-in-out duration-300`}
             >
-              <div className="flex flex-col items-center w-full bg-[#ecf3fe] px-5 py-10 rounded-xl gap-2">
-                <BiCircleThreeQuarter className="text-4xl text-[#74aef8]" />
-                <p className="md:text-xl text-lg font-medium">Total today</p>
+              <div className="flex flex-col items-center w-full bg-[#5032fd] text-white px-5 py-10 rounded-xl gap-2">
+                <BiDollarCircle className="text-4xl" />
+                <p className="md:text-xl text-lg text-center font-medium">
+                  Total today
+                </p>
                 <SpringCount
                   className="text-2xl font-bold"
                   from={0}
                   to={5433}
-                  specialCharacter="K"
+                  specialCharacter="VND"
                 />
               </div>
-              <div className="flex flex-col items-center w-full bg-[#eef8f3] px-5 py-10 rounded-xl gap-2">
+              <div className="flex flex-col items-center w-full bg-[#0891b2] text-white px-5 py-10 rounded-xl gap-2">
                 <AiOutlineShoppingCart className="text-4xl" />
-                <p className="md:text-xl text-lg font-medium">Orders today:</p>
-                <SpringCount className="text-2xl font-bold" from={0} to={33} />
-              </div>
-              <div className="flex flex-col items-center w-full bg-[#ecf3fe] px-5 py-10 rounded-xl gap-2">
-                <BiCircleThreeQuarter className="text-4xl text-[#74aef8]" />
-                <p className="md:text-xl text-lg font-medium">Total today</p>
-                <SpringCount
+                <p className="md:text-xl text-lg text-center font-medium">
+                  Orders today
+                </p>
+                {!loadingOverviews && <SpringCount
                   className="text-2xl font-bold"
                   from={0}
-                  to={5433}
-                  specialCharacter="K"
-                />
+                  to={overviews.total_orders}
+                />}
               </div>
-              <div className="flex flex-col items-center w-full bg-[#eef8f3] px-5 py-10 rounded-xl gap-2">
-                <AiOutlineShoppingCart className="text-4xl" />
-                <p className="md:text-xl text-lg font-medium">Orders today:</p>
-                <SpringCount className="text-2xl font-bold" from={0} to={33} />
-              </div>
-              <div className="flex flex-col items-center w-full bg-[#ecf3fe] px-5 py-10 rounded-xl gap-2">
-                <BiCircleThreeQuarter className="text-4xl text-[#74aef8]" />
-                <p className="md:text-xl text-lg font-medium">Total today</p>
-                <SpringCount
+              <div className="flex flex-col items-center w-full bg-success text-white px-5 py-10 rounded-xl gap-2">
+                <BiPackage className="text-4xl" />
+                <p className="md:text-xl text-lg text-center font-medium">
+                  Orders Delivered
+                </p>
+                {!loadingOverviews && <SpringCount
                   className="text-2xl font-bold"
                   from={0}
-                  to={5433}
-                  specialCharacter="K"
-                />
+                  to={overviews.delivered_orders}
+                />}
               </div>
-              <div className="flex flex-col items-center w-full bg-[#eef8f3] px-5 py-10 rounded-xl gap-2">
-                <AiOutlineShoppingCart className="text-4xl" />
-                <p className="md:text-xl text-lg font-medium">Orders today:</p>
-                <SpringCount className="text-2xl font-bold" from={0} to={33} />
+              <div className="flex flex-col items-center w-full bg-warn text-white px-5 py-10 rounded-xl gap-2">
+                <BiAlarm className="text-4xl" />
+                <p className="md:text-xl text-lg text-center font-medium">
+                  Orders Pending
+                </p>
+                {!loadingOverviews && (
+                  <SpringCount
+                    className="text-2xl font-bold"
+                    from={0}
+                    to={overviews.pending_orders}
+                  />
+                )}
+              </div>
+              <div className="flex flex-col items-center w-full bg-primary text-white px-5 py-10 rounded-xl gap-2">
+                <BiCircleThreeQuarter className="text-4xl" />
+                <p className="md:text-xl text-lg text-center font-medium">
+                  Orders Processing
+                </p>
+                {!loadingOverviews && <SpringCount
+                  className="text-2xl font-bold"
+                  from={0}
+                  to={overviews.processing_orders}
+                />}
+              </div>
+              <div className="flex flex-col items-center w-full bg-cancle text-white px-5 py-10 rounded-xl gap-2">
+                <BiMinusCircle className="text-4xl" />
+                <p className="md:text-xl text-lg text-center font-medium">
+                  Orders Cancle
+                </p>
+                {!loadingOverviews && <SpringCount
+                  className="text-2xl font-bold"
+                  from={0}
+                  to={overviews.cancle_orders}
+                />}
               </div>
             </div>
 
             <button
               onClick={() => setShow(!show)}
-              className="md:hidden block absolute -bottom-10 left-1/2 -translate-x-1/2"
+              className="md:hidden block absolute -bottom-10 left-1/2 -translate-x-1/2 select-none"
             >
               {!show && (
                 <MdOutlineKeyboardDoubleArrowDown className="text-3xl text-primary" />
