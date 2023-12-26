@@ -28,7 +28,7 @@ const SpringCount = (props: Props) => {
       },
     });
     return () => controls.stop();
-  }, []);
+  }, [to]);
 
   return (
     <motion.p

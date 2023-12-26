@@ -47,7 +47,7 @@ const options = {
     },
     title: {
       display: true,
-      text: "Overview week",
+      text: "Overview 5 days",
     },
   },
 };
@@ -62,29 +62,9 @@ const getDate = (count: number = 0) => {
   return newDate.toLocaleDateString();
 };
 
-const data = {
-  labels: [
-    getDate(6),
-    getDate(5),
-    getDate(4),
-    getDate(3),
-    getDate(2),
-    getDate(1),
-    getDate(0),
-  ],
-  datasets: [
-    {
-      label: "Orders",
-      data: [1, 2, 30],
-      backgroundColor: "#418efd",
-      borderRadius: 10,
-      borderWidth: 0,
-    },
-  ],
-};
-
 interface IOverview {
-  total_orders: number;
+  gross: number;
+  total_orders: string[];
   pending_orders: number;
   processing_orders: number;
   delivered_orders: number;
@@ -92,7 +72,8 @@ interface IOverview {
 }
 
 const initOveviews: IOverview = {
-  total_orders: 0,
+  gross: 0,
+  total_orders: [],
   processing_orders: 0,
   cancle_orders: 0,
   delivered_orders: 0,
@@ -100,18 +81,35 @@ const initOveviews: IOverview = {
 };
 
 export default function Home() {
+  const data = {
+    labels: [],
+    datasets: [
+      {
+        label: "Gross",
+        data: [],
+        backgroundColor: "#418efd",
+        borderRadius: 10,
+        borderWidth: 0,
+      },
+    ],
+  };
+
   const [overviews, setOverviews] = useState<IOverview>(initOveviews);
 
   const [message, setMessage] = useState<string | null>(null);
   const [show, setShow] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [loadingOverviews, setLoadingOvervies] = useState<boolean>(true);
+  const [dataBar, setDataBar] = useState<any>(data);
 
   const handleGetOverviews = async () => {
     setLoadingOvervies(true);
 
     try {
-      const { status, payload } = await axiosGet("/overviews/home");
+      const date = new Date().toLocaleDateString("en-GB");
+      const { status, payload } = await axiosGet(
+        `/overviews/home?date=${date}`
+      );
 
       if (status === 200) {
         setOverviews(payload);
@@ -123,8 +121,28 @@ export default function Home() {
     }
   };
 
+  const handleGetGross = async () => {
+    try {
+      const { status, payload } = await axiosGet(`/gross-date/home`);
+      if (status === 200) {
+        const newData = dataBar;
+
+        payload.map((item: any) => {
+          newData.labels.push(item.date);
+          newData.datasets[0].data.push(item.gross);
+        });
+
+        setDataBar(newData);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     handleGetOverviews();
+    handleGetGross();
   }, []);
 
   return (
@@ -149,7 +167,7 @@ export default function Home() {
                 specialCharacter="VND"
               />
             </div>
-            <Bar options={options} data={data} />
+            {!loading && <Bar options={options} data={dataBar} />}
           </div>
           <div className="relative lg:w-5/12 w-full mb-10">
             <div
@@ -160,36 +178,42 @@ export default function Home() {
               <div className="flex flex-col items-center w-full bg-[#5032fd] text-white px-5 py-10 rounded-xl gap-2">
                 <BiDollarCircle className="text-4xl" />
                 <p className="md:text-xl text-lg text-center font-medium">
-                  Total today
+                  Income today
                 </p>
-                <SpringCount
-                  className="text-2xl font-bold"
-                  from={0}
-                  to={5433}
-                  specialCharacter="VND"
-                />
+                {!loadingOverviews && (
+                  <SpringCount
+                    className="text-2xl font-bold"
+                    from={0}
+                    specialCharacter="VND"
+                    to={overviews.gross}
+                  />
+                )}
               </div>
               <div className="flex flex-col items-center w-full bg-[#0891b2] text-white px-5 py-10 rounded-xl gap-2">
                 <AiOutlineShoppingCart className="text-4xl" />
                 <p className="md:text-xl text-lg text-center font-medium">
                   Orders today
                 </p>
-                {!loadingOverviews && <SpringCount
-                  className="text-2xl font-bold"
-                  from={0}
-                  to={overviews.total_orders}
-                />}
+                {!loadingOverviews && (
+                  <SpringCount
+                    className="text-2xl font-bold"
+                    from={0}
+                    to={overviews.total_orders.length}
+                  />
+                )}
               </div>
               <div className="flex flex-col items-center w-full bg-success text-white px-5 py-10 rounded-xl gap-2">
                 <BiPackage className="text-4xl" />
                 <p className="md:text-xl text-lg text-center font-medium">
                   Orders Delivered
                 </p>
-                {!loadingOverviews && <SpringCount
-                  className="text-2xl font-bold"
-                  from={0}
-                  to={overviews.delivered_orders}
-                />}
+                {!loadingOverviews && (
+                  <SpringCount
+                    className="text-2xl font-bold"
+                    from={0}
+                    to={overviews.delivered_orders}
+                  />
+                )}
               </div>
               <div className="flex flex-col items-center w-full bg-warn text-white px-5 py-10 rounded-xl gap-2">
                 <BiAlarm className="text-4xl" />
@@ -209,22 +233,26 @@ export default function Home() {
                 <p className="md:text-xl text-lg text-center font-medium">
                   Orders Processing
                 </p>
-                {!loadingOverviews && <SpringCount
-                  className="text-2xl font-bold"
-                  from={0}
-                  to={overviews.processing_orders}
-                />}
+                {!loadingOverviews && (
+                  <SpringCount
+                    className="text-2xl font-bold"
+                    from={0}
+                    to={overviews.processing_orders}
+                  />
+                )}
               </div>
               <div className="flex flex-col items-center w-full bg-cancle text-white px-5 py-10 rounded-xl gap-2">
                 <BiMinusCircle className="text-4xl" />
                 <p className="md:text-xl text-lg text-center font-medium">
                   Orders Cancle
                 </p>
-                {!loadingOverviews && <SpringCount
-                  className="text-2xl font-bold"
-                  from={0}
-                  to={overviews.cancle_orders}
-                />}
+                {!loadingOverviews && (
+                  <SpringCount
+                    className="text-2xl font-bold"
+                    from={0}
+                    to={overviews.cancle_orders}
+                  />
+                )}
               </div>
             </div>
 

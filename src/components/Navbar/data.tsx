@@ -1,5 +1,5 @@
 import { AiOutlineSetting, AiOutlineShoppingCart } from "react-icons/ai";
-import { BiLogOut, BiCategoryAlt } from "react-icons/bi";
+import { BiLogOut, BiCategoryAlt, BiDollarCircle } from "react-icons/bi";
 import { RxDashboard } from "react-icons/rx";
 import { ReactNode } from "react";
 import { HiOutlineUsers } from "react-icons/hi2";
@@ -44,6 +44,11 @@ const listBody: itemNav[] = [
     name: "Orders",
     path: "/orders",
     icon: <AiOutlineShoppingCart />,
+  },
+  {
+    name: "Income",
+    path: "/incomes",
+    icon: <BiDollarCircle />,
   },
   {
     name: "Customers",
