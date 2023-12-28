@@ -37,17 +37,27 @@ const Search: FC<Props> = (props: Props) => {
   //     }
   //   }, [debouncedValue]);
 
+  const handleFilter = () => {
+    if (router.query.page && Number(router.query.page) !== 1) {
+      router.replace({
+        query: {},
+      });
+    }
+
+    if (!router.query.page || Number(router.query.page) === 1) {
+      onFilter();
+    }
+  };
+
   const onKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     const key = e.key;
     if (key === "Enter") {
-      onFilter();
+      handleFilter();
     }
-  }
+  };
 
   return (
-    <div
-      className={`flex flex-wrap items-end min-h-10 mt-5 mb-10 gap-5`}
-    >
+    <div className={`flex flex-wrap items-end min-h-10 mt-5 mb-10 gap-5`}>
       <input
         value={search}
         type="text"
@@ -62,7 +72,7 @@ const Search: FC<Props> = (props: Props) => {
 
       <div className="md:w-fit w-full flex md:flex-row flex-col items-center md:gap-5 gap-2">
         <button
-        onClick={onFilter}
+          onClick={handleFilter}
           className={`flex md:w-fit w-full items-center justify-center h-10 text-lg text-white bg-primary font-medium px-8 py-1 rounded-md`}
         >
           Fillter

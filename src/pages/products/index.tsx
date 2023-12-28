@@ -47,7 +47,8 @@ interface Props {
 }
 
 const ProductPage = (props: Props) => {
-  const { handleCheckLogin, handleRefreshToken } = useContext<IAuthContext>(AuthContex);
+  const { handleCheckLogin, handleRefreshToken } =
+    useContext<IAuthContext>(AuthContex);
 
   const { query } = props;
   const currentPage = query.page ? query.page : 1;
@@ -289,7 +290,11 @@ const ProductPage = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    handleGetData();
+    if (filter) {
+      handleGetDataByFilter();
+    } else {
+      handleGetData();
+    }
   }, [currentPage]);
 
   return (

@@ -219,8 +219,12 @@ const AttributesPage = (props: Props) => {
   }, [selectItem]);
 
   useEffect(() => {
-    handleGetData();
-  }, []);
+    if (filter) {
+      handleGetDataByFilter();
+    } else {
+      handleGetData();
+    }
+  }, [currentPage]);
 
   return (
     <ShowItemsLayout

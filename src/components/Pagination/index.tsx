@@ -54,7 +54,10 @@ const Pagination = (props: Props) => {
             </span>
             to
             <span className="font-medium">
-              {pagination.currentPage * pagination.pageSize}
+              {pagination.currentPage * pagination.pageSize >
+              pagination.totalItems
+                ? pagination.totalItems
+                : pagination.currentPage * pagination.pageSize}
             </span>
             of
             <span className="font-medium">{pagination.totalItems}</span>
@@ -95,26 +98,6 @@ const Pagination = (props: Props) => {
                   {page}
                 </button>
               ))}
-            <button
-              onClick={() => onPagination(2)}
-              className={`${
-                2 === pagination.currentPage
-                  ? "text-white bg-blue-600 pointer-events-none"
-                  : "text-blue-600 bg-white"
-              } -ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium hover:bg-blue-600 hover:text-white focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-tertiary active:text-gray-700 transition ease-in-out duration-150 hover:bg-tertiary`}
-            >
-              2
-            </button>
-            <button
-              onClick={() => onPagination(3)}
-              className={`${
-                3 === pagination.currentPage
-                  ? "text-white bg-blue-600 pointer-events-none"
-                  : "text-blue-600 bg-white"
-              } -ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium hover:bg-blue-600 hover:text-white focus:z-10 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-tertiary active:text-gray-700 transition ease-in-out duration-150 hover:bg-tertiary`}
-            >
-              3
-            </button>
           </div>
           <div
             className={`${

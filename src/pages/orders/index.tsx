@@ -15,6 +15,7 @@ import { ButtonEdit } from "~/components/Button";
 import { IFilter, ISelectItem } from "~/interface";
 import { SelectDate, SelectItem } from "~/components/Select";
 import { currencyFormat } from "~/helper/currencyFormat";
+import { useRouter } from "next/router";
 
 interface Props {
   query: InferGetServerSidePropsType<typeof getServerSideProps>;
@@ -89,6 +90,7 @@ const OrdersPage = (props: Props) => {
   }, [filter, orders]);
 
   const handleGetDataByFilter = useCallback(async () => {
+    console.log("fillrer")
     setLoading(true);
     try {
       const response = await axiosGet(
@@ -104,7 +106,7 @@ const OrdersPage = (props: Props) => {
       if (response.status === 200) {
         if (response.payload.length === 0) {
           setOrders([]);
-          setMessage(`No category`);
+          setMessage(`No data`);
         } else {
           setMessage(null);
           setOrders(response.payload);
@@ -120,7 +122,7 @@ const OrdersPage = (props: Props) => {
       setMessage(`No order`);
       setLoading(false);
     }
-  }, [filter]);
+  }, [filter, currentPage]);
 
   const handleGetData = async () => {
     setLoading(true);
@@ -148,8 +150,12 @@ const OrdersPage = (props: Props) => {
   };
 
   useEffect(() => {
-    handleGetData();
-  }, []);
+    if (filter) {
+      handleGetDataByFilter();
+    } else {
+      handleGetData();
+    }
+  }, [currentPage]);
 
   return (
     <ShowItemsLayout
@@ -176,7 +182,7 @@ const OrdersPage = (props: Props) => {
             />
             <SelectItem
               width="lg:w-2/12 md:w-4/12 w-full"
-              placeholder="Payment Metohd"
+              placeholder="Payment Method"
               name="payment_method"
               value={filter?.payment_method || ""}
               data={dataFilterMethod}
