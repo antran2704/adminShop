@@ -75,6 +75,9 @@ interface IGrow {
 }
 
 interface IGrowDate extends IGrow {
+  day?: string;
+  month?: string;
+  year?: string;
   date: string;
 }
 
@@ -189,17 +192,20 @@ export default function IncomePage() {
     ],
   };
 
+  const chartWeekRef = useRef<any>();
   const chartMonthRef = useRef<any>();
   const chartYearRef = useRef<any>();
 
-  const [tag, setTag] = useState<TYPE_TAG>(TYPE_TAG.DATE);
+  const [tag, setTag] = useState<TYPE_TAG>(TYPE_TAG.WEEK);
 
   const [years, setYears] = useState<ISelectItem[]>(initYears);
 
+  const [dataBarWeek, setDataBarWeek] = useState<any>(data);
   const [dataBarMonth, setDataBarMonth] = useState<any>(data);
   const [dataBarYear, setDataBarYear] = useState<any>(data);
 
   const [growDate, setGrowDate] = useState<IGrowDate>(initOverviewDate);
+  const [growWeek, setGrowWeek] = useState<IGrowDate>(initOverviewDate);
   const [growMonth, setGrowMonth] = useState<IGrow>(initOverview);
   const [growYear, setGrowYear] = useState<IGrow>(initOverview);
 
@@ -208,11 +214,18 @@ export default function IncomePage() {
       new Date().getMonth() + 1
     }-${new Date().getDate()}`
   );
+
   const [selectGrowMonth, setSelectGrowMonth] =
     useState<ISelectGrowMonth>(initSelectGrowMonth);
 
   const [selectGrowYear, setSelectGrowYear] =
     useState<ISelectGrowYear>(initSelectGrowYear);
+
+  const getFirstDayInWeek = (value: string) => {
+    const firstDay = new Date(value);
+    firstDay.setDate(firstDay.getDate() - firstDay.getDay() + 1);
+    return firstDay;
+  };
 
   const onSelecTag = (value: string) => {
     if (value === TYPE_TAG.MONTH && !growMonth.updatedAt) {
@@ -226,6 +239,10 @@ export default function IncomePage() {
     }
 
     setTag(value as TYPE_TAG);
+  };
+
+  const onSelectWeek = (value: Date) => {
+    handleGetGrossInWeek(value);
   };
 
   const onSelectDate = (value: string) => {
@@ -325,13 +342,79 @@ export default function IncomePage() {
           newData.datasets[0].data.push(0);
           newData.datasets[1].data.push(0);
         }
-        payload.map((item: any) => {
+
+        payload.map((item: IGrowDate) => {
           const day = Number(item.day);
           newData.datasets[0].data[day - 1] = item.sub_gross;
           newData.datasets[1].data[day - 1] = item.gross;
         });
         chartMonthRef.current.update();
         setDataBarMonth(newData);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  const handleGetGrossInWeek = async (startDate: Date) => {
+    try {
+      const { status, payload } = await axiosGet(
+        `/gross-date/week?start_date=${startDate.toDateString()}`
+      );
+
+      const startDay = startDate.getDate();
+      const newData: any = data;
+
+      for (let i = 0; i <= 6; i++) {
+        const nextDay = new Date();
+        nextDay.setDate(startDay + i);
+        newData.labels.push(nextDay.getDate());
+        newData.datasets[0].data[i] = 0;
+        newData.datasets[1].data[i] = 0;
+      }
+
+      if(payload.length === 0) {
+        setGrowWeek(initOverviewDate);
+        setDataBarWeek(newData);
+        chartWeekRef.current.update();
+        return;
+      }
+
+
+      if (status === 200 && payload.length > 0) {
+        payload.map((item: IGrowDate) => {
+          const day = Number(item.day);
+          const index = newData.labels.findIndex(
+            (label: number) => label === day
+          );
+          newData.datasets[0].data[index] = item.sub_gross;
+          newData.datasets[1].data[index] = item.gross;
+        });
+
+        const dataOverview: IGrowDate = payload.reduce(
+          (accumulator: IGrow, item: any) => {
+            accumulator = {
+              gross: accumulator.gross + (item.gross || 0),
+              sub_gross: accumulator.sub_gross + (item.sub_gross || 0),
+              orders: accumulator.orders + (item.orders.length || 0),
+              cancle_orders:
+                accumulator.cancle_orders + (item.cancle_orders || 0),
+              delivered_orders:
+                accumulator.delivered_orders + (item.delivered_orders || 0),
+              updatedAt: null,
+            };
+
+            return accumulator;
+          },
+          initOverview
+        );
+
+        dataOverview.updatedAt = payload[payload.length - 1].updatedAt;
+        dataOverview.date = payload[payload.length - 1].date;
+
+        setGrowWeek(dataOverview);
+        setDataBarWeek(newData);
+        chartWeekRef.current.update();
       }
     } catch (error: any) {
       console.log(error);
@@ -346,7 +429,7 @@ export default function IncomePage() {
 
       if (status === 200) {
         const newData: any = data;
-        
+
         for (let i = 1; i <= MONTHS.length; i++) {
           newData.labels.push(i);
           newData.datasets[0].data.push(0);
@@ -412,6 +495,9 @@ export default function IncomePage() {
   useEffect(() => {
     handleGetGrossDate(new Date().toString());
     handleGetYear();
+
+    const firstDay = getFirstDayInWeek(new Date().toDateString());
+    handleGetGrossInWeek(firstDay);
   }, []);
 
   return (
@@ -549,30 +635,33 @@ export default function IncomePage() {
         {tag === TYPE_TAG.WEEK && (
           <div className="w-full rounded-xl py-5">
             <div className="flex items-center gap-5">
-              <input type="week" onChange={(e) => console.log(e.target.valueAsDate?.toLocaleDateString("en-GB"))}/>
+              <input
+                type="week"
+                onChange={(e) => onSelectWeek(e.target.valueAsDate as Date)}
+              />
             </div>
 
-            {/* <div className="mt-5">
+            <div className="mt-5">
               <p className="text-lg font-medium text-center">
                 Thu nhập tháng {selectGrowMonth.month} năm{" "}
                 {selectGrowMonth.year}
               </p>
-              {growMonth.updatedAt && (
+              {growWeek.updatedAt && (
                 <p className="text-lg font-medium text-center">
                   (Dữ liệu cập nhật lúc{" "}
-                  {new Date(growMonth.updatedAt).toLocaleTimeString()} ngày{" "}
-                  {new Date(growMonth.updatedAt).toLocaleDateString("en-GB")})
+                  {new Date(growWeek.updatedAt).toLocaleTimeString()} ngày{" "}
+                  {new Date(growWeek.updatedAt).toLocaleDateString("en-GB")})
                 </p>
               )}
-              {!growMonth.updatedAt && (
+              {!growWeek.updatedAt && (
                 <p className="text-lg font-medium text-center">
                   Chưa có dữ liệu
                 </p>
               )}
             </div>
-            <Bar ref={chartMonthRef} options={options} data={dataBarMonth} />
+            <Bar ref={chartWeekRef} options={options} data={dataBarWeek} />
 
-            <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 my-5 gap-2">
+            {/* <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 my-5 gap-2">
               <div className="flex flex-col items-center w-full bg-[#5032fd] text-white px-5 py-10 rounded-xl gap-2">
                 <BiDollarCircle className="text-4xl" />
                 <p className="md:text-xl text-lg text-center font-medium">
@@ -662,7 +751,6 @@ export default function IncomePage() {
                 </p>
               )}
             </div>
-            <Bar ref={chartMonthRef} options={options} data={dataBarMonth} />
 
             <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 my-5 gap-2">
               <div className="flex flex-col items-center w-full bg-[#5032fd] text-white px-5 py-10 rounded-xl gap-2">
@@ -711,6 +799,8 @@ export default function IncomePage() {
                 />
               </div>
             </div>
+
+            <Bar ref={chartMonthRef} options={options} data={dataBarMonth} />
           </div>
         )}
 
