@@ -148,13 +148,6 @@ export default function Home() {
 
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
-      <input
-        type="week"
-        onChange={(e) => {
-          console.log(e.target.valueAsDate?.getDate());
-          console.log([e.target]);
-        }}
-      />
       <div className="w-full h-[10%] mb-5">
         <h1 className="md:text-3xl text-2xl font-bold mb-1">
           Welcome Admin Dashboard Antrandev

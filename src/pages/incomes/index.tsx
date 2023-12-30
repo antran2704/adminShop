@@ -1,16 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { AiOutlineEdit, AiOutlineShoppingCart } from "react-icons/ai";
-import {
-  MdOutlineKeyboardDoubleArrowDown,
-  MdOutlineKeyboardDoubleArrowUp,
-} from "react-icons/md";
-import {
-  BiCircleThreeQuarter,
-  BiDollarCircle,
-  BiPackage,
-  BiAlarm,
-  BiMinusCircle,
-} from "react-icons/bi";
+import { AiOutlineShoppingCart } from "react-icons/ai";
+import { BiDollarCircle, BiPackage, BiMinusCircle } from "react-icons/bi";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,14 +12,10 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
-import { Table, CelTable } from "~/components/Table";
-
-import { typeCel } from "~/enums";
-import Link from "next/link";
-import SpringCount from "~/components/SpringCount";
 import { axiosGet } from "~/ultils/configAxios";
 import { SelectDate, SelectItem, SelectTag } from "~/components/Select";
 import { ISelectItem } from "~/interface";
+import Statistic from "~/components/Statistic";
 
 ChartJS.register(
   CategoryScale,
@@ -81,6 +67,13 @@ interface IGrowDate extends IGrow {
   date: string;
 }
 
+interface ISelectGrowWeek {
+  startDay: string;
+  endDay: string;
+  year: string;
+  month: string;
+}
+
 interface ISelectGrowMonth {
   month: string;
   year: string;
@@ -102,6 +95,13 @@ const initOverview: IGrow = {
 const initOverviewDate: IGrowDate = {
   ...initOverview,
   date: new Date().toLocaleDateString(),
+};
+
+const initSelectGrowWeek: ISelectGrowWeek = {
+  startDay: "",
+  endDay: "",
+  year: "",
+  month: "",
 };
 
 const initSelectGrowMonth: ISelectGrowMonth = {
@@ -171,6 +171,18 @@ const MONTHS: ISelectItem[] = [
   },
 ];
 
+const getFirstDayInWeek = (value: string) => {
+  const firstDay = new Date(value);
+  firstDay.setDate(firstDay.getDate() - firstDay.getDay() + 1);
+  return firstDay;
+};
+
+const getEndDayInWeek = (value: string) => {
+  const endDay = new Date(value);
+  endDay.setDate(endDay.getDate() - endDay.getDay() + 7);
+  return endDay;
+};
+
 export default function IncomePage() {
   const data = {
     labels: [],
@@ -196,7 +208,7 @@ export default function IncomePage() {
   const chartMonthRef = useRef<any>();
   const chartYearRef = useRef<any>();
 
-  const [tag, setTag] = useState<TYPE_TAG>(TYPE_TAG.WEEK);
+  const [tag, setTag] = useState<TYPE_TAG>(TYPE_TAG.DATE);
 
   const [years, setYears] = useState<ISelectItem[]>(initYears);
 
@@ -215,17 +227,14 @@ export default function IncomePage() {
     }-${new Date().getDate()}`
   );
 
+  const [selectGrowWeek, setSelectGrowWeek] =
+    useState<ISelectGrowWeek>(initSelectGrowWeek);
+
   const [selectGrowMonth, setSelectGrowMonth] =
     useState<ISelectGrowMonth>(initSelectGrowMonth);
 
   const [selectGrowYear, setSelectGrowYear] =
     useState<ISelectGrowYear>(initSelectGrowYear);
-
-  const getFirstDayInWeek = (value: string) => {
-    const firstDay = new Date(value);
-    firstDay.setDate(firstDay.getDate() - firstDay.getDay() + 1);
-    return firstDay;
-  };
 
   const onSelecTag = (value: string) => {
     if (value === TYPE_TAG.MONTH && !growMonth.updatedAt) {
@@ -238,23 +247,32 @@ export default function IncomePage() {
       handleGetGrossInYear(selectGrowYear.year);
     }
 
+    if (value === TYPE_TAG.WEEK && !growWeek.updatedAt) {
+      const firstDay = getFirstDayInWeek(new Date().toDateString());
+      handleGetGrossInWeek(firstDay);
+    }
+
     setTag(value as TYPE_TAG);
   };
 
   const onSelectWeek = (value: Date) => {
+    if (!value) return;
+
     handleGetGrossInWeek(value);
   };
 
   const onSelectDate = (value: string) => {
+    if (!value) return;
+
     handleGetGrossDate(value);
     setSelectDate(value);
   };
 
   const onChangeGrowYear = (value: string, name: string) => {
-    handleGetGrossMonth(selectGrowMonth.month, value);
-    handleGetGrossInMonth(selectGrowMonth.month, value);
+    handleGetGrossYear(value);
+    handleGetGrossInYear(value);
 
-    setSelectGrowMonth({ ...selectGrowMonth, [name]: value });
+    setSelectGrowYear({ ...selectGrowYear, [name]: value });
   };
 
   const onChangeGrowMonth = (value: string, name: string) => {
@@ -357,6 +375,12 @@ export default function IncomePage() {
   };
 
   const handleGetGrossInWeek = async (startDate: Date) => {
+    const endDay = getEndDayInWeek(startDate.toDateString())
+      .getDate()
+      .toString();
+    const month = (startDate.getMonth() + 1).toString();
+    const year = startDate.getFullYear().toString();
+
     try {
       const { status, payload } = await axiosGet(
         `/gross-date/week?start_date=${startDate.toDateString()}`
@@ -373,13 +397,11 @@ export default function IncomePage() {
         newData.datasets[1].data[i] = 0;
       }
 
-      if(payload.length === 0) {
+      if (payload.length === 0) {
         setGrowWeek(initOverviewDate);
         setDataBarWeek(newData);
         chartWeekRef.current.update();
-        return;
       }
-
 
       if (status === 200 && payload.length > 0) {
         payload.map((item: IGrowDate) => {
@@ -416,6 +438,8 @@ export default function IncomePage() {
         setDataBarWeek(newData);
         chartWeekRef.current.update();
       }
+
+      setSelectGrowWeek({ startDay: startDay.toString(), endDay, year, month });
     } catch (error: any) {
       console.log(error);
     }
@@ -495,9 +519,6 @@ export default function IncomePage() {
   useEffect(() => {
     handleGetGrossDate(new Date().toString());
     handleGetYear();
-
-    const firstDay = getFirstDayInWeek(new Date().toDateString());
-    handleGetGrossInWeek(firstDay);
   }, []);
 
   return (
@@ -572,79 +593,64 @@ export default function IncomePage() {
           <div
             className={`grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300 mt-5`}
           >
-            <div className="flex flex-col items-center w-full bg-[#5032fd] text-white px-5 py-10 rounded-xl gap-2">
-              <BiDollarCircle className="text-4xl" />
-              <p className="md:text-xl text-lg text-center font-medium">
-                Thu nhập tạm tính
-              </p>
-              <SpringCount
-                className="text-2xl font-bold"
-                from={0}
-                specialCharacter="VND"
-                to={growDate.sub_gross}
-              />
-            </div>
-            <div className="flex flex-col items-center w-full bg-[#5032fd] text-white px-5 py-10 rounded-xl gap-2">
-              <BiDollarCircle className="text-4xl" />
-              <p className="md:text-xl text-lg text-center font-medium">
-                Tổng thu nhập
-              </p>
-              <SpringCount
-                className="text-2xl font-bold"
-                from={0}
-                specialCharacter="VND"
-                to={growDate.gross}
-              />
-            </div>
-            <div className="flex flex-col items-center w-full bg-[#0891b2] text-white px-5 py-10 rounded-xl gap-2">
-              <AiOutlineShoppingCart className="text-4xl" />
-              <p className="md:text-xl text-lg text-center font-medium">
-                Tổng đơn hàng
-              </p>
-              <SpringCount
-                className="text-2xl font-bold"
-                from={0}
-                to={growDate.orders}
-              />
-            </div>
-            <div className="flex flex-col items-center w-full bg-success text-white px-5 py-10 rounded-xl gap-2">
-              <BiPackage className="text-4xl" />
-              <p className="md:text-xl text-lg text-center font-medium">
-                Đơn hàng thành công
-              </p>
-              <SpringCount
-                className="text-2xl font-bold"
-                from={0}
-                to={growDate.delivered_orders}
-              />
-            </div>
-            <div className="flex flex-col items-center w-full bg-cancle text-white px-5 py-10 rounded-xl gap-2">
-              <BiMinusCircle className="text-4xl" />
-              <p className="md:text-xl text-lg text-center font-medium">
-                Đơn hàng hủy
-              </p>
-              <SpringCount
-                className="text-2xl font-bold"
-                from={0}
-                to={growDate.cancle_orders}
-              />
-            </div>
+            <Statistic
+              title="Thu nhập tạm tính"
+              IconElement={<BiDollarCircle className="text-4xl" />}
+              to={growDate.sub_gross}
+              backgroundColor="bg-[#5032fd]"
+              duration={0}
+              specialCharacter="VND"
+            />
+            <Statistic
+              title="Tổng thu nhập"
+              IconElement={<BiDollarCircle className="text-4xl" />}
+              to={growDate.gross}
+              backgroundColor="bg-[#5032fd]"
+              duration={0}
+              specialCharacter="VND"
+            />
+
+            <Statistic
+              title="Tổng đơn hàng"
+              IconElement={<AiOutlineShoppingCart className="text-4xl" />}
+              to={growDate.orders}
+              backgroundColor="bg-[#0891b2]"
+              duration={0}
+            />
+
+            <Statistic
+              title="Đơn hàng thành công"
+              IconElement={<BiPackage className="text-4xl" />}
+              to={growDate.delivered_orders}
+              backgroundColor="bg-success"
+              duration={0}
+            />
+
+            <Statistic
+              title="Đơn hàng thành công"
+              IconElement={<BiMinusCircle className="text-4xl" />}
+              to={growDate.cancle_orders}
+              backgroundColor="bg-cancle"
+              duration={0}
+            />
           </div>
         </div>
 
         {tag === TYPE_TAG.WEEK && (
           <div className="w-full rounded-xl py-5">
-            <div className="flex items-center gap-5">
+            <div className="lg:w-2/12 md:w-3/12 w-5/12 mb-5">
               <input
                 type="week"
                 onChange={(e) => onSelectWeek(e.target.valueAsDate as Date)}
+                className="w-full min-h-[40px] rounded-md px-2 py-1 border-2 focus:border-[#4f46e5]"
               />
             </div>
 
-            <div className="mt-5">
+            <div className="my-10">
               <p className="text-lg font-medium text-center">
-                Thu nhập tháng {selectGrowMonth.month} năm{" "}
-                {selectGrowMonth.year}
+                Thu nhập từ ngày {selectGrowWeek.startDay} đến ngày{" "}
+                {selectGrowWeek.endDay} tháng {selectGrowWeek.month} năm{" "}
+                {selectGrowWeek.year}
               </p>
               {growWeek.updatedAt && (
                 <p className="text-lg font-medium text-center">
@@ -659,55 +665,62 @@ export default function IncomePage() {
                 </p>
               )}
             </div>
-            <Bar ref={chartWeekRef} options={options} data={dataBarWeek} />
 
-            {/* <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 my-5 gap-2">
-              <div className="flex flex-col items-center w-full bg-[#5032fd] text-white px-5 py-10 rounded-xl gap-2">
-                <BiDollarCircle className="text-4xl" />
-                <p className="md:text-xl text-lg text-center font-medium">
-                  Tổng thu nhập
-                </p>
-                <SpringCount
-                  className="text-2xl font-bold"
-                  from={0}
+            <div className="flex lg:flex-row flex-col items-start my-5 gap-10">
+              <div
+                className={`grid md:grid-cols-2 grid-cols-1 lg:w-6/12 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300`}
+              >
+                <Statistic
+                  title="Thu nhập tạm tính"
+                  IconElement={<BiDollarCircle className="text-4xl" />}
+                  to={growWeek.sub_gross}
+                  backgroundColor="bg-[#5032fd]"
+                  duration={0}
                   specialCharacter="VND"
-                  to={growMonth.gross}
+                />
+                <Statistic
+                  title="Tổng thu nhập"
+                  IconElement={<BiDollarCircle className="text-4xl" />}
+                  to={growWeek.gross}
+                  backgroundColor="bg-[#5032fd]"
+                  duration={0}
+                  specialCharacter="VND"
+                />
+
+                <Statistic
+                  title="Tổng đơn hàng"
+                  IconElement={<AiOutlineShoppingCart className="text-4xl" />}
+                  to={growWeek.orders}
+                  backgroundColor="bg-[#0891b2]"
+                  duration={0}
+                />
+
+                <Statistic
+                  title="Đơn hàng thành công"
+                  IconElement={<BiPackage className="text-4xl" />}
+                  to={growWeek.delivered_orders}
+                  backgroundColor="bg-success"
+                  duration={0}
+                />
+
+                <Statistic
+                  title="Đơn hàng thành công"
+                  IconElement={<BiMinusCircle className="text-4xl" />}
+                  to={growWeek.cancle_orders}
+                  backgroundColor="bg-cancle"
+                  duration={0}
                 />
               </div>
-              <div className="flex flex-col items-center w-full bg-[#0891b2] text-white px-5 py-10 rounded-xl gap-2">
-                <AiOutlineShoppingCart className="text-4xl" />
-                <p className="md:text-xl text-lg text-center font-medium">
-                  Tổng đơn hàng
-                </p>
-                <SpringCount
-                  className="text-2xl font-bold"
-                  from={0}
-                  to={growMonth.orders}
+
+              <div className="lg:w-6/12 w-full">
+                <Bar
+                  className="w-full"
+                  ref={chartWeekRef}
+                  options={options}
+                  data={dataBarWeek}
                 />
               </div>
-              <div className="flex flex-col items-center w-full bg-success text-white px-5 py-10 rounded-xl gap-2">
-                <BiPackage className="text-4xl" />
-                <p className="md:text-xl text-lg text-center font-medium">
-                  Đơn hàng thành công
-                </p>
-                <SpringCount
-                  className="text-2xl font-bold"
-                  from={0}
-                  to={growMonth.delivered_orders}
-                />
-              </div>
-              <div className="flex flex-col items-center w-full bg-cancle text-white px-5 py-10 rounded-xl gap-2">
-                <BiMinusCircle className="text-4xl" />
-                <p className="md:text-xl text-lg text-center font-medium">
-                  Đơn hàng hủy
-                </p>
-                <SpringCount
-                  className="text-2xl font-bold"
-                  from={0}
-                  to={growMonth.cancle_orders}
-                />
-              </div>
-            </div> */}
+            </div>
           </div>
         )}
 
@@ -752,52 +765,49 @@ export default function IncomePage() {
               )}
             </div>
 
-            <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 my-5 gap-2">
-              <div className="flex flex-col items-center w-full bg-[#5032fd] text-white px-5 py-10 rounded-xl gap-2">
-                <BiDollarCircle className="text-4xl" />
-                <p className="md:text-xl text-lg text-center font-medium">
-                  Tổng thu nhập
-                </p>
-                <SpringCount
-                  className="text-2xl font-bold"
-                  from={0}
-                  specialCharacter="VND"
-                  to={growMonth.gross}
-                />
-              </div>
-              <div className="flex flex-col items-center w-full bg-[#0891b2] text-white px-5 py-10 rounded-xl gap-2">
-                <AiOutlineShoppingCart className="text-4xl" />
-                <p className="md:text-xl text-lg text-center font-medium">
-                  Tổng đơn hàng
-                </p>
-                <SpringCount
-                  className="text-2xl font-bold"
-                  from={0}
-                  to={growMonth.orders}
-                />
-              </div>
-              <div className="flex flex-col items-center w-full bg-success text-white px-5 py-10 rounded-xl gap-2">
-                <BiPackage className="text-4xl" />
-                <p className="md:text-xl text-lg text-center font-medium">
-                  Đơn hàng thành công
-                </p>
-                <SpringCount
-                  className="text-2xl font-bold"
-                  from={0}
-                  to={growMonth.delivered_orders}
-                />
-              </div>
-              <div className="flex flex-col items-center w-full bg-cancle text-white px-5 py-10 rounded-xl gap-2">
-                <BiMinusCircle className="text-4xl" />
-                <p className="md:text-xl text-lg text-center font-medium">
-                  Đơn hàng hủy
-                </p>
-                <SpringCount
-                  className="text-2xl font-bold"
-                  from={0}
-                  to={growMonth.cancle_orders}
-                />
-              </div>
+            <div
+              className={`grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300 my-5`}
+            >
+              <Statistic
+                title="Thu nhập tạm tính"
+                IconElement={<BiDollarCircle className="text-4xl" />}
+                to={growMonth.sub_gross}
+                backgroundColor="bg-[#5032fd]"
+                duration={0}
+                specialCharacter="VND"
+              />
+              <Statistic
+                title="Tổng thu nhập"
+                IconElement={<BiDollarCircle className="text-4xl" />}
+                to={growMonth.gross}
+                backgroundColor="bg-[#5032fd]"
+                duration={0}
+                specialCharacter="VND"
+              />
+
+              <Statistic
+                title="Tổng đơn hàng"
+                IconElement={<AiOutlineShoppingCart className="text-4xl" />}
+                to={growMonth.orders}
+                backgroundColor="bg-[#0891b2]"
+                duration={0}
+              />
+
+              <Statistic
+                title="Đơn hàng thành công"
+                IconElement={<BiPackage className="text-4xl" />}
+                to={growMonth.delivered_orders}
+                backgroundColor="bg-success"
+                duration={0}
+              />
+
+              <Statistic
+                title="Đơn hàng thành công"
+                IconElement={<BiMinusCircle className="text-4xl" />}
+                to={growMonth.cancle_orders}
+                backgroundColor="bg-cancle"
+                duration={0}
+              />
             </div>
 
             <Bar ref={chartMonthRef} options={options} data={dataBarMonth} />
@@ -834,7 +844,61 @@ export default function IncomePage() {
                 </p>
               )}
             </div>
-            <Bar ref={chartYearRef} options={options} data={dataBarYear} />
+            <div className="flex lg:flex-row flex-col items-start my-5 gap-10">
+              <div
+                className={`grid md:grid-cols-2 grid-cols-1 lg:w-6/12 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300`}
+              >
+                <Statistic
+                  title="Thu nhập tạm tính"
+                  IconElement={<BiDollarCircle className="text-4xl" />}
+                  to={growYear.sub_gross}
+                  backgroundColor="bg-[#5032fd]"
+                  duration={0}
+                  specialCharacter="VND"
+                />
+                <Statistic
+                  title="Tổng thu nhập"
+                  IconElement={<BiDollarCircle className="text-4xl" />}
+                  to={growYear.gross}
+                  backgroundColor="bg-[#5032fd]"
+                  duration={0}
+                  specialCharacter="VND"
+                />
+
+                <Statistic
+                  title="Tổng đơn hàng"
+                  IconElement={<AiOutlineShoppingCart className="text-4xl" />}
+                  to={growYear.orders}
+                  backgroundColor="bg-[#0891b2]"
+                  duration={0}
+                />
+
+                <Statistic
+                  title="Đơn hàng thành công"
+                  IconElement={<BiPackage className="text-4xl" />}
+                  to={growYear.delivered_orders}
+                  backgroundColor="bg-success"
+                  duration={0}
+                />
+
+                <Statistic
+                  title="Đơn hàng thành công"
+                  IconElement={<BiMinusCircle className="text-4xl" />}
+                  to={growYear.cancle_orders}
+                  backgroundColor="bg-cancle"
+                  duration={0}
+                />
+              </div>
+
+              <div className="lg:w-6/12 w-full">
+                <Bar
+                  className="w-full"
+                  ref={chartYearRef}
+                  options={options}
+                  data={dataBarYear}
+                />
+              </div>
+            </div>
           </div>
         )}
       </div>
