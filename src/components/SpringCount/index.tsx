@@ -2,19 +2,20 @@ import { useEffect, useRef } from "react";
 import { animate, motion } from "framer-motion";
 
 interface Props {
-  from: Number;
-  to: Number;
+  from: number;
+  to: number;
+  duration: number;
   className?: string;
   specialCharacter?: string;
 }
 
 const SpringCount = (props: Props) => {
   const ref = useRef<HTMLParagraphElement>(null);
-  const { from, to, className, specialCharacter = "" } = props;
+  const { from, to, className, duration = 0.5, specialCharacter = "" } = props;
 
   useEffect(() => {
     const controls = animate(from, to, {
-      duration: 1,
+      duration: duration,
       onUpdate(value) {
         if (ref.current) {
           const price = Number(value);

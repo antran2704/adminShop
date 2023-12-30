@@ -37,7 +37,7 @@ const listBody: itemNav[] = [
       {
         name: "Coupons",
         path: "/coupons",
-      }
+      },
     ],
   },
   {
@@ -47,8 +47,26 @@ const listBody: itemNav[] = [
   },
   {
     name: "Income",
-    path: "/incomes",
+    path: "/",
     icon: <BiDollarCircle />,
+    children: [
+      {
+        name: "Date",
+        path: "/incomes/date",
+      },
+      {
+        name: "Week",
+        path: "/incomes/week",
+      },
+      {
+        name: "Month",
+        path: "/incomes/month",
+      },
+      {
+        name: "Year",
+        path: "/incomes/year",
+      },
+    ],
   },
   {
     name: "Customers",
