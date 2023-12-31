@@ -1,6 +1,11 @@
-const formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
+const formatBigNumber = (value: number) => {
+  return new Intl.NumberFormat("de-DE").format(value);
+}
 
-export { formatter };
+const revertPriceToString = (value: string) => {
+  if (typeof value !== "string") return;
+
+  return value.split(".").join("");
+};
+
+export { formatBigNumber, revertPriceToString };

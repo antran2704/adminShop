@@ -25,6 +25,7 @@ import ImageCus from "~/components/Image/ImageCus";
 import { ButtonDelete, ButtonEdit } from "~/components/Button";
 import Link from "next/link";
 import { AuthContex, IAuthContext } from "~/layouts/DefaultLayout";
+import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 
 interface ISelectProduct {
   id: string | null;
@@ -376,14 +377,14 @@ const ProductPage = (props: Props) => {
                 <CelTable
                   type={typeCel.TEXT}
                   center={true}
-                  value={product.price.toString()}
+                  value={formatBigNumber(product.price)}
                 />
                 <CelTable
                   type={typeCel.TEXT}
                   center={true}
                   value={
                     product.promotion_price
-                      ? product.promotion_price.toString()
+                      ? formatBigNumber(product.promotion_price)
                       : "0"
                   }
                 />

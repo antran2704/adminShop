@@ -25,6 +25,10 @@ import { SelectItem } from "~/components/Select";
 import generalBreadcrumbs from "~/helper/generateBreadcrumb";
 import Specifications from "~/components/Specifications";
 import Loading from "~/components/Loading";
+import {
+  formatBigNumber,
+  revertPriceToString,
+} from "~/helper/number/fomatterCurrency";
 
 const initData: ICreateProduct = {
   title: "",
@@ -33,7 +37,7 @@ const initData: ICreateProduct = {
   category: { _id: null, title: "" },
   categories: [],
   price: 0,
-  promotionPrice: 0,
+  promotion_price: 0,
   inventory: 0,
   public: true,
   thumbnail: null,
@@ -145,8 +149,8 @@ const CreateProductPage = () => {
 
   const changePrice = useCallback(
     (name: string, value: number) => {
-      if (name === "promotionPrice" && product.price <= value) {
-        setFieldsCheck([...fieldsCheck, "promotionPrice"]);
+      if (name === "promotion_price" && product.price <= value) {
+        setFieldsCheck([...fieldsCheck, "promotion_price"]);
         toast.error("Promotion price must less than default price", {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -261,7 +265,7 @@ const CreateProductPage = () => {
     let fields = handleCheckFields(data);
     setFieldsCheck(fields);
 
-    if(fields.length > 0) {
+    if (fields.length > 0) {
       router.push(`#${fields[0]}`);
     }
     return fields;
@@ -328,7 +332,7 @@ const CreateProductPage = () => {
         breadcrumbs,
         specifications,
         price: product.price,
-        promotionPrice: product.promotionPrice,
+        promotion_price: product.promotion_price,
         inventory: product.inventory,
         public: product.public,
       });
@@ -340,12 +344,12 @@ const CreateProductPage = () => {
         router.push("/products");
       }
 
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       toast.error("Error in create product", {
         position: toast.POSITION.TOP_RIGHT,
       });
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -488,19 +492,19 @@ const CreateProductPage = () => {
             title="Price"
             width="lg:w-2/4 w-full"
             error={fieldsCheck.includes("price")}
-            value={product.price.toString()}
+            value={formatBigNumber(product.price)}
             name="price"
-            type={typeInput.number}
+            type={typeInput.price}
             getNumber={changePrice}
           />
 
           <Input
             title="Promotion Price"
             width="lg:w-2/4 w-full"
-            value={product.promotionPrice.toString()}
-            error={fieldsCheck.includes("promotionPrice")}
-            name="promotionPrice"
-            type={typeInput.number}
+            value={formatBigNumber(product.promotion_price)}
+            error={fieldsCheck.includes("promotion_price")}
+            name="promotion_price"
+            type={typeInput.price}
             getNumber={changePrice}
           />
 

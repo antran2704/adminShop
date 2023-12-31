@@ -51,7 +51,7 @@ const Thumbnail: FC<Props> = (props: Props) => {
         className={`flex flex-col items-center justify-center w-full ${
           error ? "border-error" : ""
         } ${
-          className ? className : "min-h-[100px] min-w-[100px] max-h-[400px] max-w-[400px]"
+          className ? className : "min-h-[300px] min-w-[100px] max-h-[400px] max-w-[400px]"
         } rounded-md border-2 ${!url ? 'border-dashed' : ""} cursor-pointer overflow-hidden`}
       >
         {loading && (

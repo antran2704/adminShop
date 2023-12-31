@@ -88,12 +88,8 @@ const EditCouponPage = (props: Props) => {
     [data, fieldsCheck]
   );
 
-  const onSelectDate = (name: string, value: string) => {
-    if (
-      name === "discount_start_date" &&
-      (new Date() > new Date(value) ||
-        new Date(value) > new Date(data.discount_end_date))
-    ) {
+  const onSelectDate = (value: string, name: string) => {
+    if (name === "discount_start_date" && new Date(value) < new Date()) {
       toast.info("Start date must be greater than the current time!!!", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -103,7 +99,7 @@ const EditCouponPage = (props: Props) => {
 
     if (
       name === "discount_end_date" &&
-      (new Date() > new Date(value) ||
+      (new Date(value) < new Date() ||
         new Date(data.discount_start_date) >= new Date(value))
     ) {
       toast.info("End date must be greater than the Start date!!!", {

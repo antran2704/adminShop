@@ -86,7 +86,8 @@ const initSelectGrowWeek: ISelectGrowWeek = {
 
 const getFirstDayInWeek = (value: string) => {
   const firstDay = new Date(value);
-  firstDay.setDate(firstDay.getDate() - firstDay.getDay() + 1);
+  const day = firstDay.getDay();
+  firstDay.setDate(firstDay.getDate() - day + (day === 0 ? -6 : 1));
   return firstDay;
 };
 

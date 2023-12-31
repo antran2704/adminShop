@@ -13,6 +13,7 @@ import { axiosPost } from "~/ultils/configAxios";
 import Thumbnail from "~/components/Image/Thumbnail";
 import { uploadImageOnServer } from "~/helper/handleImage";
 import { SelectDate, SelectTag } from "~/components/Select";
+import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 
 const initData: ICouponCreate = {
   discount_code: "",
@@ -73,8 +74,8 @@ const CreateCouponPage = () => {
     [data, fieldsCheck]
   );
 
-  const onSelectDate = (name: string, value: string) => {
-    if (name === "discount_start_date" && new Date() > new Date(value)) {
+  const onSelectDate = (value: string, name: string) => {
+    if (name === "discount_start_date" && new Date(value) < new Date()) {
       toast.info("Start date must be greater than the current time!!!", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -84,7 +85,7 @@ const CreateCouponPage = () => {
 
     if (
       name === "discount_end_date" &&
-      (new Date() > new Date(value) ||
+      (new Date(value) < new Date() ||
         new Date(data.discount_start_date) >= new Date(value))
     ) {
       toast.info("End date must be greater than the Start date!!!", {
@@ -326,10 +327,10 @@ const CreateCouponPage = () => {
               </p>
               <Input
                 width="lg:w-2/4 w-full"
-                value={data.discount_value.toString()}
+                value={formatBigNumber(data.discount_value)}
                 error={fieldsCheck.includes("discount_value")}
                 name="discount_value"
-                type={typeInput.number}
+                type={typeInput.price}
                 placeholder="Coupon value"
                 getNumber={(name: string, value: number) =>
                   onChangeDiscountValue(discountType, name, value)
@@ -343,10 +344,10 @@ const CreateCouponPage = () => {
           <Input
             title="Minimum Amount"
             width="lg:w-2/4 w-full"
-            value={data.discount_min_value.toString()}
+            value={formatBigNumber(data.discount_min_value)}
             name="discount_min_value"
             error={fieldsCheck.includes("discount_min_value")}
-            type={typeInput.number}
+            type={typeInput.price}
             placeholder="Minimum Amount"
             getNumber={changeNumber}
           />

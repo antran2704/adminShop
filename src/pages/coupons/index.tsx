@@ -34,6 +34,7 @@ import { useAppSelector } from "~/store/hooks";
 import { AuthContex, IAuthContext } from "~/layouts/DefaultLayout";
 import { AxiosError, AxiosResponse } from "axios";
 import { getCookies } from "cookies-next";
+import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 
 interface ISelectCoupon {
   id: string;
@@ -442,7 +443,7 @@ const CouponsPage = (props: Props) => {
                   value={
                     item.discount_type === EDicount_type.PERCENTAGE
                       ? `${item.discount_value}%`
-                      : `${item.discount_value} VND`
+                      : `${formatBigNumber(item.discount_value)} VND`
                   }
                   center={true}
                 />

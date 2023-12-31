@@ -1,20 +1,21 @@
 import { useRouter } from "next/router";
-import dynamic from "next/dynamic";
-import { FC, useState, useEffect } from "react";
+import { FC, useState, useEffect, useContext } from "react";
 import { RiListSettingsFill } from "react-icons/ri";
 import { BsArrowLeft } from "react-icons/bs";
+import { BiLogOut } from "react-icons/bi";
 import { listBody, listSetting, itemNav } from "./data";
 import useViewport from "~/hooks/useViewport";
 import { useAppSelector } from "~/store/hooks";
 import ImageCus from "../Image/ImageCus";
 import NavbarItem from "./NavbarItem";
+import { AuthContex } from "~/layouts/DefaultLayout";
 
-// const NavbarItem = dynamic(() => import("./NavbarItem"), {
-//   ssr: true,
-// });
 const Navbar: FC = () => {
   const router = useRouter();
   const width = useViewport();
+
+  const { handleLogOut } = useContext(AuthContex);
+
   const { infor } = useAppSelector((state) => state.user);
 
   const [show, setShow] = useState(false);
@@ -81,6 +82,16 @@ const Navbar: FC = () => {
                 data={item}
               />
             ))}
+
+            <li className="w-full">
+              <button
+                onClick={handleLogOut}
+                className={`w-full flex items-center text-base font-medium px-3 py-2 my-1 hover:bg-primary text-black hover:text-white lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}
+              >
+                <BiLogOut />
+                <span>Logout</span>
+              </button>
+            </li>
           </ul>
         </div>
       </nav>

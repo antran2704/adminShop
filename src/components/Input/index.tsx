@@ -3,6 +3,10 @@ import { FC, ChangeEvent, FormEvent, KeyboardEvent, memo } from "react";
 import handleCheckValidNumber from "~/helper/number";
 import { typeInput } from "~/enums";
 import { TippyInfor } from "../Tippy";
+import {
+  formatBigNumber,
+  revertPriceToString,
+} from "~/helper/number/fomatterCurrency";
 
 interface Props {
   id?: string | null;
@@ -63,7 +67,7 @@ const FieldAdd: FC<Props> = (props: Props) => {
     if (readonly) return;
 
     const name = e.target.name;
-    const value = Number(e.target.value);
+    const value = Number(revertPriceToString(e.target.value));
 
     const valid = handleCheckValidNumber(value);
 
@@ -71,7 +75,7 @@ const FieldAdd: FC<Props> = (props: Props) => {
       if (valid) {
         getNumber(name, value);
       }
-      if (Number(value) <= 0) {
+      if (value <= 0) {
         getNumber(name, 0);
       }
     }
@@ -124,6 +128,22 @@ const FieldAdd: FC<Props> = (props: Props) => {
       )}
 
       {type === typeInput.number && (
+        <input
+          required
+          name={name}
+          value={value}
+          placeholder={placeholder}
+          onInput={handleChangeNumberValue}
+          type="text"
+          className={`w-full rounded-md px-2 py-1 border-2 ${
+            error && "border-error"
+          } ${
+            readonly ? "pointer-events-none cursor-not-allowed opacity-80" : ""
+          } focus:border-[#4f46e5] outline-none`}
+        />
+      )}
+
+      {type === typeInput.price && (
         <input
           required
           name={name}

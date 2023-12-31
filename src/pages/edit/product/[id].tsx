@@ -40,6 +40,7 @@ import Loading from "~/components/Loading";
 import { CelTable, Table } from "~/components/Table";
 import Popup from "~/components/Popup";
 import { ButtonDelete } from "~/components/Button";
+import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 
 enum TYPE_TAG {
   BASIC_INFOR = "basic_infor",
@@ -986,19 +987,19 @@ const ProductEditPage = (props: Props) => {
                 title="Price"
                 width="lg:w-2/4 w-full"
                 error={fieldsCheck.includes("price")}
-                value={product.price.toString()}
+                value={formatBigNumber(product.price)}
                 name="price"
-                type={typeInput.number}
+                type={typeInput.price}
                 getNumber={changePrice}
               />
 
               <Input
                 title="Promotion Price"
                 width="lg:w-2/4 w-full"
-                value={product.promotion_price.toString()}
+                value={formatBigNumber(product.promotion_price)}
                 error={fieldsCheck.includes("promotion_price")}
                 name="promotion_price"
-                type={typeInput.number}
+                type={typeInput.price}
                 getNumber={changePrice}
               />
 

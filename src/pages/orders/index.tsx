@@ -14,8 +14,7 @@ import { orderStatus } from "~/components/Table/statusCel";
 import { ButtonEdit } from "~/components/Button";
 import { IFilter, ISelectItem } from "~/interface";
 import { SelectDate, SelectItem } from "~/components/Select";
-import { currencyFormat } from "~/helper/currencyFormat";
-import { useRouter } from "next/router";
+import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 
 interface Props {
   query: InferGetServerSidePropsType<typeof getServerSideProps>;
@@ -235,7 +234,7 @@ const OrdersPage = (props: Props) => {
                 <CelTable
                   center={true}
                   type={typeCel.TEXT}
-                  value={`${currencyFormat(order.total)} VND`}
+                  value={`${formatBigNumber(order.total)} VND`}
                 />
                 <CelTable
                   type={typeCel.STATUS}
