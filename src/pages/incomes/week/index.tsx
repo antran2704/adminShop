@@ -14,7 +14,8 @@ import { Bar } from "react-chartjs-2";
 
 import Statistic from "~/components/Statistic";
 import { axiosGet } from "~/ultils/configAxios";
-import { IGrow } from "../interface";
+import { IGrow, IGrowDate } from "~/interface";
+import { getEndDayInWeek, getFirstDayInWeek } from "~/helper/datetime";
 
 ChartJS.register(
   CategoryScale,
@@ -53,13 +54,6 @@ const initOverview: IGrow = {
   updatedAt: null,
 };
 
-interface IGrowDate extends IGrow {
-  day?: string;
-  month?: string;
-  year?: string;
-  date: string;
-}
-
 const initOverviewDate: IGrowDate = {
   gross: 0,
   sub_gross: 0,
@@ -82,19 +76,6 @@ const initSelectGrowWeek: ISelectGrowWeek = {
   endDay: "",
   year: "",
   month: "",
-};
-
-const getFirstDayInWeek = (value: string) => {
-  const firstDay = new Date(value);
-  const day = firstDay.getDay();
-  firstDay.setDate(firstDay.getDate() - day + (day === 0 ? -6 : 1));
-  return firstDay;
-};
-
-const getEndDayInWeek = (value: string) => {
-  const endDay = new Date(value);
-  endDay.setDate(endDay.getDate() - endDay.getDay() + 7);
-  return endDay;
 };
 
 const IncomeWeekPage = () => {

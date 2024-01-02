@@ -22,44 +22,39 @@ interface ISpecificationsProduct {
   attributes: ISpecificationAttributes[];
 }
 
-interface IVariantProduct {
+interface IProduct {
   _id: string | null;
-  product_id: string;
   title: string;
-  barcode: string;
-  available: boolean;
+  thumbnail: string | null;
+  barcode: string | null;
+  sku: string | null;
+  public: boolean;
   price: number;
   promotion_price: number;
-  sku: string | null;
+  inventory: number;
+  sold: number;
+}
+
+interface IVariantProduct extends IProduct {
+  product_id: string;
+  available: boolean;
   option1: string | null;
   option2: string | null;
   option3: string | null;
   options: string[];
-  thumbnail: string | null;
   url: string | null;
-  inventory: number;
-  sold: number;
-  public: boolean;
 }
 
-interface IProductData {
-  _id: string | null;
-  title: string;
+interface IProductData extends IProduct {
   category: IParentCategory;
   categories: IParentCategory[];
-  slug?: string;
   type: [];
   shortDescription: string;
   description: string;
-  price: number;
-  promotion_price: number;
   options: IOptionProduct[];
-  inventory: number;
-  thumbnail: string | null;
   gallery: string[];
   brand: string | null;
   hotProduct: boolean | false;
-  public: boolean | true;
   specifications: ISpecificationsProduct[];
   viewer: number;
   rate: number;

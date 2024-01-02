@@ -67,6 +67,9 @@ const initData: IProductData = {
   breadcrumbs: [],
   specifications: [],
   variants: [],
+  sku: null,
+  barcode: null,
+  sold: 0,
   viewer: 0,
   rate: 0,
 };
@@ -640,6 +643,8 @@ const ProductEditPage = (props: Props) => {
         public: product.public,
         variations: variations_id,
         options: optionsProduct,
+        sku: product.sku,
+        barcode: product.barcode
       });
 
       if (payload.status === 201) {
@@ -682,6 +687,9 @@ const ProductEditPage = (props: Props) => {
         variations,
         options,
         breadcrumbs,
+        sku,
+        barcode,
+        sold,
       } = payload;
 
       if (status === 200) {
@@ -730,6 +738,9 @@ const ProductEditPage = (props: Props) => {
           viewer,
           brand,
           variants: variations ? variations : [],
+          sku,
+          barcode,
+          sold,
         };
         setProduct(productData);
         setTitle(title);
@@ -989,7 +1000,7 @@ const ProductEditPage = (props: Props) => {
                 error={fieldsCheck.includes("price")}
                 value={formatBigNumber(product.price)}
                 name="price"
-                type={typeInput.price}
+                type={typeInput.number}
                 getNumber={changePrice}
               />
 
@@ -999,7 +1010,7 @@ const ProductEditPage = (props: Props) => {
                 value={formatBigNumber(product.promotion_price)}
                 error={fieldsCheck.includes("promotion_price")}
                 name="promotion_price"
-                type={typeInput.price}
+                type={typeInput.number}
                 getNumber={changePrice}
               />
 
@@ -1013,6 +1024,29 @@ const ProductEditPage = (props: Props) => {
                 name="inventory"
                 type={typeInput.number}
                 getNumber={changePrice}
+              />
+
+              <Input
+                title="SKU"
+                width="lg:w-2/4 w-full"
+                value={product.sku || ""}
+                error={fieldsCheck.includes("sku")}
+                placeholder="SKU..."
+                name="sku"
+                type={typeInput.input}
+                getValue={changeValue}
+                infor="Mã SKU giúp quản lí sản phẩm tốt hơn"
+              />
+
+              <Input
+                title="Barcode"
+                width="lg:w-2/4 w-full"
+                value={product.barcode || ""}
+                error={fieldsCheck.includes("barcode")}
+                name="barcode"
+                placeholder="Bar code..."
+                type={typeInput.input}
+                getValue={changeValue}
               />
             </div>
 

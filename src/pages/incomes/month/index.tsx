@@ -14,7 +14,7 @@ import { Bar } from "react-chartjs-2";
 
 import Statistic from "~/components/Statistic";
 import { axiosGet } from "~/ultils/configAxios";
-import { IGrow } from "../interface";
+import { IGrow, IGrowDate } from "~/interface";
 import { SelectItem } from "~/components/Select";
 import { ISelectItem } from "~/interface";
 
@@ -104,13 +104,6 @@ const initOverview: IGrow = {
   delivered_orders: 0,
   updatedAt: null,
 };
-
-interface IGrowDate extends IGrow {
-  day?: string;
-  month?: string;
-  year?: string;
-  date: string;
-}
 
 interface ISelectGrowMonth {
   month: string;

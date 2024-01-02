@@ -24,7 +24,7 @@ const FormLayout: ForwardRefRenderFunction<HTMLUListElement, props> = (
 
       <ul
         ref={ref}
-        className="scrollHidden h-[90vh] pb-20 px-5 gap-3 overflow-auto"
+        className="scrollHidden h-[80vh] pb-20 px-5 gap-3 overflow-auto"
       >
         {children}
       </ul>

@@ -7,4 +7,11 @@ interface IGrow {
   updatedAt?: string | null;
 }
 
-export type { IGrow };
+interface IGrowDate extends IGrow {
+  day?: string;
+  month?: string;
+  year?: string;
+  date: string;
+}
+
+export type { IGrow, IGrowDate };

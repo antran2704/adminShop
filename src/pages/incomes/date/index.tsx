@@ -5,15 +5,8 @@ import { BiDollarCircle, BiPackage, BiMinusCircle } from "react-icons/bi";
 import { SelectDate } from "~/components/Select";
 import Statistic from "~/components/Statistic";
 import { axiosGet } from "~/ultils/configAxios";
-import { IGrow } from "../interface";
+import { IGrow, IGrowDate } from "~/interface";
 import { ISelectItem } from "~/interface";
-
-interface IGrowDate extends IGrow {
-  day?: string;
-  month?: string;
-  year?: string;
-  date: string;
-}
 
 const initOverviewDate: IGrowDate = {
   gross: 0,

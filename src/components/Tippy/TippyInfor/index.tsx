@@ -1,4 +1,4 @@
-import { IoIosInformationCircleOutline } from "react-icons/io";
+import { HiOutlineInformationCircle } from "react-icons/hi2";
 import Tippy from "@tippyjs/react";
 
 interface Props {
@@ -18,7 +18,7 @@ const TippyInfor = (props: Props) => {
       placement="top"
     >
       <button>
-        <IoIosInformationCircleOutline className="text-xl cursor-pointer" />
+        <HiOutlineInformationCircle className="text-xl cursor-pointer" />
       </button>
     </Tippy>
   );

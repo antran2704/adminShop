@@ -14,7 +14,7 @@ import { Bar } from "react-chartjs-2";
 
 import Statistic from "~/components/Statistic";
 import { axiosGet } from "~/ultils/configAxios";
-import { IGrow } from "../interface";
+import { IGrow } from "~/interface";
 import { SelectItem } from "~/components/Select";
 import { ISelectItem } from "~/interface";
 

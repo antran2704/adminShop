@@ -1,13 +1,6 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "..";
-import { handleGetUser } from "~/helper/Auth";
-
-interface IUserInfor {
-  _id: string | null;
-  name: string;
-  email: string;
-  avartar: string | null;
-}
+import { IUserInfor } from "~/interface";
 
 interface IInitData {
   infor: IUserInfor;

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { FC, ReactNode, memo } from "react";
 import { typeCel, typeInput } from "~/enums";
-import { getDateTime } from "~/helper/datetimeFormat";
+import { getDateTime } from "~/helper/datetime";
 import ButtonCheck from "../Button/ButtonCheck";
 import Input from "../Input";
 import SelectImage from "../Image/SelectImage";

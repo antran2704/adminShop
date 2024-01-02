@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AiOutlineEdit, AiOutlineShoppingCart } from "react-icons/ai";
 import {
   MdOutlineKeyboardDoubleArrowDown,
@@ -28,6 +28,9 @@ import { typeCel } from "~/enums";
 import Link from "next/link";
 import SpringCount from "~/components/SpringCount";
 import { axiosGet } from "~/ultils/configAxios";
+import { getFirstDayInWeek } from "~/helper/datetime";
+import { IGrowDate } from "~/interface";
+import Statistic from "~/components/Statistic";
 
 ChartJS.register(
   CategoryScale,
@@ -47,20 +50,20 @@ const options = {
     },
     title: {
       display: true,
-      text: "Overview 5 days",
+      text: "Overview in week",
+    },
+  },
+  scales: {
+    x: {
+      stacked: true,
+    },
+    y: {
+      stacked: true,
     },
   },
 };
 
 const colHeadTable = ["Name", "Email", "Phone", "Status", "", ""];
-
-const getDate = (count: number = 0) => {
-  const newDate = new Date();
-  const date = newDate.getDate();
-
-  newDate.setDate(date - count);
-  return newDate.toLocaleDateString();
-};
 
 interface IOverview {
   gross: number;
@@ -85,23 +88,31 @@ export default function Home() {
     labels: [],
     datasets: [
       {
+        label: "Sub Gross",
+        data: [],
+        backgroundColor: "rgb(255, 99, 132)",
+        borderRadius: 10,
+        borderWidth: 0,
+      },
+      {
         label: "Gross",
         data: [],
-        backgroundColor: "#418efd",
+        backgroundColor: "rgb(75, 192, 192)",
         borderRadius: 10,
         borderWidth: 0,
       },
     ],
   };
 
+  const chartWeekRef = useRef<any>();
+
   const [overviews, setOverviews] = useState<IOverview>(initOveviews);
+  const [dataBarWeek, setDataBarWeek] = useState<any>(data);
 
   const [message, setMessage] = useState<string | null>(null);
   const [show, setShow] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [loadingOverviews, setLoadingOvervies] = useState<boolean>(true);
-  const [dataBar, setDataBar] = useState<any>(data);
-  const [inp, setInp] = useState("");
 
   const handleGetOverviews = async () => {
     setLoadingOvervies(true);
@@ -122,28 +133,50 @@ export default function Home() {
     }
   };
 
-  const handleGetGross = async () => {
+  const handleGetGrossInWeek = async (startDate: Date) => {
     try {
-      const { status, payload } = await axiosGet(`/gross-date/home`);
-      if (status === 200) {
-        const newData = dataBar;
+      const { status, payload } = await axiosGet(
+        `/gross-date/week?start_date=${startDate.toDateString()}`
+      );
 
-        payload.map((item: any) => {
-          newData.labels.push(item.date);
-          newData.datasets[0].data.push(item.gross);
+      const startDay = startDate.getDate();
+      const newData: any = data;
+
+      for (let i = 0; i <= 6; i++) {
+        const nextDay = new Date();
+        nextDay.setDate(startDay + i);
+        newData.labels.push(nextDay.getDate());
+        newData.datasets[0].data[i] = 0;
+        newData.datasets[1].data[i] = 0;
+      }
+
+      if (payload.length === 0) {
+        setDataBarWeek(newData);
+        chartWeekRef.current.update();
+      }
+
+      if (status === 200 && payload.length > 0) {
+        payload.map((item: IGrowDate) => {
+          const day = Number(item.day);
+          const index = newData.labels.findIndex(
+            (label: number) => label === day
+          );
+          newData.datasets[0].data[index] = item.sub_gross;
+          newData.datasets[1].data[index] = item.gross;
         });
 
-        setDataBar(newData);
-        setLoading(false);
+        setDataBarWeek(newData);
+        chartWeekRef.current.update();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
     }
   };
 
   useEffect(() => {
+    const firstDay = getFirstDayInWeek(new Date().toDateString());
+    handleGetGrossInWeek(firstDay);
     handleGetOverviews();
-    handleGetGross();
   }, []);
 
   return (
@@ -166,9 +199,10 @@ export default function Home() {
                 from={0}
                 to={4413954}
                 specialCharacter="VND"
+                duration={0.5}
               />
             </div>
-            {!loading && <Bar options={options} data={dataBar} />}
+            <Bar ref={chartWeekRef} options={options} data={dataBarWeek} />
           </div>
           <div className="relative lg:w-5/12 w-full mb-10">
             <div
@@ -176,85 +210,54 @@ export default function Home() {
                 show ? "max-h-[2000px]" : "max-h-[600px]"
               } gap-2 overflow-hidden transition-all ease-in-out duration-300`}
             >
-              <div className="flex flex-col items-center w-full bg-[#5032fd] text-white px-5 py-10 rounded-xl gap-2">
-                <BiDollarCircle className="text-4xl" />
-                <p className="md:text-xl text-lg text-center font-medium">
-                  Income today
-                </p>
-                {!loadingOverviews && (
-                  <SpringCount
-                    className="text-2xl font-bold"
-                    from={0}
-                    specialCharacter="VND"
-                    to={overviews.gross}
-                  />
-                )}
-              </div>
-              <div className="flex flex-col items-center w-full bg-[#0891b2] text-white px-5 py-10 rounded-xl gap-2">
-                <AiOutlineShoppingCart className="text-4xl" />
-                <p className="md:text-xl text-lg text-center font-medium">
-                  Orders today
-                </p>
-                {!loadingOverviews && (
-                  <SpringCount
-                    className="text-2xl font-bold"
-                    from={0}
-                    to={overviews.total_orders.length}
-                  />
-                )}
-              </div>
-              <div className="flex flex-col items-center w-full bg-success text-white px-5 py-10 rounded-xl gap-2">
-                <BiPackage className="text-4xl" />
-                <p className="md:text-xl text-lg text-center font-medium">
-                  Orders Delivered
-                </p>
-                {!loadingOverviews && (
-                  <SpringCount
-                    className="text-2xl font-bold"
-                    from={0}
-                    to={overviews.delivered_orders}
-                  />
-                )}
-              </div>
-              <div className="flex flex-col items-center w-full bg-warn text-white px-5 py-10 rounded-xl gap-2">
-                <BiAlarm className="text-4xl" />
-                <p className="md:text-xl text-lg text-center font-medium">
-                  Orders Pending
-                </p>
-                {!loadingOverviews && (
-                  <SpringCount
-                    className="text-2xl font-bold"
-                    from={0}
-                    to={overviews.pending_orders}
-                  />
-                )}
-              </div>
-              <div className="flex flex-col items-center w-full bg-primary text-white px-5 py-10 rounded-xl gap-2">
-                <BiCircleThreeQuarter className="text-4xl" />
-                <p className="md:text-xl text-lg text-center font-medium">
-                  Orders Processing
-                </p>
-                {!loadingOverviews && (
-                  <SpringCount
-                    className="text-2xl font-bold"
-                    from={0}
-                    to={overviews.processing_orders}
-                  />
-                )}
-              </div>
-              <div className="flex flex-col items-center w-full bg-cancle text-white px-5 py-10 rounded-xl gap-2">
-                <BiMinusCircle className="text-4xl" />
-                <p className="md:text-xl text-lg text-center font-medium">
-                  Orders Cancle
-                </p>
-                {!loadingOverviews && (
-                  <SpringCount
-                    className="text-2xl font-bold"
-                    from={0}
-                    to={overviews.cancle_orders}
-                  />
-                )}
-              </div>
+              <Statistic
+                title="Thu nhập hôm nay"
+                IconElement={<BiDollarCircle className="text-4xl" />}
+                to={overviews.gross}
+                backgroundColor="bg-[#5032fd]"
+                duration={0.5}
+                specialCharacter="VND"
+              />
+
+              <Statistic
+                title="Đơn hàng hôm nay"
+                IconElement={<AiOutlineShoppingCart className="text-4xl" />}
+                to={overviews.total_orders.length}
+                backgroundColor="bg-[#0891b2]"
+                duration={0.5}
+              />
+
+              <Statistic
+                title="Tổng đơn hàng thành công"
+                IconElement={<BiPackage className="text-4xl" />}
+                to={overviews.delivered_orders}
+                backgroundColor="bg-[#0891b2]"
+                duration={0.5}
+              />
+
+              <Statistic
+                title="Chờ xác nhận"
+                IconElement={<BiPackage className="text-4xl" />}
+                to={overviews.pending_orders}
+                backgroundColor="bg-warn"
+                duration={0.5}
+              />
+
+              <Statistic
+                title="Đang chuẩn bị hàng"
+                IconElement={<BiCircleThreeQuarter className="text-4xl" />}
+                to={overviews.processing_orders}
+                backgroundColor="bg-primary"
+                duration={0.5}
+              />
+
+              <Statistic
+                title="Tổng đơn hủy"
+                IconElement={<BiMinusCircle className="text-4xl" />}
+                to={overviews.cancle_orders}
+                backgroundColor="bg-cancle"
+                duration={0.5}
+              />
             </div>
 
             <button

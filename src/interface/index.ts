@@ -73,6 +73,14 @@ export type { ICoupon, ICouponHome, ICouponCreate };
 import { IBreadcrumb } from "./breadcrum";
 export type { IBreadcrumb };
 
+// User
+import { IUserInfor } from "./user";
+export type { IUserInfor };
+
+// Grow
+import { IGrow, IGrowDate } from "./grow";
+export type { IGrow, IGrowDate };
+
 // AXIOS
 import { AxiosResponseCus } from "./responseAxios";
 export type { AxiosResponseCus };

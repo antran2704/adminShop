@@ -51,8 +51,8 @@ const Thumbnail: FC<Props> = (props: Props) => {
         className={`flex flex-col items-center justify-center w-full ${
           error ? "border-error" : ""
         } ${
-          className ? className : "min-h-[300px] min-w-[100px] max-h-[400px] max-w-[400px]"
-        } rounded-md border-2 ${!url ? 'border-dashed' : ""} cursor-pointer overflow-hidden`}
+          className ? className : "min-w-[100px] max-h-[400px] max-w-[400px]"
+        } rounded-md border-2 ${!url ? 'min-h-[300px] border-dashed' : ""} cursor-pointer overflow-hidden`}
       >
         {loading && (
           <p className="text-base font-medium text-center">Loading...</p>

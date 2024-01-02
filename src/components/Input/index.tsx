@@ -143,22 +143,6 @@ const FieldAdd: FC<Props> = (props: Props) => {
         />
       )}
 
-      {type === typeInput.price && (
-        <input
-          required
-          name={name}
-          value={value}
-          placeholder={placeholder}
-          onInput={handleChangeNumberValue}
-          type="text"
-          className={`w-full rounded-md px-2 py-1 border-2 ${
-            error && "border-error"
-          } ${
-            readonly ? "pointer-events-none cursor-not-allowed opacity-80" : ""
-          } focus:border-[#4f46e5] outline-none`}
-        />
-      )}
-
       {type === typeInput.textarea && (
         <textarea
           className={`w-full rounded-md px-2 py-1 border-2  ${

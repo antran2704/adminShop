@@ -330,7 +330,7 @@ const CreateCouponPage = () => {
                 value={formatBigNumber(data.discount_value)}
                 error={fieldsCheck.includes("discount_value")}
                 name="discount_value"
-                type={typeInput.price}
+                type={typeInput.number}
                 placeholder="Coupon value"
                 getNumber={(name: string, value: number) =>
                   onChangeDiscountValue(discountType, name, value)
@@ -347,7 +347,7 @@ const CreateCouponPage = () => {
             value={formatBigNumber(data.discount_min_value)}
             name="discount_min_value"
             error={fieldsCheck.includes("discount_min_value")}
-            type={typeInput.price}
+            type={typeInput.number}
             placeholder="Minimum Amount"
             getNumber={changeNumber}
           />
