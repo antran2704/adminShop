@@ -71,10 +71,7 @@ const AttributesPage = (props: Props) => {
   }, [filter, attributes]);
 
   const onChangeSearch = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      const name = e.target.name;
-
+    (name: string, value: string) => {
       setFilter({ ...filter, [name]: value });
     },
     [filter]

@@ -1,12 +1,10 @@
 import { AxiosError } from "axios";
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
-import { ButtonClassic } from "~/components/Button";
 import Thumbnail from "~/components/Image/Thumbnail";
-import Input from "~/components/Input";
+import { InputText, InputPassword } from "~/components/InputField";
 import Loading from "~/components/Loading";
 import Popup from "~/components/Popup";
-import { typeInput } from "~/enums";
 import { uploadImageOnServer } from "~/helper/handleImage";
 import { IUserInfor } from "~/interface";
 import FormLayout from "~/layouts/FormLayout";
@@ -205,23 +203,21 @@ const SettingPage = () => {
           </h3>
         </div>
 
-        <Input
+        <InputText
           title="Email"
           width="lg:w-2/4 w-full my-5"
           value={user.email}
           name="email"
           placeholder="Your Email..."
-          type={typeInput.input}
           getValue={changeValue}
         />
 
-        <Input
+        <InputText
           title="Name"
           width="lg:w-2/4 w-full my-5"
           value={user.name}
           name="name"
           placeholder="Your Name..."
-          type={typeInput.input}
           getValue={changeValue}
         />
 
@@ -256,30 +252,27 @@ const SettingPage = () => {
           >
             <div>
               <div className="mb-10">
-                <Input
+                <InputPassword
                   title="Mật khẩu cũ"
                   width="w-full my-5"
                   value={passwordData.password || ""}
                   name="password"
-                  type={typeInput.input}
                   getValue={changePassword}
                 />
 
-                <Input
+                <InputPassword
                   title="Mật khẩu mới"
                   width="w-full my-5"
                   value={passwordData.newPassword || ""}
                   name="newPassword"
-                  type={typeInput.input}
                   getValue={changePassword}
                 />
 
-                <Input
+                <InputPassword
                   title="Nhập lại mật khẩu mới"
                   width="w-full my-5"
                   value={passwordData.reNewPassword || ""}
                   name="reNewPassword"
-                  type={typeInput.input}
                   enableEnter={true}
                   onEnter={handleChangePassword}
                   getValue={changePassword}

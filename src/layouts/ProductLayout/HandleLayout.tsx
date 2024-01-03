@@ -11,7 +11,7 @@ import { IThumbnail } from "~/interface/image";
 import { typeInput } from "~/enums";
 
 import FormLayout from "../FormLayout";
-import Input from "~/components/Input";
+import Input from "~/components/InputField";
 import Thumbnail from "~/components/Image/Thumbnail";
 import Gallery from "~/components/Image/Gallery";
 import Popup from "~/components/Popup";

@@ -1,5 +1,5 @@
-export enum typeInput {
-  input = "input",
-  number = "number", 
-  textarea = "textarea",
-};
+export enum SizeInput {
+  L = "large",
+  M = "medium",
+  S = "small",
+}

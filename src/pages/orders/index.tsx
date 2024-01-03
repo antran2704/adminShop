@@ -67,10 +67,7 @@ const OrdersPage = (props: Props) => {
   const [pagination, setPagination] = useState<IPagination>(initPagination);
 
   const onChangeSearch = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      const name = e.target.name;
-
+    (name: string, value: string) => {
       setFilter({ ...filter, [name]: value });
     },
     [filter]

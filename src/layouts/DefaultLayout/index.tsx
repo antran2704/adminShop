@@ -124,7 +124,7 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
             const { status, data } =
               (await handleCheckLogin()) as AxiosResponseCus;
 
-            setLoading(false);
+            // setLoading(false);
             return { status, data };
           }
         }

@@ -8,14 +8,12 @@ import generalBreadcrumbs from "~/helper/generateBreadcrumb";
 import { deleteImageInSever, uploadImageOnServer } from "~/helper/handleImage";
 
 import {
-  IThumbnailUrl,
   IDataCategory,
   ICategorySelect,
   IObjectCategory,
 } from "~/interface/category";
-import { typeInput } from "~/enums";
 import FormLayout from "~/layouts/FormLayout";
-import Input from "~/components/Input";
+import { InputText } from "~/components/InputField";
 import Tree from "~/components/Tree";
 import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
@@ -188,7 +186,7 @@ const EditCategoryPage = (props: Props) => {
   const handleGetData = async () => {
     setLoading(true);
     const id = query.id;
-    
+
     try {
       const data = await axiosGet(`/categories/id/${id}`);
 
@@ -277,36 +275,33 @@ const EditCategoryPage = (props: Props) => {
       <Fragment>
         <div>
           <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-            <Input
+            <InputText
               title="Title"
               error={fieldsCheck.includes("title")}
               width="lg:w-2/4 w-full"
               value={data.title}
               name="title"
-              type={typeInput.input}
               getValue={changeValue}
             />
           </div>
 
           <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-            <Input
+            <InputText
               title="Description"
               width="lg:w-2/4 w-full"
               value={data.description}
               name="description"
               error={fieldsCheck.includes("description")}
-              type={typeInput.textarea}
               getValue={changeValue}
             />
           </div>
 
           <div className="w-full mt-5">
-            <Input
+            <InputText
               title="Parent Category"
               width="lg:w-2/4 w-full"
               value={categorySelect.title ? categorySelect.title : ""}
               name="parent_id"
-              type={typeInput.input}
               readonly={true}
             />
 

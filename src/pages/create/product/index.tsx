@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 
 import { axiosGet, axiosPost } from "~/ultils/configAxios";
@@ -11,16 +11,15 @@ import {
   ISelectItem,
   ISpecificationsProduct,
 } from "~/interface";
-import { typeInput } from "~/enums";
 import { deleteImageInSever, uploadImageOnServer } from "~/helper/handleImage";
 import FormLayout from "~/layouts/FormLayout";
-import Input from "~/components/Input";
+import {InputText, InputNumber, InputTextarea} from "~/components/InputField";
 import Tree from "~/components/Tree";
 import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Gallery from "~/components/Image/Gallery";
-import MultipleValue from "~/components/Input/MultipleValue";
+import MultipleValue from "~/components/InputField/MultipleValue";
 import { SelectItem } from "~/components/Select";
 import generalBreadcrumbs from "~/helper/generateBreadcrumb";
 import Specifications from "~/components/Specifications";
@@ -395,41 +394,38 @@ const CreateProductPage = () => {
     >
       <div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          <Input
+          <InputText
             title="Title"
             width="lg:w-2/4 w-full"
             value={product.title}
             error={fieldsCheck.includes("title")}
             name="title"
             placeholder="Input product name..."
-            type={typeInput.input}
             getValue={changeValue}
           />
         </div>
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          <Input
+          <InputTextarea
             title="Short description"
             width="lg:w-2/4 w-full"
             error={fieldsCheck.includes("shortDescription")}
             value={product.shortDescription}
             name="shortDescription"
             placeholder="Input short description about product"
-            type={typeInput.textarea}
             rows={2}
             getValue={changeValue}
           />
         </div>
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          <Input
+          <InputTextarea
             title="Description"
             width="lg:w-2/4 w-full"
             error={fieldsCheck.includes("description")}
             value={product.description}
             name="description"
             placeholder="Input description about product"
-            type={typeInput.textarea}
             getValue={changeValue}
           />
         </div>
@@ -490,65 +486,59 @@ const CreateProductPage = () => {
         </div>
 
         <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
-          <Input
+          <InputNumber
             title="Price"
             width="lg:w-2/4 w-full"
             error={fieldsCheck.includes("price")}
             value={formatBigNumber(product.price)}
             name="price"
-            type={typeInput.number}
-            getNumber={changePrice}
+            getValue={changePrice}
           />
 
-          <Input
+          <InputNumber
             title="Promotion Price"
             width="lg:w-2/4 w-full"
             value={formatBigNumber(product.promotion_price)}
             error={fieldsCheck.includes("promotion_price")}
             name="promotion_price"
-            type={typeInput.number}
-            getNumber={changePrice}
+            getValue={changePrice}
           />
 
-          <Input
+          <InputNumber
             title="Inventory"
             width="lg:w-2/4 w-full"
             value={product.inventory.toString()}
             error={fieldsCheck.includes("inventory")}
             name="inventory"
-            type={typeInput.number}
-            getNumber={changePrice}
+            getValue={changePrice}
           />
 
-          <Input
+          <InputText
             title="SKU"
             width="lg:w-2/4 w-full"
             value={product.sku || ""}
             error={fieldsCheck.includes("sku")}
             placeholder="SKU..."
             name="sku"
-            type={typeInput.input}
             getValue={changeValue}
             infor="Mã SKU giúp quản lí sản phẩm tốt hơn"
           />
 
-          <Input
+          <InputText
             title="Barcode"
             width="lg:w-2/4 w-full"
             value={product.barcode || ""}
             error={fieldsCheck.includes("barcode")}
             name="barcode"
             placeholder="Bar code..."
-            type={typeInput.input}
             getValue={changeValue}
           />
 
-          <Input
+          <InputNumber
             title="Sold"
             width="lg:w-2/4 w-full"
             value={product.sold.toString()}
             name="sold"
-            type={typeInput.input}
             readonly={true}
           />
         </div>

@@ -3,18 +3,10 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 import { axiosGet, axiosPost } from "~/ultils/configAxios";
-
-import {
-  IThumbnailUrl,
-  IDataCategory,
-  ICategorySelect,
-  IObjectCategory,
-  IBreadcrumb,
-} from "~/interface";
-import { typeInput } from "~/enums";
+import { IDataCategory, ICategorySelect, IObjectCategory } from "~/interface";
 import { uploadImageOnServer } from "~/helper/handleImage";
 import FormLayout from "~/layouts/FormLayout";
-import Input from "~/components/Input";
+import { InputText } from "~/components/InputField";
 import Tree from "~/components/Tree";
 import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
@@ -208,36 +200,36 @@ const CreateCategoryPage = () => {
     >
       <div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          <Input
+          <InputText
             title="Title"
             width="lg:w-2/4 w-full"
             value={data.title}
             error={fieldsCheck.includes("title")}
             name="title"
-            type={typeInput.input}
+            placeholder="Title for category..."
             getValue={changeValue}
           />
         </div>
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          <Input
+          <InputText
             title="Description"
             width="lg:w-2/4 w-full"
             error={fieldsCheck.includes("description")}
             value={data.description}
             name="description"
-            type={typeInput.textarea}
+            placeholder="Description for category..."
             getValue={changeValue}
           />
         </div>
 
         <div className="w-full mt-5">
-          <Input
+          <InputText
             title="Parent Category"
             width="lg:w-2/4 w-full"
             value={categorySelect.title ? categorySelect.title : ""}
             name="parent_id"
-            type={typeInput.input}
+            placeholder="Please select parent category"
             readonly={true}
           />
 

@@ -191,22 +191,10 @@ export default function Home() {
       </div>
       <div className="w-full lg:mb-10 mb-5">
         <h2 className="text-title mb-4">Dashboard Overview</h2>
-        <div className="flex lg:flex-row flex-col-reverse items-start justify-between h-full gap-10">
-          <div className="lg:w-7/12 w-full h-full bg-[#f4f7ff] rounded-xl p-5">
-            <div>
-              <SpringCount
-                className="text-lg font-bold"
-                from={0}
-                to={4413954}
-                specialCharacter="VND"
-                duration={0.5}
-              />
-            </div>
-            <Bar ref={chartWeekRef} options={options} data={dataBarWeek} />
-          </div>
-          <div className="relative lg:w-5/12 w-full mb-10">
+        <div className="h-full gap-10">
+          <div className="relative w-full mb-10">
             <div
-              className={`grid md:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max ${
+              className={`grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max ${
                 show ? "max-h-[2000px]" : "max-h-[600px]"
               } gap-2 overflow-hidden transition-all ease-in-out duration-300`}
             >
@@ -271,6 +259,18 @@ export default function Home() {
                 <MdOutlineKeyboardDoubleArrowUp className="text-3xl text-primary" />
               )}
             </button>
+          </div>
+          <div className="lg:w-3/4 w-full h-full bg-[#f4f7ff] rounded-xl p-5 mx-auto">
+            <div>
+              <SpringCount
+                className="text-lg font-bold"
+                from={0}
+                to={4413954}
+                specialCharacter="VND"
+                duration={0.5}
+              />
+            </div>
+            <Bar ref={chartWeekRef} options={options} data={dataBarWeek} />
           </div>
         </div>
       </div>

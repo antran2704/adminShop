@@ -3,8 +3,8 @@ import { useState, useCallback } from "react";
 import { toast } from "react-toastify";
 
 import ButtonCheck from "~/components/Button/ButtonCheck";
-import Input from "~/components/Input";
-import { EDicount_type, EDiscount_applies, typeInput } from "~/enums";
+import { InputText, InputNumber } from "~/components/InputField";
+import { EDicount_type, EDiscount_applies } from "~/enums";
 import FormLayout from "~/layouts/FormLayout";
 
 import { ICouponCreate } from "~/interface";
@@ -245,24 +245,22 @@ const CreateCouponPage = () => {
     >
       <div>
         <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
-          <Input
+          <InputText
             title="Coupon name"
             width="lg:w-2/4 w-full"
             value={data.discount_name}
             error={fieldsCheck.includes("discount_name")}
             name="discount_name"
-            type={typeInput.input}
             placeholder="Coupon name"
             getValue={changeValue}
           />
 
-          <Input
+          <InputText
             title="Coupon Code"
             width="lg:w-2/4 w-full"
             value={data.discount_code.toUpperCase()}
             name="discount_code"
             error={fieldsCheck.includes("discount_code")}
-            type={typeInput.input}
             placeholder="Coupon Code"
             getValue={changeValue}
           />
@@ -325,14 +323,13 @@ const CreateCouponPage = () => {
               <p className="min-w-[40px] text-base text-[#1E1E1E] text-center font-medium">
                 {discountType === EDicount_type.PERCENTAGE ? "%" : "VND"}
               </p>
-              <Input
+              <InputNumber
                 width="lg:w-2/4 w-full"
                 value={formatBigNumber(data.discount_value)}
                 error={fieldsCheck.includes("discount_value")}
                 name="discount_value"
-                type={typeInput.number}
                 placeholder="Coupon value"
-                getNumber={(name: string, value: number) =>
+                getValue={(name: string, value: number) =>
                   onChangeDiscountValue(discountType, name, value)
                 }
               />
@@ -341,37 +338,34 @@ const CreateCouponPage = () => {
         </div>
 
         <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
-          <Input
+          <InputNumber
             title="Minimum Amount"
             width="lg:w-2/4 w-full"
             value={formatBigNumber(data.discount_min_value)}
             name="discount_min_value"
             error={fieldsCheck.includes("discount_min_value")}
-            type={typeInput.number}
             placeholder="Minimum Amount"
-            getNumber={changeNumber}
+            getValue={changeNumber}
           />
 
-          <Input
+          <InputNumber
             title="Coupon quantity"
             width="lg:w-2/4 w-full"
             value={data.discount_max_uses.toString()}
             name="discount_max_uses"
             error={fieldsCheck.includes("discount_max_uses")}
-            type={typeInput.number}
             placeholder="Coupon quantity"
-            getNumber={changeNumber}
+            getValue={changeNumber}
           />
 
-          <Input
+          <InputNumber
             title="Coupon per user"
             width="lg:w-2/4 w-full"
             value={data.discount_per_user.toString()}
             name="discount_per_user"
             error={fieldsCheck.includes("discount_per_user")}
-            type={typeInput.number}
             placeholder="Coupon per user"
-            getNumber={changeNumber}
+            getValue={changeNumber}
           />
         </div>
 

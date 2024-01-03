@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { FC, memo, KeyboardEvent, ChangeEvent } from "react";
+import { InputText } from "../InputField";
 
 interface Props {
   placeholder?: string;
@@ -7,7 +8,7 @@ interface Props {
   children?: JSX.Element;
   onReset: () => void;
   onFilter: () => void;
-  onSearch: (e: ChangeEvent<HTMLInputElement>) => void;
+  onSearch: (name: string, value: string) => void;
 }
 
 const Search: FC<Props> = (props: Props) => {
@@ -49,23 +50,17 @@ const Search: FC<Props> = (props: Props) => {
     }
   };
 
-  const onKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
-    const key = e.key;
-    if (key === "Enter") {
-      handleFilter();
-    }
-  };
-
   return (
     <div className={`flex flex-wrap items-end min-h-10 mt-5 mb-10 gap-5`}>
-      <input
-        value={search}
-        type="text"
+      <InputText
+        width="lg:w-4/12 md:w-6/12 w-full"
         name="search"
-        onChange={onSearch}
-        onKeyUp={onKeyUp}
-        className={`lg:w-4/12 md:w-6/12 w-full h-10 border rounded-md focus:outline-none text-xxs lg:text-base text-[#343a40] px-5 bg-transparent`}
+        size="M"
+        value={search}
+        getValue={onSearch}
         placeholder={placeholder ? placeholder : "Search..."}
+        enableEnter={true}
+        onEnter={handleFilter}
       />
 
       {children}

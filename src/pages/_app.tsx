@@ -9,9 +9,10 @@ import LAYOUT from "~/layouts";
 export default function App({ Component, pageProps }: AppProps) {
   const pathName = usePathname();
   let Layout;
-
   switch (pathName) {
     case "/login":
+    case "/password/reset":
+    case "/check/password-key":
       Layout = LAYOUT.LoginLayout;
       break;
 

@@ -3,13 +3,12 @@ import { useState, useCallback } from "react";
 import { toast } from "react-toastify";
 
 import ButtonCheck from "~/components/Button/ButtonCheck";
-import Input from "~/components/Input";
-import { typeInput } from "~/enums";
+import { InputText } from "~/components/InputField";
 import FormLayout from "~/layouts/FormLayout";
 
 import { IAttribute, ISelectItem } from "~/interface";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
-import MultipleValue from "~/components/Input/MultipleValue";
+import MultipleValue from "~/components/InputField/MultipleValue";
 import { axiosPost } from "~/ultils/configAxios";
 import Loading from "~/components/Loading";
 
@@ -132,26 +131,24 @@ const CreateAttributePage = () => {
     >
       <div>
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">
-          <Input
+          <InputText
             title="Attribute Title"
             width="lg:w-2/4 w-full"
             value={data.name}
             error={fieldsCheck.includes("name")}
             name="name"
-            type={typeInput.input}
             placeholder="Color or Size or Material"
             getValue={changeValue}
           />
         </div>
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          <Input
+          <InputText
             title="Attribute Code"
             width="lg:w-2/4 w-full"
             value={data.code}
             name="code"
             error={fieldsCheck.includes("code")}
-            type={typeInput.input}
             getValue={changeValue}
           />
         </div>

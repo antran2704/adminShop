@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { FC, ReactNode, memo } from "react";
-import { typeCel, typeInput } from "~/enums";
+import { typeCel } from "~/enums";
 import { getDateTime } from "~/helper/datetime";
 import ButtonCheck from "../Button/ButtonCheck";
-import Input from "../Input";
+import { InputNumber, InputText } from "../InputField";
 import SelectImage from "../Image/SelectImage";
 
 interface Props {
@@ -94,12 +94,11 @@ const CelTable: FC<Props> = (props: Props) => {
             center ? "text-center" : "text-start"
           } text-blue-900 sm:text-sm text-xs leading-5`}
         >
-          <Input
+          <InputText
             id={id}
             name={name as string}
             placeholder={placeholder}
             value={value}
-            type={typeInput.input}
             getValue={onChangeInput}
           />
         </td>
@@ -114,13 +113,12 @@ const CelTable: FC<Props> = (props: Props) => {
             center ? "text-center" : "text-start"
           } text-blue-900 sm:text-sm text-xs leading-5`}
         >
-          <Input
+          <InputNumber
             id={id}
             name={name as string}
             value={value}
             placeholder={placeholder}
-            type={typeInput.number}
-            getNumber={onChangeInputNumber}
+            getValue={onChangeInputNumber}
           />
         </td>
       );

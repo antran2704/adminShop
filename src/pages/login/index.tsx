@@ -1,11 +1,13 @@
 import axios, { AxiosError } from "axios";
 import { setCookie } from "cookies-next";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, FormEvent } from "react";
 import { toast } from "react-toastify";
 
 import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
+import { InputText, InputPassword } from "~/components/InputField";
 import { AxiosResponseCus } from "~/interface";
 import { useAppDispatch } from "~/store/hooks";
 import { login } from "~/store/slice";
@@ -25,17 +27,16 @@ const LoginPage = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<IDataSend>(initData);
+
+  const [loading, setLoading] = useState<boolean>(false);
+
   const [message, setMessage] = useState<string | null>(null);
 
-  const onChangeData = (e: ChangeEvent<HTMLInputElement>) => {
+  const onChangeData = (name: string, value: string) => {
     if (message) {
       setMessage(null);
     }
-
-    const name = e.target.name;
-    const value = e.target.value;
 
     setData({ ...data, [name]: value });
   };
@@ -70,7 +71,7 @@ const LoginPage = () => {
     } catch (err) {
       const error = err as AxiosError;
 
-      if(error.code === "ERR_NETWORK") {
+      if (error.code === "ERR_NETWORK") {
         toast.error("Error in server, please try again", {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -114,35 +115,27 @@ const LoginPage = () => {
 
           <form onSubmit={onLogin} method="POST" className="flex flex-col">
             <div className="flex flex-col items-start mt-5 gap-5">
-              <div className="w-full flex flex-col items-start gap-2">
-                <span className="block text-base text-[#1E1E1E] font-medium">
-                  Email
-                </span>
-                <input
-                  required
-                  value={data.email || ""}
-                  name="email"
-                  placeholder={"Email..."}
-                  onInput={onChangeData}
-                  type="text"
-                  className={`w-full rounded-md px-2 py-2 border-2 focus:border-[#4f46e5] outline-none`}
-                />
-              </div>
+              <InputText
+                title="Email"
+                width="w-full"
+                value={data.email || ""}
+                name="email"
+                required={true}
+                size="M"
+                placeholder="Your Email..."
+                getValue={onChangeData}
+              />
+              <InputPassword
+                title="Email"
+                width="w-full"
+                value={data.password || ""}
+                placeholder={"Password..."}
+                name="password"
+                required={true}
+                size="M"
+                getValue={onChangeData}
+              />
 
-              <div className="w-full flex flex-col items-start gap-2">
-                <span className="block text-base text-[#1E1E1E] font-medium">
-                  Password
-                </span>
-                <input
-                  required
-                  name="password"
-                  value={data.password || ""}
-                  placeholder={"Password..."}
-                  onInput={onChangeData}
-                  type="password"
-                  className={`w-full rounded-md px-2 py-2 border-2 focus:border-[#4f46e5] outline-none`}
-                />
-              </div>
               {message && <p className="text-base text-error">{message}</p>}
             </div>
 
@@ -153,6 +146,15 @@ const LoginPage = () => {
                 size="L"
                 className="w-full flex items-center justify-center h-[52px] bg-primary"
               />
+
+              <div className="flex items-center justify-center">
+                <Link
+                  className="block underline hover:text-primary my-5"
+                  href="/password/reset"
+                >
+                  Quên mật khẩu
+                </Link>
+              </div>
             </div>
           </form>
         </div>

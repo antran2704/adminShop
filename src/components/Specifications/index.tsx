@@ -2,8 +2,7 @@ import { Fragment, memo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AiOutlineCloseCircle, AiOutlinePlus } from "react-icons/ai";
 
-import { typeInput } from "~/enums";
-import Input from "../Input";
+import {InputText} from "../InputField";
 import {
   ISelectItem,
   ISpecificationAttributes,
@@ -214,12 +213,11 @@ const Specifications = (props: Props) => {
                     key={attribute.id}
                     className="flex items-start justify-between gap-5"
                   >
-                    <Input
+                    <InputText
                       title="Name"
                       width="w-1/2"
                       value={attribute.name}
                       name="name"
-                      type={typeInput.input}
                       getValue={(name, value) =>
                         onChangeAtribute(
                           name,
@@ -229,12 +227,11 @@ const Specifications = (props: Props) => {
                         )
                       }
                     />
-                    <Input
+                    <InputText
                       title="Value"
                       width="w-1/2"
                       value={attribute.value}
                       name="value"
-                      type={typeInput.input}
                       getValue={(name, value) =>
                         onChangeAtribute(
                           name,
@@ -284,13 +281,12 @@ const Specifications = (props: Props) => {
         <Fragment>
           <div className="flex flex-col justify-between h-full">
             <div className="w-full flex flex-col px-5 gap-5">
-              <Input
+              <InputText
                 title="Specification Title"
                 width="w-full"
                 enableEnter={true}
                 onEnter={onAddSpecification}
                 name="name"
-                type={typeInput.input}
                 value={newSpecification.name}
                 getValue={onChangeValue}
                 error={fieldsCheck.includes("name")}

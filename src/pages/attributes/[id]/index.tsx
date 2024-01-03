@@ -5,7 +5,7 @@ import { useState, useEffect, Fragment, useCallback } from "react";
 import { toast } from "react-toastify";
 
 import { axiosGet, axiosPatch, axiosPost } from "~/ultils/configAxios";
-import { typeCel, typeInput } from "~/enums";
+import { typeCel } from "~/enums";
 
 import { INewVariant, IVariant } from "~/interface";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
@@ -16,7 +16,7 @@ import { Table, CelTable } from "~/components/Table";
 import { colHeaderAttributeValue as colHeadTable } from "~/components/Table/colHeadTable";
 import { IPagination } from "~/interface/pagination";
 import PopupForm from "~/components/Popup/PopupForm";
-import Input from "~/components/Input";
+import {InputText} from "~/components/InputField";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { ButtonDelete, ButtonEdit } from "~/components/Button";
 import Loading from "~/components/Loading";
@@ -115,7 +115,6 @@ const AttributeValuesPage = (props: Props) => {
       });
     }
 
-    setLoading(true);
     try {
       const payload = await axiosPatch(`/attributes/child/${id}`, {
         children_id,
@@ -124,17 +123,14 @@ const AttributeValuesPage = (props: Props) => {
       });
 
       if (payload.status === 201) {
-        handleGetData();
         toast.success("Success updated attribute", {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
-      setLoading(false);
     } catch (error) {
       toast.error("Please try again", {
         position: toast.POSITION.TOP_RIGHT,
       });
-      setLoading(false);
     }
   };
 
@@ -398,13 +394,12 @@ const AttributeValuesPage = (props: Props) => {
             {selectItem && selectItem.id && (
               <div className="flex flex-col justify-between h-full">
                 <div className="w-full flex flex-col px-5 gap-5">
-                  <Input
+                  <InputText
                     title="Attribute Title"
                     width="w-full"
                     value={selectItem.title}
                     name="title"
                     error={fieldsCheck.includes("title")}
-                    type={typeInput.input}
                     getValue={changeValue}
                     placeholder="Color or Size or Material"
                   />
@@ -447,11 +442,10 @@ const AttributeValuesPage = (props: Props) => {
           <Fragment>
             <div className="flex flex-col justify-between h-full">
               <div className="w-full flex flex-col px-5 gap-5">
-                <Input
+                <InputText
                   title="Attribute Title"
                   width="w-full"
                   name="name"
-                  type={typeInput.input}
                   value={newVarinat.name}
                   getValue={changeValueNewVariant}
                   error={fieldsCheck.includes("name")}
