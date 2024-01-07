@@ -39,9 +39,11 @@ interface IOrder {
   discount_codes: ICouponOrder[];
   status: statusOrder;
   payment_method: string;
-  cancleContent?: string;
-  note?: string;
+  cancleContent?: string | null;
+  note?: string | null;
   createdAt: string;
 }
 
-export type { IItemOrder, IOrder };
+type IOrderCancle = Pick<IOrder, "note" | "cancleContent">
+
+export type { IItemOrder, IOrder, IOrderCancle };

@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { FC, memo, KeyboardEvent, ChangeEvent } from "react";
+import { FC, memo, useEffect, useState, useCallback } from "react";
 import { InputText } from "../InputField";
 
 interface Props {
@@ -14,29 +14,6 @@ interface Props {
 const Search: FC<Props> = (props: Props) => {
   const { search, placeholder, children, onReset, onSearch, onFilter } = props;
   const router = useRouter();
-  const currentSearch = router.query.search;
-  //   const [search, setSearch] = useState<string | null>(null);
-  //   const debouncedValue = useDebounce(search, 1000);
-
-  //   const onChangeSearch = (e: ChangeEvent<HTMLInputElement>) => {
-  //     const searchText = e.target.value;
-
-  //     if (searchText.length > 0) {
-  //       router.replace({
-  //         query: { search: searchText },
-  //       });
-  //     } else {
-  //       router.replace({});
-  //     }
-
-  //     setSearch(searchText);
-  //   };
-
-  //   useEffect(() => {
-  //     if (search !== null) {
-  //       props.onSearch(search);
-  //     }
-  //   }, [debouncedValue]);
 
   const handleFilter = () => {
     if (router.query.page && Number(router.query.page) !== 1) {
@@ -48,6 +25,13 @@ const Search: FC<Props> = (props: Props) => {
     if (!router.query.page || Number(router.query.page) === 1) {
       onFilter();
     }
+  };
+
+  const handleReset = () => {
+    router.replace({
+      query: {},
+    });
+    onReset();
   };
 
   return (
@@ -73,7 +57,7 @@ const Search: FC<Props> = (props: Props) => {
           Fillter
         </button>
         <button
-          onClick={onReset}
+          onClick={handleReset}
           className={`flex md:w-fit w-full items-center justify-center h-10 text-lg text-text bg-[#e5e7eb] font-medium px-8 py-1 rounded-md`}
         >
           Reset

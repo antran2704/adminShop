@@ -3,9 +3,8 @@ import { useRouter } from "next/router";
 import { useState, useEffect, Fragment, useCallback } from "react";
 import { toast } from "react-toastify";
 
-import { axiosGet, axiosPatch } from "~/ultils/configAxios";
 import generalBreadcrumbs from "~/helper/generateBreadcrumb";
-import { deleteImageInSever, uploadImageOnServer } from "~/helper/handleImage";
+import { deleteImageInSever } from "~/helper/handleImage";
 
 import {
   IDataCategory,
@@ -19,6 +18,13 @@ import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Loading from "~/components/Loading";
+import {
+  getCategories,
+  getCategory,
+  getParentCategories,
+  updateCategory,
+  uploadThumbnailCategory,
+} from "~/api-client";
 
 const initData: IDataCategory = {
   _id: null,
@@ -42,6 +48,11 @@ const EditCategoryPage = (props: Props) => {
   const [categoriesParent, setCategoriesParent] = useState([]);
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
   const [categorySelect, setCategorySelect] = useState<ICategorySelect>({
+    title: null,
+    node_id: null,
+  });
+
+  const [defaultSelect, setDefaultSelect] = useState<ICategorySelect>({
     title: null,
     node_id: null,
   });
@@ -82,10 +93,7 @@ const EditCategoryPage = (props: Props) => {
         setLoadingThumbnail(true);
 
         try {
-          const { status, payload } = await uploadImageOnServer(
-            `${process.env.NEXT_PUBLIC_ENDPOINT_API}/categories/uploadThumbnail`,
-            formData
-          );
+          const { status, payload } = await uploadThumbnailCategory(formData);
 
           if (status === 201) {
             setThumbnail(payload);
@@ -164,9 +172,7 @@ const EditCategoryPage = (props: Props) => {
         }
       }
 
-      const payload = await axiosPatch(`/categories/${data._id}`, {
-        ...sendData,
-      });
+      const payload = await updateCategory(data._id as string, sendData);
 
       if (payload.status === 201) {
         toast.success("Success updated category", {
@@ -188,7 +194,7 @@ const EditCategoryPage = (props: Props) => {
     const id = query.id;
 
     try {
-      const data = await axiosGet(`/categories/id/${id}`);
+      const data = await getCategory(id);
 
       if (data.status === 200) {
         const title = data.payload.parent_id
@@ -212,6 +218,10 @@ const EditCategoryPage = (props: Props) => {
           node_id,
           title,
         });
+        setDefaultSelect({
+          node_id,
+          title,
+        });
 
         setLoading(false);
       }
@@ -226,7 +236,7 @@ const EditCategoryPage = (props: Props) => {
   const handleGetCategories = async () => {
     let data: any = {};
     try {
-      const response = await axiosGet("/categories");
+      const response = await getCategories();
 
       for (const item of response.payload) {
         const { _id, parent_id, title, childrens } = item;
@@ -244,7 +254,7 @@ const EditCategoryPage = (props: Props) => {
 
   const handleGetCategoriesParent = async () => {
     try {
-      const response = await axiosGet("/categories/parent");
+      const response = await getParentCategories();
       const data = response.payload.map((item: any) => item._id);
 
       setCategoriesParent(data);
@@ -314,6 +324,7 @@ const EditCategoryPage = (props: Props) => {
                     node_id="Home"
                     parent_id={null}
                     categorySelect={categorySelect}
+                    defaultSelect={defaultSelect}
                     onSelect={onSelectCategory}
                   />
                 )}

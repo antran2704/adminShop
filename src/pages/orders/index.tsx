@@ -1,5 +1,5 @@
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
-import { useEffect, useState, useCallback, Fragment, ChangeEvent } from "react";
+import { useEffect, useState, useCallback, Fragment } from "react";
 import { axiosGet } from "~/ultils/configAxios";
 
 import { IOrder } from "~/interface/order";
@@ -15,16 +15,13 @@ import { ButtonEdit } from "~/components/Button";
 import { IFilter, ISelectItem } from "~/interface";
 import { SelectDate, SelectItem } from "~/components/Select";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
+import { useRouter } from "next/router";
+import { initPagination } from "~/components/Pagination/initData";
+import { getOrders, getOrdersWithFilter } from "~/api-client";
 
 interface Props {
   query: InferGetServerSidePropsType<typeof getServerSideProps>;
 }
-
-const initPagination: IPagination = {
-  currentPage: 1,
-  pageSize: 0,
-  totalItems: 0,
-};
 
 const dataFilterStatus: ISelectItem[] = [
   {
@@ -59,6 +56,7 @@ const dataFilterMethod: ISelectItem[] = [
 const OrdersPage = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? query.page : 1;
+  const router = useRouter();
 
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [message, setMessage] = useState<string | null>(null);
@@ -76,6 +74,9 @@ const OrdersPage = (props: Props) => {
   const onSelect = useCallback(
     (value: string, name: string) => {
       setFilter({ ...filter, [name]: value });
+      router.replace({
+        query: {},
+      });
     },
     [filter]
   );
@@ -86,18 +87,9 @@ const OrdersPage = (props: Props) => {
   }, [filter, orders]);
 
   const handleGetDataByFilter = useCallback(async () => {
-    console.log("fillrer")
     setLoading(true);
     try {
-      const response = await axiosGet(
-        `${process.env.NEXT_PUBLIC_ENDPOINT_API}/orders/search?search=${
-          filter?.search || ""
-        }&status=${filter?.status || ""}&payment_method=${
-          filter?.payment_method || ""
-        }&start_date=${filter?.start_date || ""}&end_date=${
-          filter?.end_date || ""
-        }&page=${currentPage}`
-      );
+      const response = await getOrdersWithFilter(filter, currentPage);
 
       if (response.status === 200) {
         if (response.payload.length === 0) {
@@ -123,7 +115,7 @@ const OrdersPage = (props: Props) => {
   const handleGetData = async () => {
     setLoading(true);
     try {
-      const response = await axiosGet(`/orders?page=${currentPage}`);
+      const response = await getOrders(currentPage);
       if (response.status === 200) {
         if (response.payload.length === 0) {
           setOrders([]);
@@ -204,7 +196,12 @@ const OrdersPage = (props: Props) => {
           </Fragment>
         </Search>
 
-        <Table colHeadTabel={colHeadTable} message={message} loading={loading}>
+        <Table
+          colHeadTabel={colHeadTable}
+          items={orders}
+          loading={loading}
+          message={message}
+        >
           <Fragment>
             {orders.map((order: IOrder) => (
               <tr

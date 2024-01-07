@@ -13,10 +13,7 @@ import {
 import { toast } from "react-toastify";
 import { AiOutlinePrinter } from "react-icons/ai";
 
-import { axiosGet, axiosPatch } from "~/ultils/configAxios";
-
 import { getDateTime } from "~/helper/datetime";
-import { currencyFormat } from "../../helper/currencyFormat";
 import optionsCancle from "./optionCancle";
 
 import { IOptionCancle } from "./interface";
@@ -30,6 +27,8 @@ import { colHeaderOrderDetail as colHeadTable } from "~/components/Table/colHead
 import Popup from "~/components/Popup";
 import { ButtonClassic } from "~/components/Button";
 import Loading from "~/components/Loading";
+import { formatBigNumber } from "~/helper/number/fomatterCurrency";
+import { getOrder, updateOrder } from "~/api-client";
 
 const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {
   loading: () => <Loading />,
@@ -47,10 +46,10 @@ const OrderDetail = () => {
   const router: NextRouter = useRouter();
   const orderId = router.query.id;
   const noteRef = useRef<HTMLTextAreaElement>(null);
-
   const [data, setData] = useState<IOrder | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const [message] = useState<string | null>(null);
   const [cancle, setCancle] = useState<string | null>(null);
+
   const [loading, setLoading] = useState<boolean>(true);
   const [showPrint, setShowPrint] = useState<boolean>(false);
   const [showCancle, setShowCancle] = useState<boolean>(false);
@@ -93,23 +92,18 @@ const OrderDetail = () => {
       let payload;
 
       if (status === statusOrder.processing) {
-        payload = await axiosPatch(`orders/status/${orderId}`, {
-          status: statusOrder.processing,
-        });
+        payload = await updateOrder(orderId as string, statusOrder.processing);
       }
 
       if (status === statusOrder.cancle) {
-        payload = await axiosPatch(`orders/status/${orderId}`, {
-          status: statusOrder.cancle,
+        payload = await updateOrder(orderId as string, statusOrder.cancle, {
           note: noteRef.current ? noteRef.current.value : null,
           cancleContent: cancle,
         });
       }
 
       if (status === statusOrder.delivered) {
-        payload = await axiosPatch(`orders/status/${orderId}`, {
-          status: statusOrder.delivered,
-        });
+        payload = await updateOrder(orderId as string, statusOrder.delivered);
       }
 
       if (payload.status === 201) {
@@ -132,18 +126,16 @@ const OrderDetail = () => {
   const getDataOrder = async (id: string) => {
     setLoading(true);
     try {
-      const response = await axiosGet(`/orders/${id}`);
+      const response = await getOrder(id);
       if (response.status === 200) {
         setData(response.payload);
       }
-      setLoading(false);
     } catch (error) {
-      console.log(error);
-      toast.error("Error in server", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setLoading(false);
+      router.push("/404");
+      return;
     }
+
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -193,15 +185,28 @@ const OrderDetail = () => {
               {data.status}
             </p>
           </li>
+
           {data.status === statusOrder.cancle && (
-            <li className="flex items-start justify-start text-base mt-1 gap-1">
-              <h3 className="font-medium capitalize">Why:</h3>
-              <p
-                className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
-              >
-                {data.cancleContent || "updating"}
-              </p>
-            </li>
+            <Fragment>
+              <li className="flex items-start justify-start text-base mt-1 gap-1">
+                <h3 className="font-medium capitalize">Why:</h3>
+                <p
+                  className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
+                >
+                  {data.cancleContent || "updating"}
+                </p>
+              </li>
+              {data.note && (
+                <li className="flex items-start justify-start text-base mt-1 gap-1">
+                  <h3 className="font-medium capitalize">Note:</h3>
+                  <p
+                    className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
+                  >
+                    {data.note}
+                  </p>
+                </li>
+              )}
+            </Fragment>
           )}
 
           {data.status === statusOrder.pending && (
@@ -255,7 +260,7 @@ const OrderDetail = () => {
           >
             <Fragment>
               {data.items.map((item: IItemOrder, index: number) => (
-                <tr key={item.product_id} className="hover:bg-slate-100">
+                <tr key={item._id} className="hover:bg-slate-100">
                   <CelTable
                     center={true}
                     type={typeCel.TEXT}
@@ -279,12 +284,12 @@ const OrderDetail = () => {
                   <CelTable
                     center={true}
                     type={typeCel.TEXT}
-                    value={currencyFormat(item.price) + " VND"}
+                    value={formatBigNumber(item.price) + " VND"}
                   />
                   <CelTable
                     center={true}
                     type={typeCel.TEXT}
-                    value={currencyFormat(item.price * item.quantity) + " VND"}
+                    value={formatBigNumber(item.price * item.quantity) + " VND"}
                   />
                 </tr>
               ))}
@@ -308,7 +313,7 @@ const OrderDetail = () => {
               Shipping cost
             </h3>
             <p className="md:text-base text-sm font-medium text-primary mt-2">
-              {currencyFormat(30000)} VND
+              {formatBigNumber(30000)} VND
             </p>
           </div>
           <div>
@@ -329,7 +334,7 @@ const OrderDetail = () => {
                   Discount Value:
                 </p>
                 <p className="md:text-base text-sm font-medium text-primary mt-2">
-                  -{currencyFormat(30000)} VND
+                  -{formatBigNumber(30000)} VND
                 </p>
               </li>
             </ul>
@@ -339,7 +344,7 @@ const OrderDetail = () => {
               Total
             </h3>
             <p className="md:text-base text-sm font-medium text-primary mt-2">
-              {currencyFormat(data.total)} VND
+              {formatBigNumber(data.total)} VND
             </p>
           </div>
         </div>
@@ -398,7 +403,7 @@ const OrderDetail = () => {
               <h3 className="text-base mb-2">Note</h3>
               <textarea
                 ref={noteRef}
-                className="w-full px-5 py-2 rounded-md border-2"
+                className="w-full px-3 py-2 rounded-md border-2"
                 name="note_option"
                 id="note_option"
                 cols={30}

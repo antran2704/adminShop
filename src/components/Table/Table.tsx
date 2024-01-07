@@ -9,7 +9,7 @@ interface Props {
   setSelects?: (value: SetStateAction<string[]>) => void
   isSelected?: boolean;
   selectAll?: boolean;
-  message: string | null;
+  message?: string | null;
   loading: boolean;
 }
 
@@ -81,13 +81,13 @@ const Table: FC<Props> = (props: Props) => {
                   </tr>
                 ))}
 
-              {message && (
+              {!loading && message && (
                 <tr>
                   <td
                     colSpan={colHeadTabel.length}
                     className="px-6 py-4 whitespace-no-wrap"
                   >
-                    <NoResult title={message} />
+                    <NoResult title={message as string} />
                   </td>
                 </tr>
               )}

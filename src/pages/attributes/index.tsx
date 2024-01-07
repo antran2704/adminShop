@@ -14,6 +14,7 @@ import Search from "~/components/Search";
 import { Table, CelTable } from "~/components/Table";
 import { colHeaderAttribute as colHeadTable } from "~/components/Table/colHeadTable";
 import { ButtonDelete, ButtonEdit } from "~/components/Button";
+import { initPagination } from "~/components/Pagination/initData";
 
 interface ISelectAttribute {
   id: string | null;
@@ -25,17 +26,10 @@ const initSelect: ISelectAttribute = {
   title: "",
 };
 
-const initPagination: IPagination = {
-  currentPage: 1,
-  totalItems: 0,
-  pageSize: 0,
-};
-
 interface Props {
   query: ParsedUrlQuery;
 }
 
-// Title for tabel
 const AttributesPage = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? query.page : 1;

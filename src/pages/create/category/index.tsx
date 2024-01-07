@@ -2,9 +2,7 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
-import { axiosGet, axiosPost } from "~/ultils/configAxios";
 import { IDataCategory, ICategorySelect, IObjectCategory } from "~/interface";
-import { uploadImageOnServer } from "~/helper/handleImage";
 import FormLayout from "~/layouts/FormLayout";
 import { InputText } from "~/components/InputField";
 import Tree from "~/components/Tree";
@@ -13,6 +11,12 @@ import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import generalBreadcrumbs from "~/helper/generateBreadcrumb";
 import Loading from "~/components/Loading";
+import {
+  createCategory,
+  getAllCategories,
+  getParentCategories,
+  uploadThumbnailCategory,
+} from "~/api-client";
 
 const initData: IDataCategory = {
   parent_id: null,
@@ -38,6 +42,9 @@ const CreateCategoryPage = () => {
     title: null,
     node_id: null,
   });
+
+  // console.log("categories:::", categories);
+  // console.log("categoriesParent:::", categoriesParent);
 
   const [thumbnail, setThumbnail] = useState<string | null>(null);
 
@@ -73,10 +80,7 @@ const CreateCategoryPage = () => {
       setLoadingThumbnail(true);
 
       try {
-        const { status, payload } = await uploadImageOnServer(
-          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/categories/uploadThumbnail`,
-          formData
-        );
+        const { status, payload } = await uploadThumbnailCategory(formData);
 
         if (status === 201) {
           setThumbnail(payload);
@@ -133,7 +137,7 @@ const CreateCategoryPage = () => {
         categories
       );
 
-      const payload = await axiosPost("/categories", {
+      const payload = await createCategory({
         title: data.title,
         description: data.description,
         meta_title: data.title,
@@ -163,7 +167,7 @@ const CreateCategoryPage = () => {
   const handleGetCategories = async () => {
     let data: IObjectCategory = {};
     try {
-      const response = await axiosGet("categories");
+      const response = await getAllCategories();
 
       for (const item of response.payload) {
         const { _id, parent_id, title, childrens, slug } = item;
@@ -178,7 +182,7 @@ const CreateCategoryPage = () => {
 
   const handleGetCategoriesParent = async () => {
     try {
-      const response = await axiosGet("categories/parent");
+      const response = await getParentCategories();
       const data = response.payload.map((item: any) => item._id);
 
       setCategoriesParent(data);

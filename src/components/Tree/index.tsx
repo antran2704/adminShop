@@ -8,11 +8,13 @@ interface Props {
   categories: any;
   categoriesParent: any;
   categorySelect: ICategorySelect;
+  defaultSelect?: ICategorySelect;
+  checkOnMove?: boolean;
   onSelect: (title: string | null, node_id: string | null) => void;
 }
 
 const Tree = (props: Props) => {
-  const { node_id, categories, categoriesParent, categorySelect, onSelect } =
+  const { node_id, checkOnMove = false, categories, categoriesParent, categorySelect, defaultSelect, onSelect } =
     props;
   const [item] = useState(categories[node_id]);
   return (
@@ -22,10 +24,12 @@ const Tree = (props: Props) => {
           title={"Home"}
           parent_id={null}
           node_id={"Home"}
+          checkOnMove={checkOnMove}
           childrens={categoriesParent}
           categories={categories}
           categoriesParent={categoriesParent}
           categorySelect={categorySelect}
+          defaultSelect={defaultSelect}
           onSelect={onSelect}
         />
       )}
@@ -35,10 +39,12 @@ const Tree = (props: Props) => {
           title={item.title}
           parent_id={item.parent_id}
           node_id={item._id}
+          checkOnMove={checkOnMove}
           childrens={item.childrens}
           categories={categories}
           categoriesParent={categoriesParent}
           categorySelect={categorySelect}
+          defaultSelect={defaultSelect}
           onSelect={onSelect}
         />
       )}

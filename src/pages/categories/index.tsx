@@ -1,9 +1,7 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { useState, useEffect, Fragment, useCallback, ChangeEvent } from "react";
+import { useState, useEffect, Fragment, useCallback } from "react";
 import { toast } from "react-toastify";
-
-import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
@@ -17,6 +15,13 @@ import Search from "~/components/Search";
 import { Table, CelTable } from "~/components/Table";
 import { colHeadCategory as colHeadTable } from "~/components/Table/colHeadTable";
 import { ButtonDelete, ButtonEdit } from "~/components/Button";
+import { initPagination } from "~/components/Pagination/initData";
+import {
+  deleteCategory,
+  getCategories,
+  getCategoriesWithFilter,
+  updateCategory,
+} from "~/api-client";
 
 interface ISelectCategory {
   id: string;
@@ -25,19 +30,13 @@ interface ISelectCategory {
   thumbnail: string;
 }
 
-const initPagination: IPagination = {
-  currentPage: 1,
-  totalItems: 0,
-  pageSize: 0,
-};
-
 interface Props {
   query: ParsedUrlQuery;
 }
 
 const CategoriesPage = (props: Props) => {
   const { query } = props;
-  const currentPage = query.page ? query.page : 1;
+  const currentPage = query.page ? Number(query.page) : 1;
 
   const [categories, setCategories] = useState<IDataCategory[]>([]);
   const [selectCategories, setSelectCategories] = useState<string[]>([]);
@@ -84,9 +83,7 @@ const CategoriesPage = (props: Props) => {
     }
 
     try {
-      const payload = await axiosPatch(`/categories/${id}`, {
-        public: status,
-      });
+      const payload = await updateCategory(id, { public: status });
 
       if (payload.status === 201) {
         toast.success("Success updated category", {
@@ -123,7 +120,7 @@ const CategoriesPage = (props: Props) => {
     setLoading(true);
 
     try {
-      const response = await axiosGet(`/categories?page=${currentPage}`);
+      const response = await getCategories(currentPage);
       if (response.status === 200) {
         if (response.payload.length === 0) {
           setCategories([]);
@@ -150,7 +147,6 @@ const CategoriesPage = (props: Props) => {
         setLoading(false);
       }
     } catch (error) {
-      console.log(error);
       setMessage("Error in server");
       setLoading(false);
       toast.error("Error in server, please try again", {
@@ -164,9 +160,7 @@ const CategoriesPage = (props: Props) => {
     setLoading(true);
 
     try {
-      const response = await axiosGet(
-        `/categories/search?search=${filter?.search || ""}&page=${currentPage}`
-      );
+      const response = await getCategoriesWithFilter(filter, currentPage);
       if (response.status === 200) {
         if (response.payload.length === 0) {
           setCategories([]);
@@ -193,7 +187,6 @@ const CategoriesPage = (props: Props) => {
         setLoading(false);
       }
     } catch (error) {
-      console.log(error);
       setMessage("Error in server");
       toast.error("Error in server, please try again", {
         position: toast.POSITION.TOP_RIGHT,
@@ -213,7 +206,7 @@ const CategoriesPage = (props: Props) => {
 
     try {
       await deleteImageInSever(selectItem.thumbnail);
-      await axiosDelete(`/categories/${selectItem.id}`);
+      await deleteCategory(selectItem.id);
       setShowPopup(false);
 
       if (filter) {
@@ -311,7 +304,7 @@ const CategoriesPage = (props: Props) => {
                   value={item.createdAt}
                 />
                 <CelTable type={typeCel.GROUP}>
-                  <div className="flex items-center justify-end gap-2">
+                  <div className="flex items-center justify-center gap-2">
                     <ButtonEdit link={`/edit/category/${item._id}`} />
 
                     <ButtonDelete

@@ -71,9 +71,11 @@ const ShowItemsLayout = (props: Props) => {
       <Fragment>
         {children}
 
-        {pagination.totalItems > pagination.pageSize && (
-          <Pagination pagination={pagination} />
-        )}
+        {pagination.totalItems > pagination.pageSize &&
+          pagination.currentPage <=
+            Math.ceil(pagination.totalItems / pagination.pageSize) && (
+            <Pagination pagination={pagination} />
+          )}
       </Fragment>
 
       {showPopup && selectItem?.id && handlePopup && (

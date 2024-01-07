@@ -28,7 +28,7 @@ interface IDataCategory {
   meta_description?: string;
   public: boolean;
   thumbnail: string | null;
-  breadcrumbs?: IBreadcrumbCategory[] | [];
+  breadcrumbs?: IBreadcrumbCategory[] | string[];
   createdAt?: string;
 }
 

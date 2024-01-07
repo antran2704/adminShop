@@ -8,8 +8,8 @@ import {
   StyleSheet,
   PDFViewer,
 } from "@react-pdf/renderer";
-import { currencyFormat } from "~/helper/currencyFormat";
 import { getDateTime } from "~/helper/datetime";
+import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { IOrder, IItemOrder } from "~/interface/order";
 
 interface Props {
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     gap: "2",
   },
   justifyContent_between: {
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   content: {
     fontSize: 12,
@@ -136,8 +136,8 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "flex-end"
-  }
+    justifyContent: "flex-end",
+  },
 });
 
 // Create Document Component
@@ -247,10 +247,10 @@ const PDFDocument = (props: Props) => {
                     {item.quantity}
                   </Text>
                   <Text style={[styles.col, styles.textCenter]}>
-                    {currencyFormat(item.price)} VND
+                    {formatBigNumber(item.price)} VND
                   </Text>
                   <Text style={[styles.col, styles.textCenter]}>
-                    {currencyFormat(item.price * item.quantity)} VND
+                    {formatBigNumber(item.price * item.quantity)} VND
                   </Text>
                 </View>
               ))}
@@ -261,26 +261,34 @@ const PDFDocument = (props: Props) => {
             <View style={styles.groupContent}>
               <View />
               <View>
-                <View style={[styles.wrapContent, styles.justifyContent_between]}>
+                <View
+                  style={[styles.wrapContent, styles.justifyContent_between]}
+                >
                   <Text style={[styles.title, styles.footerTitle]}>
                     Total Amount:
                   </Text>
                   <Text style={styles.content}>
-                    {currencyFormat(data.sub_total)} VND
+                    {formatBigNumber(data.sub_total)} VND
                   </Text>
                 </View>
-                <View style={[styles.wrapContent, styles.justifyContent_between]}>
+                <View
+                  style={[styles.wrapContent, styles.justifyContent_between]}
+                >
                   <Text style={[styles.title, styles.footerTitle]}>
                     Discount:
                   </Text>
-                  <Text style={styles.content}>- {currencyFormat(300)} VND</Text>
+                  <Text style={styles.content}>
+                    - {formatBigNumber(300)} VND
+                  </Text>
                 </View>
-                <View style={[styles.wrapContent, styles.justifyContent_between]}>
+                <View
+                  style={[styles.wrapContent, styles.justifyContent_between]}
+                >
                   <Text style={[styles.title, styles.footerTitle]}>
                     Shipping cost:
                   </Text>
                   <Text style={styles.content}>
-                    {currencyFormat(data.shipping_cost)} VND
+                    {formatBigNumber(data.shipping_cost)} VND
                   </Text>
                 </View>
                 <View
@@ -293,7 +301,7 @@ const PDFDocument = (props: Props) => {
                 >
                   <Text style={[styles.title, styles.footerTitle]}>Total:</Text>
                   <Text style={styles.content}>
-                    {currencyFormat(data.total)} VND
+                    {formatBigNumber(data.total)} VND
                   </Text>
                 </View>
               </View>

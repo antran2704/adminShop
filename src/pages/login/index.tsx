@@ -149,7 +149,7 @@ const LoginPage = () => {
 
               <div className="flex items-center justify-center">
                 <Link
-                  className="block underline hover:text-primary my-5"
+                  className="block hover:underline hover:text-primary my-5"
                   href="/password/reset"
                 >
                   Quên mật khẩu

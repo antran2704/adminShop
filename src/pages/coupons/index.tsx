@@ -6,7 +6,6 @@ import {
   useContext,
   Fragment,
   useCallback,
-  ChangeEvent,
 } from "react";
 import { toast } from "react-toastify";
 
@@ -30,22 +29,16 @@ import { ButtonDelete, ButtonEdit } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
 import Link from "next/link";
 import { SelectDate } from "~/components/Select";
-import { useAppSelector } from "~/store/hooks";
 import { AuthContex, IAuthContext } from "~/layouts/DefaultLayout";
 import { AxiosError, AxiosResponse } from "axios";
 import { getCookies } from "cookies-next";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
+import { initPagination } from "~/components/Pagination/initData";
 
 interface ISelectCoupon {
   id: string;
   title: string;
 }
-
-const initPagination: IPagination = {
-  currentPage: 1,
-  totalItems: 0,
-  pageSize: 0,
-};
 
 interface Props {
   query: ParsedUrlQuery;

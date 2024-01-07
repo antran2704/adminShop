@@ -26,17 +26,12 @@ import { ButtonDelete, ButtonEdit } from "~/components/Button";
 import Link from "next/link";
 import { AuthContex, IAuthContext } from "~/layouts/DefaultLayout";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
+import { initPagination } from "~/components/Pagination/initData";
 
 interface ISelectProduct {
   id: string | null;
   title: string;
 }
-
-const initPagination: IPagination = {
-  currentPage: 1,
-  totalItems: 0,
-  pageSize: 0,
-};
 
 const initSelectProduct: ISelectProduct = {
   id: null,
@@ -48,9 +43,6 @@ interface Props {
 }
 
 const ProductPage = (props: Props) => {
-  const { handleCheckLogin, handleRefreshToken } =
-    useContext<IAuthContext>(AuthContex);
-
   const { query } = props;
   const currentPage = query.page ? query.page : 1;
   const [categories, setCategories] = useState<ISelectItem[]>([]);

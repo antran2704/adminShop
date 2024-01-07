@@ -3,15 +3,18 @@ import { AiOutlinePlus, AiOutlineMinus, AiOutlineFile } from "react-icons/ai";
 
 import Tree from ".";
 import { ICategorySelect } from "~/interface/category";
+import { toast } from "react-toastify";
 
 interface Props {
   parent_id: string | null;
   node_id: string;
   title: string;
   childrens: string[];
+  checkOnMove?: boolean;
   categories: any;
   categoriesParent: any;
   categorySelect: ICategorySelect;
+  defaultSelect?: ICategorySelect;
   onSelect: (title: string | null, node_id: string | null) => void;
 }
 
@@ -22,8 +25,10 @@ const TreeNode = (props: Props) => {
     node_id,
     childrens,
     categories,
+    checkOnMove = false,
     categoriesParent,
     categorySelect,
+    defaultSelect,
     onSelect,
   } = props;
   const [open, setOpen] = useState<boolean>(false);
@@ -35,9 +40,17 @@ const TreeNode = (props: Props) => {
   const handleSelect = () => {
     if (!parent_id && title === "Home") {
       onSelect("Home", null);
-    } else {
-      onSelect(title, node_id);
+      return;
     }
+
+    if (checkOnMove && defaultSelect) {
+      toast.success("Can't move parent category into children category", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      return;
+    }
+    onSelect(title, node_id);
   };
 
   return (
@@ -45,6 +58,8 @@ const TreeNode = (props: Props) => {
       <div
         className={`flex items-center w-fit ${
           categorySelect.title === title && "bg-primary text-white"
+        } ${
+          defaultSelect?.node_id === node_id && "bg-success text-white"
         } cursor-pointer px-3 py-1 rounded-md gap-2`}
       >
         {childrens.length === 0 && <AiOutlineFile className="text-lg w-5" />}
@@ -64,6 +79,8 @@ const TreeNode = (props: Props) => {
               key={item}
               parent_id={node_id}
               node_id={item}
+              checkOnMove={(defaultSelect && defaultSelect.node_id === item) ? true : checkOnMove}
+              defaultSelect={defaultSelect}
               categories={categories}
               categoriesParent={categoriesParent}
               categorySelect={categorySelect}
