@@ -30,7 +30,7 @@ const updateOrder = async (
   status: statusOrder,
   options?: Partial<IOrderCancle>
 ) => {
-  return await axiosPatch(`orders/status/${order_id}`, {
+  return await axiosPatch(`/orders/status/${order_id}`, {
     status,
     ...options,
   });

@@ -1,9 +1,8 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { useState, useEffect, Fragment, useCallback, ChangeEvent } from "react";
+import { useState, useEffect, Fragment, useCallback } from "react";
 import { toast } from "react-toastify";
 
-import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
 import { typeCel } from "~/enums";
 
 import { IAttribute, IFilter, IPagination } from "~/interface";
@@ -15,6 +14,12 @@ import { Table, CelTable } from "~/components/Table";
 import { colHeaderAttribute as colHeadTable } from "~/components/Table/colHeadTable";
 import { ButtonDelete, ButtonEdit } from "~/components/Button";
 import { initPagination } from "~/components/Pagination/initData";
+import {
+  deleteAttribute,
+  getAttributes,
+  getAttributesWithFilter,
+  updateAttribute,
+} from "~/api-client";
 
 interface ISelectAttribute {
   id: string | null;
@@ -32,7 +37,7 @@ interface Props {
 
 const AttributesPage = (props: Props) => {
   const { query } = props;
-  const currentPage = query.page ? query.page : 1;
+  const currentPage = query.page ? Number(query.page) : 1;
 
   const [attributes, setAttribute] = useState<IAttribute[]>([]);
   const [selectAttributes, setSelectAttributes] = useState<string[]>([]);
@@ -79,9 +84,7 @@ const AttributesPage = (props: Props) => {
     }
 
     try {
-      const payload = await axiosPatch(`/attributes/${id}`, {
-        public: status,
-      });
+      const payload = await updateAttribute(id, { public: status });
 
       if (payload.status === 201) {
         toast.success("Success updated attribute", {
@@ -114,7 +117,7 @@ const AttributesPage = (props: Props) => {
     setLoading(true);
 
     try {
-      const response = await axiosGet(`/attributes?page=${currentPage}`);
+      const response = await getAttributes(currentPage);
       if (response.status === 200) {
         if (response.payload.length === 0) {
           setAttribute([]);
@@ -148,9 +151,7 @@ const AttributesPage = (props: Props) => {
     setLoading(true);
 
     try {
-      const response = await axiosGet(
-        `/attributes/search?search=${filter?.search || ""}&page=${currentPage}`
-      );
+      const response = await getAttributesWithFilter(filter, currentPage);
       if (response.status === 200) {
         if (response.payload.length === 0) {
           setAttribute([]);
@@ -189,7 +190,7 @@ const AttributesPage = (props: Props) => {
     }
 
     try {
-      await axiosDelete(`/attributes/${selectItem.id}`);
+      await deleteAttribute(selectItem.id as string);
       setShowPopup(false);
 
       if (filter) {
@@ -269,6 +270,7 @@ const AttributesPage = (props: Props) => {
                 <CelTable
                   type={typeCel.LINK}
                   value={item.name}
+                  center={true}
                   href={`/attributes/${item._id}`}
                   className="hover:text-primary"
                 />

@@ -5,8 +5,6 @@ import { useState, useEffect, useCallback, Fragment } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 
-import { axiosGet, axiosPatch, axiosPost } from "~/ultils/configAxios";
-
 import {
   ICategorySelect,
   IObjectCategory,
@@ -19,6 +17,7 @@ import {
   IVariantProduct,
   IOptionProduct,
   IValueOption,
+  ISendProduct,
 } from "~/interface";
 
 import { typeCel } from "~/enums";
@@ -41,6 +40,14 @@ import { CelTable, Table } from "~/components/Table";
 import Popup from "~/components/Popup";
 import { ButtonDelete } from "~/components/Button";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
+import {
+  createVariations,
+  getAllCategories,
+  getAttributesAvailable,
+  getParentCategories,
+  getProduct,
+  updateProduct,
+} from "~/api-client";
 
 enum TYPE_TAG {
   BASIC_INFOR = "basic_infor",
@@ -187,11 +194,10 @@ const ProductEditPage = (props: Props) => {
       const currentShowAttributes = showAttributes;
       Object.keys(attributes).forEach((id: string) => {
         const attribute: IAttribute = attributes[id];
-        console.log(attribute);
         currentShowAttributes[attribute.code] = [];
 
         if (items.length > 0) {
-          attribute.variants.forEach((item: IVariant) => {
+          attribute.variants.forEach((item: any) => {
             currentShowAttributes[attribute.code].push({
               _id: item._id,
               title: item.name,
@@ -601,7 +607,7 @@ const ProductEditPage = (props: Props) => {
       let inventory: number = 0;
 
       if (variants.length > 0) {
-        const variationsRes = await axiosPost("/variations", variants);
+        const variationsRes = await createVariations(variants);
 
         if (variationsRes.status !== 201) {
           toast.error("Error in updated variations", {
@@ -625,7 +631,7 @@ const ProductEditPage = (props: Props) => {
         inventory = product.inventory;
       }
 
-      const payload = await axiosPatch(`/products/${id}`, {
+      const sendData: ISendProduct = {
         title: product.title,
         description: product.description,
         shortDescription: product.shortDescription,
@@ -633,8 +639,8 @@ const ProductEditPage = (props: Props) => {
         meta_description: product.description,
         thumbnail,
         gallery,
-        category: defaultCategory,
-        categories: categoriesProduct,
+        category: defaultCategory as string,
+        categories: categoriesProduct as string[],
         breadcrumbs,
         specifications,
         price: product.price,
@@ -645,7 +651,9 @@ const ProductEditPage = (props: Props) => {
         options: optionsProduct,
         sku: product.sku,
         barcode: product.barcode,
-      });
+      };
+
+      const payload = await updateProduct(id as string, sendData);
 
       if (payload.status === 201) {
         toast.success("Success updated product", {
@@ -665,7 +673,7 @@ const ProductEditPage = (props: Props) => {
     setLoading(true);
 
     try {
-      const { payload, status } = await axiosGet(`/products/id/${id}`);
+      const { payload, status } = await getProduct(id as string);
 
       const {
         title,
@@ -769,7 +777,7 @@ const ProductEditPage = (props: Props) => {
     setLoading(true);
 
     try {
-      const { status, payload } = await axiosGet(`/attributes/available`);
+      const { status, payload } = await getAttributesAvailable();
 
       if (status === 200) {
         let attributesPayload: IObjAttibute = {};
@@ -812,7 +820,7 @@ const ProductEditPage = (props: Props) => {
   const handleGetCategories = async () => {
     let data: IObjectCategory = {};
     try {
-      const response = await axiosGet("categories");
+      const response = await getAllCategories({ title: "1", childrens: "1" });
 
       for (const item of response.payload) {
         const { _id, parent_id, title, childrens, slug } = item;
@@ -827,7 +835,7 @@ const ProductEditPage = (props: Props) => {
 
   const handleGetCategoriesParent = async () => {
     try {
-      const response = await axiosGet("categories/parent");
+      const response = await getParentCategories();
       const data = response.payload.map((item: any) => item._id);
       setCategoriesParent(data);
     } catch (error) {
@@ -1014,7 +1022,7 @@ const ProductEditPage = (props: Props) => {
                 width="lg:w-2/4 w-full"
                 readonly={variants.length > 0 ? true : false}
                 infor="If product have variations, you can't edit input"
-                value={product.inventory.toString()}
+                value={formatBigNumber(product.inventory)}
                 error={fieldsCheck.includes("inventory")}
                 name="inventory"
                 getValue={changePrice}
@@ -1039,6 +1047,14 @@ const ProductEditPage = (props: Props) => {
                 name="barcode"
                 placeholder="Bar code..."
                 getValue={changeValue}
+              />
+
+              <InputNumber
+                title="Sold"
+                width="lg:w-2/4 w-full"
+                value={product.sold.toString()}
+                name="sold"
+                readonly={true}
               />
             </div>
 

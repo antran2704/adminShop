@@ -2,18 +2,17 @@ import { useRouter } from "next/router";
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 
-import { axiosGet, axiosPost } from "~/ultils/configAxios";
-
 import {
   ICategorySelect,
   IObjectCategory,
   ICreateProduct,
   ISelectItem,
   ISpecificationsProduct,
+  ISendProduct,
 } from "~/interface";
-import { deleteImageInSever, uploadImageOnServer } from "~/helper/handleImage";
+import { deleteImageInSever } from "~/helper/handleImage";
 import FormLayout from "~/layouts/FormLayout";
-import {InputText, InputNumber, InputTextarea} from "~/components/InputField";
+import { InputText, InputNumber, InputTextarea } from "~/components/InputField";
 import Tree from "~/components/Tree";
 import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
@@ -25,6 +24,12 @@ import generalBreadcrumbs from "~/helper/generateBreadcrumb";
 import Specifications from "~/components/Specifications";
 import Loading from "~/components/Loading";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
+import {
+  createProduct,
+  getAllCategories,
+  getParentCategories,
+  uploadThumbnailProduct,
+} from "~/api-client";
 
 const initData: ICreateProduct = {
   title: "",
@@ -184,10 +189,7 @@ const CreateProductPage = () => {
         setLoadingThumbnail(true);
 
         try {
-          const { status, payload } = await uploadImageOnServer(
-            `${process.env.NEXT_PUBLIC_ENDPOINT_API}/products/uploadImage`,
-            formData
-          );
+          const { status, payload } = await uploadThumbnailProduct(formData);
 
           if (status === 201) {
             setThumbnail(payload);
@@ -213,10 +215,7 @@ const CreateProductPage = () => {
         setLoadingGallery(true);
 
         try {
-          const { status, payload } = await uploadImageOnServer(
-            `${process.env.NEXT_PUBLIC_ENDPOINT_API}/products/uploadImage`,
-            formData
-          );
+          const { status, payload } = await uploadThumbnailProduct(formData);
 
           if (status === 201) {
             setGallery([...gallery, payload]);
@@ -318,7 +317,7 @@ const CreateProductPage = () => {
         }
       );
 
-      const payload = await axiosPost("/products", {
+      const sendData: ISendProduct = {
         title: product.title,
         description: product.description,
         shortDescription: product.shortDescription,
@@ -326,8 +325,8 @@ const CreateProductPage = () => {
         meta_description: product.description,
         thumbnail,
         gallery,
-        category: defaultCategory,
-        categories: categoriesProduct,
+        category: defaultCategory as string,
+        categories: categoriesProduct as string[],
         breadcrumbs,
         specifications,
         price: product.price,
@@ -336,7 +335,10 @@ const CreateProductPage = () => {
         public: product.public,
         sku: product.sku,
         barcode: product.barcode,
-      });
+        options: [],
+      };
+
+      const payload = await createProduct(sendData);
 
       if (payload.status === 201) {
         toast.success("Success create product", {
@@ -357,7 +359,7 @@ const CreateProductPage = () => {
   const handleGetCategories = async () => {
     let data: IObjectCategory = {};
     try {
-      const response = await axiosGet("categories");
+      const response = await getAllCategories({ title: "1", childrens: "1" });
 
       for (const item of response.payload) {
         const { _id, parent_id, title, childrens, slug } = item;
@@ -372,7 +374,7 @@ const CreateProductPage = () => {
 
   const handleGetCategoriesParent = async () => {
     try {
-      const response = await axiosGet("categories/parent");
+      const response = await getParentCategories();
       const data = response.payload.map((item: any) => item._id);
 
       setCategoriesParent(data);
@@ -507,7 +509,7 @@ const CreateProductPage = () => {
           <InputNumber
             title="Inventory"
             width="lg:w-2/4 w-full"
-            value={product.inventory.toString()}
+            value={formatBigNumber(product.inventory)}
             error={fieldsCheck.includes("inventory")}
             name="inventory"
             getValue={changePrice}
@@ -532,14 +534,6 @@ const CreateProductPage = () => {
             name="barcode"
             placeholder="Bar code..."
             getValue={changeValue}
-          />
-
-          <InputNumber
-            title="Sold"
-            width="lg:w-2/4 w-full"
-            value={product.sold.toString()}
-            name="sold"
-            readonly={true}
           />
         </div>
 

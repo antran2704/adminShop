@@ -18,4 +18,11 @@ interface IAttribute {
   updateAt?: string;
 }
 
-export type { IVariant, IAttribute, INewVariant };
+interface ISendAttribute {
+  code: string;
+  name: string;
+  variants: Omit<IVariant, "_id">[];
+  public: boolean;
+}
+
+export type { IVariant, IAttribute, INewVariant, ISendAttribute };

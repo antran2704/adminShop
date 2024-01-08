@@ -4,7 +4,6 @@ import { ParsedUrlQuery } from "querystring";
 import { useState, useEffect, Fragment, useCallback } from "react";
 import { toast } from "react-toastify";
 
-import { axiosGet, axiosPatch, axiosPost } from "~/ultils/configAxios";
 import { typeCel } from "~/enums";
 
 import { INewVariant, IVariant } from "~/interface";
@@ -16,10 +15,16 @@ import { Table, CelTable } from "~/components/Table";
 import { colHeaderAttributeValue as colHeadTable } from "~/components/Table/colHeadTable";
 import { IPagination } from "~/interface/pagination";
 import PopupForm from "~/components/Popup/PopupForm";
-import {InputText} from "~/components/InputField";
+import { InputText } from "~/components/InputField";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { ButtonDelete, ButtonEdit } from "~/components/Button";
 import Loading from "~/components/Loading";
+import {
+  createChildAttribute,
+  deleteChildAttribute,
+  getChildAttributes,
+  updateChildAttribute,
+} from "~/api-client";
 
 interface ISelectAttribute {
   id: string | null;
@@ -61,7 +66,7 @@ const AttributeValuesPage = (props: Props) => {
   const [showFormCreate, setShowFormCreate] = useState<boolean>(false);
   const [newVarinat, setNewVariant] = useState<INewVariant>(initNewVariant);
   const [selectItem, setSelectItem] = useState<ISelectAttribute>(initSelect);
-  const [pagination, setPagination] = useState<IPagination>(initPagination);
+  const [pagination] = useState<IPagination>(initPagination);
 
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
 
@@ -116,8 +121,7 @@ const AttributeValuesPage = (props: Props) => {
     }
 
     try {
-      const payload = await axiosPatch(`/attributes/child/${id}`, {
-        children_id,
+      const payload = await updateChildAttribute(id as string, children_id, {
         ...data,
         public: status,
       });
@@ -157,11 +161,14 @@ const AttributeValuesPage = (props: Props) => {
     }
     setLoading(true);
     try {
-      const payload = await axiosPatch(`/attributes/child/${id}`, {
-        children_id: selectItem.id,
-        name: selectItem.title,
-        public: selectItem.public,
-      });
+      const payload = await updateChildAttribute(
+        id as string,
+        selectItem.id as string,
+        {
+          name: selectItem.title,
+          public: selectItem.public,
+        }
+      );
 
       if (payload.status === 201) {
         toast.success("Success updated attribute", {
@@ -188,7 +195,10 @@ const AttributeValuesPage = (props: Props) => {
   const checkData = (data: any) => {
     let fields = handleCheckFields(data);
     setFieldsCheck(fields);
-    router.push(`#${fields[0]}`);
+    if (fields.length > 0) {
+      router.push(`#${fields[0]}`);
+    }
+
     return fields;
   };
 
@@ -225,7 +235,7 @@ const AttributeValuesPage = (props: Props) => {
     setLoadingTable(true);
 
     try {
-      const response = await axiosGet(`/attributes/${id}`);
+      const response = await getChildAttributes(id as string);
       if (response.status === 200) {
         if (response.payload.variants.length === 0) {
           setAttribute([]);
@@ -243,7 +253,6 @@ const AttributeValuesPage = (props: Props) => {
             };
           }
         );
-        // setPagination(response.pagination);
         setAttribute(data);
         setLoadingTable(false);
       }
@@ -264,10 +273,7 @@ const AttributeValuesPage = (props: Props) => {
     }
 
     try {
-      await axiosPatch(`/attributes/child/delete`, {
-        parent_id: id,
-        children_id: selectItem.id,
-      });
+      await deleteChildAttribute(id as string, selectItem.id as string);
       setShowPopup(false);
       handleGetData();
       toast.success("Success delete attribute value", {
@@ -298,7 +304,7 @@ const AttributeValuesPage = (props: Props) => {
     }
 
     try {
-      const payload = await axiosPost(`variants/child/${id}`, {
+      const payload = await createChildAttribute(id as string, {
         name: newVarinat.name,
         public: newVarinat.public,
       });

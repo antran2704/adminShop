@@ -9,8 +9,8 @@ import FormLayout from "~/layouts/FormLayout";
 import { IAttribute, ISelectItem } from "~/interface";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import MultipleValue from "~/components/InputField/MultipleValue";
-import { axiosPost } from "~/ultils/configAxios";
 import Loading from "~/components/Loading";
+import { createdAttribute } from "~/api-client";
 
 const initData: IAttribute = {
   _id: "",
@@ -69,7 +69,7 @@ const CreateAttributePage = () => {
   const generateAttributes = (attributes: ISelectItem[]) => {
     return attributes.map((attribute) => ({
       name: attribute.title,
-      publish: true,
+      public: true,
     }));
   };
 
@@ -100,12 +100,12 @@ const CreateAttributePage = () => {
     setLoading(true);
 
     try {
-      const payload = await axiosPost("/attributes", {
+      const payload = await createdAttribute({
         name: data.name,
         code: data.code,
         variants: generateAttributes(data.variants as ISelectItem[]),
         public: data.public,
-      });
+      })
 
       if (payload.status === 201) {
         toast.success("Success create attribute", {
@@ -130,7 +130,7 @@ const CreateAttributePage = () => {
       onSubmit={handleOnSubmit}
     >
       <div>
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">
+        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
           <InputText
             title="Attribute Title"
             width="lg:w-2/4 w-full"

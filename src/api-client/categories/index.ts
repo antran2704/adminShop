@@ -1,5 +1,7 @@
+import qs from "qs";
+
 import { uploadImageOnServer } from "~/helper/handleImage";
-import { IDataCategory, IFilter } from "~/interface";
+import { IDataCategory, IFilter, IQueryParam } from "~/interface";
 import {
   axiosDelete,
   axiosGet,
@@ -15,13 +17,15 @@ const getCategory = async (category_id: string) => {
   return await axiosGet(`/categories/id/${category_id}`);
 };
 
-
 const getParentCategories = async () => {
   return await axiosGet("categories/parent");
 };
 
-const getAllCategories = async () => {
-  return await axiosGet(`/categories`);
+const getAllCategories = async (
+  select?: IQueryParam<Partial<IDataCategory>>
+) => {
+  const parseQuery = qs.stringify(select);
+  return await axiosGet(`/categories/all?${parseQuery}`);
 };
 
 const getCategoriesWithFilter = async (

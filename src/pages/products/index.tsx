@@ -1,16 +1,8 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import {
-  useState,
-  useEffect,
-  Fragment,
-  useCallback,
-  ChangeEvent,
-  useContext,
-} from "react";
+import { useState, useEffect, Fragment, useCallback } from "react";
 import { toast } from "react-toastify";
 
-import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
 import { typeCel } from "~/enums";
 
 import { IFilter, IPagination, IProductHome, IDataCategory } from "~/interface";
@@ -24,9 +16,15 @@ import SelectItem from "~/components/Select/SelectItem";
 import ImageCus from "~/components/Image/ImageCus";
 import { ButtonDelete, ButtonEdit } from "~/components/Button";
 import Link from "next/link";
-import { AuthContex, IAuthContext } from "~/layouts/DefaultLayout";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { initPagination } from "~/components/Pagination/initData";
+import {
+  deleteProduct,
+  getAllCategories,
+  getProducts,
+  getProductsWithFilter,
+  updateProduct,
+} from "~/api-client";
 
 interface ISelectProduct {
   id: string | null;
@@ -44,7 +42,7 @@ interface Props {
 
 const ProductPage = (props: Props) => {
   const { query } = props;
-  const currentPage = query.page ? query.page : 1;
+  const currentPage = query.page ? Number(query.page) : 1;
   const [categories, setCategories] = useState<ISelectItem[]>([]);
   const [products, setProducts] = useState<IProductHome[]>([]);
   const [selectProduct, setSelectProduct] =
@@ -91,11 +89,7 @@ const ProductPage = (props: Props) => {
     setLoading(true);
 
     try {
-      const response = await axiosGet(
-        `/products/search?search=${filter?.search || ""}&category=${
-          filter?.category || ""
-        }&page=${currentPage}`
-      );
+      const response = await getProductsWithFilter(filter, currentPage);
 
       if (response.status === 200) {
         if (response.payload.length === 0) {
@@ -141,9 +135,7 @@ const ProductPage = (props: Props) => {
     }
 
     try {
-      const payload = await axiosPatch(`/products/${id}`, {
-        public: status,
-      });
+      const payload = await updateProduct(id, { public: status });
 
       if (payload.status === 201) {
         toast.success("Success updated product", {
@@ -167,7 +159,7 @@ const ProductPage = (props: Props) => {
     setLoading(true);
 
     try {
-      const response = await axiosGet(`/products?page=${currentPage}`);
+      const response = await getProducts(currentPage);
       if (response.status === 200) {
         if (response.payload.length === 0) {
           setProducts([]);
@@ -206,7 +198,9 @@ const ProductPage = (props: Props) => {
 
   const handleGetCategories = async () => {
     try {
-      const response = await axiosGet(`/categories/all?title=1`);
+      const response = await getAllCategories({
+        title: "1",
+      });
       if (response.status === 200) {
         if (response.payload.length === 0) {
           setCategories([]);
@@ -254,7 +248,7 @@ const ProductPage = (props: Props) => {
     }
 
     try {
-      const response = await axiosDelete(`/products/${selectProduct.id}`);
+      const response = await deleteProduct(selectProduct.id);
       setShowPopup(false);
 
       if (response.status === 201) {

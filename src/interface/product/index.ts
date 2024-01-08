@@ -25,6 +25,8 @@ interface ISpecificationsProduct {
 interface IProduct {
   _id: string | null;
   title: string;
+  meta_title?: string;
+  meta_description?: string;
   thumbnail: string | null;
   barcode: string | null;
   sku: string | null;
@@ -53,8 +55,8 @@ interface IProductData extends IProduct {
   description: string;
   options: IOptionProduct[];
   gallery: string[];
-  brand: string | null;
-  hotProduct: boolean | false;
+  brand?: string | null;
+  hotProduct?: boolean;
   specifications: ISpecificationsProduct[];
   viewer: number;
   rate: number;
@@ -67,6 +69,24 @@ type ICreateProduct = Omit<
   IProductData,
   "_id" | "viewer" | "rate" | "slug" | "type" | "createdAt"
 >;
+
+type ISendProduct = Omit<
+  IProductData,
+  | "_id"
+  | "viewer"
+  | "rate"
+  | "slug"
+  | "type"
+  | "createdAt"
+  | "category"
+  | "categories"
+  | "variants"
+  | "sold"
+> & {
+  category: string;
+  categories: string[];
+  variations?: string[];
+};
 
 type IProductHome = Pick<
   IProductData,
@@ -87,6 +107,7 @@ export type {
   IOptionProduct,
   ISpecificationsProduct,
   ICreateProduct,
+  ISendProduct,
   ISpecificationAttributes,
   IValueOption,
 };
