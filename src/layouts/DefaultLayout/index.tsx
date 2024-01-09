@@ -16,7 +16,7 @@ import { AxiosResponseCus } from "~/interface";
 export interface IAuthContext {
   handleCheckLogin: () => Promise<AxiosResponseCus | undefined>;
   handleRefreshToken: () => Promise<AxiosResponseCus | undefined>;
-  checkAuth: () => Promise<AxiosResponseCus | undefined>;
+  checkAuth: () => Promise<void>;
   handleLogOut: () => void;
 }
 
@@ -27,7 +27,7 @@ export const AuthContex = createContext<IAuthContext>({
   handleRefreshToken: function (): Promise<AxiosResponseCus | undefined> {
     throw new Error("Function not implemented.");
   },
-  checkAuth: function (): Promise<AxiosResponseCus | undefined> {
+  checkAuth: function (): Promise<void> {
     throw new Error("Function not implemented.");
   },
   handleLogOut: () => {},
@@ -77,8 +77,12 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
   const handleCheckLogin = async () => {
     const { accessToken, refreshToken, publicKey } = getCookies();
 
-    if (!accessToken || !refreshToken || !publicKey) {
+    if (!refreshToken || !publicKey) {
       return { status: 401, data: { message: "Unauthor" } };
+    }
+
+    if (!accessToken) {
+      return { status: 400, data: { message: "jwt expired" } };
     }
 
     try {
@@ -121,18 +125,14 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
             (await handleRefreshToken()) as AxiosResponseCus;
 
           if (responseRefresh.status === 200) {
-            const { status, data } =
-              (await handleCheckLogin()) as AxiosResponseCus;
-
-            // setLoading(false);
-            return { status, data };
+            (await handleCheckLogin()) as AxiosResponseCus;
           }
         }
         break;
 
       case 401:
         router.push("/login");
-        return;
+        break;
 
       case 500:
         toast.error("Server is busy, please try again", {
@@ -141,7 +141,6 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
     }
 
     setLoading(false);
-    return { status, data };
   };
 
   const handleLogOut = () => {

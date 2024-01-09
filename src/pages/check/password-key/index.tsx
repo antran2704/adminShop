@@ -1,7 +1,8 @@
 import { AxiosError } from "axios";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
+import { FormEvent, useState, useEffect, Fragment } from "react";
 import { toast } from "react-toastify";
 import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
@@ -125,15 +126,21 @@ const CheckPasswordKeyPage = () => {
         setSearchParams({ email, token, key });
       }
     } catch (err) {
-      toast.error("Server is busy, please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+      const error = err as AxiosError;
+      if (error.code === "ERR_NETWORK") {
+        toast.error("Error in server, please try again", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      }
+
       setCheckError(true);
     }
     setLoadingCheck(false);
   };
 
   useEffect(() => {
+    if (!router.isReady) return;
+
     const emailParams = query.get("email");
     const tokenParams = query.get("t_k");
     const keyParams = query.get("k_y");
@@ -145,16 +152,27 @@ const CheckPasswordKeyPage = () => {
     }
 
     handleCheckKey(emailParams, tokenParams, keyParams);
-  }, []);
+  }, [router.isReady]);
+
+  if (loadingCheck) {
+    return loadingCheck && <Loading />;
+  }
 
   return (
     <div className="bg_login flex items-center justify-center h-screen">
-      <div className="lg:w-1/2 md:w-4/6 sm:w-5/6 w-full flex items-start bg-white rounded-lg shadow-xl overflow-hidden">
-        <div className="w-full md:px-10 px-5 pt-10 pb-20 ">
-          {!checkError && (
-            <div className="w-full">
+      <div className="lg:min-w-[1000px] md:w-4/6 sm:w-5/6 w-full flex items-start bg-white rounded-lg shadow-xl overflow-hidden">
+        {!checkError && (
+          <Fragment>
+            <div className="lg:block hidden">
+              <ImageCus
+                src="/reset_password.svg"
+                title="Login"
+                className="w-[500px] h-[600px]"
+              />
+            </div>
+            <div className="lg:w-6/12 w-full md:px-10 px-5 pt-10 pb-20">
               <h1 className="lg:text-3xl text-2xl w-fit font-medium mx-auto">
-                New Password
+                Reset Password
               </h1>
 
               <form onSubmit={onSubmit} method="POST" className="flex flex-col">
@@ -194,15 +212,17 @@ const CheckPasswordKeyPage = () => {
                 </div>
               </form>
             </div>
-          )}
+          </Fragment>
+        )}
 
-          {checkError && !loadingCheck && (
+        {checkError && !loadingCheck && (
+          <div className="w-full md:px-10 px-5 pt-10 pb-20 ">
             <div className="flex flex-col items-center justify-center gap-5">
-              <ImageCus className="w-20 h-20" src="/error.gif" />
+              <ImageCus className="h-[200px]" src="/404_link.svg" />
               <h1 className="lg:text-3xl text-2xl w-fit font-medium mx-auto">
                 Rất tiếc
               </h1>
-              <p className="text-base font-medium text-center">
+              <p className="w-3/4 text-base font-medium text-center">
                 Liên kết đặt lại mật khẩu không hợp lệ / đã hết hạn (chỉ hợp lệ
                 trong vòng 24 giờ), có thể do liên kết này đã được sử dụng.
               </p>
@@ -216,11 +236,9 @@ const CheckPasswordKeyPage = () => {
                 </Link>
               </p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
-
-      {loadingCheck && <Loading />}
     </div>
   );
 };

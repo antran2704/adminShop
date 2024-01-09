@@ -1,4 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
+import { getCookies, setCookie } from "cookies-next";
+import { getRefreshToken } from "~/helper/Auth";
 
 const httpConfig = axios.create({
   baseURL: process.env.NEXT_PUBLIC_ENDPOINT_API,
@@ -37,5 +39,31 @@ const axiosDelete = async (
   const payload = await httpConfig.delete(path, { ...config });
   return payload.data;
 };
+
+httpConfig.interceptors.response.use(
+  function (response) {
+    return response;
+  },
+  async (error) => {
+    const { refreshToken } = getCookies();
+    if (!refreshToken) return Promise.reject(error);
+
+    const response = error.response.data;
+
+    if (
+      response.status === 400 &&
+      (response.message === "invalid signature" ||
+        response.message === "jwt malformed")
+    ) {
+      const { status, payload } = await getRefreshToken(refreshToken);
+
+      if (status === 200) {
+        setCookie("accessToken", payload.newAccessToken);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export { axiosGet, axiosPatch, axiosPost, axiosDelete };

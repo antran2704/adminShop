@@ -1,6 +1,5 @@
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import { useEffect, useState, useCallback, Fragment } from "react";
-import { axiosGet } from "~/ultils/configAxios";
 
 import { IOrder } from "~/interface/order";
 import { IPagination } from "~/interface/pagination";

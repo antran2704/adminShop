@@ -1,26 +1,13 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import {
-  useState,
-  useEffect,
-  useContext,
-  Fragment,
-  useCallback,
-} from "react";
+import { useState, useEffect, Fragment, useCallback } from "react";
 import { toast } from "react-toastify";
-
-import { axiosDelete, axiosGet, axiosPatch } from "~/ultils/configAxios";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
 import { EDicount_type, typeCel } from "~/enums";
 
-import {
-  IFilter,
-  ICouponHome,
-  IPagination,
-  AxiosResponseCus,
-} from "~/interface";
+import { IFilter, ICouponHome, IPagination } from "~/interface";
 
 import Search from "~/components/Search";
 import { Table, CelTable } from "~/components/Table";
@@ -29,11 +16,17 @@ import { ButtonDelete, ButtonEdit } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
 import Link from "next/link";
 import { SelectDate } from "~/components/Select";
-import { AuthContex, IAuthContext } from "~/layouts/DefaultLayout";
 import { AxiosError, AxiosResponse } from "axios";
 import { getCookies } from "cookies-next";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { initPagination } from "~/components/Pagination/initData";
+import {
+  deleteCoupon,
+  getCoupons,
+  getCouponsWithFilter,
+  updateCoupon,
+} from "~/api-client";
+import { useRouter } from "next/navigation";
 
 interface ISelectCoupon {
   id: string;
@@ -46,8 +39,9 @@ interface Props {
 
 const CouponsPage = (props: Props) => {
   const { query } = props;
-  const currentPage = query.page ? query.page : 1;
-  const { handleRefreshToken } = useContext<IAuthContext>(AuthContex);
+  const currentPage = query.page ? Number(query.page) : 1;
+
+  const router = useRouter();
 
   const [coupons, setCoupons] = useState<ICouponHome[]>([]);
   const [selectCoupons, setSelectCoupons] = useState<string[]>([]);
@@ -101,7 +95,6 @@ const CouponsPage = (props: Props) => {
     }
 
     const { accessToken, publicKey, apiKey } = getCookies();
-    if (!accessToken) return;
 
     try {
       const headers = {
@@ -110,12 +103,12 @@ const CouponsPage = (props: Props) => {
         "x-api-key": `Key ${apiKey}`,
       };
 
-      const payload = await axiosPatch(
-        `/discounts/${id}`,
+      const payload = await updateCoupon(
+        id,
         {
           discount_public: status,
         },
-        { headers }
+        headers
       );
 
       if (payload.status === 201) {
@@ -127,7 +120,7 @@ const CouponsPage = (props: Props) => {
       const { code, response: responseErr } = err as AxiosError;
 
       if (code === "ERR_NETWORK") {
-        toast.error("Please check your netword, try again", {
+        toast.error("Server is busy, please try again", {
           position: toast.POSITION.TOP_RIGHT,
         });
         setMessage("Error in server");
@@ -146,13 +139,18 @@ const CouponsPage = (props: Props) => {
         return;
       }
 
-      if (payload.status === 400 && payload.data.message === "jwt expired") {
-        const refreshTokenRes =
-          (await handleRefreshToken()) as AxiosResponseCus;
-
-        if (refreshTokenRes.status === 200) {
-          onChangePublish(id, status);
+      if (
+        payload.status === 400 &&
+        (payload.data.message === "jwt expired" ||
+          payload.data.message === "jwt malformed")
+      ) {
+        const { refreshToken } = getCookies();
+        if (!refreshToken) {
+          router.push("/login");
+          return;
         }
+
+        onChangePublish(id, status);
       }
     }
   };
@@ -184,9 +182,20 @@ const CouponsPage = (props: Props) => {
         "x-api-key": `Key ${apiKey}`,
       };
 
-      const response = await axiosGet(
-        `/discounts?page=${currentPage}&discount_name=1&discount_public=1&discount_type=1&discount_thumbnail=1&discount_code=1&discount_value=1&discount_active=1&discount_start_date=1&discount_end_date=1`,
-        { headers }
+      const response = await getCoupons(
+        currentPage,
+        {
+          discount_name: "1",
+          discount_public: "1",
+          discount_type: "1",
+          discount_thumbnail: "1",
+          discount_code: "1",
+          discount_value: "1",
+          discount_active: "1",
+          discount_start_date: "1",
+          discount_end_date: "1",
+        },
+        headers
       );
 
       if (response.status === 200) {
@@ -204,17 +213,6 @@ const CouponsPage = (props: Props) => {
       const { code, response: responseErr } = err as AxiosError;
 
       if (code === "ERR_NETWORK") {
-        toast.error("Please check your netword, try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        setMessage("Error in server");
-        setLoading(false);
-        return;
-      }
-
-      const { status, data } = responseErr as AxiosResponse;
-
-      if (status === 500) {
         toast.error("Server is busy, please try again", {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -223,13 +221,29 @@ const CouponsPage = (props: Props) => {
         return;
       }
 
-      if (status === 400 && data.message === "jwt expired") {
-        const refreshTokenRes =
-          (await handleRefreshToken()) as AxiosResponseCus;
+      const payload = responseErr as AxiosResponse;
 
-        if (refreshTokenRes.status === 200) {
-          handleGetData();
+      if (payload.status === 500) {
+        toast.error("Server is busy, please try again", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setMessage("Error in server");
+        setLoading(false);
+        return;
+      }
+
+      if (
+        payload.status === 400 &&
+        (payload.data.message === "jwt expired" ||
+          payload.data.message === "jwt malformed")
+      ) {
+        const { refreshToken } = getCookies();
+        if (!refreshToken) {
+          router.push("/login");
+          return;
         }
+
+        handleGetData();
       }
     }
   };
@@ -249,13 +263,21 @@ const CouponsPage = (props: Props) => {
         "x-api-key": `Key ${apiKey}`,
       };
 
-      const response = await axiosGet(
-        `/discounts/search?search=${filter?.search || ""}&start_date=${
-          filter?.start_date || ""
-        }&end_date=${
-          filter?.end_date || ""
-        }&discount_name=1&discount_public=1&discount_code=1&discount_value=1&discount_type=1&discount_thumbnail=1&discount_active=1&discount_start_date=1&discount_end_date=1&page=${currentPage}`,
-        { headers }
+      const response = await getCouponsWithFilter(
+        filter,
+        currentPage,
+        {
+          discount_name: "1",
+          discount_public: "1",
+          discount_type: "1",
+          discount_thumbnail: "1",
+          discount_code: "1",
+          discount_value: "1",
+          discount_active: "1",
+          discount_start_date: "1",
+          discount_end_date: "1",
+        },
+        headers
       );
 
       if (response.status === 200) {
@@ -274,17 +296,6 @@ const CouponsPage = (props: Props) => {
       const { code, response: responseErr } = err as AxiosError;
 
       if (code === "ERR_NETWORK") {
-        toast.error("Please check your netword, try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        setMessage("Error in server");
-        setLoading(false);
-        return;
-      }
-
-      const { status, data } = responseErr as AxiosResponse;
-
-      if (status === 500) {
         toast.error("Server is busy, please try again", {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -293,13 +304,29 @@ const CouponsPage = (props: Props) => {
         return;
       }
 
-      if (status === 400 && data.message === "jwt expired") {
-        const refreshTokenRes =
-          (await handleRefreshToken()) as AxiosResponseCus;
+      const payload = responseErr as AxiosResponse;
 
-        if (refreshTokenRes.status === 200) {
-          handleGetDataByFilter();
+      if (payload.status === 500) {
+        toast.error("Server is busy, please try again", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        setMessage("Error in server");
+        setLoading(false);
+        return;
+      }
+
+      if (
+        payload.status === 400 &&
+        (payload.data.message === "jwt expired" ||
+          payload.data.message === "jwt malformed")
+      ) {
+        const { refreshToken } = getCookies();
+        if (!refreshToken) {
+          router.push("/login");
+          return;
         }
+
+        handleGetDataByFilter();
       }
     }
   }, [filter]);
@@ -314,7 +341,7 @@ const CouponsPage = (props: Props) => {
     }
 
     try {
-      await axiosDelete(`/discounts/${selectItem.id}`);
+      await deleteCoupon(selectItem.id);
       setShowPopup(false);
 
       if (filter) {

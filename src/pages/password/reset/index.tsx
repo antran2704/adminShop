@@ -1,4 +1,5 @@
 import { AxiosError } from "axios";
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { toast } from "react-toastify";
 import { ButtonClassic } from "~/components/Button";
@@ -77,7 +78,11 @@ const PasswordResetPage = () => {
     <div className="bg_login flex items-center justify-center h-screen">
       <div className="lg:min-w-[1000px] md:w-4/6 sm:w-5/6 w-full flex items-start bg-white rounded-lg shadow-xl overflow-hidden">
         <div className="lg:block hidden">
-          <ImageCus src="/login.png" title="Login" />
+          <ImageCus
+            src="/forget_password.svg"
+            title="Login"
+            className="w-[500px] h-[600px]"
+          />
         </div>
         <div className="lg:w-6/12 w-full md:px-10 px-5 pt-10 pb-20 ">
           {!sendSuccess && (
@@ -109,6 +114,15 @@ const PasswordResetPage = () => {
                     size="L"
                     className="w-full flex items-center justify-center h-[52px] bg-primary"
                   />
+                </div>
+
+                <div className="flex items-center justify-center">
+                  <Link
+                    className="block hover:underline hover:text-primary my-5"
+                    href="/login"
+                  >
+                    Đăng nhập
+                  </Link>
                 </div>
               </form>
             </div>

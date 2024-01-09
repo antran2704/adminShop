@@ -106,9 +106,13 @@ const LoginPage = () => {
     <div className="bg_login flex items-center justify-center h-screen">
       <div className="lg:min-w-[1000px] md:w-4/6 sm:w-5/6 w-full flex items-start bg-white rounded-lg shadow-xl overflow-hidden">
         <div className="lg:block hidden">
-          <ImageCus src="/login.png" title="Login" />
+          <ImageCus
+            src="/login_bg.svg"
+            title="Login"
+            className="w-[500px] h-[600px]"
+          />
         </div>
-        <div className="lg:w-6/12 w-full md:px-10 px-5 pt-10 pb-20 ">
+        <div className="lg:w-6/12 w-full md:px-10 px-5 pt-10 pb-20">
           <h1 className="lg:text-3xl text-2xl w-fit font-medium mx-auto">
             Login
           </h1>

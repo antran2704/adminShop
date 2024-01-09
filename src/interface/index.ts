@@ -11,4 +11,4 @@ export * from "./coupon";
 export * from "./breadcrum";
 export * from "./user";
 export * from "./grow";
-export * from "./responseAxios";
+export * from "./axios";

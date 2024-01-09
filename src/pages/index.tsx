@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { AiOutlineEdit, AiOutlineShoppingCart } from "react-icons/ai";
+import { useState, useEffect, useRef, Fragment } from "react";
+import { AiOutlineShoppingCart } from "react-icons/ai";
 import {
   MdOutlineKeyboardDoubleArrowDown,
   MdOutlineKeyboardDoubleArrowUp,
@@ -8,7 +8,6 @@ import {
   BiCircleThreeQuarter,
   BiDollarCircle,
   BiPackage,
-  BiAlarm,
   BiMinusCircle,
 } from "react-icons/bi";
 import {
@@ -22,6 +21,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
+import { colHeadOrder as colHeadTable } from "~/components/Table/colHeadTable";
 import { Table, CelTable } from "~/components/Table";
 
 import { typeCel } from "~/enums";
@@ -31,6 +31,11 @@ import { axiosGet } from "~/ultils/configAxios";
 import { getFirstDayInWeek } from "~/helper/datetime";
 import { IGrowDate } from "~/interface";
 import Statistic from "~/components/Statistic";
+import { IOrder } from "~/interface/order";
+import { getOrders } from "~/api-client";
+import { formatBigNumber } from "~/helper/number/fomatterCurrency";
+import { orderStatus } from "~/components/Table/statusCel";
+import { ButtonEdit } from "~/components/Button";
 
 ChartJS.register(
   CategoryScale,
@@ -62,8 +67,6 @@ const options = {
     },
   },
 };
-
-const colHeadTable = ["Name", "Email", "Phone", "Status", "", ""];
 
 interface IOverview {
   gross: number;
@@ -109,14 +112,13 @@ export default function Home() {
   const [overviews, setOverviews] = useState<IOverview>(initOveviews);
   const [dataBarWeek, setDataBarWeek] = useState<any>(data);
 
+  const [orders, setOrders] = useState<IOrder[]>([]);
+
   const [message, setMessage] = useState<string | null>(null);
   const [show, setShow] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [loadingOverviews, setLoadingOvervies] = useState<boolean>(true);
 
   const handleGetOverviews = async () => {
-    setLoadingOvervies(true);
-
     try {
       const date = new Date().toLocaleDateString("en-GB");
       const { status, payload } = await axiosGet(
@@ -126,10 +128,8 @@ export default function Home() {
       if (status === 200) {
         setOverviews(payload);
       }
-      setLoadingOvervies(false);
     } catch (error) {
       console.log(error);
-      setLoadingOvervies(false);
     }
   };
 
@@ -173,10 +173,34 @@ export default function Home() {
     }
   };
 
+  const handleGetData = async () => {
+    setLoading(true);
+    try {
+      const response = await getOrders(1);
+      if (response.status === 200) {
+        if (response.payload.length === 0) {
+          setOrders([]);
+          setMessage(`No Data`);
+        } else {
+          setMessage(null);
+          setOrders(response.payload);
+        }
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setOrders([]);
+      setMessage(`No Data`);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const firstDay = getFirstDayInWeek(new Date().toDateString());
     handleGetGrossInWeek(firstDay);
     handleGetOverviews();
+    handleGetData();
   }, []);
 
   return (
@@ -287,33 +311,56 @@ export default function Home() {
         <div>
           <Table
             colHeadTabel={colHeadTable}
-            message={message}
+            items={orders}
             loading={loading}
+            message={message}
           >
-            <tr className="hover:bg-slate-100">
-              <CelTable type={typeCel.TEXT} value={"1"} />
-              <CelTable type={typeCel.TEXT} value={"Antrandev"} />
-              <CelTable
-                type={typeCel.TEXT}
-                value={"phamtrangiaan27@gmail.com"}
-              />
-              <CelTable
-                type={typeCel.TEXT}
-                value={"0946003423"}
-                className="text-primary"
-              />
-              <CelTable type={typeCel.STATUS} value={"pending"} />
-              <CelTable type={typeCel.GROUP}>
-                <>
-                  <Link
-                    href={"/"}
-                    className="block w-fit px-3 py-2 border-blue-700 border-2 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
-                  >
-                    <AiOutlineEdit className="text-xl w-fit" />
-                  </Link>
-                </>
-              </CelTable>
-            </tr>
+            <Fragment>
+              {orders.map((order: IOrder) => (
+                <tr
+                  key={order._id}
+                  className="hover:bg-slate-100 border-b border-gray-300"
+                >
+                  <CelTable
+                    type={typeCel.TEXT}
+                    className="whitespace-nowrap"
+                    value={order.order_id}
+                    center={true}
+                  />
+                  <CelTable
+                    type={typeCel.TEXT}
+                    className="whitespace-nowrap"
+                    value={order.user_infor.name}
+                  />
+                  <CelTable
+                    center={true}
+                    type={typeCel.TEXT}
+                    className="capitalize"
+                    value={order.payment_method}
+                  />
+                  <CelTable
+                    center={true}
+                    type={typeCel.TEXT}
+                    value={`${formatBigNumber(order.total)} VND`}
+                  />
+                  <CelTable
+                    type={typeCel.STATUS}
+                    value={order.status}
+                    status={orderStatus[order.status]}
+                  />
+                  <CelTable
+                    center={true}
+                    type={typeCel.DATE}
+                    value={order.createdAt}
+                  />
+                  <CelTable type={typeCel.GROUP}>
+                    <div className="flex items-center justify-center">
+                      <ButtonEdit link={`/orders/${order._id}`} />
+                    </div>
+                  </CelTable>
+                </tr>
+              ))}
+            </Fragment>
           </Table>
         </div>
       </div>
