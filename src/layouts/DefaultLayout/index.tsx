@@ -14,23 +14,11 @@ import { AxiosError } from "axios";
 import { AxiosResponseCus } from "~/interface";
 
 export interface IAuthContext {
-  handleCheckLogin: () => Promise<AxiosResponseCus | undefined>;
-  handleRefreshToken: () => Promise<AxiosResponseCus | undefined>;
-  checkAuth: () => Promise<void>;
   handleLogOut: () => void;
 }
 
 export const AuthContex = createContext<IAuthContext>({
-  handleCheckLogin: function (): Promise<AxiosResponseCus | undefined> {
-    throw new Error("Function not implemented.");
-  },
-  handleRefreshToken: function (): Promise<AxiosResponseCus | undefined> {
-    throw new Error("Function not implemented.");
-  },
-  checkAuth: function (): Promise<void> {
-    throw new Error("Function not implemented.");
-  },
-  handleLogOut: () => {},
+  handleLogOut: (): void => {},
 });
 
 interface Props {
@@ -42,9 +30,7 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
   const [loading, setLoading] = useState<boolean>(true);
   const dispatch = useAppDispatch();
 
-  const handleRefreshToken: () => Promise<
-    AxiosResponseCus | undefined
-  > = async () => {
+  const handleRefreshToken: () => Promise<any> = async () => {
     const { refreshToken } = getCookies();
 
     if (!refreshToken) {
@@ -52,92 +38,61 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
       return;
     }
 
-    try {
-      const { status, payload } = await getRefreshToken(refreshToken);
+    const { status, payload } = await getRefreshToken(refreshToken);
 
-      if (status === 200) {
-        setCookie("accessToken", payload.newAccessToken);
-        return { status, data: payload };
-      }
-    } catch (err) {
-      const { code, response } = err as AxiosError;
-      if (code === "ERR_NETWORK") {
-        return { status: 500, data: { message: "Error in server" } };
-      }
-
-      const { status, data } = response as unknown as AxiosResponseCus;
-      if (data.message === "jwt expired" || data.message === "jwt malformed") {
-        router.push("/login");
-      }
-
-      return { status, data };
+    if (status === 200) {
+      setCookie("accessToken", payload.newAccessToken);
     }
+
+    return { status, payload };
   };
 
   const handleCheckLogin = async () => {
-    const { accessToken, refreshToken, publicKey } = getCookies();
+    const { accessToken, publicKey } = getCookies();
 
-    if (!refreshToken || !publicKey) {
-      return { status: 401, data: { message: "Unauthor" } };
-    }
+    if (!accessToken || !publicKey) return null;
 
-    if (!accessToken) {
-      return { status: 400, data: { message: "jwt expired" } };
-    }
-
-    try {
-      const { status, payload } = await handleGetUser(accessToken, publicKey);
-
-      if (status === 200) {
-        dispatch(login(payload));
-
-        return { status, data: payload };
-      }
-    } catch (err) {
-      const { code, response } = err as AxiosError;
-      if (code === "ERR_NETWORK") {
-        return { status: 500, data: { message: "Error in server" } };
-      }
-
-      if (response) {
-        const { status, data } = response;
-        return { status, data };
-      }
-    }
+    const { status, payload } = await handleGetUser(accessToken, publicKey);
+    return { status, payload };
   };
 
   const checkAuth = async () => {
     setLoading(true);
+    const { refreshToken, publicKey } = getCookies();
 
-    const { status, data } = (await handleCheckLogin()) as AxiosResponseCus;
+    if (!refreshToken || !publicKey) {
+      router.push("/login");
+      return;
+    }
 
-    switch (status) {
-      case 400:
-        if (
-          data.message === "invalid signature" ||
-          data.message === "jwt malformed"
-        ) {
+    try {
+      const { accessToken } = getCookies();
+
+      if (!accessToken) {
+        await handleRefreshToken();
+      }
+
+      const response = await handleCheckLogin();
+
+      // if(!response) {
+      //   await handleRefreshToken();
+      // }
+
+      if (response && response.status === 200) {
+        dispatch(login(response.payload));
+      }
+    } catch (err) {
+      const error = err as AxiosError;
+      const { status, data } = error.response as AxiosResponseCus;
+      if (status === 400 && data.message === "jwt expired") {
+        const { refreshToken } = getCookies();
+        if (!refreshToken) {
           router.push("/login");
+          return;
         }
 
-        if (data.message === "jwt expired") {
-          const responseRefresh =
-            (await handleRefreshToken()) as AxiosResponseCus;
-
-          if (responseRefresh.status === 200) {
-            (await handleCheckLogin()) as AxiosResponseCus;
-          }
-        }
-        break;
-
-      case 401:
-        router.push("/login");
-        break;
-
-      case 500:
-        toast.error("Server is busy, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        await handleCheckLogin();
+      }
     }
 
     setLoading(false);
@@ -175,9 +130,6 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
     <main className="flex items-start justify-between bg-[#f9fafb]">
       <AuthContex.Provider
         value={{
-          handleCheckLogin,
-          handleRefreshToken,
-          checkAuth,
           handleLogOut,
         }}
       >

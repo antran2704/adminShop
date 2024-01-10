@@ -16,6 +16,7 @@ const ButtonEdit = (props: Props) => {
       {link && (
         <Link
           href={link}
+          target="_blank"
           className={`${
             className ? className : ""
           } block w-fit px-3 py-2 text-[#9ca3af] rounded transition duration-300 hover:text-success`}

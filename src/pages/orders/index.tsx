@@ -103,7 +103,6 @@ const OrdersPage = (props: Props) => {
       setPagination(response.pagination);
       setLoading(false);
     } catch (error) {
-      console.log(error);
       setOrders([]);
       setPagination(initPagination);
       setMessage(`No order`);

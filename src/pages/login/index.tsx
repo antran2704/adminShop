@@ -71,13 +71,7 @@ const LoginPage = () => {
     } catch (err) {
       const error = err as AxiosError;
 
-      if (error.code === "ERR_NETWORK") {
-        toast.error("Error in server, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
-
-      if (axios.isAxiosError(error) && error?.response) {
+      if (error?.response) {
         const { status, data: responseErr } =
           error.response as unknown as AxiosResponseCus;
 
@@ -90,14 +84,13 @@ const LoginPage = () => {
           setData({ ...data, password: null });
         }
 
-        if (status === 500) {
-          toast.error("Error in server, please try again", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        }
+        // if (status === 500) {
+        //   toast.error("Error in server, please try again", {
+        //     position: toast.POSITION.TOP_RIGHT,
+        //   });
+        // }
       }
 
-      console.log(error);
       setLoading(false);
     }
   };

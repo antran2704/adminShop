@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import { notFound } from 'next/navigation'
 import { NextRouter, useRouter } from "next/router";
 import {
   useState,
@@ -115,7 +116,6 @@ const OrderDetail = () => {
         getDataOrder(orderId as string);
       }
     } catch (error) {
-      console.error(error);
       toast.error("Error change status order", {
         position: toast.POSITION.TOP_RIGHT,
       });
