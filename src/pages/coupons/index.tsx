@@ -120,37 +120,13 @@ const CouponsPage = (props: Props) => {
       const { code, response: responseErr } = err as AxiosError;
 
       if (code === "ERR_NETWORK") {
-        toast.error("Server is busy, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
         setMessage("Error in server");
-        setLoading(false);
-        return;
       }
 
       const payload = responseErr as AxiosResponse;
 
       if (payload.status === 500) {
-        toast.error("Server is busy, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
         setMessage("Error in server");
-        setLoading(false);
-        return;
-      }
-
-      if (
-        payload.status === 400 &&
-        (payload.data.message === "jwt expired" ||
-          payload.data.message === "jwt malformed")
-      ) {
-        const { refreshToken } = getCookies();
-        if (!refreshToken) {
-          router.push("/login");
-          return;
-        }
-
-        onChangePublish(id, status);
       }
     }
   };
@@ -207,45 +183,22 @@ const CouponsPage = (props: Props) => {
         }
         setPagination(response.pagination);
         setCoupons(response.payload);
-        setLoading(false);
       }
     } catch (err) {
       const { code, response: responseErr } = err as AxiosError;
 
       if (code === "ERR_NETWORK") {
-        toast.error("Server is busy, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
         setMessage("Error in server");
-        setLoading(false);
-        return;
       }
 
       const payload = responseErr as AxiosResponse;
 
       if (payload.status === 500) {
-        toast.error("Server is busy, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
         setMessage("Error in server");
-        setLoading(false);
-        return;
-      }
-
-      if (
-        payload.status === 400 &&
-        (payload.data.message === "jwt expired" ||
-          payload.data.message === "jwt malformed")
-      ) {
-        const { refreshToken } = getCookies();
-        if (!refreshToken) {
-          router.push("/login");
-          return;
-        }
-
-        handleGetData();
       }
     }
+
+    setLoading(false);
   };
 
   const handleGetDataByFilter = useCallback(async () => {
@@ -296,39 +249,17 @@ const CouponsPage = (props: Props) => {
       const { code, response: responseErr } = err as AxiosError;
 
       if (code === "ERR_NETWORK") {
-        toast.error("Server is busy, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
         setMessage("Error in server");
-        setLoading(false);
-        return;
       }
 
       const payload = responseErr as AxiosResponse;
 
       if (payload.status === 500) {
-        toast.error("Server is busy, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
         setMessage("Error in server");
-        setLoading(false);
-        return;
-      }
-
-      if (
-        payload.status === 400 &&
-        (payload.data.message === "jwt expired" ||
-          payload.data.message === "jwt malformed")
-      ) {
-        const { refreshToken } = getCookies();
-        if (!refreshToken) {
-          router.push("/login");
-          return;
-        }
-
-        handleGetDataByFilter();
       }
     }
+
+    setLoading(false);
   }, [filter]);
 
   const handleDeleteCoupon = useCallback(async () => {
@@ -340,8 +271,17 @@ const CouponsPage = (props: Props) => {
       return;
     }
 
+    const { accessToken, publicKey, apiKey } = getCookies();
+    if (!accessToken) return;
+
     try {
-      await deleteCoupon(selectItem.id);
+      const headers = {
+        Authorization: `Bear ${accessToken}`,
+        "public-key": `Key ${publicKey}`,
+        "x-api-key": `Key ${apiKey}`,
+      };
+
+      await deleteCoupon(selectItem.id, headers);
       setShowPopup(false);
 
       if (filter) {

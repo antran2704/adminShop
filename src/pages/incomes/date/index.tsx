@@ -5,8 +5,7 @@ import { BiDollarCircle, BiPackage, BiMinusCircle } from "react-icons/bi";
 import { SelectDate } from "~/components/Select";
 import Statistic from "~/components/Statistic";
 import { axiosGet } from "~/ultils/configAxios";
-import { IGrow, IGrowDate } from "~/interface";
-import { ISelectItem } from "~/interface";
+import { IGrowDate } from "~/interface";
 
 const initOverviewDate: IGrowDate = {
   gross: 0,
@@ -18,16 +17,7 @@ const initOverviewDate: IGrowDate = {
   date: new Date().toLocaleDateString(),
 };
 
-const initYears: ISelectItem[] = [
-  {
-    _id: new Date().getFullYear().toString(),
-    title: new Date().getFullYear().toString(),
-  },
-];
-
 const IncomeDatePage = () => {
-  const [years, setYears] = useState<ISelectItem[]>(initYears);
-
   const [growDate, setGrowDate] = useState<IGrowDate>(initOverviewDate);
   const [selectDate, setSelectDate] = useState<string>(
     `${new Date().getFullYear()}-${
@@ -69,29 +59,11 @@ const IncomeDatePage = () => {
           updatedAt: null,
         });
       }
-      console.log(error);
-    }
-  };
-
-  const handleGetYear = async () => {
-    try {
-      const { status, payload } = await axiosGet("/gross-year?year=1");
-      if (status === 200 && payload.length > 0) {
-        const items: ISelectItem[] = payload.map((item: any) => ({
-          _id: item.year,
-          title: item.year,
-        }));
-
-        setYears(items);
-      }
-    } catch (error) {
-      console.log(error);
     }
   };
 
   useEffect(() => {
     handleGetGrossDate(new Date().toString());
-    handleGetYear();
   }, []);
 
   return (

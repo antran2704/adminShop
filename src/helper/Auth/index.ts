@@ -1,17 +1,18 @@
-import { axiosGet, axiosPost } from "~/ultils/configAxios";
+import { deleteCookie, setCookie } from "cookies-next";
+import { IKeyToken } from "~/interface";
 
-const handleGetUser = async (accessToken: string, publicKey: string) => {
-  const headers = {
-    Authorization: `Bear ${accessToken}`,
-    "public-key": `Key ${publicKey}`,
-  };
-  return await axiosGet("/admin", { headers });
+const logout = () => {
+  deleteCookie("accessToken");
+  deleteCookie("publicKey");
+  deleteCookie("refreshToken");
+  deleteCookie("apiKey");
 };
 
-const getRefreshToken = async (refreshToken: string) => {
-  return await axiosPost("/admin/refreshToken", {
-    refreshToken,
-  });
+const login = (data: IKeyToken) => {
+  setCookie("accessToken", data.accessToken);
+  setCookie("publicKey", data.publicKey);
+  setCookie("refreshToken", data.refreshToken);
+  setCookie("apiKey", data.apiKey);
 };
 
-export { handleGetUser, getRefreshToken };
+export { logout, login };

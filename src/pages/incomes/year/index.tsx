@@ -157,30 +157,26 @@ const IncomeYearPage = () => {
   };
 
   const handleGetGrossInYear = async (year: string) => {
-    try {
-      const { status, payload } = await axiosGet(
-        `/gross-month/year?gross_year=${year}`
-      );
+    const { status, payload } = await axiosGet(
+      `/gross-month/year?gross_year=${year}`
+    );
 
-      if (status === 200) {
-        const newData: any = data;
+    if (status === 200) {
+      const newData: any = data;
 
-        for (let i = 1; i <= MONTHS.length; i++) {
-          newData.labels.push(i);
-          newData.datasets[0].data.push(0);
-          newData.datasets[1].data.push(0);
-        }
-
-        payload.map((item: any) => {
-          const month = Number(item.month);
-          newData.datasets[0].data[month - 1] = item.sub_gross;
-          newData.datasets[1].data[month - 1] = item.gross;
-        });
-        chartYearRef.current.update();
-        setDataBarYear(newData);
+      for (let i = 1; i <= MONTHS.length; i++) {
+        newData.labels.push(i);
+        newData.datasets[0].data.push(0);
+        newData.datasets[1].data.push(0);
       }
-    } catch (error: any) {
-      console.log(error);
+
+      payload.map((item: any) => {
+        const month = Number(item.month);
+        newData.datasets[0].data[month - 1] = item.sub_gross;
+        newData.datasets[1].data[month - 1] = item.gross;
+      });
+      chartYearRef.current.update();
+      setDataBarYear(newData);
     }
   };
 
@@ -207,23 +203,18 @@ const IncomeYearPage = () => {
           updatedAt: null,
         });
       }
-      console.log(error);
     }
   };
 
   const handleGetYear = async () => {
-    try {
-      const { status, payload } = await axiosGet("/gross-year?year=1");
-      if (status === 200 && payload.length > 0) {
-        const items: ISelectItem[] = payload.map((item: any) => ({
-          _id: item.year,
-          title: item.year,
-        }));
+    const { status, payload } = await axiosGet("/gross-year?year=1");
+    if (status === 200 && payload.length > 0) {
+      const items: ISelectItem[] = payload.map((item: any) => ({
+        _id: item.year,
+        title: item.year,
+      }));
 
-        setYears(items);
-      }
-    } catch (error) {
-      console.log(error);
+      setYears(items);
     }
   };
 

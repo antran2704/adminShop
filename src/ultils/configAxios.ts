@@ -1,7 +1,8 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { deleteCookie, getCookies, setCookie } from "cookies-next";
+import { getCookies, setCookie } from "cookies-next";
 import { toast } from "react-toastify";
-import { getRefreshToken } from "~/helper/Auth";
+import { getRefreshToken } from "~/api-client";
+import { logout } from "~/helper/Auth";
 
 const httpConfig = axios.create({
   baseURL: process.env.NEXT_PUBLIC_ENDPOINT_API,
@@ -43,21 +44,27 @@ const axiosDelete = async (
 
 let isRefresh = false;
 
+const handleLogout = () => {
+  logout();
+  window.location.pathname = "/login";
+};
+
 httpConfig.interceptors.response.use(
   function (response) {
     return response;
   },
   async (error) => {
-    console.log(error);
-    const response = error.response.data;
-
     if (error.code === "ERR_NETWORK") {
-      toast.error("Error in server, please try again", {
+      toast.error("Please check your network", {
         position: toast.POSITION.TOP_RIGHT,
       });
 
       return Promise.reject(error);
     }
+
+    const response = error.response.data;
+
+    if (!response) return Promise.reject(error);
 
     if (response.status === 500) {
       toast.error("Error in server, please try again", {
@@ -67,27 +74,45 @@ httpConfig.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    if (response.status === 403) {
+      toast.error("Forbidden, please login", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      handleLogout();
+      return Promise.reject(error);
+    }
+
     if (
       response.status === 400 &&
       (response.message === "jwt expired" ||
         response.message === "jwt malformed")
     ) {
       const { refreshToken } = getCookies();
-      if (!refreshToken) return Promise.reject(error);
+      
+      if (!refreshToken) {
+        isRefresh = false;
+        handleLogout();
+        return Promise.reject(error);
+      }
 
-      if (!isRefresh) {
+      const originalRequest = error.config;
+
+      if (!isRefresh && !originalRequest._retry) {
         isRefresh = true;
 
         const { status, payload } = await getRefreshToken(refreshToken);
         if (status === 200) {
           setCookie("accessToken", payload.newAccessToken);
           isRefresh = false;
+
+          originalRequest._retry = true;
+          originalRequest.headers[
+            "Authorization"
+          ] = `Bear ${payload.newAccessToken}`;
+          return Promise.resolve(httpConfig(originalRequest));
         }
       } else {
-        deleteCookie("accessToken");
-        deleteCookie("publicKey");
-        deleteCookie("refreshToken");
-        deleteCookie("apiKey");
+        handleLogout();
         isRefresh = false;
       }
     }

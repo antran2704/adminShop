@@ -188,50 +188,41 @@ const IncomeMonthPage = () => {
           updatedAt: null,
         });
       }
-      console.log(error);
     }
   };
 
   const handleGetGrossInMonth = async (month: string, year: string) => {
-    try {
-      const { status, payload } = await axiosGet(
-        `/gross-date/month?gross_month=${month}&gross_year=${year}`
-      );
-      if (status === 200) {
-        const days = new Date(2023, Number(month), 0).getDate();
-        const newData: any = data;
-        for (let i = 1; i <= days; i++) {
-          newData.labels.push(`${i}/${month}`);
-          newData.datasets[0].data.push(0);
-          newData.datasets[1].data.push(0);
-        }
-
-        payload.map((item: IGrowDate) => {
-          const day = Number(item.day);
-          newData.datasets[0].data[day - 1] = item.sub_gross;
-          newData.datasets[1].data[day - 1] = item.gross;
-        });
-        chartMonthRef.current.update();
-        setDataBarMonth(newData);
+    const { status, payload } = await axiosGet(
+      `/gross-date/month?gross_month=${month}&gross_year=${year}`
+    );
+    if (status === 200) {
+      const days = new Date(2023, Number(month), 0).getDate();
+      const newData: any = data;
+      for (let i = 1; i <= days; i++) {
+        newData.labels.push(`${i}/${month}`);
+        newData.datasets[0].data.push(0);
+        newData.datasets[1].data.push(0);
       }
-    } catch (error: any) {
-      console.log(error);
+
+      payload.map((item: IGrowDate) => {
+        const day = Number(item.day);
+        newData.datasets[0].data[day - 1] = item.sub_gross;
+        newData.datasets[1].data[day - 1] = item.gross;
+      });
+      chartMonthRef.current.update();
+      setDataBarMonth(newData);
     }
   };
 
   const handleGetYear = async () => {
-    try {
-      const { status, payload } = await axiosGet("/gross-year?year=1");
-      if (status === 200 && payload.length > 0) {
-        const items: ISelectItem[] = payload.map((item: any) => ({
-          _id: item.year,
-          title: item.year,
-        }));
+    const { status, payload } = await axiosGet("/gross-year?year=1");
+    if (status === 200 && payload.length > 0) {
+      const items: ISelectItem[] = payload.map((item: any) => ({
+        _id: item.year,
+        title: item.year,
+      }));
 
-        setYears(items);
-      }
-    } catch (error) {
-      console.log(error);
+      setYears(items);
     }
   };
 

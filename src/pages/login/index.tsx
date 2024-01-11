@@ -1,16 +1,17 @@
-import axios, { AxiosError } from "axios";
-import { setCookie } from "cookies-next";
+import { AxiosError } from "axios";
+import { getCookies } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState, FormEvent } from "react";
-import { toast } from "react-toastify";
+import { useState, FormEvent, useEffect } from "react";
 
 import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
 import { InputText, InputPassword } from "~/components/InputField";
-import { AxiosResponseCus } from "~/interface";
+import Loading from "~/components/Loading";
+import { loginReducer } from "~/store/slice";
+import { login } from "~/helper/Auth";
+import { AxiosResponseCus, IKeyToken } from "~/interface";
 import { useAppDispatch } from "~/store/hooks";
-import { login } from "~/store/slice";
 import { axiosPost } from "~/ultils/configAxios";
 
 interface IDataSend {
@@ -30,6 +31,7 @@ const LoginPage = () => {
   const [data, setData] = useState<IDataSend>(initData);
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [checkLogin, setCheckLogin] = useState<boolean>(true);
 
   const [message, setMessage] = useState<string | null>(null);
 
@@ -54,16 +56,15 @@ const LoginPage = () => {
       const { status, payload } = await axiosPost("/admin/login", data);
 
       if (status === 200) {
-        dispatch(login(payload));
+        dispatch(loginReducer(payload));
 
-        setCookie("accessToken", payload.accessToken);
-
-        setCookie("publicKey", payload.publicKey);
-
-        setCookie("refreshToken", payload.refreshToken);
-
-        setCookie("apiKey", payload.apiKey);
-
+        const data: IKeyToken = {
+          accessToken: payload.accessToken,
+          refreshToken: payload.refreshToken,
+          apiKey: payload.apiKey,
+          publicKey: payload.publicKey,
+        };
+        login(data);
         router.push("/");
       }
 
@@ -83,17 +84,26 @@ const LoginPage = () => {
           setMessage("Email or Password incorrect");
           setData({ ...data, password: null });
         }
-
-        // if (status === 500) {
-        //   toast.error("Error in server, please try again", {
-        //     position: toast.POSITION.TOP_RIGHT,
-        //   });
-        // }
       }
 
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const { accessToken, publicKey, apiKey, refreshToken } = getCookies();
+
+    if (accessToken && publicKey && apiKey && refreshToken) {
+      router.push("/");
+      return;
+    }
+
+    setCheckLogin(false);
+  }, []);
+
+  if (checkLogin) {
+    return <Loading />;
+  }
 
   return (
     <div className="bg_login flex items-center justify-center h-screen">

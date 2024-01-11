@@ -21,7 +21,7 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    login: (state, action) => {
+    loginReducer: (state, action) => {
       state.infor = action.payload;
     },
     isLoading: (state, action) => {
@@ -32,5 +32,5 @@ const userSlice = createSlice({
 
 export const getUser = (state: RootState) => state.user;
 
-export const { login, isLoading } = userSlice.actions;
+export const { loginReducer, isLoading } = userSlice.actions;
 export default userSlice.reducer;

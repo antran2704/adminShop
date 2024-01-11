@@ -119,68 +119,64 @@ const IncomeWeekPage = () => {
     const month = (startDate.getMonth() + 1).toString();
     const year = startDate.getFullYear().toString();
 
-    try {
-      const { status, payload } = await axiosGet(
-        `/gross-date/week?start_date=${startDate.toDateString()}`
+    const { status, payload } = await axiosGet(
+      `/gross-date/week?start_date=${startDate.toDateString()}`
+    );
+
+    const startDay = startDate.getDate();
+    const newData: any = data;
+
+    for (let i = 0; i <= 6; i++) {
+      const nextDay = new Date();
+      nextDay.setDate(startDay + i);
+      newData.labels.push(nextDay.getDate());
+      newData.datasets[0].data[i] = 0;
+      newData.datasets[1].data[i] = 0;
+    }
+
+    if (payload.length === 0) {
+      setGrowWeek(initOverviewDate);
+      setDataBarWeek(newData);
+      chartWeekRef.current.update();
+    }
+
+    if (status === 200 && payload.length > 0) {
+      payload.map((item: IGrowDate) => {
+        const day = Number(item.day);
+        const index = newData.labels.findIndex(
+          (label: number) => label === day
+        );
+        newData.datasets[0].data[index] = item.sub_gross;
+        newData.datasets[1].data[index] = item.gross;
+      });
+
+      const dataOverview: IGrowDate = payload.reduce(
+        (accumulator: IGrow, item: any) => {
+          accumulator = {
+            gross: accumulator.gross + (item.gross || 0),
+            sub_gross: accumulator.sub_gross + (item.sub_gross || 0),
+            orders: accumulator.orders + (item.orders.length || 0),
+            cancle_orders:
+              accumulator.cancle_orders + (item.cancle_orders || 0),
+            delivered_orders:
+              accumulator.delivered_orders + (item.delivered_orders || 0),
+            updatedAt: null,
+          };
+
+          return accumulator;
+        },
+        initOverview
       );
 
-      const startDay = startDate.getDate();
-      const newData: any = data;
+      dataOverview.updatedAt = payload[payload.length - 1].updatedAt;
+      dataOverview.date = payload[payload.length - 1].date;
 
-      for (let i = 0; i <= 6; i++) {
-        const nextDay = new Date();
-        nextDay.setDate(startDay + i);
-        newData.labels.push(nextDay.getDate());
-        newData.datasets[0].data[i] = 0;
-        newData.datasets[1].data[i] = 0;
-      }
-
-      if (payload.length === 0) {
-        setGrowWeek(initOverviewDate);
-        setDataBarWeek(newData);
-        chartWeekRef.current.update();
-      }
-
-      if (status === 200 && payload.length > 0) {
-        payload.map((item: IGrowDate) => {
-          const day = Number(item.day);
-          const index = newData.labels.findIndex(
-            (label: number) => label === day
-          );
-          newData.datasets[0].data[index] = item.sub_gross;
-          newData.datasets[1].data[index] = item.gross;
-        });
-
-        const dataOverview: IGrowDate = payload.reduce(
-          (accumulator: IGrow, item: any) => {
-            accumulator = {
-              gross: accumulator.gross + (item.gross || 0),
-              sub_gross: accumulator.sub_gross + (item.sub_gross || 0),
-              orders: accumulator.orders + (item.orders.length || 0),
-              cancle_orders:
-                accumulator.cancle_orders + (item.cancle_orders || 0),
-              delivered_orders:
-                accumulator.delivered_orders + (item.delivered_orders || 0),
-              updatedAt: null,
-            };
-
-            return accumulator;
-          },
-          initOverview
-        );
-
-        dataOverview.updatedAt = payload[payload.length - 1].updatedAt;
-        dataOverview.date = payload[payload.length - 1].date;
-
-        setGrowWeek(dataOverview);
-        setDataBarWeek(newData);
-        chartWeekRef.current.update();
-      }
-
-      setSelectGrowWeek({ startDay: startDay.toString(), endDay, year, month });
-    } catch (error: any) {
-      console.log(error);
+      setGrowWeek(dataOverview);
+      setDataBarWeek(newData);
+      chartWeekRef.current.update();
     }
+
+    setSelectGrowWeek({ startDay: startDay.toString(), endDay, year, month });
   };
 
   useEffect(() => {

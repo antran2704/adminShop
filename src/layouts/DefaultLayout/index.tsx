@@ -1,17 +1,16 @@
 import { useRouter } from "next/router";
-import { useState, useEffect, createContext, FC, Fragment } from "react";
-import { getCookies, setCookie, deleteCookie } from "cookies-next";
-import { ToastContainer, toast } from "react-toastify";
+import { useState, useEffect, createContext, FC } from "react";
+import { getCookies, setCookie } from "cookies-next";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { useAppDispatch } from "~/store/hooks";
-import { login } from "~/store/slice";
+import { loginReducer } from "~/store/slice";
 
 import Navbar from "~/components/Navbar";
 import Loading from "~/components/Loading";
-import { getRefreshToken, handleGetUser } from "~/helper/Auth";
-import { AxiosError } from "axios";
-import { AxiosResponseCus } from "~/interface";
+import { logout } from "~/helper/Auth";
+import { getRefreshToken, getUser } from "~/api-client";
 
 export interface IAuthContext {
   handleLogOut: () => void;
@@ -52,7 +51,12 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
 
     if (!accessToken || !publicKey) return null;
 
-    const { status, payload } = await handleGetUser(accessToken, publicKey);
+    const { status, payload } = await getUser(accessToken, publicKey);
+
+    if (status === 200) {
+      dispatch(loginReducer(payload));
+    }
+
     return { status, payload };
   };
 
@@ -72,27 +76,9 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
         await handleRefreshToken();
       }
 
-      const response = await handleCheckLogin();
-
-      // if(!response) {
-      //   await handleRefreshToken();
-      // }
-
-      if (response && response.status === 200) {
-        dispatch(login(response.payload));
-      }
+      await handleCheckLogin();
     } catch (err) {
-      const error = err as AxiosError;
-      const { status, data } = error.response as AxiosResponseCus;
-      if (status === 400 && data.message === "jwt expired") {
-        const { refreshToken } = getCookies();
-        if (!refreshToken) {
-          router.push("/login");
-          return;
-        }
-
-        await handleCheckLogin();
-      }
+      console.log(err);
     }
 
     setLoading(false);
@@ -101,10 +87,7 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
   const handleLogOut = () => {
     setLoading(true);
 
-    deleteCookie("accessToken");
-    deleteCookie("publicKey");
-    deleteCookie("refreshToken");
-    deleteCookie("apiKey");
+    logout();
 
     const userInfor = {
       _id: null,
@@ -112,7 +95,7 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
       email: "",
       avartar: null,
     };
-    dispatch(login(userInfor));
+    dispatch(loginReducer(userInfor));
     router.push("/login");
 
     setLoading(false);

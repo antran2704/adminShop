@@ -49,8 +49,8 @@ const updateCoupon = async (
   return await axiosPatch(`/discounts/${coupon_id}`, data, { headers });
 };
 
-const deleteCoupon = async (coupon_id: string) => {
-  return await axiosDelete(`/discounts/${coupon_id}`);
+const deleteCoupon = async (coupon_id: string, headers?: Partial<AxiosRequestHeadersCus>) => {
+  return await axiosDelete(`/discounts/${coupon_id}`, {headers});
 };
 
 export { getCoupons, getCouponsWithFilter, updateCoupon, deleteCoupon };
