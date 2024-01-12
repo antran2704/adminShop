@@ -9,10 +9,10 @@ import ImageCus from "~/components/Image/ImageCus";
 import { InputText, InputPassword } from "~/components/InputField";
 import Loading from "~/components/Loading";
 import { loginReducer } from "~/store/slice";
-import { login } from "~/helper/Auth";
-import { AxiosResponseCus, IKeyToken } from "~/interface";
+import { AxiosResponseCus } from "~/interface";
 import { useAppDispatch } from "~/store/hooks";
 import { axiosPost } from "~/ultils/configAxios";
+import { getUser } from "~/api-client";
 
 interface IDataSend {
   email: string | null;
@@ -57,21 +57,12 @@ const LoginPage = () => {
 
       if (status === 200) {
         dispatch(loginReducer(payload));
-
-        const data: IKeyToken = {
-          accessToken: payload.accessToken,
-          refreshToken: payload.refreshToken,
-          apiKey: payload.apiKey,
-          publicKey: payload.publicKey,
-        };
-        login(data);
         router.push("/");
       }
 
       setLoading(false);
     } catch (err) {
       const error = err as AxiosError;
-
       if (error?.response) {
         const { status, data: responseErr } =
           error.response as unknown as AxiosResponseCus;
@@ -90,15 +81,21 @@ const LoginPage = () => {
     }
   };
 
-  useEffect(() => {
-    const { accessToken, publicKey, apiKey, refreshToken } = getCookies();
+  const handleCheckLogin = async () => {
+    try {
+      const { status, payload } = await getUser();
 
-    if (accessToken && publicKey && apiKey && refreshToken) {
-      router.push("/");
-      return;
+      if (status === 200) {
+        router.push("/");
+        dispatch(loginReducer(payload));
+      }
+    } catch (error) {
+      setCheckLogin(false);
     }
+  };
 
-    setCheckLogin(false);
+  useEffect(() => {
+    handleCheckLogin();
   }, []);
 
   if (checkLogin) {

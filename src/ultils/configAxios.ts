@@ -1,8 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { getCookies, setCookie } from "cookies-next";
 import { toast } from "react-toastify";
-import { getRefreshToken } from "~/api-client";
-import { logout } from "~/helper/Auth";
+import { getRefreshToken, logout } from "~/api-client";
 
 const httpConfig = axios.create({
   baseURL: process.env.NEXT_PUBLIC_ENDPOINT_API,
@@ -46,7 +44,7 @@ let isRefresh = false;
 
 const handleLogout = () => {
   logout();
-  window.location.pathname = "/login";
+  // window.location.pathname = "/login";
 };
 
 httpConfig.interceptors.response.use(
@@ -82,33 +80,17 @@ httpConfig.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    if (
-      response.status === 400 &&
-      (response.message === "jwt expired" ||
-        response.message === "jwt malformed")
-    ) {
-      const { refreshToken } = getCookies();
-      
-      if (!refreshToken) {
-        isRefresh = false;
-        handleLogout();
-        return Promise.reject(error);
-      }
+    const originalRequest = error.config;
 
-      const originalRequest = error.config;
-
+    if (response.status === 401) {
       if (!isRefresh && !originalRequest._retry) {
         isRefresh = true;
 
-        const { status, payload } = await getRefreshToken(refreshToken);
+        const { status } = await getRefreshToken();
         if (status === 200) {
-          setCookie("accessToken", payload.newAccessToken);
           isRefresh = false;
 
           originalRequest._retry = true;
-          originalRequest.headers[
-            "Authorization"
-          ] = `Bear ${payload.newAccessToken}`;
           return Promise.resolve(httpConfig(originalRequest));
         }
       } else {

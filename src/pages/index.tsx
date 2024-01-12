@@ -189,7 +189,6 @@ export default function Home() {
 
       setLoading(false);
     } catch (error) {
-      console.log(error);
       setOrders([]);
       setMessage(`No Data`);
       setLoading(false);

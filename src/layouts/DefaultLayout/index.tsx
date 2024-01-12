@@ -1,16 +1,14 @@
 import { useRouter } from "next/router";
 import { useState, useEffect, createContext, FC } from "react";
-import { getCookies, setCookie } from "cookies-next";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { useAppDispatch } from "~/store/hooks";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { loginReducer } from "~/store/slice";
 
 import Navbar from "~/components/Navbar";
 import Loading from "~/components/Loading";
-import { logout } from "~/helper/Auth";
-import { getRefreshToken, getUser } from "~/api-client";
+import { getUser, logout } from "~/api-client";
 
 export interface IAuthContext {
   handleLogOut: () => void;
@@ -26,62 +24,25 @@ interface Props {
 
 const DefaultLayout: FC<Props> = ({ children }: Props) => {
   const router = useRouter();
-  const [loading, setLoading] = useState<boolean>(true);
+
+  const { infor } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
 
-  const handleRefreshToken: () => Promise<any> = async () => {
-    const { refreshToken } = getCookies();
-
-    if (!refreshToken) {
-      router.push("/login");
-      return;
-    }
-
-    const { status, payload } = await getRefreshToken(refreshToken);
-
-    if (status === 200) {
-      setCookie("accessToken", payload.newAccessToken);
-    }
-
-    return { status, payload };
-  };
-
-  const handleCheckLogin = async () => {
-    const { accessToken, publicKey } = getCookies();
-
-    if (!accessToken || !publicKey) return null;
-
-    const { status, payload } = await getUser(accessToken, publicKey);
-
-    if (status === 200) {
-      dispatch(loginReducer(payload));
-    }
-
-    return { status, payload };
-  };
+  const [loading, setLoading] = useState<boolean>(true);
 
   const checkAuth = async () => {
     setLoading(true);
-    const { refreshToken, publicKey } = getCookies();
-
-    if (!refreshToken || !publicKey) {
-      router.push("/login");
-      return;
-    }
 
     try {
-      const { accessToken } = getCookies();
+      const { status, payload } = await getUser();
 
-      if (!accessToken) {
-        await handleRefreshToken();
+      if (status === 200) {
+        dispatch(loginReducer(payload));
+        setLoading(false);
       }
-
-      await handleCheckLogin();
     } catch (err) {
-      console.log(err);
+      router.push("/login");
     }
-
-    setLoading(false);
   };
 
   const handleLogOut = () => {
@@ -102,7 +63,9 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
   };
 
   useEffect(() => {
-    checkAuth();
+    if (!infor._id) {
+      checkAuth();
+    }
   }, []);
 
   if (loading) {

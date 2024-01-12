@@ -26,7 +26,6 @@ import {
   getCouponsWithFilter,
   updateCoupon,
 } from "~/api-client";
-import { useRouter } from "next/navigation";
 
 interface ISelectCoupon {
   id: string;
@@ -40,8 +39,6 @@ interface Props {
 const CouponsPage = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? Number(query.page) : 1;
-
-  const router = useRouter();
 
   const [coupons, setCoupons] = useState<ICouponHome[]>([]);
   const [selectCoupons, setSelectCoupons] = useState<string[]>([]);
@@ -94,22 +91,10 @@ const CouponsPage = (props: Props) => {
       });
     }
 
-    const { accessToken, publicKey, apiKey } = getCookies();
-
     try {
-      const headers = {
-        Authorization: `Bear ${accessToken}`,
-        "public-key": `Key ${publicKey}`,
-        "x-api-key": `Key ${apiKey}`,
-      };
-
-      const payload = await updateCoupon(
-        id,
-        {
-          discount_public: status,
-        },
-        headers
-      );
+      const payload = await updateCoupon(id, {
+        discount_public: status,
+      });
 
       if (payload.status === 201) {
         toast.success("Success updated discount", {
@@ -145,34 +130,21 @@ const CouponsPage = (props: Props) => {
   }, [showPopup, selectItem]);
 
   const handleGetData = async () => {
-    const { accessToken, publicKey, apiKey } = getCookies();
-    if (!accessToken) return;
-
     setMessage(null);
     setLoading(true);
 
     try {
-      const headers = {
-        Authorization: `Bear ${accessToken}`,
-        "public-key": `Key ${publicKey}`,
-        "x-api-key": `Key ${apiKey}`,
-      };
-
-      const response = await getCoupons(
-        currentPage,
-        {
-          discount_name: "1",
-          discount_public: "1",
-          discount_type: "1",
-          discount_thumbnail: "1",
-          discount_code: "1",
-          discount_value: "1",
-          discount_active: "1",
-          discount_start_date: "1",
-          discount_end_date: "1",
-        },
-        headers
-      );
+      const response = await getCoupons(currentPage, {
+        discount_name: "1",
+        discount_public: "1",
+        discount_type: "1",
+        discount_thumbnail: "1",
+        discount_code: "1",
+        discount_value: "1",
+        discount_active: "1",
+        discount_start_date: "1",
+        discount_end_date: "1",
+      });
 
       if (response.status === 200) {
         if (response.payload.length === 0) {
@@ -202,36 +174,21 @@ const CouponsPage = (props: Props) => {
   };
 
   const handleGetDataByFilter = useCallback(async () => {
-    const { accessToken, publicKey, apiKey } = getCookies();
-
-    if (!accessToken) return;
-
     setMessage(null);
     setLoading(true);
 
     try {
-      const headers = {
-        Authorization: `Bear ${accessToken}`,
-        "public-key": `Key ${publicKey}`,
-        "x-api-key": `Key ${apiKey}`,
-      };
-
-      const response = await getCouponsWithFilter(
-        filter,
-        currentPage,
-        {
-          discount_name: "1",
-          discount_public: "1",
-          discount_type: "1",
-          discount_thumbnail: "1",
-          discount_code: "1",
-          discount_value: "1",
-          discount_active: "1",
-          discount_start_date: "1",
-          discount_end_date: "1",
-        },
-        headers
-      );
+      const response = await getCouponsWithFilter(filter, currentPage, {
+        discount_name: "1",
+        discount_public: "1",
+        discount_type: "1",
+        discount_thumbnail: "1",
+        discount_code: "1",
+        discount_value: "1",
+        discount_active: "1",
+        discount_start_date: "1",
+        discount_end_date: "1",
+      });
 
       if (response.status === 200) {
         if (response.payload.length === 0) {
