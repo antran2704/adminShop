@@ -218,6 +218,12 @@ const AttributesPage = (props: Props) => {
     }
   }, [currentPage]);
 
+  useEffect(() => {
+    if (selectAttributes.length > 0) {
+      setSelectAttributes([]);
+    }
+  }, [attributes, currentPage]);
+
   return (
     <ShowItemsLayout
       title="Attributes"

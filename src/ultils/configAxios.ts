@@ -1,6 +1,9 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { toast } from "react-toastify";
 import { getRefreshToken, logout } from "~/api-client";
+import { loginReducer, logoutReducer } from "~/store/slice";
+import { AppDispatch } from "~/store";
+import { NextRouter } from "next/router";
 
 const httpConfig = axios.create({
   baseURL: process.env.NEXT_PUBLIC_ENDPOINT_API,
@@ -41,11 +44,34 @@ const axiosDelete = async (
 };
 
 let isRefresh = false;
+let router: NextRouter;
+let dispatch: AppDispatch;
+
+export const injectStore = (_dispatch: AppDispatch) => {
+  dispatch = _dispatch;
+};
+
+export const injectRouter = (_router: NextRouter) => {
+  router = _router;
+};
 
 const handleLogout = () => {
+  const userInfor = {
+    _id: null,
+    name: "",
+    email: "",
+    avartar: null,
+  };
+
   logout();
-  // window.location.pathname = "/login";
+  dispatch(loginReducer(userInfor));
+  dispatch(logoutReducer(true));
+  router.push("/login");
 };
+
+httpConfig.interceptors.response.use((config) => {
+  return config;
+});
 
 httpConfig.interceptors.response.use(
   function (response) {
@@ -80,9 +106,18 @@ httpConfig.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    if (response.status === 404 && response.message === "Not found key token") {
+      handleLogout();
+      return Promise.reject(error);
+    }
+
     const originalRequest = error.config;
 
     if (response.status === 401) {
+      if (originalRequest.method === "post") {
+        return Promise.reject(error);
+      }
+
       if (!isRefresh && !originalRequest._retry) {
         isRefresh = true;
 
@@ -94,7 +129,9 @@ httpConfig.interceptors.response.use(
           return Promise.resolve(httpConfig(originalRequest));
         }
       } else {
-        handleLogout();
+        if (router.pathname !== "/login") {
+          handleLogout();
+        }
         isRefresh = false;
       }
     }

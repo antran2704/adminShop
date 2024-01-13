@@ -234,6 +234,12 @@ const CategoriesPage = (props: Props) => {
     }
   }, [currentPage]);
 
+  useEffect(() => {
+    if (selectCategories.length > 0) {
+      setSelectCategories([]);
+    }
+  }, [categories, currentPage]);
+
   return (
     <ShowItemsLayout
       title="Categories"

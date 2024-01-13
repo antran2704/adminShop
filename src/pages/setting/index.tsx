@@ -9,7 +9,7 @@ import { uploadImageOnServer } from "~/helper/handleImage";
 import { IUserInfor } from "~/interface";
 import FormLayout from "~/layouts/FormLayout";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { login } from "~/store/slice";
+import { loginReducer } from "~/store/slice";
 import { axiosPatch, axiosPost } from "~/ultils/configAxios";
 
 interface IPassword {
@@ -179,7 +179,7 @@ const SettingPage = () => {
         position: toast.POSITION.TOP_RIGHT,
       });
 
-      dispatch(login(payload));
+      dispatch(loginReducer(payload));
     } catch (error) {
       toast.error("Upload setting failed", {
         position: toast.POSITION.TOP_RIGHT,

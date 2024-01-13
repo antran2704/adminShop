@@ -8,9 +8,9 @@ import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
 import { InputText, InputPassword } from "~/components/InputField";
 import Loading from "~/components/Loading";
-import { loginReducer } from "~/store/slice";
+import { loginReducer, logoutReducer } from "~/store/slice";
 import { AxiosResponseCus } from "~/interface";
-import { useAppDispatch } from "~/store/hooks";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { axiosPost } from "~/ultils/configAxios";
 import { getUser } from "~/api-client";
 
@@ -26,6 +26,7 @@ const initData: IDataSend = {
 
 const LoginPage = () => {
   const router = useRouter();
+  const { logout } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
 
   const [data, setData] = useState<IDataSend>(initData);
@@ -57,6 +58,7 @@ const LoginPage = () => {
 
       if (status === 200) {
         dispatch(loginReducer(payload));
+        dispatch(logoutReducer(false))
         router.push("/");
       }
 
@@ -95,7 +97,12 @@ const LoginPage = () => {
   };
 
   useEffect(() => {
-    handleCheckLogin();
+    if (!logout) {
+      handleCheckLogin();
+      return;
+    }
+
+    setCheckLogin(false);
   }, []);
 
   if (checkLogin) {

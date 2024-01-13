@@ -266,6 +266,12 @@ const CouponsPage = (props: Props) => {
     }
   }, [currentPage]);
 
+  useEffect(() => {
+    if (selectCoupons.length > 0) {
+      setSelectCoupons([]);
+    }
+  }, [coupons, currentPage]);
+
   return (
     <ShowItemsLayout
       title="Coupons"

@@ -4,19 +4,20 @@ import { FaRegEdit } from "react-icons/fa";
 
 interface Props {
   link?: string;
+  target?: "_blank" | "_self";
   className?: string;
   onClick?: () => void;
 }
 
 const ButtonEdit = (props: Props) => {
-  const { link, className, onClick } = props;
+  const { link, className, target = "_self", onClick } = props;
 
   return (
     <Fragment>
       {link && (
         <Link
           href={link}
-          target="_blank"
+          target={target}
           className={`${
             className ? className : ""
           } block w-fit px-3 py-2 text-[#9ca3af] rounded transition duration-300 hover:text-success`}

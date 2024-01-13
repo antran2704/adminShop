@@ -5,8 +5,13 @@ import { Provider } from "react-redux";
 import { store } from "../store";
 
 import LAYOUT from "~/layouts";
+import { useEffect } from "react";
+import { injectRouter } from "~/ultils/configAxios";
+import { useRouter } from "next/router";
 
 export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+
   const pathName = usePathname();
   let Layout;
   switch (pathName) {
@@ -19,6 +24,10 @@ export default function App({ Component, pageProps }: AppProps) {
     default:
       Layout = LAYOUT.DefaultLayout;
   }
+
+  useEffect(() => {
+    injectRouter(router);
+  }, []);
 
   return (
     <Provider store={store}>

@@ -4,7 +4,7 @@ import { IUserInfor } from "~/interface";
 
 interface IInitData {
   infor: IUserInfor;
-  loading: boolean;
+  logout: boolean;
 }
 
 const initialState: IInitData = {
@@ -14,7 +14,7 @@ const initialState: IInitData = {
     email: "",
     avartar: null,
   },
-  loading: false,
+  logout: false,
 };
 
 const userSlice = createSlice({
@@ -24,13 +24,13 @@ const userSlice = createSlice({
     loginReducer: (state, action) => {
       state.infor = action.payload;
     },
-    isLoading: (state, action) => {
-      state.loading = action.payload;
+    logoutReducer: (state, action) => {
+      state.logout = action.payload;
     },
   },
 });
 
 export const getUser = (state: RootState) => state.user;
 
-export const { loginReducer, isLoading } = userSlice.actions;
+export const { loginReducer, logoutReducer } = userSlice.actions;
 export default userSlice.reducer;

@@ -1,27 +1,41 @@
 import { useRouter } from "next/router";
-import { FC, useState, useEffect, useContext } from "react";
+import { FC, useState, useEffect } from "react";
 import { RiListSettingsFill } from "react-icons/ri";
 import { BsArrowLeft } from "react-icons/bs";
 import { BiLogOut } from "react-icons/bi";
 import { listBody, listSetting, itemNav } from "./data";
 import useViewport from "~/hooks/useViewport";
-import { useAppSelector } from "~/store/hooks";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import ImageCus from "../Image/ImageCus";
 import NavbarItem from "./NavbarItem";
-import { AuthContex } from "~/layouts/DefaultLayout";
+import { logout } from "~/api-client";
+import { loginReducer, logoutReducer } from "~/store/slice";
 
 const Navbar: FC = () => {
   const router = useRouter();
   const width = useViewport();
 
-  const { handleLogOut } = useContext(AuthContex);
-
+  const dispatch = useAppDispatch();
   const { infor } = useAppSelector((state) => state.user);
 
   const [show, setShow] = useState(false);
 
   const handeShow = () => {
     setShow(!show);
+  };
+
+  const handleLogOut = async () => {
+    await logout();
+
+    const userInfor = {
+      _id: null,
+      name: "",
+      email: "",
+      avartar: null,
+    };
+    dispatch(loginReducer(userInfor));
+    dispatch(logoutReducer(true));
+    router.push("/login");
   };
 
   useEffect(() => {

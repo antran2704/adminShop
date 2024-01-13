@@ -111,6 +111,7 @@ export default function Home() {
 
   const [overviews, setOverviews] = useState<IOverview>(initOveviews);
   const [dataBarWeek, setDataBarWeek] = useState<any>(data);
+  const [totalWeek, setTotalWeek] = useState<number>(0);
 
   const [orders, setOrders] = useState<IOrder[]>([]);
 
@@ -141,6 +142,7 @@ export default function Home() {
 
       const startDay = startDate.getDate();
       const newData: any = data;
+      let total: number = 0;
 
       for (let i = 0; i <= 6; i++) {
         const nextDay = new Date();
@@ -152,6 +154,7 @@ export default function Home() {
 
       if (payload.length === 0) {
         setDataBarWeek(newData);
+        setTotalWeek(0);
         chartWeekRef.current.update();
       }
 
@@ -163,8 +166,10 @@ export default function Home() {
           );
           newData.datasets[0].data[index] = item.sub_gross;
           newData.datasets[1].data[index] = item.gross;
+          total += item.gross;
         });
 
+        setTotalWeek(total);
         setDataBarWeek(newData);
         chartWeekRef.current.update();
       }
@@ -288,7 +293,7 @@ export default function Home() {
               <SpringCount
                 className="text-lg font-bold"
                 from={0}
-                to={4413954}
+                to={totalWeek}
                 specialCharacter="VND"
                 duration={0.5}
               />

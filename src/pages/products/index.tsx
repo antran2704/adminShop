@@ -281,6 +281,12 @@ const ProductPage = (props: Props) => {
     }
   }, [currentPage]);
 
+  useEffect(() => {
+    if (selectProducts.length > 0) {
+      setSelectProducts([]);
+    }
+  }, [products, currentPage]);
+
   return (
     <ShowItemsLayout
       title="Products"
