@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { FC, useState, useEffect } from "react";
-import { RiListSettingsFill } from "react-icons/ri";
 import { BsArrowLeft } from "react-icons/bs";
 import { BiLogOut } from "react-icons/bi";
 import { listBody, listSetting, itemNav } from "./data";
@@ -10,6 +9,7 @@ import ImageCus from "../Image/ImageCus";
 import NavbarItem from "./NavbarItem";
 import { logout } from "~/api-client";
 import { loginReducer, logoutReducer } from "~/store/slice";
+import { IoMdSettings } from "react-icons/io";
 
 const Navbar: FC = () => {
   const router = useRouter();
@@ -46,11 +46,11 @@ const Navbar: FC = () => {
 
   return (
     <>
-      <button
-        className="fixed flex items-center justify-center w-10 h-10 right-2 bottom-2 bg-black rounded-md opacity-60 hover:opacity-100 z-10"
+     <button
+        className="fixed flex items-center justify-center w-10 h-10 -right-2 bottom-20 bg-black rounded-md opacity-60 hover:opacity-100 z-10"
         onClick={handeShow}
       >
-        <RiListSettingsFill className="text-xl text-white" />
+        <IoMdSettings  className="text-xl text-white" />
       </button>
       {/* Navbar on PC */}
       <nav

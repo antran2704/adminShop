@@ -43,9 +43,6 @@ const CreateCategoryPage = () => {
     node_id: null,
   });
 
-  // console.log("categories:::", categories);
-  // console.log("categoriesParent:::", categoriesParent);
-
   const [thumbnail, setThumbnail] = useState<string | null>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -202,23 +199,21 @@ const CreateCategoryPage = () => {
       backLink="/categories"
       onSubmit={handleOnSubmit}
     >
-      <div>
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
+      <div className="lg:w-2/4 w-full mx-auto">
+        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputText
             title="Title"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={data.title}
             error={fieldsCheck.includes("title")}
             name="title"
             placeholder="Title for category..."
             getValue={changeValue}
           />
-        </div>
 
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
           <InputText
             title="Description"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             error={fieldsCheck.includes("description")}
             value={data.description}
             name="description"
@@ -227,10 +222,10 @@ const CreateCategoryPage = () => {
           />
         </div>
 
-        <div className="w-full mt-5">
+        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputText
             title="Parent Category"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={categorySelect.title ? categorySelect.title : ""}
             name="parent_id"
             placeholder="Please select parent category"
@@ -252,16 +247,14 @@ const CreateCategoryPage = () => {
           </div>
         </div>
 
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
+        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <Thumbnail
             error={fieldsCheck.includes("thumbnail")}
             url={thumbnail}
             loading={loadingThumbnail}
             onChange={uploadThumbnail}
           />
-        </div>
 
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
           <ButtonCheck
             title="Public"
             name="public"
@@ -270,6 +263,8 @@ const CreateCategoryPage = () => {
             onChange={changePublic}
           />
         </div>
+
+        <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3"></div>
 
         {loading && <Loading />}
       </div>

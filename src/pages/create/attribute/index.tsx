@@ -105,7 +105,7 @@ const CreateAttributePage = () => {
         code: data.code,
         variants: generateAttributes(data.variants as ISelectItem[]),
         public: data.public,
-      })
+      });
 
       if (payload.status === 201) {
         toast.success("Success create attribute", {
@@ -129,34 +129,30 @@ const CreateAttributePage = () => {
       backLink="/attributes"
       onSubmit={handleOnSubmit}
     >
-      <div>
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
+      <div className="lg:w-2/4 w-full mx-auto">
+        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputText
             title="Attribute Title"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={data.name}
             error={fieldsCheck.includes("name")}
             name="name"
             placeholder="Color or Size or Material"
             getValue={changeValue}
           />
-        </div>
 
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
           <InputText
             title="Attribute Code"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={data.code}
             name="code"
             error={fieldsCheck.includes("code")}
             getValue={changeValue}
           />
-        </div>
 
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
           <MultipleValue
             title="Variants"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             items={data.variants as ISelectItem[]}
             name="variants"
             placeholder="Press enter to add variant"

@@ -25,6 +25,7 @@ const colHeaderOrderDetail: string[] = [
   "Options",
   "Quantity",
   "Price",
+  "Promotion Price",
   "Amout",
 ];
 

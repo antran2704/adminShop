@@ -3,7 +3,7 @@ import { Fragment } from "react";
 import { IoIosAdd } from "react-icons/io";
 
 import Popup from "~/components/Popup";
-import Pagination from "~/components/Pagination";
+import PaginationCus from "~/components/Pagination";
 
 import { IPagination } from "~/interface/pagination";
 
@@ -71,11 +71,9 @@ const ShowItemsLayout = (props: Props) => {
       <Fragment>
         {children}
 
-        {pagination.totalItems > pagination.pageSize &&
-          pagination.currentPage <=
-            Math.ceil(pagination.totalItems / pagination.pageSize) && (
-            <Pagination pagination={pagination} />
-          )}
+        {pagination.totalItems > pagination.pageSize && (
+          <PaginationCus pagination={pagination} />
+        )}
       </Fragment>
 
       {showPopup && selectItem?.id && handlePopup && (

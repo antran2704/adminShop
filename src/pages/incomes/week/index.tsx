@@ -34,14 +34,6 @@ const options = {
       position: "top" as const,
     },
   },
-  scales: {
-    x: {
-      stacked: true,
-    },
-    y: {
-      stacked: true,
-    },
-  },
   maintainAspectRatio: false,
 };
 

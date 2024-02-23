@@ -50,6 +50,14 @@ const dataFilterMethod: ISelectItem[] = [
     _id: "card",
     title: "Card",
   },
+  {
+    _id: "cod",
+    title: "Cod",
+  },
+  {
+    _id: "vnpay",
+    title: "VNPay",
+  },
 ];
 
 const OrdersPage = (props: Props) => {
@@ -240,7 +248,7 @@ const OrdersPage = (props: Props) => {
                 />
                 <CelTable type={typeCel.GROUP}>
                   <div className="flex items-center justify-center">
-                    <ButtonEdit link={`/orders/${order._id}`} />
+                    <ButtonEdit link={`/orders/${order.order_id}`} />
                   </div>
                 </CelTable>
               </tr>

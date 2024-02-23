@@ -42,12 +42,14 @@ import { ButtonDelete } from "~/components/Button";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import {
   createVariations,
+  deleteProduct,
   getAllCategories,
   getAttributesAvailable,
   getParentCategories,
   getProduct,
   updateProduct,
 } from "~/api-client";
+import { data } from "autoprefixer";
 
 enum TYPE_TAG {
   BASIC_INFOR = "basic_infor",
@@ -166,6 +168,11 @@ const ProductEditPage = (props: Props) => {
 
   const [showPopupClearVariants, setShowClearVariants] =
     useState<boolean>(false);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+
+  const handlePopup = () => {
+    setShowPopup(!showPopup);
+  };
 
   const onShowPopupVariant = (variant: IVariantProduct | null = null) => {
     if (variant) {
@@ -557,6 +564,26 @@ const ProductEditPage = (props: Props) => {
     return fields;
   };
 
+  const handleDeleteProduct = async () => {
+    if (!product._id) return;
+
+    try {
+      await deleteProduct(product._id);
+      setShowPopup(false);
+
+      toast.success("Success delete product", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      router.push("/products");
+    } catch (error) {
+      toast.error("Error delete product", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      console.log(error);
+    }
+  };
+
   const handleOnSubmit = async () => {
     const fields = checkData([
       {
@@ -904,23 +931,21 @@ const ProductEditPage = (props: Props) => {
         </div>
 
         {tag === TYPE_TAG.BASIC_INFOR && (
-          <div>
-            <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between lg:gap-5 gap-3">
+          <div className="lg:w-2/4 w-full mx-auto">
+            <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
               <InputText
                 title="Title"
-                width="lg:w-2/4 w-full"
+                width="w-full"
                 value={product.title || ""}
                 error={fieldsCheck.includes("title")}
                 name="title"
                 placeholder="Input product name..."
                 getValue={changeValue}
               />
-            </div>
 
-            <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
               <InputTextarea
                 title="Short description"
-                width="lg:w-2/4 w-full"
+                width="w-full"
                 error={fieldsCheck.includes("shortDescription")}
                 value={product.shortDescription || ""}
                 name="shortDescription"
@@ -928,12 +953,10 @@ const ProductEditPage = (props: Props) => {
                 rows={2}
                 getValue={changeValue}
               />
-            </div>
 
-            <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
               <InputTextarea
                 title="Description"
-                width="lg:w-2/4 w-full"
+                width="w-full"
                 error={fieldsCheck.includes("description")}
                 value={product.description || ""}
                 name="description"
@@ -942,10 +965,10 @@ const ProductEditPage = (props: Props) => {
               />
             </div>
 
-            <div className="w-full mt-5">
+            <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
               <MultipleValue
                 title="Categories"
-                width="lg:w-2/4 w-full"
+                width="w-full"
                 items={mutipleCategories}
                 name="categories"
                 infor="Categories select must be different Home Category"
@@ -968,9 +991,7 @@ const ProductEditPage = (props: Props) => {
                     />
                   )}
               </div>
-            </div>
 
-            <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
               <SelectItem
                 width="lg:w-2/4 w-full"
                 title="Default category"
@@ -981,7 +1002,7 @@ const ProductEditPage = (props: Props) => {
               />
             </div>
 
-            <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+            <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
               <Thumbnail
                 error={fieldsCheck.includes("thumbnail")}
                 url={thumbnail}
@@ -998,10 +1019,10 @@ const ProductEditPage = (props: Props) => {
               />
             </div>
 
-            <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+            <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
               <InputNumber
                 title="Price"
-                width="lg:w-2/4 w-full"
+                width="w-full"
                 error={fieldsCheck.includes("price")}
                 value={formatBigNumber(product.price)}
                 name="price"
@@ -1010,7 +1031,7 @@ const ProductEditPage = (props: Props) => {
 
               <InputNumber
                 title="Promotion Price"
-                width="lg:w-2/4 w-full"
+                width="w-full"
                 value={formatBigNumber(product.promotion_price)}
                 error={fieldsCheck.includes("promotion_price")}
                 name="promotion_price"
@@ -1019,7 +1040,7 @@ const ProductEditPage = (props: Props) => {
 
               <InputNumber
                 title="Inventory"
-                width="lg:w-2/4 w-full"
+                width="w-full"
                 readonly={variants.length > 0 ? true : false}
                 infor="If product have variations, you can't edit input"
                 value={formatBigNumber(product.inventory)}
@@ -1027,10 +1048,12 @@ const ProductEditPage = (props: Props) => {
                 name="inventory"
                 getValue={changePrice}
               />
+            </div>
 
+            <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
               <InputText
                 title="SKU"
-                width="lg:w-2/4 w-full"
+                width="w-full"
                 value={product.sku || ""}
                 error={fieldsCheck.includes("sku")}
                 placeholder="SKU..."
@@ -1041,7 +1064,7 @@ const ProductEditPage = (props: Props) => {
 
               <InputText
                 title="Barcode"
-                width="lg:w-2/4 w-full"
+                width="w-full"
                 value={product.barcode || ""}
                 error={fieldsCheck.includes("barcode")}
                 name="barcode"
@@ -1051,21 +1074,21 @@ const ProductEditPage = (props: Props) => {
 
               <InputNumber
                 title="Sold"
-                width="lg:w-2/4 w-full"
+                width="w-full"
                 value={product.sold.toString()}
                 name="sold"
                 readonly={true}
               />
             </div>
 
-            <div className="lg:w-2/4 w-full flex flex-col mt-5 lg:gap-5 gap-3">
+            <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
               <Specifications
                 specifications={specifications}
                 onUpdate={onUpdateSpecifications}
               />
             </div>
 
-            <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
+            <div className="w-full flex lg:flex-nowrap flex-wrap items-end justify-between mt-5 gap-5">
               {product._id && (
                 <ButtonCheck
                   title="Public"
@@ -1075,6 +1098,13 @@ const ProductEditPage = (props: Props) => {
                   onChange={changePublic}
                 />
               )}
+
+              <button
+                onClick={handlePopup}
+                className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
+              >
+                Delete
+              </button>
             </div>
 
             {loading && <Loading />}
@@ -1268,6 +1298,31 @@ const ProductEditPage = (props: Props) => {
               </Popup>
             )}
           </div>
+        )}
+
+        {showPopup && (
+          <Popup
+            title="Xác nhận xóa sản phẩm"
+            show={showPopup}
+            onClose={handlePopup}
+          >
+            <div>
+              <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
+                <button
+                  onClick={handlePopup}
+                  className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-90 hover:opacity-100 rounded-md transition-cus"
+                >
+                  Cancle
+                </button>
+                <button
+                  onClick={handleDeleteProduct}
+                  className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-90 hover:opacity-100 rounded-md"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </Popup>
         )}
       </Fragment>
     </FormLayout>

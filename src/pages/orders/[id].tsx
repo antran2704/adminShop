@@ -1,5 +1,4 @@
 import dynamic from "next/dynamic";
-import { notFound } from 'next/navigation'
 import { NextRouter, useRouter } from "next/router";
 import {
   useState,
@@ -15,9 +14,9 @@ import { toast } from "react-toastify";
 import { AiOutlinePrinter } from "react-icons/ai";
 
 import { getDateTime } from "~/helper/datetime";
-import optionsCancle from "./optionCancle";
+import optionsCancle from "~/data/optionCancle";
 
-import { IOptionCancle } from "./interface";
+import { IOptionCancle } from "~/interface";
 import { IOrder, statusOrder, IItemOrder } from "~/interface/order";
 import { typeCel } from "~/enums";
 
@@ -145,7 +144,7 @@ const OrderDetail = () => {
   }, [orderId]);
 
   return (
-    <section className="lg:py-5 px-5 py-24">
+    <section className="p-5">
       <h1 className="lg:text-2xl md:text-xl text-lg font-medium">
         Order detail
       </h1>
@@ -268,13 +267,19 @@ const OrderDetail = () => {
                   />
                   <CelTable
                     type={typeCel.LINK}
-                    value={item.name}
-                    href={`/edit/product/${item.product_id}`}
+                    value={
+                      item.variation ? item.variation.title : item.product.title
+                    }
+                    href={`/edit/product/${item.product._id}`}
                   />
                   <CelTable
                     center={true}
                     type={typeCel.TEXT}
-                    value={item.options.join(" / ")}
+                    value={
+                      item.variation
+                        ? item.variation.options?.join(" / ")
+                        : "Default"
+                    }
                   />
                   <CelTable
                     center={true}
@@ -289,7 +294,16 @@ const OrderDetail = () => {
                   <CelTable
                     center={true}
                     type={typeCel.TEXT}
-                    value={formatBigNumber(item.price * item.quantity) + " VND"}
+                    value={formatBigNumber(item.promotion_price) + " VND"}
+                  />
+                  <CelTable
+                    center={true}
+                    type={typeCel.TEXT}
+                    value={
+                      (item.promotion_price > 0
+                        ? formatBigNumber(item.promotion_price * item.quantity)
+                        : formatBigNumber(item.price * item.quantity)) + " VND"
+                    }
                   />
                 </tr>
               ))}
@@ -313,7 +327,7 @@ const OrderDetail = () => {
               Shipping cost
             </h3>
             <p className="md:text-base text-sm font-medium text-primary mt-2">
-              {formatBigNumber(30000)} VND
+              {formatBigNumber(data.shipping_cost)} VND
             </p>
           </div>
           <div>

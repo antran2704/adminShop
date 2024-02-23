@@ -19,12 +19,14 @@ import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Loading from "~/components/Loading";
 import {
+  deleteCategory,
   getCategories,
   getCategory,
   getParentCategories,
   updateCategory,
   uploadThumbnailCategory,
 } from "~/api-client";
+import Popup from "~/components/Popup";
 
 const initData: IDataCategory = {
   _id: null,
@@ -61,6 +63,11 @@ const EditCategoryPage = (props: Props) => {
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
 
   const [loading, setLoading] = useState(true);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+
+  const handlePopup = () => {
+    setShowPopup(!showPopup);
+  };
 
   const onSelectCategory = (title: string | null, node_id: string | null) => {
     setCategorySelect({ title, node_id });
@@ -117,6 +124,30 @@ const EditCategoryPage = (props: Props) => {
     router.push(`#${fields[0]}`);
     return fields;
   };
+
+  const handleDeleteCategory = useCallback(async () => {
+    if (!data._id) return;
+
+    try {
+      if (data.thumbnail) {
+        await deleteImageInSever(data.thumbnail as string);
+      }
+
+      await deleteCategory(data._id as string);
+      setShowPopup(false);
+
+      toast.success("Success delete category", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      router.push("/categories");
+    } catch (error) {
+      toast.error("Error delete category", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      console.log(error);
+    }
+  }, [data]);
 
   const handleOnSubmit = async () => {
     const fields = checkData([
@@ -283,22 +314,20 @@ const EditCategoryPage = (props: Props) => {
       onSubmit={handleOnSubmit}
     >
       <Fragment>
-        <div>
-          <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
+        <div className="lg:w-2/4 w-full mx-auto">
+          <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
             <InputText
               title="Title"
               error={fieldsCheck.includes("title")}
-              width="lg:w-2/4 w-full"
+              width="w-full"
               value={data.title}
               name="title"
               getValue={changeValue}
             />
-          </div>
 
-          <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
             <InputText
               title="Description"
-              width="lg:w-2/4 w-full"
+              width="w-full"
               value={data.description}
               name="description"
               error={fieldsCheck.includes("description")}
@@ -306,10 +335,10 @@ const EditCategoryPage = (props: Props) => {
             />
           </div>
 
-          <div className="w-full mt-5">
+          <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
             <InputText
               title="Parent Category"
-              width="lg:w-2/4 w-full"
+              width="w-full"
               value={categorySelect.title ? categorySelect.title : ""}
               name="parent_id"
               readonly={true}
@@ -331,7 +360,7 @@ const EditCategoryPage = (props: Props) => {
             </div>
           </div>
 
-          <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
+          <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
             <Thumbnail
               error={fieldsCheck.includes("thumbnail")}
               url={thumbnail}
@@ -340,7 +369,7 @@ const EditCategoryPage = (props: Props) => {
             />
           </div>
 
-          <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
+          <div className="w-full flex lg:flex-nowrap flex-wrap items-end justify-between mt-5 gap-5">
             {data?._id && (
               <ButtonCheck
                 title="Public"
@@ -350,10 +379,42 @@ const EditCategoryPage = (props: Props) => {
                 onChange={changePublic}
               />
             )}
+
+            <button
+              onClick={handlePopup}
+              className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
+            >
+              Delete
+            </button>
           </div>
         </div>
 
         {loading && <Loading />}
+
+        {showPopup && (
+          <Popup
+            title="Xác nhận xóa thư mục"
+            show={showPopup}
+            onClose={handlePopup}
+          >
+            <div>
+              <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
+                <button
+                  onClick={handlePopup}
+                  className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-90 hover:opacity-100 rounded-md transition-cus"
+                >
+                  Cancle
+                </button>
+                <button
+                  onClick={handleDeleteCategory}
+                  className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-90 hover:opacity-100 rounded-md"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </Popup>
+        )}
       </Fragment>
     </FormLayout>
   );

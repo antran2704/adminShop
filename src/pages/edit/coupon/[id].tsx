@@ -16,6 +16,8 @@ import Thumbnail from "~/components/Image/Thumbnail";
 import { uploadImageOnServer } from "~/helper/handleImage";
 import { SelectDate, SelectTag } from "~/components/Select";
 import Loading from "~/components/Loading";
+import { deleteCoupon } from "~/api-client";
+import Popup from "~/components/Popup";
 
 interface Props {
   query: ParsedUrlQuery;
@@ -58,6 +60,11 @@ const EditCouponPage = (props: Props) => {
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
 
   const [loading, setLoading] = useState(true);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+
+  const handlePopup = () => {
+    setShowPopup(!showPopup);
+  };
 
   const changePublic = useCallback(
     (name: string, value: boolean) => {
@@ -261,6 +268,26 @@ const EditCouponPage = (props: Props) => {
     }
   };
 
+  const handleDeleteCoupon = useCallback(async () => {
+    if (!data._id) return;
+
+    try {
+      await deleteCoupon(data._id);
+      setShowPopup(false);
+
+      toast.success("Success delete coupon", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      router.push("/coupons");
+    } catch (error) {
+      toast.error("Error delete coupon", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      console.log(error);
+    }
+  }, [data]);
+
   const handleOnSubmit = async () => {
     setLoading(true);
 
@@ -310,6 +337,7 @@ const EditCouponPage = (props: Props) => {
     try {
       const payload = await axiosPatch(`/discounts/${id}`, {
         ...data,
+        discount_code: data.discount_code.toUpperCase(),
         discount_thumbnail: thumbnail,
         discount_type: discountType,
       });
@@ -339,11 +367,11 @@ const EditCouponPage = (props: Props) => {
       backLink="/coupons"
       onSubmit={handleOnSubmit}
     >
-      <div>
-        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+      <div className="lg:w-2/4 w-full mx-auto">
+        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputText
             title="Coupon name"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={data.discount_name}
             error={fieldsCheck.includes("discount_name")}
             name="discount_name"
@@ -353,7 +381,7 @@ const EditCouponPage = (props: Props) => {
 
           <InputText
             title="Coupon Code"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={data.discount_code.toUpperCase()}
             name="discount_code"
             error={fieldsCheck.includes("discount_code")}
@@ -362,10 +390,10 @@ const EditCouponPage = (props: Props) => {
           />
         </div>
 
-        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <SelectDate
             title="Start date"
-            className="lg:w-1/2 w-full"
+            className="w-full"
             name="discount_start_date"
             type="datetime-local"
             value={data.discount_start_date}
@@ -375,7 +403,7 @@ const EditCouponPage = (props: Props) => {
           <SelectDate
             title="End date"
             type="datetime-local"
-            className={`lg:w-1/2 w-full ${
+            className={`w-full ${
               data.discount_start_date.length > 0
                 ? "pointer-events-auto"
                 : "opacity-60 pointer-events-none"
@@ -387,7 +415,7 @@ const EditCouponPage = (props: Props) => {
           />
         </div>
 
-        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <div>
             <p className="text-base text-[#1E1E1E] font-medium mb-2">
               Coupon type
@@ -420,7 +448,7 @@ const EditCouponPage = (props: Props) => {
                 {discountType === EDicount_type.PERCENTAGE ? "%" : "VND"}
               </p>
               <InputNumber
-                width="lg:w-2/4 w-full"
+                width="w-full"
                 value={data.discount_value.toString()}
                 error={fieldsCheck.includes("discount_value")}
                 name="discount_value"
@@ -433,10 +461,10 @@ const EditCouponPage = (props: Props) => {
           </div>
         </div>
 
-        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputNumber
             title="Minimum Amount"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={data.discount_min_value.toString()}
             name="discount_min_value"
             error={fieldsCheck.includes("discount_min_value")}
@@ -446,7 +474,7 @@ const EditCouponPage = (props: Props) => {
 
           <InputNumber
             title="Coupon quantity"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={data.discount_max_uses.toString()}
             name="discount_max_uses"
             error={fieldsCheck.includes("discount_max_uses")}
@@ -456,7 +484,7 @@ const EditCouponPage = (props: Props) => {
 
           <InputNumber
             title="Coupon per user"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={data.discount_per_user.toString()}
             name="discount_per_user"
             error={fieldsCheck.includes("discount_per_user")}
@@ -465,9 +493,8 @@ const EditCouponPage = (props: Props) => {
           />
         </div>
 
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
+        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <Thumbnail
-            className="w-[400px] h-[300px]"
             error={fieldsCheck.includes("thumbnail")}
             url={thumbnail}
             loading={loadingThumbnail}
@@ -475,7 +502,7 @@ const EditCouponPage = (props: Props) => {
           />
         </div>
 
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
+        <div className="w-full flex lg:flex-nowrap flex-wrap items-end justify-between mt-5 gap-5">
           <ButtonCheck
             title="Public"
             name="discount_public"
@@ -483,9 +510,41 @@ const EditCouponPage = (props: Props) => {
             isChecked={data.discount_public}
             onChange={changePublic}
           />
+
+          <button
+            onClick={handlePopup}
+            className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
+          >
+            Delete
+          </button>
         </div>
 
         {loading && <Loading />}
+
+        {showPopup && (
+          <Popup
+            title="Xác nhận xóa mã giảm giá"
+            show={showPopup}
+            onClose={handlePopup}
+          >
+            <div>
+              <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
+                <button
+                  onClick={handlePopup}
+                  className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-90 hover:opacity-100 rounded-md transition-cus"
+                >
+                  Cancle
+                </button>
+                <button
+                  onClick={handleDeleteCoupon}
+                  className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-90 hover:opacity-100 rounded-md"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </Popup>
+        )}
       </div>
     </FormLayout>
   );

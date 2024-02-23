@@ -38,7 +38,7 @@ const Thumbnail: FC<Props> = (props: Props) => {
     }
   };
   return (
-    <div className="lg:w-1/2 w-full">
+    <div className="w-full">
       <span
         id="thumbnail"
         className="block text-base text-[#1E1E1E] font-medium mb-1"
@@ -52,7 +52,7 @@ const Thumbnail: FC<Props> = (props: Props) => {
           error ? "border-error" : ""
         } ${
           className ? className : "min-w-[100px] max-h-[400px] max-w-[400px]"
-        } rounded-md border-2 ${!url ? 'min-h-[300px] border-dashed' : ""} cursor-pointer overflow-hidden`}
+        } rounded-md ${!url ? 'min-h-[260px] border-2 border-dashed' : ""} cursor-pointer overflow-hidden`}
       >
         {loading && (
           <p className="text-base font-medium text-center">Loading...</p>

@@ -394,23 +394,21 @@ const CreateProductPage = () => {
       backLink="/products"
       onSubmit={handleOnSubmit}
     >
-      <div>
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
+      <div className="lg:w-2/4 w-full mx-auto">
+        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputText
             title="Title"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={product.title}
             error={fieldsCheck.includes("title")}
             name="title"
             placeholder="Input product name..."
             getValue={changeValue}
           />
-        </div>
 
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
           <InputTextarea
             title="Short description"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             error={fieldsCheck.includes("shortDescription")}
             value={product.shortDescription}
             name="shortDescription"
@@ -418,12 +416,10 @@ const CreateProductPage = () => {
             rows={2}
             getValue={changeValue}
           />
-        </div>
 
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
           <InputTextarea
             title="Description"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             error={fieldsCheck.includes("description")}
             value={product.description}
             name="description"
@@ -432,10 +428,10 @@ const CreateProductPage = () => {
           />
         </div>
 
-        <div className="w-full mt-5">
+        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <MultipleValue
             title="Categories"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             items={mutipleCategories}
             name="categories"
             placeholder="Please select a category or categories"
@@ -457,11 +453,9 @@ const CreateProductPage = () => {
                 />
               )}
           </div>
-        </div>
 
-        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
           <SelectItem
-            width="lg:w-2/4 w-full"
+            width="w-full"
             title="Default category"
             name="category"
             value={defaultCategory ? defaultCategory : ""}
@@ -470,7 +464,7 @@ const CreateProductPage = () => {
           />
         </div>
 
-        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <Thumbnail
             error={fieldsCheck.includes("thumbnail")}
             url={thumbnail}
@@ -487,10 +481,10 @@ const CreateProductPage = () => {
           />
         </div>
 
-        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputNumber
             title="Price"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             error={fieldsCheck.includes("price")}
             value={formatBigNumber(product.price)}
             name="price"
@@ -499,7 +493,7 @@ const CreateProductPage = () => {
 
           <InputNumber
             title="Promotion Price"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={formatBigNumber(product.promotion_price)}
             error={fieldsCheck.includes("promotion_price")}
             name="promotion_price"
@@ -508,16 +502,18 @@ const CreateProductPage = () => {
 
           <InputNumber
             title="Inventory"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={formatBigNumber(product.inventory)}
             error={fieldsCheck.includes("inventory")}
             name="inventory"
             getValue={changePrice}
           />
+        </div>
 
+        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputText
             title="SKU"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={product.sku || ""}
             error={fieldsCheck.includes("sku")}
             placeholder="SKU..."
@@ -528,7 +524,7 @@ const CreateProductPage = () => {
 
           <InputText
             title="Barcode"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={product.barcode || ""}
             error={fieldsCheck.includes("barcode")}
             name="barcode"
@@ -537,7 +533,7 @@ const CreateProductPage = () => {
           />
         </div>
 
-        <div className="lg:w-2/4 w-full flex flex-col mt-5 lg:gap-5 gap-3">
+        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <Specifications
             specifications={specifications}
             onUpdate={onUpdateSpecifications}

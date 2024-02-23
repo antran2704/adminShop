@@ -1,4 +1,5 @@
 import { ICoupon } from "../coupon";
+import { IProductData, IVariantProduct } from "../product";
 
 export enum statusOrder {
   pending = "pending",
@@ -9,14 +10,12 @@ export enum statusOrder {
 
 interface IItemOrder {
   _id: string;
-  product_id: string;
-  name: string;
-  options: string[];
-  thumbnail: string | null;
+  product: Partial<IProductData>;
+  variation: Partial<IVariantProduct>;
+  // options: string[];
   promotion_price: number;
   price: number;
   quantity: number;
-  link: string;
 }
 
 type ICouponOrder = Pick<ICoupon, "discount_name" | "discount_code">;
@@ -44,6 +43,6 @@ interface IOrder {
   createdAt: string;
 }
 
-type IOrderCancle = Pick<IOrder, "note" | "cancleContent">
+type IOrderCancle = Pick<IOrder, "note" | "cancleContent">;
 
 export type { IItemOrder, IOrder, IOrderCancle };

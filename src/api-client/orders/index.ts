@@ -22,7 +22,7 @@ const getOrdersWithFilter = async (
 };
 
 const getOrder = async (order_id: string) => {
-  return await axiosGet(`/orders/${order_id}`);
+  return await axiosGet(`/orders/order_id/${order_id}`);
 };
 
 const updateOrder = async (
