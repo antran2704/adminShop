@@ -9,6 +9,7 @@ import {
   PDFViewer,
 } from "@react-pdf/renderer";
 import { getDateTime } from "~/helper/datetime";
+import { getValueCoupon } from "~/helper/number/coupon";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { IOrder, IItemOrder } from "~/interface/order";
 
@@ -226,6 +227,9 @@ const PDFDocument = (props: Props) => {
                 <Text style={[styles.col, styles.textCenter]}>Type</Text>
                 <Text style={[styles.col, styles.textCenter]}>Quantity</Text>
                 <Text style={[styles.col, styles.textCenter]}>Price</Text>
+                <Text style={[styles.col, styles.textCenter]}>
+                  Promotion Price
+                </Text>
                 <Text style={[styles.col, styles.textCenter]}>Amount</Text>
               </View>
 
@@ -238,10 +242,12 @@ const PDFDocument = (props: Props) => {
                     {index + 1}
                   </Text>
                   <Text style={[styles.col, styles.textJustify]}>
-                    {item.name}
+                    {item.variation ? item.variation.title : item.product.title}
                   </Text>
                   <Text style={[styles.col, styles.textCenter]}>
-                    {item.options.join(" / ")}
+                    {item.variation
+                      ? item.variation.options?.join(" / ")
+                      : "Default"}
                   </Text>
                   <Text style={[styles.col, styles.textCenter]}>
                     {item.quantity}
@@ -250,7 +256,13 @@ const PDFDocument = (props: Props) => {
                     {formatBigNumber(item.price)} VND
                   </Text>
                   <Text style={[styles.col, styles.textCenter]}>
-                    {formatBigNumber(item.price * item.quantity)} VND
+                    {formatBigNumber(item.promotion_price)} VND
+                  </Text>
+                  <Text style={[styles.col, styles.textCenter]}>
+                    {item.promotion_price > 0
+                      ? formatBigNumber(item.promotion_price * item.quantity)
+                      : formatBigNumber(item.price * item.quantity)}{" "}
+                    VND
                   </Text>
                 </View>
               ))}
@@ -271,16 +283,26 @@ const PDFDocument = (props: Props) => {
                     {formatBigNumber(data.sub_total)} VND
                   </Text>
                 </View>
-                <View
-                  style={[styles.wrapContent, styles.justifyContent_between]}
-                >
-                  <Text style={[styles.title, styles.footerTitle]}>
-                    Discount:
-                  </Text>
-                  <Text style={styles.content}>
-                    - {formatBigNumber(300)} VND
-                  </Text>
-                </View>
+                {data.discount && (
+                  <View
+                    style={[styles.wrapContent, styles.justifyContent_between]}
+                  >
+                    <Text style={[styles.title, styles.footerTitle]}>
+                      Discount:
+                    </Text>
+                    <Text style={styles.content}>
+                      -{" "}
+                      {formatBigNumber(
+                        getValueCoupon(
+                          data.sub_total,
+                          data.discount.discount_value as number,
+                          data.discount.discount_type as string
+                        )
+                      )}{" "}
+                      VND
+                    </Text>
+                  </View>
+                )}
                 <View
                   style={[styles.wrapContent, styles.justifyContent_between]}
                 >

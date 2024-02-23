@@ -81,9 +81,9 @@ const OrdersPage = (props: Props) => {
   const onSelect = useCallback(
     (value: string, name: string) => {
       setFilter({ ...filter, [name]: value });
-      router.replace({
-        query: {},
-      });
+      // router.replace({
+      //   query: {},
+      // });
     },
     [filter]
   );
@@ -152,11 +152,7 @@ const OrdersPage = (props: Props) => {
   }, [currentPage]);
 
   return (
-    <ShowItemsLayout
-      title="Orders"
-      titleCreate="Create order"
-      pagination={pagination}
-    >
+    <ShowItemsLayout title="Orders" pagination={pagination}>
       <Fragment>
         <Search
           search={filter?.search || ""}

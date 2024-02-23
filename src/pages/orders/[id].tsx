@@ -29,6 +29,7 @@ import { ButtonClassic } from "~/components/Button";
 import Loading from "~/components/Loading";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { getOrder, updateOrder } from "~/api-client";
+import { getValueCoupon } from "~/helper/number/coupon";
 
 const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {
   loading: () => <Loading />,
@@ -318,53 +319,68 @@ const OrderDetail = () => {
             <h3 className="lg:text-lg  md:text-base text-sm font-medium uppercase">
               Payment method
             </h3>
-            <p className="md:text-base text-sm font-medium text-primary mt-2">
-              Card
-            </p>
+            <p className="md:text-base text-sm font-medium mt-2">Card</p>
           </div>
           <div>
             <h3 className="lg:text-lg  md:text-base text-sm font-medium uppercase">
               Shipping cost
             </h3>
-            <p className="md:text-base text-sm font-medium text-primary mt-2">
+            <p className="md:text-base text-sm font-medium mt-2">
               {formatBigNumber(data.shipping_cost)} VND
             </p>
           </div>
-          <div>
-            <h3 className="lg:text-lg  md:text-base text-sm font-medium uppercase">
-              Discount
-            </h3>
-            <ul>
-              <li className="flex items-center justify-between gap-2">
-                <p className="md:text-base text-sm font-medium text-[#707275] mt-2">
-                  Coupo Name:
-                </p>
-                <p className="md:text-base text-sm font-medium text-primary mt-2">
-                  SUMMER-123
-                </p>
-              </li>
-              <li className="flex items-center justify-between gap-2">
-                <p className="md:text-base text-sm font-medium text-[#707275] mt-2">
-                  Discount Value:
-                </p>
-                <p className="md:text-base text-sm font-medium text-primary mt-2">
-                  -{formatBigNumber(30000)} VND
-                </p>
-              </li>
-            </ul>
-          </div>
+          {data.discount && (
+            <div>
+              <h3 className="lg:text-lg  md:text-base text-sm font-medium uppercase">
+                Discount
+              </h3>
+              <ul>
+                <li className="flex items-center justify-between gap-2">
+                  <p className="md:text-base text-sm font-medium text-[#707275] mt-2">
+                    Name:
+                  </p>
+                  <p className="md:text-base text-sm font-medium mt-2">
+                    {data.discount.discount_code}
+                  </p>
+                </li>
+                <li className="flex items-center justify-between gap-2">
+                  <p className="md:text-base text-sm font-medium text-[#707275] mt-2">
+                    Value:
+                  </p>
+                  <p className="md:text-base text-sm font-medium mt-2">
+                    -
+                    {formatBigNumber(
+                      getValueCoupon(
+                        data.sub_total,
+                        data.discount.discount_value as number,
+                        data.discount.discount_type as string
+                      )
+                    )}{" "}
+                    VND
+                  </p>
+                </li>
+              </ul>
+            </div>
+          )}
           <div>
             <h3 className="lg:text-lg  md:text-base text-sm font-medium uppercase">
               Total
             </h3>
-            <p className="md:text-base text-sm font-medium text-primary mt-2">
+            <p className="md:text-base text-sm text-[#0E9F6E] font-medium mt-2">
               {formatBigNumber(data.total)} VND
             </p>
           </div>
         </div>
       )}
 
-      <div className="flex items-center justify-end mt-5">
+      <div className="flex items-center justify-between mt-5">
+        <button
+          onClick={() => router.push("/orders")}
+          className="min-w-[100px] text-base text-white bg-[#111926] px-5 py-2 opacity-90 hover:opacity-100 border-2 rounded-md"
+        >
+          Back
+        </button>
+
         <button
           onClick={() => onShow(showPrint, setShowPrint)}
           className="flex items-center text-base text-white bg-[#0E9F6E] px-5 py-2 rounded-md gap-2"

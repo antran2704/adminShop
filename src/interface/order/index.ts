@@ -35,7 +35,7 @@ interface IOrder {
   shipping_cost: number;
   sub_total: number;
   total: number;
-  discount_codes: ICouponOrder[];
+  discount: Partial<ICoupon>;
   status: statusOrder;
   payment_method: string;
   cancleContent?: string | null;

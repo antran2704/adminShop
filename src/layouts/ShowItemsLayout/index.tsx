@@ -45,27 +45,29 @@ const ShowItemsLayout = (props: Props) => {
       <div className="flex items-center justify-between mb-5 gap-5">
         <h1 className="lg:text-2xl text-xl font-bold">{title}</h1>
 
-        <div className="flex items-center gap-2">
-          {link && (
-            <Link
-              href={link}
-              className="flex items-center font-medium md:text-base text-sm text-white bg-success px-3 py-2 rounded-md gap-1"
-            >
-              <IoIosAdd className="md:text-2xl text-xl" />
-              {titleCreate}
-            </Link>
-          )}
+        {titleCreate && (
+          <div className="flex items-center gap-2">
+            {link && (
+              <Link
+                href={link}
+                className="flex items-center font-medium md:text-base text-sm text-white bg-success px-3 py-2 rounded-md gap-1"
+              >
+                <IoIosAdd className="md:text-2xl text-xl" />
+                {titleCreate}
+              </Link>
+            )}
 
-          {!link && (
-            <button
-              onClick={onCreate}
-              className="flex items-center font-medium md:text-base text-sm text-white bg-success px-3 py-2 rounded-md gap-1"
-            >
-              <IoIosAdd className="md:text-2xl text-xl" />
-              {titleCreate}
-            </button>
-          )}
-        </div>
+            {!link && (
+              <button
+                onClick={onCreate}
+                className="flex items-center font-medium md:text-base text-sm text-white bg-success px-3 py-2 rounded-md gap-1"
+              >
+                <IoIosAdd className="md:text-2xl text-xl" />
+                {titleCreate}
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       <Fragment>
