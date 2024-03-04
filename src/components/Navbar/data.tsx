@@ -23,6 +23,10 @@ const listBody: itemNav[] = [
     icon: <BiCategoryAlt />,
     children: [
       {
+        name: "Banners",
+        path: "/banners",
+      },
+      {
         name: "Categories",
         path: "/categories",
       },

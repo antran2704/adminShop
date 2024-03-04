@@ -10,6 +10,7 @@ import Navbar from "~/components/Navbar";
 import Loading from "~/components/Loading";
 import { getUser } from "~/api-client";
 import { injectStore } from "~/ultils/configAxios";
+// import { socket } from "~/ultils/socket";
 
 interface Props {
   children: JSX.Element;
@@ -21,6 +22,7 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
   const { infor } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
 
+  const [notifications, setNotifications] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const checkAuth = async () => {
@@ -38,6 +40,10 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
     }
   };
 
+  const onNotification = (value: string) => {
+    setNotifications([...notifications, value]);
+  };
+
   useEffect(() => {
     injectStore(dispatch);
 
@@ -48,6 +54,22 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
     setLoading(false);
   }, []);
 
+  // useEffect(() => {
+  //   socket.connect();
+
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   socket.on("notification", onNotification);
+
+  //   return () => {
+  //     socket.off("notification", onNotification);
+  //   };
+  // }, [notifications]);
+
   if (loading) {
     return <Loading />;
   }
@@ -55,7 +77,17 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
   return (
     <main className="flex items-start justify-between bg-[#f9fafb]">
       <Navbar />
-      <div className="w-full min-h-screen">{children}</div>
+      <div className="w-full min-h-screen">
+        {/* <div className="flex flex-col items-end p-5">
+          <p>Notification</p>
+          <ul>
+            {notifications.map((notification: string, index: number) => (
+              <li key={index}>{notification}</li>
+            ))}
+          </ul>
+        </div> */}
+        {children}
+      </div>
       <ToastContainer
         autoClose={5000}
         pauseOnFocusLoss={false}

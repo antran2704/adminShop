@@ -76,6 +76,15 @@ const colHeaderCoupon: string[] = [
   "Action"
 ];
 
+const colHeaderBanner: string[] = [
+  "Title",
+  "Image",
+  "Published",
+  "Created Date",
+  "Action"
+];
+
+
 export {
   colHeadCategory,
   colHeadOrder,
@@ -84,5 +93,6 @@ export {
   colHeaderAttributeValue,
   colHeaderProduct,
   colHeaderVariants,
-  colHeaderCoupon
+  colHeaderCoupon,
+  colHeaderBanner
 };

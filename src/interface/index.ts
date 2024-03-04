@@ -14,3 +14,4 @@ export * from "./grow";
 export * from "./axios";
 export * from "./keyToken";
 export * from "./options";
+export * from "./banner"

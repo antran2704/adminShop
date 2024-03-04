@@ -5,3 +5,4 @@ export * from "./attributes";
 export * from "./variations";
 export * from "./coupons";
 export * from "./auth";
+export * from "./banners"

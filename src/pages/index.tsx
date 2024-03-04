@@ -58,14 +58,6 @@ const options = {
       text: "Overview in week",
     },
   },
-  scales: {
-    x: {
-      stacked: true,
-    },
-    y: {
-      stacked: true,
-    },
-  },
 };
 
 interface IOverview {
@@ -166,7 +158,7 @@ export default function Home() {
           );
           newData.datasets[0].data[index] = item.sub_gross;
           newData.datasets[1].data[index] = item.gross;
-          total += item.gross;
+          total += item.sub_gross;
         });
 
         setTotalWeek(total);
@@ -290,6 +282,7 @@ export default function Home() {
           </div>
           <div className="lg:w-3/4 w-full h-full bg-[#f4f7ff] rounded-xl p-5 mx-auto">
             <div>
+              <p>Thu nhập tạm tính</p>
               <SpringCount
                 className="text-lg font-bold"
                 from={0}
