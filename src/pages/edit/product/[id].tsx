@@ -21,7 +21,7 @@ import {
 } from "~/interface";
 
 import { typeCel } from "~/enums";
-import { deleteImageInSever, uploadImageOnServer } from "~/helper/handleImage";
+import { deleteImageInSever } from "~/helper/handleImage";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import generalBreadcrumbs from "~/helper/generateBreadcrumb";
 
@@ -48,8 +48,9 @@ import {
   getParentCategories,
   getProduct,
   updateProduct,
+  uploadThumbnailProduct,
 } from "~/api-client";
-import { data } from "autoprefixer";
+import { generateSlug } from "~/helper/generateSlug";
 
 enum TYPE_TAG {
   BASIC_INFOR = "basic_infor",
@@ -478,10 +479,7 @@ const ProductEditPage = (props: Props) => {
         setLoadingThumbnail(true);
 
         try {
-          const { status, payload } = await uploadImageOnServer(
-            `${process.env.NEXT_PUBLIC_ENDPOINT_API}/products/uploadImage`,
-            formData
-          );
+          const { status, payload } = await uploadThumbnailProduct(formData);
 
           if (status === 201) {
             setThumbnail(payload);
@@ -507,10 +505,7 @@ const ProductEditPage = (props: Props) => {
         setLoadingGallery(true);
 
         try {
-          const { status, payload } = await uploadImageOnServer(
-            `${process.env.NEXT_PUBLIC_ENDPOINT_API}/products/uploadImage`,
-            formData
-          );
+          const { status, payload } = await uploadThumbnailProduct(formData);
 
           if (status === 201) {
             setGallery([...gallery, payload]);
@@ -530,20 +525,22 @@ const ProductEditPage = (props: Props) => {
 
   const onRemoveGallary = useCallback(
     async (url: string) => {
-      try {
-        const payload = await deleteImageInSever(url);
+      const newGallery = gallery.filter((image) => image !== url);
+      setGallery(newGallery);
+      // try {
+      //   const payload = await deleteImageInSever(url);
 
-        if (payload.status === 201) {
-          const newGallery = gallery.filter((image) => image !== url);
-          setGallery(newGallery);
-        }
-      } catch (error) {
-        toast.error("Remove image failed", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+      //   if (payload.status === 201) {
+      //     const newGallery = gallery.filter((image) => image !== url);
+      //     setGallery(newGallery);
+      //   }
+      // } catch (error) {
+      //   toast.error("Remove image failed", {
+      //     position: toast.POSITION.TOP_RIGHT,
+      //   });
 
-        console.log(error);
-      }
+      //   console.log(error);
+      // }
     },
     [gallery, loadingGallery]
   );
@@ -662,6 +659,7 @@ const ProductEditPage = (props: Props) => {
         title: product.title,
         description: product.description,
         shortDescription: product.shortDescription,
+        slug: generateSlug(product.title),
         meta_title: product.title,
         meta_description: product.description,
         thumbnail,
@@ -684,7 +682,7 @@ const ProductEditPage = (props: Props) => {
 
       if (payload.status === 201) {
         toast.success("Success updated product", {
-          position: toast.POSITION.TOP_RIGHT,
+          position: toast.POSITION.BOTTOM_RIGHT,
         });
         router.push("/products");
       }
@@ -993,7 +991,7 @@ const ProductEditPage = (props: Props) => {
               </div>
 
               <SelectItem
-                width="lg:w-2/4 w-full"
+                width="w-full"
                 title="Default category"
                 name="category"
                 value={defaultCategory ? defaultCategory : ""}
@@ -1230,7 +1228,7 @@ const ProductEditPage = (props: Props) => {
                           placeholder="Price"
                           className="min-w-[140px]"
                           name="price"
-                          value={variant.price.toString()}
+                          value={formatBigNumber(variant.price)}
                           onChangeInputNumber={(name: string, value: number) =>
                             onChangeNumberVariant(name, value, index)
                           }
@@ -1240,7 +1238,7 @@ const ProductEditPage = (props: Props) => {
                           placeholder="Promotion Price"
                           className="min-w-[140px]"
                           name="promotion_price"
-                          value={variant.promotion_price.toString()}
+                          value={formatBigNumber(variant.promotion_price)}
                           onChangeInputNumber={(name: string, value: number) =>
                             onChangeNumberVariant(name, value, index)
                           }

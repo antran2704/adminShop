@@ -27,6 +27,7 @@ import {
   uploadThumbnailCategory,
 } from "~/api-client";
 import Popup from "~/components/Popup";
+import { generateSlug } from "~/helper/generateSlug";
 
 const initData: IDataCategory = {
   _id: null,
@@ -186,6 +187,7 @@ const EditCategoryPage = (props: Props) => {
       public: data.public,
       parent_id: categorySelect.node_id,
       breadcrumbs,
+      slug: generateSlug(data.title),
     };
 
     setLoading(true);
@@ -207,7 +209,7 @@ const EditCategoryPage = (props: Props) => {
 
       if (payload.status === 201) {
         toast.success("Success updated category", {
-          position: toast.POSITION.TOP_RIGHT,
+          position: toast.POSITION.BOTTOM_RIGHT,
         });
         setLoading(false);
         router.push("/categories");
@@ -226,7 +228,6 @@ const EditCategoryPage = (props: Props) => {
 
     try {
       const data = await getCategory(id);
-
       if (data.status === 200) {
         const title = data.payload.parent_id
           ? data.payload.parent_id.title
@@ -250,8 +251,8 @@ const EditCategoryPage = (props: Props) => {
           title,
         });
         setDefaultSelect({
-          node_id,
-          title,
+          node_id: data.payload._id,
+          title: data.payload.title,
         });
 
         setLoading(false);

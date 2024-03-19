@@ -60,6 +60,7 @@ interface IProductData extends IProduct {
   specifications: ISpecificationsProduct[];
   viewer: number;
   rate: number;
+  slug?: string;
   variants: IVariantProduct[];
   breadcrumbs: string[];
   createdAt?: string;
@@ -75,7 +76,6 @@ type ISendProduct = Omit<
   | "_id"
   | "viewer"
   | "rate"
-  | "slug"
   | "type"
   | "createdAt"
   | "category"

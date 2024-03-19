@@ -79,7 +79,11 @@ const TreeNode = (props: Props) => {
               key={item}
               parent_id={node_id}
               node_id={item}
-              checkOnMove={(defaultSelect && defaultSelect.node_id === item) ? true : checkOnMove}
+              checkOnMove={
+                defaultSelect && defaultSelect.node_id === item
+                  ? true
+                  : checkOnMove
+              }
               defaultSelect={defaultSelect}
               categories={categories}
               categoriesParent={categoriesParent}

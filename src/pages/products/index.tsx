@@ -344,19 +344,19 @@ const ProductPage = (props: Props) => {
                   }
                 />
                 <CelTable type={typeCel.GROUP}>
-                  <div className="flex items-center gap-2">
+                  <Link
+                    href={`/edit/product/${product._id}`}
+                    className="flex items-center gap-2"
+                  >
                     <ImageCus
                       title="product image"
                       src={product.thumbnail as string}
                       className="min-w-[32px] w-8 h-8 rounded-full"
                     />
-                    <Link
-                      href={`/edit/product/${product._id}`}
-                      className="text-sm font-medium whitespace-nowrap"
-                    >
+                    <p className="text-sm font-medium whitespace-nowrap">
                       {product.title}
-                    </Link>
-                  </div>
+                    </p>
+                  </Link>
                 </CelTable>
                 <CelTable
                   type={typeCel.TEXT}
