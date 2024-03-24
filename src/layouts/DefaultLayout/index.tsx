@@ -57,7 +57,7 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
     <main className="flex items-start justify-between bg-[#f9fafb]">
       <Navbar />
       <div className="w-full min-h-screen">
-        {/* <Notification /> */}
+        <Notification />
         {children}
       </div>
       <ToastContainer

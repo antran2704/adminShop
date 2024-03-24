@@ -931,13 +931,15 @@ const ProductEditPage = (props: Props) => {
         {tag === TYPE_TAG.BASIC_INFOR && (
           <div className="lg:w-2/4 w-full mx-auto">
             <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-              <InputText
+              <InputTextarea
                 title="Title"
                 width="w-full"
                 value={product.title || ""}
                 error={fieldsCheck.includes("title")}
                 name="title"
                 placeholder="Input product name..."
+                rows={2}
+                infor="Name of product must less than 120 characters"
                 getValue={changeValue}
               />
 

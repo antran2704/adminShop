@@ -14,6 +14,7 @@ const InputTextareaField: FC<ITextarea> = (props: ITextarea) => {
     cols = 30,
     rows = 6,
     size = "S",
+    maxLength,
     infor = null,
     readonly = false,
     required = false,
@@ -69,6 +70,7 @@ const InputTextareaField: FC<ITextarea> = (props: ITextarea) => {
         } focus:border-[#4f46e5] outline-none`}
         name={name}
         value={value}
+        maxLength={120}
         onInput={handleChangeValue}
         onKeyUp={(e) => {
           if (enableEnter) {

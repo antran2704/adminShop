@@ -1,4 +1,4 @@
-import { Notification } from "~/interface";
+import { Notification, NotificationItem } from "~/interface";
 import { axiosGet, axiosPatch } from "~/ultils/configAxios";
 
 const getNotifications = async (page: number = 1, limit: number = 6) => {
@@ -7,7 +7,7 @@ const getNotifications = async (page: number = 1, limit: number = 6) => {
 
 const updateNotification = async (
   notification_id: string,
-  data: Partial<Notification>
+  data: Partial<NotificationItem>
 ) => {
   return await axiosPatch(`/notifications/admin/${notification_id}`, data);
 };

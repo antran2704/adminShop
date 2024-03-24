@@ -19,7 +19,7 @@ const FormLayout: ForwardRefRenderFunction<HTMLUListElement, props> = (
   return (
     <section className="scrollHidden relative w-full h-screen overflow-auto">
       <div className="flex items-center justify-between px-5 py-5 border-b-2 z-20">
-        <h1 className="lg:text-xl text-lg font-semibold">{title}</h1>
+        <h1 className="lg:text-xl text-lg font-semibold max-w-[60%] line-clamp-2">{title}</h1>
         <button
           onClick={onSubmit}
           className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"

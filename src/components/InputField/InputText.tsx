@@ -16,6 +16,7 @@ const InputField: FC<IInputText> = (props: IInputText) => {
     readonly = false,
     required = false,
     enableEnter = false,
+    maxLength,
     error,
     onEnter,
     getValue,
@@ -74,6 +75,7 @@ const InputField: FC<IInputText> = (props: IInputText) => {
           }
         }}
         onInput={handleChangeValue}
+        maxLength={maxLength}
         type="text"
         className={`w-full rounded-md ${SIZE[size]} border-2 ${
           error && "border-error"

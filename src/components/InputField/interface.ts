@@ -11,6 +11,7 @@ interface IInput {
   required?: boolean;
   infor?: string | null;
   size?: "S" | "M" | "L";
+  maxLength?: number;
   onEnter?: () => void;
 }
 
