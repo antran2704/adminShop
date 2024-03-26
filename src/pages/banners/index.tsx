@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { useState, useEffect, Fragment, useCallback } from "react";
+import { useState, useEffect, Fragment, useCallback, ReactElement } from "react";
 import { toast } from "react-toastify";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
@@ -11,20 +11,18 @@ import { IFilter, IPagination, Banner } from "~/interface";
 
 import { deleteImageInSever } from "~/helper/handleImage";
 
-import Search from "~/components/Search";
 import { Table, CelTable } from "~/components/Table";
 import { colHeaderBanner as colHeadTable } from "~/components/Table/colHeadTable";
 import { ButtonDelete, ButtonEdit } from "~/components/Button";
 import { initPagination } from "~/components/Pagination/initData";
 import {
   deleteBanner,
-  deleteCategory,
   getBanners,
-  getCategories,
   getCategoriesWithFilter,
   updateBanner,
-  updateCategory,
 } from "~/api-client";
+import DefaultLayout from "~/layouts/DefaultLayout";
+import { NextPageWithLayout } from "~/interface/page";
 
 interface ISelectBanner {
   _id: string;
@@ -36,7 +34,8 @@ interface Props {
   query: ParsedUrlQuery;
 }
 
-const BannersPage = (props: Props) => {
+const Layout = DefaultLayout;
+const BannersPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? Number(query.page) : 1;
 
@@ -324,6 +323,10 @@ const BannersPage = (props: Props) => {
 };
 
 export default BannersPage;
+
+BannersPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

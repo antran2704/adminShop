@@ -9,16 +9,17 @@ import {
   Dispatch,
   SetStateAction,
   ChangeEvent,
+  ReactElement,
 } from "react";
 import { toast } from "react-toastify";
 import { AiOutlinePrinter } from "react-icons/ai";
 
 import { getDateTime } from "~/helper/datetime";
-import optionsCancle from "~/data/optionCancle";
+import { optionsCancle, optionsCancleByPayment } from "~/data/optionCancle";
 
 import { IOptionCancle } from "~/interface";
 import { IOrder, statusOrder, IItemOrder } from "~/interface/order";
-import { typeCel } from "~/enums";
+import { PaymentStatus, typeCel } from "~/enums";
 
 import { Table } from "~/components/Table";
 import { CelTable } from "~/components/Table";
@@ -28,8 +29,10 @@ import Popup from "~/components/Popup";
 import { ButtonClassic } from "~/components/Button";
 import Loading from "~/components/Loading";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
-import { getOrder, updateOrder } from "~/api-client";
+import { getOrder, updateOrder, updatePaymentStatusOrder } from "~/api-client";
 import { getValueCoupon } from "~/helper/number/coupon";
+import DefaultLayout from "~/layouts/DefaultLayout";
+import { NextPageWithLayout } from "~/interface/page";
 
 const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {
   loading: () => <Loading />,
@@ -43,7 +46,9 @@ const BG_STATUS = {
   cancle: "bg-cancle",
 };
 
-const OrderDetail = () => {
+const Layout = DefaultLayout;
+
+const OrderDetail: NextPageWithLayout = () => {
   const router: NextRouter = useRouter();
   const orderId = router.query.id;
   const noteRef = useRef<HTMLTextAreaElement>(null);
@@ -51,15 +56,20 @@ const OrderDetail = () => {
   const [message] = useState<string | null>(null);
   const [cancle, setCancle] = useState<string | null>(null);
 
+  console.log("order:::", data);
+
   const [loading, setLoading] = useState<boolean>(true);
   const [showPrint, setShowPrint] = useState<boolean>(false);
   const [showCancle, setShowCancle] = useState<boolean>(false);
   const [showDelivered, setShowDelivered] = useState<boolean>(false);
   const [showProcessing, setShowProcessing] = useState<boolean>(false);
+  const [showConfirmBanking, setShowConfirmBanking] = useState<boolean>(false);
   const [disableBtnCancle, setDisableBtn] = useState<boolean>(true);
 
   const onShowCancle = useCallback(() => {
     setShowCancle(!showCancle);
+    setCancle(null);
+    setDisableBtn(true);
   }, [showCancle]);
 
   const onShowDelivered = useCallback(() => {
@@ -69,6 +79,10 @@ const OrderDetail = () => {
   const onShowProcessing = useCallback(() => {
     setShowProcessing(!showProcessing);
   }, [showProcessing]);
+
+  const onShowConfirmBanking = useCallback(() => {
+    setShowConfirmBanking(!showConfirmBanking);
+  }, [showConfirmBanking]);
 
   const onShow = (
     value: boolean,
@@ -85,6 +99,39 @@ const OrderDetail = () => {
     },
     [cancle, disableBtnCancle]
   );
+
+  const hanldeChangePaymentStatus = async (status: PaymentStatus) => {
+    setLoading(true);
+
+    try {
+      let payload;
+
+      if (status === PaymentStatus.cancle) {
+        payload = await updatePaymentStatusOrder(orderId as string, status, {
+          note: noteRef.current ? noteRef.current.value : null,
+          cancleContent: cancle,
+        });
+      }
+
+      if (status === PaymentStatus.success) {
+        payload = await updatePaymentStatusOrder(orderId as string, status);
+      }
+
+      if (payload.status === 201) {
+        toast.success("Success change status payment order", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+
+        setLoading(false);
+        getDataOrder(orderId as string);
+      }
+    } catch (error) {
+      toast.error("Error change status order", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      setLoading(false);
+    }
+  };
 
   const hanldeChangeStatus = async (status: statusOrder) => {
     setLoading(true);
@@ -149,7 +196,6 @@ const OrderDetail = () => {
       <h1 className="lg:text-2xl md:text-xl text-lg font-medium">
         Order detail
       </h1>
-
       {data && (
         <ul className="py-5">
           <h2 className="md:text-lg text-base text-primary font-medium">
@@ -186,71 +232,121 @@ const OrderDetail = () => {
             </p>
           </li>
 
-          {data.status === statusOrder.cancle && (
-            <Fragment>
-              <li className="flex items-start justify-start text-base mt-1 gap-1">
-                <h3 className="font-medium capitalize">Why:</h3>
-                <p
-                  className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
-                >
-                  {data.cancleContent || "updating"}
-                </p>
-              </li>
-              {data.note && (
-                <li className="flex items-start justify-start text-base mt-1 gap-1">
-                  <h3 className="font-medium capitalize">Note:</h3>
-                  <p
-                    className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
-                  >
-                    {data.note}
-                  </p>
+          {data.payment_status === PaymentStatus.success && (
+            <div>
+              {data.status === statusOrder.cancle && (
+                <Fragment>
+                  <li className="flex items-start justify-start text-base mt-1 gap-1">
+                    <h3 className="font-medium capitalize">Why:</h3>
+                    <p
+                      className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
+                    >
+                      {data.cancleContent || "updating"}
+                    </p>
+                  </li>
+                  {data.note && (
+                    <li className="flex items-start justify-start text-base mt-1 gap-1">
+                      <h3 className="font-medium capitalize">Note:</h3>
+                      <p
+                        className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
+                      >
+                        {data.note}
+                      </p>
+                    </li>
+                  )}
+                </Fragment>
+              )}
+
+              {data.status === statusOrder.pending && (
+                <li className="flex items-center justify-start mt-5 text-base gap-1">
+                  <h3 className="font-medium capitalize">Change Status:</h3>
+                  <div className="flex items-center gap-3">
+                    <ButtonClassic
+                      title="Processing"
+                      size="S"
+                      handleClick={onShowProcessing}
+                      className="bg-primary"
+                    />
+                    <ButtonClassic
+                      title="Cancle"
+                      size="S"
+                      handleClick={onShowCancle}
+                      className="bg-cancle"
+                    />
+                  </div>
                 </li>
               )}
-            </Fragment>
+
+              {data.status === statusOrder.processing && (
+                <li className="flex items-center justify-start mt-5 text-base gap-1">
+                  <h3 className="font-medium capitalize">Change Status:</h3>
+                  <div className="flex items-center gap-3">
+                    <ButtonClassic
+                      title="Delivered"
+                      size="S"
+                      handleClick={onShowDelivered}
+                      className="bg-success"
+                    />
+                    <ButtonClassic
+                      title="Cancle"
+                      size="S"
+                      handleClick={onShowCancle}
+                      className="bg-cancle"
+                    />
+                  </div>
+                </li>
+              )}
+            </div>
           )}
 
-          {data.status === statusOrder.pending && (
-            <li className="flex items-center justify-start mt-5 text-base gap-1">
-              <h3 className="font-medium capitalize">Change Status:</h3>
-              <div className="flex items-center gap-3">
-                <ButtonClassic
-                  title="Processing"
-                  size="S"
-                  handleClick={onShowProcessing}
-                  className="bg-primary"
-                />
-                <ButtonClassic
-                  title="Cancle"
-                  size="S"
-                  handleClick={onShowCancle}
-                  className="bg-cancle"
-                />
-              </div>
-            </li>
-          )}
+          {data.payment_status !== PaymentStatus.success && (
+            <div>
+              {data.status === statusOrder.cancle && (
+                <Fragment>
+                  <li className="flex items-start justify-start text-base mt-1 gap-1">
+                    <h3 className="font-medium capitalize">Why:</h3>
+                    <p
+                      className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
+                    >
+                      {data.cancleContent || "updating"}
+                    </p>
+                  </li>
+                  {data.note && (
+                    <li className="flex items-start justify-start text-base mt-1 gap-1">
+                      <h3 className="font-medium capitalize">Note:</h3>
+                      <p
+                        className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
+                      >
+                        {data.note}
+                      </p>
+                    </li>
+                  )}
+                </Fragment>
+              )}
 
-          {data.status === statusOrder.processing && (
-            <li className="flex items-center justify-start mt-5 text-base gap-1">
-              <h3 className="font-medium capitalize">Change Status:</h3>
-              <div className="flex items-center gap-3">
-                <ButtonClassic
-                  title="Delivered"
-                  size="S"
-                  handleClick={onShowDelivered}
-                  className="bg-success"
-                />
-                <ButtonClassic
-                  title="Cancle"
-                  size="S"
-                  handleClick={onShowCancle}
-                  className="bg-cancle"
-                />
-              </div>
-            </li>
+              {data.status === statusOrder.pending && (
+                <li className="flex items-center justify-start mt-5 text-base gap-1">
+                  <h3 className="font-medium capitalize">Confirm banking:</h3>
+                  <div className="flex items-center gap-3">
+                    <ButtonClassic
+                      title="Confirm"
+                      size="S"
+                      handleClick={onShowConfirmBanking}
+                      className="bg-success"
+                    />
+                    <ButtonClassic
+                      title="Cancle"
+                      size="S"
+                      handleClick={onShowCancle}
+                      className="bg-cancle"
+                    />
+                  </div>
+                </li>
+              )}
+            </div>
           )}
         </ul>
       )}
-
       {data && (
         <div className="my-5">
           <Table
@@ -265,6 +361,12 @@ const OrderDetail = () => {
                     center={true}
                     type={typeCel.TEXT}
                     value={(index + 1).toString()}
+                  />
+                  <CelTable
+                    type={typeCel.THUMBNAIL}
+                    value={item.product.thumbnail as string}
+                    href={`/edit/product/${item.product._id}`}
+                    className="w-20 h-20"
                   />
                   <CelTable
                     type={typeCel.LINK}
@@ -312,7 +414,6 @@ const OrderDetail = () => {
           </Table>
         </div>
       )}
-
       {data && (
         <div className="flex md:flex-row flex-col md:items-start items-start justify-between bg-[#f9fafb] p-5 border rounded-md gap-5">
           <div>
@@ -372,7 +473,6 @@ const OrderDetail = () => {
           </div>
         </div>
       )}
-
       <div className="flex items-center justify-between mt-5">
         <button
           onClick={() => router.push("/orders")}
@@ -402,8 +502,34 @@ const OrderDetail = () => {
           </div>
         )}
       </div>
+      {showConfirmBanking && (
+        <Popup
+          show={showConfirmBanking}
+          title="Xác nhận đã chuyển khoản"
+          onClose={onShowConfirmBanking}
+        >
+          <div className="flex items-center justify-between">
+            <ButtonClassic
+              title="Cancle"
+              size="S"
+              handleClick={onShowConfirmBanking}
+              className="bg-error"
+            />
 
-      {showCancle && (
+            <ButtonClassic
+              title="Accept"
+              size="S"
+              handleClick={() => {
+                onShowConfirmBanking();
+                hanldeChangePaymentStatus(PaymentStatus.success);
+              }}
+              className="bg-success text-white opacity-80 hover:opacity-100"
+            />
+          </div>
+        </Popup>
+      )}
+
+      {showCancle && data?.payment_status === PaymentStatus.success && (
         <Popup show={showCancle} title="Lý do hủy đơn" onClose={onShowCancle}>
           <div className="mx-auto">
             <fieldset>
@@ -465,6 +591,67 @@ const OrderDetail = () => {
         </Popup>
       )}
 
+      {showCancle && data?.payment_status !== PaymentStatus.success && (
+        <Popup show={showCancle} title="Lý do hủy đơn" onClose={onShowCancle}>
+          <div className="mx-auto">
+            <fieldset>
+              <legend className="sr-only">Countries</legend>
+
+              {optionsCancleByPayment.map((option: IOptionCancle) => (
+                <div key={option.id} className="flex items-center mb-4">
+                  <input
+                    id={option.id}
+                    type="radio"
+                    name="options"
+                    onChange={(e) => onChooseOption(e)}
+                    value={option.value}
+                    className="h-4 w-4 border-gray-300"
+                  />
+                  <label
+                    htmlFor={option.id}
+                    className="text-sm font-medium text-gray-900 ml-2 block"
+                  >
+                    {option.lable}
+                  </label>
+                </div>
+              ))}
+            </fieldset>
+
+            <div className="my-4">
+              <h3 className="text-base mb-2">Note</h3>
+              <textarea
+                ref={noteRef}
+                className="w-full px-3 py-2 rounded-md border-2"
+                name="note_option"
+                id="note_option"
+                cols={30}
+                rows={4}
+                placeholder="Enter note..."
+              ></textarea>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <ButtonClassic
+                title="Cancle"
+                size="S"
+                handleClick={onShowCancle}
+                className="bg-error"
+              />
+
+              <ButtonClassic
+                title="Accept"
+                disable={disableBtnCancle}
+                size="S"
+                handleClick={() => {
+                  onShowCancle();
+                  hanldeChangeStatus(statusOrder.cancle);
+                }}
+                className={`${disableBtnCancle ? 'bg-[#d1d6e2]' : 'bg-success'}`}
+              />
+            </div>
+          </div>
+        </Popup>
+      )}
       {showDelivered && (
         <Popup
           title="Bạn có muốn hoàn thành đơn hàng này"
@@ -491,7 +678,6 @@ const OrderDetail = () => {
           </div>
         </Popup>
       )}
-
       {showProcessing && (
         <Popup
           title="Đang chuẩn bị đơn hàng"
@@ -518,9 +704,12 @@ const OrderDetail = () => {
           </div>
         </Popup>
       )}
-
       {loading && <Loading />}
     </section>
   );
 };
 export default OrderDetail;
+
+OrderDetail.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};

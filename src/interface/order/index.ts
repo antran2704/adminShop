@@ -1,3 +1,4 @@
+import { PaymentStatus } from "~/enums";
 import { ICoupon } from "../coupon";
 import { IProductData, IVariantProduct } from "../product";
 
@@ -38,6 +39,7 @@ interface IOrder {
   discount: Partial<ICoupon>;
   status: statusOrder;
   payment_method: string;
+  payment_status: PaymentStatus;
   cancleContent?: string | null;
   note?: string | null;
   createdAt: string;

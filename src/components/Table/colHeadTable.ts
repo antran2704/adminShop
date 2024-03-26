@@ -21,6 +21,7 @@ const colHeadOrder: string[] = [
 // header table for order detail
 const colHeaderOrderDetail: string[] = [
   "NO",
+  "Thumnail",
   "Product",
   "Options",
   "Quantity",

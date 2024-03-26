@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, ReactElement } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { BiDollarCircle, BiPackage, BiMinusCircle } from "react-icons/bi";
 import {
@@ -16,6 +16,8 @@ import Statistic from "~/components/Statistic";
 import { axiosGet } from "~/ultils/configAxios";
 import { IGrow, IGrowDate } from "~/interface";
 import { getEndDayInWeek, getFirstDayInWeek } from "~/helper/datetime";
+import DefaultLayout from "~/layouts/DefaultLayout";
+import { NextPageWithLayout } from "~/interface/page";
 
 ChartJS.register(
   CategoryScale,
@@ -70,7 +72,9 @@ const initSelectGrowWeek: ISelectGrowWeek = {
   month: "",
 };
 
-const IncomeWeekPage = () => {
+const Layout = DefaultLayout;
+
+const IncomeWeekPage: NextPageWithLayout = () => {
   const data = {
     labels: [],
     datasets: [
@@ -273,3 +277,7 @@ const IncomeWeekPage = () => {
 };
 
 export default IncomeWeekPage;
+
+IncomeWeekPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};

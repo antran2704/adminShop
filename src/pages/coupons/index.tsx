@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { useState, useEffect, Fragment, useCallback } from "react";
+import { useState, useEffect, Fragment, useCallback, ReactElement } from "react";
 import { toast } from "react-toastify";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
@@ -26,6 +26,8 @@ import {
   getCouponsWithFilter,
   updateCoupon,
 } from "~/api-client";
+import DefaultLayout from "~/layouts/DefaultLayout";
+import { NextPageWithLayout } from "~/interface/page";
 
 interface ISelectCoupon {
   id: string;
@@ -36,7 +38,9 @@ interface Props {
   query: ParsedUrlQuery;
 }
 
-const CouponsPage = (props: Props) => {
+const Layout = DefaultLayout;
+
+const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? Number(query.page) : 1;
 
@@ -411,6 +415,10 @@ const CouponsPage = (props: Props) => {
 };
 
 export default CouponsPage;
+
+CouponsPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

@@ -143,7 +143,7 @@ const CelTable: FC<Props> = (props: Props) => {
         <td className="px-6 py-4 whitespace-no-wrap border-b">
           <Link
             href={href ? href : "/"}
-            className="block w-[160px] h-[100px] mx-auto rounded overflow-hidden"
+            className={`block ${className ? className : 'w-[160px] h-[100px]'} mx-auto rounded overflow-hidden`}
           >
             <img
               src={value}

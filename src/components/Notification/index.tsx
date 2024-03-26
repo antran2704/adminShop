@@ -2,29 +2,36 @@ import { useEffect, useState } from "react";
 import { FaRegBell } from "react-icons/fa";
 import { getNotifications, updateNotification } from "~/api-client";
 import { Notification, NotificationItem } from "~/interface";
-import { socket } from "~/ultils/socket";
+// import { socket } from "~/ultils/socket";
 import ImageCus from "../Image/ImageCus";
 import { getDateTime } from "~/helper/datetime";
 import { iconNoti, styleTypeNoti } from "./data";
 import { useRouter } from "next/router";
+import { Socket, io } from "socket.io-client";
 
 const initNotification: Notification = {
   notifications: [],
   total: 0,
   totalUnread: 0,
 };
-
 const Notification = () => {
   const router = useRouter();
 
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [showModal, setShowModal] = useState<boolean>(false);
+
   const [notification, setNotification] =
     useState<Notification>(initNotification);
+
+  const onShowModal = () => {
+    setShowModal(!showModal);
+  };
 
   const onNotification = (item: NotificationItem) => {
     const newNotifications = notification.notifications;
     newNotifications.pop();
     newNotifications.unshift(item);
-    setNotification({ ...notification, notifications: newNotifications });
+    setNotification({ ...notification, notifications: newNotifications, totalUnread: notification.totalUnread + 1  });
   };
 
   const onClickNoti = async (data: NotificationItem) => {
@@ -49,7 +56,7 @@ const Notification = () => {
             return item;
           });
 
-        setNotification({ ...notification, notifications });
+        setNotification({ ...notification, notifications, totalUnread: notification.totalUnread - 1 });
 
         if (data.path) {
           router.push(data.path);
@@ -74,34 +81,63 @@ const Notification = () => {
   };
 
   useEffect(() => {
+    const URL = process.env.SOCKET_ENDPOINT || "http://localhost:3001";
+    const socketInit = io(URL);
+    socketInit.connect();
+
+    setSocket(socketInit);
     handleGetNotifications();
-    socket.connect();
 
     return () => {
-      socket.disconnect();
+      socketInit.disconnect();
+      setSocket(null);
     };
   }, []);
 
   useEffect(() => {
-    socket.on("notification", onNotification);
+    if (socket) {
+      socket.on("notification", onNotification);
+    }
 
     return () => {
-      socket.off("notification", onNotification);
+      if (socket) {
+        socket.off("notification", onNotification);
+      }
     };
-  }, [notification]);
+  }, [socket, notification]);
 
   return (
-    <div className="sticky top-0 flex flex-col items-end bg-white px-5 py-2 border-b shadow z-30">
-      <div className="relative group flex items-center justify-center p-2 bg-slate-100 hover:bg-slate-200 rounded-full cursor-pointer">
-        <FaRegBell className="text-2xl" />
-        {notification.totalUnread > 0 && (
-          <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-white text-xs bg-primary rounded-full z-0">
-            {notification.totalUnread > 99 ? "99" : notification.totalUnread}
-          </span>
-        )}
+    <div
+      onMouseLeave={() => {
+        if (showModal) {
+          onShowModal();
+        }
+      }}
+      className="sticky top-0 flex flex-col items-end bg-white px-5 py-2 border-b shadow z-30"
+    >
+      <div className={`relative`}>
+        <div
+          onClick={onShowModal}
+          className={`relative flex items-center justify-center p-2 ${
+            showModal ? "bg-slate-200" : "bg-slate-100 hover:bg-slate-200"
+          } rounded-full cursor-pointer`}
+        >
+          <FaRegBell className="text-2xl" />
+          {notification.totalUnread > 0 && (
+            <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-white text-xs bg-primary rounded-full z-0">
+              {notification.totalUnread > 99 ? "99" : notification.totalUnread}
+            </span>
+          )}
+        </div>
 
-        <ul className="absolute w-auto top-[120%] group-hover:top-full right-0 bg-white shadow-lg rounded-md border opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all ease-linear duration-100 z-10">
-          <div className="absolute -top-8 left-0 right-0 h-10 bg-transparent z-10"></div>
+        <ul
+          className={`absolute ${
+            showModal
+              ? "top-full pointer-events-auto opacity-100"
+              : "top-[120%] opacity-0 pointer-events-none"
+          } right-0 bg-white shadow-lg rounded-md border transition-all ease-linear duration-100 overflow-hidden z-10`}
+        >
+          {/* <div className="absolute -top-8 left-0 right-0 h-10 bg-transparent z-10"></div> */}
           {notification.notifications.map(
             (item: NotificationItem, index: number) => (
               <li
@@ -109,7 +145,7 @@ const Notification = () => {
                 onClick={() => onClickNoti(item)}
                 className={`flex items-center px-5 py-2 hover:bg-slate-100 ${
                   index > 0 ? "border-t" : ""
-                } gap-5`}
+                } cursor-pointer gap-5`}
               >
                 <ImageCus
                   src={iconNoti[item.type]}
@@ -118,9 +154,9 @@ const Notification = () => {
                 <div className="w-full flex items-center justify-between gap-5">
                   <div className="w-full">
                     <p
-                      className={`text-start whitespace-nowrap text-sm ${
+                      className={`lg:max-w-[600px] md:max-w-[500px] sm:max-w-[400px] max-w-[200px] w-[500px] text-start text-sm ${
                         !item.isReaded ? "font-medium" : "font-normal"
-                      }`}
+                      } line-clamp-2`}
                     >
                       {item.content}
                     </p>

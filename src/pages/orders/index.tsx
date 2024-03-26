@@ -1,5 +1,5 @@
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
-import { useEffect, useState, useCallback, Fragment } from "react";
+import { useEffect, useState, useCallback, Fragment, ReactElement } from "react";
 
 import { IOrder } from "~/interface/order";
 import { IPagination } from "~/interface/pagination";
@@ -17,6 +17,8 @@ import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { useRouter } from "next/router";
 import { initPagination } from "~/components/Pagination/initData";
 import { getOrders, getOrdersWithFilter } from "~/api-client";
+import DefaultLayout from "~/layouts/DefaultLayout";
+import { NextPageWithLayout } from "~/interface/page";
 
 interface Props {
   query: InferGetServerSidePropsType<typeof getServerSideProps>;
@@ -47,8 +49,8 @@ const dataFilterMethod: ISelectItem[] = [
     title: "Cash",
   },
   {
-    _id: "card",
-    title: "Card",
+    _id: "banking",
+    title: "Banking",
   },
   {
     _id: "cod",
@@ -60,7 +62,9 @@ const dataFilterMethod: ISelectItem[] = [
   },
 ];
 
-const OrdersPage = (props: Props) => {
+const Layout = DefaultLayout;
+
+const OrdersPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? query.page : 1;
   const router = useRouter();
@@ -211,10 +215,11 @@ const OrdersPage = (props: Props) => {
                 className="hover:bg-slate-100 border-b border-gray-300"
               >
                 <CelTable
-                  type={typeCel.TEXT}
+                  type={typeCel.LINK}
                   className="whitespace-nowrap"
                   value={order.order_id}
                   center={true}
+                  href={`/orders/${order.order_id}`}
                 />
                 <CelTable
                   type={typeCel.TEXT}
@@ -257,6 +262,10 @@ const OrdersPage = (props: Props) => {
 };
 
 export default OrdersPage;
+
+OrdersPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return { props: { query } };

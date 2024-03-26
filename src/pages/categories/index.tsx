@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { useState, useEffect, Fragment, useCallback } from "react";
+import { useState, useEffect, Fragment, useCallback, ReactElement } from "react";
 import { toast } from "react-toastify";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
@@ -22,6 +22,8 @@ import {
   getCategoriesWithFilter,
   updateCategory,
 } from "~/api-client";
+import DefaultLayout from "~/layouts/DefaultLayout";
+import { NextPageWithLayout } from "~/interface/page";
 
 interface ISelectCategory {
   id: string;
@@ -34,7 +36,8 @@ interface Props {
   query: ParsedUrlQuery;
 }
 
-const CategoriesPage = (props: Props) => {
+const Layout = DefaultLayout;
+const CategoriesPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? Number(query.page) : 1;
 
@@ -335,6 +338,11 @@ const CategoriesPage = (props: Props) => {
 };
 
 export default CategoriesPage;
+
+
+CategoriesPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

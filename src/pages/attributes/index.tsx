@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { useState, useEffect, Fragment, useCallback } from "react";
+import { useState, useEffect, Fragment, useCallback, ReactElement } from "react";
 import { toast } from "react-toastify";
 
 import { typeCel } from "~/enums";
@@ -20,6 +20,8 @@ import {
   getAttributesWithFilter,
   updateAttribute,
 } from "~/api-client";
+import DefaultLayout from "~/layouts/DefaultLayout";
+import { NextPageWithLayout } from "~/interface/page";
 
 interface ISelectAttribute {
   id: string | null;
@@ -35,7 +37,9 @@ interface Props {
   query: ParsedUrlQuery;
 }
 
-const AttributesPage = (props: Props) => {
+const Layout = DefaultLayout;
+
+const AttributesPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? Number(query.page) : 1;
 
@@ -315,6 +319,10 @@ const AttributesPage = (props: Props) => {
 };
 
 export default AttributesPage;
+
+AttributesPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

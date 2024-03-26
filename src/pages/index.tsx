@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, Fragment } from "react";
+import { useState, useEffect, useRef, Fragment, ReactElement } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import {
   MdOutlineKeyboardDoubleArrowDown,
@@ -36,6 +36,8 @@ import { getOrders } from "~/api-client";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { orderStatus } from "~/components/Table/statusCel";
 import { ButtonEdit } from "~/components/Button";
+import DefaultLayout from "~/layouts/DefaultLayout";
+import { NextPageWithLayout } from "~/interface/page";
 
 ChartJS.register(
   CategoryScale,
@@ -78,7 +80,9 @@ const initOveviews: IOverview = {
   pending_orders: 0,
 };
 
-export default function Home() {
+const Layout = DefaultLayout;
+
+const HomePage: NextPageWithLayout = () => {
   const data = {
     labels: [],
     datasets: [
@@ -364,3 +368,9 @@ export default function Home() {
     </section>
   );
 }
+
+export default HomePage;
+
+HomePage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};

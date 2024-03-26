@@ -35,7 +35,7 @@ const ButtonClassic = (props: Props) => {
     <button
       className={`${className ? className : ""} ${SIZE[size]} ${
         disable ? "pointer-events-none" : ""
-      } text-white rounded-md opacity-80 hover:opacity-100`}
+      } text-white rounded-md opacity-80 hover:opacity-100 transition-all ease-linear duration-100`}
       onClick={onClick}
     >
       {!loading ? (

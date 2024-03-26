@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, ReactElement } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { BiDollarCircle, BiPackage, BiMinusCircle } from "react-icons/bi";
 import {
@@ -17,6 +17,8 @@ import { axiosGet } from "~/ultils/configAxios";
 import { IGrow } from "~/interface";
 import { SelectItem } from "~/components/Select";
 import { ISelectItem } from "~/interface";
+import DefaultLayout from "~/layouts/DefaultLayout";
+import { NextPageWithLayout } from "~/interface/page";
 
 ChartJS.register(
   CategoryScale,
@@ -121,7 +123,9 @@ const initYears: ISelectItem[] = [
   },
 ];
 
-const IncomeYearPage = () => {
+const Layout = DefaultLayout;
+
+const IncomeYearPage: NextPageWithLayout = () => {
   const data = {
     labels: [],
     datasets: [
@@ -321,3 +325,7 @@ const IncomeYearPage = () => {
 };
 
 export default IncomeYearPage;
+
+IncomeYearPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};

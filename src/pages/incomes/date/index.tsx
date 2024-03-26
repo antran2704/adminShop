@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactElement } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { BiDollarCircle, BiPackage, BiMinusCircle } from "react-icons/bi";
 
@@ -6,6 +6,8 @@ import { SelectDate } from "~/components/Select";
 import Statistic from "~/components/Statistic";
 import { axiosGet } from "~/ultils/configAxios";
 import { IGrowDate } from "~/interface";
+import DefaultLayout from "~/layouts/DefaultLayout";
+import { NextPageWithLayout } from "~/interface/page";
 
 const initOverviewDate: IGrowDate = {
   gross: 0,
@@ -17,7 +19,9 @@ const initOverviewDate: IGrowDate = {
   date: new Date().toLocaleDateString(),
 };
 
-const IncomeDatePage = () => {
+const Layout = DefaultLayout;
+
+const IncomeDatePage: NextPageWithLayout = () => {
   const [growDate, setGrowDate] = useState<IGrowDate>(initOverviewDate);
   const [selectDate, setSelectDate] = useState<string>(
     `${new Date().getFullYear()}-${
@@ -152,3 +156,7 @@ const IncomeDatePage = () => {
 };
 
 export default IncomeDatePage;
+
+IncomeDatePage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};

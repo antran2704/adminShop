@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
   },
   col: {
     width: "20%",
+    padding: "0 6px",
   },
   paddingRow: {
     padding: "10px 0",
@@ -213,7 +214,7 @@ const PDFDocument = (props: Props) => {
             </View>
           </View>
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Product</Text>
+            <Text style={styles.sectionTitle}>Products</Text>
             <View style={styles.table}>
               <View
                 style={[

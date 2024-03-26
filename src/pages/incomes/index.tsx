@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, ReactElement } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { BiDollarCircle, BiPackage, BiMinusCircle } from "react-icons/bi";
 import {
@@ -16,6 +16,8 @@ import { axiosGet } from "~/ultils/configAxios";
 import { SelectDate, SelectItem, SelectTag } from "~/components/Select";
 import { ISelectItem } from "~/interface";
 import Statistic from "~/components/Statistic";
+import DefaultLayout from "~/layouts/DefaultLayout";
+import { NextPageWithLayout } from "~/interface/page";
 
 ChartJS.register(
   CategoryScale,
@@ -183,7 +185,9 @@ const getEndDayInWeek = (value: string) => {
   return endDay;
 };
 
-export default function IncomePage() {
+const Layout = DefaultLayout;
+
+const IncomePage: NextPageWithLayout = () => {
   const data = {
     labels: [],
     datasets: [
@@ -905,3 +909,9 @@ export default function IncomePage() {
     </section>
   );
 }
+
+export default IncomePage;
+
+IncomePage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};

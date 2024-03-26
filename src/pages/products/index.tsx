@@ -1,6 +1,12 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { useState, useEffect, Fragment, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  Fragment,
+  useCallback,
+  ReactElement,
+} from "react";
 import { toast } from "react-toastify";
 
 import { typeCel } from "~/enums";
@@ -25,6 +31,8 @@ import {
   getProductsWithFilter,
   updateProduct,
 } from "~/api-client";
+import DefaultLayout from "~/layouts/DefaultLayout";
+import { NextPageWithLayout } from "~/interface/page";
 
 interface ISelectProduct {
   id: string | null;
@@ -40,7 +48,9 @@ interface Props {
   query: ParsedUrlQuery;
 }
 
-const ProductPage = (props: Props) => {
+const Layout = DefaultLayout;
+
+const ProductPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? Number(query.page) : 1;
   const [categories, setCategories] = useState<ISelectItem[]>([]);
@@ -418,6 +428,10 @@ const ProductPage = (props: Props) => {
 };
 
 export default ProductPage;
+
+ProductPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

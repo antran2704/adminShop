@@ -1,3 +1,4 @@
+import { PaymentStatus } from "~/enums";
 import { IFilter } from "~/interface";
 import { IOrderCancle, statusOrder } from "~/interface/order";
 import { axiosGet, axiosPatch } from "~/ultils/configAxios";
@@ -36,4 +37,15 @@ const updateOrder = async (
   });
 };
 
-export { getOrders, getOrdersWithFilter, getOrder, updateOrder };
+const updatePaymentStatusOrder = async (
+  order_id: string,
+  status: PaymentStatus,
+  options?: Partial<IOrderCancle>
+) => {
+  return await axiosPatch(`/orders/payment_status/${order_id}`, {
+    payment_status: status,
+    ...options
+  });
+};
+
+export { getOrders, getOrdersWithFilter, getOrder, updateOrder, updatePaymentStatusOrder };

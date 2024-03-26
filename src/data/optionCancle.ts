@@ -18,4 +18,12 @@ const optionsCancle: IOptionCancle[] = [
   },
 ];
 
-export default optionsCancle;
+const optionsCancleByPayment: IOptionCancle[] = [
+  {
+    id: "1",
+    lable: "Chưa chuyển khoản",
+    value: "Chưa chuyển khoản",
+  },
+];
+
+export { optionsCancle, optionsCancleByPayment };
