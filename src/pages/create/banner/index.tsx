@@ -1,20 +1,16 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { toast } from "react-toastify";
 
-import {
-  CreateBanner,
-} from "~/interface";
+import { CreateBanner } from "~/interface";
 import FormLayout from "~/layouts/FormLayout";
 import { InputText } from "~/components/InputField";
 import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Loading from "~/components/Loading";
-import {
-  createBanner,
-  uploadBannerImage,
-} from "~/api-client";
+import { createBanner, uploadBannerImage } from "~/api-client";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 const initData: CreateBanner = {
   title: "",
@@ -23,6 +19,8 @@ const initData: CreateBanner = {
   image: "",
   path: null,
 };
+
+const Layout = LayoutWithHeader;
 
 const CreateCategoryPage = () => {
   const router = useRouter();
@@ -113,8 +111,8 @@ const CreateCategoryPage = () => {
 
     const sendData: CreateBanner = {
       ...data,
-      image: image as string
-    }
+      image: image as string,
+    };
 
     try {
       const payload = await createBanner(sendData);
@@ -188,3 +186,7 @@ const CreateCategoryPage = () => {
 };
 
 export default CreateCategoryPage;
+
+CreateCategoryPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};

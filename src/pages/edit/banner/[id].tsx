@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment, ReactElement } from "react";
 import { toast } from "react-toastify";
 import FormLayout from "~/layouts/FormLayout";
 import { InputText } from "~/components/InputField";
@@ -14,6 +14,8 @@ import {
   uploadBannerImage,
 } from "~/api-client";
 import { Banner } from "~/interface";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { NextPageWithLayout } from "~/interface/page";
 
 const initData: Banner = {
   _id: "",
@@ -28,7 +30,9 @@ interface Props {
   query: any;
 }
 
-const EditCategoryPage = (props: Props) => {
+const Layout = LayoutWithHeader;
+
+const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
   const router = useRouter();
   const { query } = props;
   const [title, setTitle] = useState<string | null>(null);
@@ -272,6 +276,10 @@ const EditCategoryPage = (props: Props) => {
 };
 
 export default EditCategoryPage;
+
+EditCategoryPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState, useCallback } from "react";
+import { useState, useCallback, ReactElement } from "react";
 import { toast } from "react-toastify";
 
 import ButtonCheck from "~/components/Button/ButtonCheck";
@@ -11,6 +11,7 @@ import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import MultipleValue from "~/components/InputField/MultipleValue";
 import Loading from "~/components/Loading";
 import { createdAttribute } from "~/api-client";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 const initData: IAttribute = {
   _id: "",
@@ -19,6 +20,8 @@ const initData: IAttribute = {
   public: true,
   variants: [],
 };
+
+const Layout = LayoutWithHeader;
 
 const CreateAttributePage = () => {
   const router = useRouter();
@@ -178,3 +181,7 @@ const CreateAttributePage = () => {
 };
 
 export default CreateAttributePage;
+
+CreateAttributePage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};

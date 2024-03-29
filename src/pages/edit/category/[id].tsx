@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { useState, useEffect, Fragment, useCallback } from "react";
+import { useState, useEffect, Fragment, useCallback, ReactElement } from "react";
 import { toast } from "react-toastify";
 
 import generalBreadcrumbs from "~/helper/generateBreadcrumb";
@@ -28,6 +28,7 @@ import {
 } from "~/api-client";
 import Popup from "~/components/Popup";
 import { generateSlug } from "~/helper/generateSlug";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 const initData: IDataCategory = {
   _id: null,
@@ -41,6 +42,8 @@ const initData: IDataCategory = {
 interface Props {
   query: any;
 }
+
+const Layout = LayoutWithHeader;
 
 const EditCategoryPage = (props: Props) => {
   const router = useRouter();
@@ -193,17 +196,17 @@ const EditCategoryPage = (props: Props) => {
     setLoading(true);
 
     try {
-      if (data.thumbnail !== thumbnail) {
-        const deleteImagePayload = await deleteImageInSever(
-          data.thumbnail as string
-        );
+      // if (data.thumbnail !== thumbnail) {
+      //   const deleteImagePayload = await deleteImageInSever(
+      //     data.thumbnail as string
+      //   );
 
-        if (deleteImagePayload.status !== 201) {
-          toast.error("Error in updated thumbnail", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        }
-      }
+      //   if (deleteImagePayload.status !== 201) {
+      //     toast.error("Error in updated thumbnail", {
+      //       position: toast.POSITION.TOP_RIGHT,
+      //     });
+      //   }
+      // }
 
       const payload = await updateCategory(data._id as string, sendData);
 
@@ -422,6 +425,10 @@ const EditCategoryPage = (props: Props) => {
 };
 
 export default EditCategoryPage;
+
+EditCategoryPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

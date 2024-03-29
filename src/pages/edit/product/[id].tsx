@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { useRouter } from "next/router";
-import { useState, useEffect, useCallback, Fragment } from "react";
+import { useState, useEffect, useCallback, Fragment, ReactElement } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 
@@ -51,6 +51,7 @@ import {
   uploadThumbnailProduct,
 } from "~/api-client";
 import { generateSlug } from "~/helper/generateSlug";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 enum TYPE_TAG {
   BASIC_INFOR = "basic_infor",
@@ -119,6 +120,8 @@ const initVariant: IVariantProduct = {
 interface Props {
   query: ParsedUrlQuery;
 }
+
+const Layout = LayoutWithHeader;
 
 const ProductEditPage = (props: Props) => {
   const { query } = props;
@@ -1330,6 +1333,10 @@ const ProductEditPage = (props: Props) => {
 };
 
 export default ProductEditPage;
+
+ProductEditPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

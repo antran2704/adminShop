@@ -10,7 +10,6 @@ import Navbar from "~/components/Navbar";
 import Loading from "~/components/Loading";
 import { getUser } from "~/api-client";
 import { injectStore } from "~/ultils/configAxios";
-import Notification from "~/components/Notification";
 
 interface Props {
   children: JSX.Element;

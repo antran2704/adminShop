@@ -32,6 +32,8 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   }, []);
 
   return (
-    <Provider store={store}>{getLayout(<Component {...pageProps} />)}</Provider>
+    <Provider store={store}>
+      {getLayout(<Component {...pageProps} />)}
+    </Provider>
   );
 }

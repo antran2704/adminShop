@@ -7,6 +7,7 @@ import { getDateTime } from "~/helper/datetime";
 import { iconNoti, styleTypeNoti } from "./data";
 import { useRouter } from "next/router";
 import { Socket, io } from "socket.io-client";
+import { NotitficationType } from "~/enums";
 
 const initNotification: Notification = {
   notifications: [],
@@ -39,7 +40,11 @@ const Notification = () => {
   const onClickNoti = async (data: NotificationItem) => {
     if (data.isReaded) {
       if (data.path) {
-        router.push(data.path);
+        if (data.type === NotitficationType.product) {
+          router.push(`/edit/${data.path.replace("products", "product")}`);
+        } else {
+          router.push(data.path);
+        }
       }
 
       return;
@@ -65,7 +70,11 @@ const Notification = () => {
         });
 
         if (data.path) {
-          router.push(data.path);
+          if (data.type === NotitficationType.product) {
+            router.push(`/edit/${data.path.replace("products", "product")}`);
+          } else {
+            router.push(data.path);
+          }
         }
       }
     } catch (error) {

@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactElement } from "react";
 import { toast } from "react-toastify";
 
 import { IDataCategory, ICategorySelect, IObjectCategory } from "~/interface";
@@ -17,6 +17,7 @@ import {
   getParentCategories,
   uploadThumbnailCategory,
 } from "~/api-client";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 const initData: IDataCategory = {
   parent_id: null,
@@ -30,6 +31,8 @@ const initData: IDataCategory = {
   breadcrumbs: [],
   childrens: [],
 };
+
+const Layout = LayoutWithHeader;
 
 const CreateCategoryPage = () => {
   const router = useRouter();
@@ -273,3 +276,7 @@ const CreateCategoryPage = () => {
 };
 
 export default CreateCategoryPage;
+
+CreateCategoryPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
