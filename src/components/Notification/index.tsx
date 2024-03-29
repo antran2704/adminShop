@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { FaRegBell } from "react-icons/fa";
 import { getNotifications, updateNotification } from "~/api-client";
 import { Notification, NotificationItem } from "~/interface";
-// import { socket } from "~/ultils/socket";
 import ImageCus from "../Image/ImageCus";
 import { getDateTime } from "~/helper/datetime";
 import { iconNoti, styleTypeNoti } from "./data";
@@ -16,7 +15,6 @@ const initNotification: Notification = {
 };
 const Notification = () => {
   const router = useRouter();
-
   const [socket, setSocket] = useState<Socket | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
 
@@ -31,7 +29,11 @@ const Notification = () => {
     const newNotifications = notification.notifications;
     newNotifications.pop();
     newNotifications.unshift(item);
-    setNotification({ ...notification, notifications: newNotifications, totalUnread: notification.totalUnread + 1  });
+    setNotification({
+      ...notification,
+      notifications: newNotifications,
+      totalUnread: notification.totalUnread + 1,
+    });
   };
 
   const onClickNoti = async (data: NotificationItem) => {
@@ -56,7 +58,11 @@ const Notification = () => {
             return item;
           });
 
-        setNotification({ ...notification, notifications, totalUnread: notification.totalUnread - 1 });
+        setNotification({
+          ...notification,
+          notifications,
+          totalUnread: notification.totalUnread - 1,
+        });
 
         if (data.path) {
           router.push(data.path);
@@ -84,6 +90,7 @@ const Notification = () => {
     const URL = process.env.SOCKET_ENDPOINT || "http://localhost:3001";
     const socketInit = io(URL);
     socketInit.connect();
+    console.log("notifi");
 
     setSocket(socketInit);
     handleGetNotifications();
@@ -137,7 +144,6 @@ const Notification = () => {
               : "top-[120%] opacity-0 pointer-events-none"
           } right-0 bg-white shadow-lg rounded-md border transition-all ease-linear duration-100 overflow-hidden z-10`}
         >
-          {/* <div className="absolute -top-8 left-0 right-0 h-10 bg-transparent z-10"></div> */}
           {notification.notifications.map(
             (item: NotificationItem, index: number) => (
               <li

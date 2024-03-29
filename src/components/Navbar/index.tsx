@@ -44,10 +44,6 @@ const Navbar: FC = () => {
     }
   }, [router.asPath]);
 
-  useEffect(() => {
-    console.log("navbar")
-  }, [])
-
   return (
     <>
      <button

@@ -31,8 +31,8 @@ import {
   getProductsWithFilter,
   updateProduct,
 } from "~/api-client";
-import DefaultLayout from "~/layouts/DefaultLayout";
 import { NextPageWithLayout } from "~/interface/page";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 interface ISelectProduct {
   id: string | null;
@@ -48,7 +48,7 @@ interface Props {
   query: ParsedUrlQuery;
 }
 
-const Layout = DefaultLayout;
+const Layout = LayoutWithHeader;
 
 const ProductPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;

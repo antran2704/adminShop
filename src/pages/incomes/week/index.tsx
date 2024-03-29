@@ -16,8 +16,8 @@ import Statistic from "~/components/Statistic";
 import { axiosGet } from "~/ultils/configAxios";
 import { IGrow, IGrowDate } from "~/interface";
 import { getEndDayInWeek, getFirstDayInWeek } from "~/helper/datetime";
-import DefaultLayout from "~/layouts/DefaultLayout";
 import { NextPageWithLayout } from "~/interface/page";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 ChartJS.register(
   CategoryScale,
@@ -72,7 +72,7 @@ const initSelectGrowWeek: ISelectGrowWeek = {
   month: "",
 };
 
-const Layout = DefaultLayout;
+const Layout = LayoutWithHeader;
 
 const IncomeWeekPage: NextPageWithLayout = () => {
   const data = {

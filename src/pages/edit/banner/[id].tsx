@@ -1,35 +1,18 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { useState, useEffect, Fragment, useCallback } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { toast } from "react-toastify";
-
-import generalBreadcrumbs from "~/helper/generateBreadcrumb";
-import { deleteImageInSever } from "~/helper/handleImage";
-
-import {
-  IDataCategory,
-  ICategorySelect,
-  IObjectCategory,
-} from "~/interface/category";
 import FormLayout from "~/layouts/FormLayout";
 import { InputText } from "~/components/InputField";
-import Tree from "~/components/Tree";
 import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Loading from "~/components/Loading";
 import {
-  deleteCategory,
   getBanner,
-  getCategories,
-  getCategory,
-  getParentCategories,
   updateBanner,
-  updateCategory,
   uploadBannerImage,
-  uploadThumbnailCategory,
 } from "~/api-client";
-import Popup from "~/components/Popup";
 import { Banner } from "~/interface";
 
 const initData: Banner = {

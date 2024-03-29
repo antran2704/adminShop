@@ -17,7 +17,6 @@ import ImageCus from "~/components/Image/ImageCus";
 import Link from "next/link";
 import { SelectDate } from "~/components/Select";
 import { AxiosError, AxiosResponse } from "axios";
-import { getCookies } from "cookies-next";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { initPagination } from "~/components/Pagination/initData";
 import {
@@ -26,8 +25,8 @@ import {
   getCouponsWithFilter,
   updateCoupon,
 } from "~/api-client";
-import DefaultLayout from "~/layouts/DefaultLayout";
 import { NextPageWithLayout } from "~/interface/page";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 interface ISelectCoupon {
   id: string;
@@ -38,7 +37,7 @@ interface Props {
   query: ParsedUrlQuery;
 }
 
-const Layout = DefaultLayout;
+const Layout = LayoutWithHeader;
 
 const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;

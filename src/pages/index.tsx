@@ -36,8 +36,8 @@ import { getOrders } from "~/api-client";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { orderStatus } from "~/components/Table/statusCel";
 import { ButtonEdit } from "~/components/Button";
-import DefaultLayout from "~/layouts/DefaultLayout";
 import { NextPageWithLayout } from "~/interface/page";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 ChartJS.register(
   CategoryScale,
@@ -80,7 +80,7 @@ const initOveviews: IOverview = {
   pending_orders: 0,
 };
 
-const Layout = DefaultLayout;
+const Layout = LayoutWithHeader;
 
 const HomePage: NextPageWithLayout = () => {
   const data = {

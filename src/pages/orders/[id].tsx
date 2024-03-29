@@ -31,8 +31,8 @@ import Loading from "~/components/Loading";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { getOrder, updateOrder, updatePaymentStatusOrder } from "~/api-client";
 import { getValueCoupon } from "~/helper/number/coupon";
-import DefaultLayout from "~/layouts/DefaultLayout";
 import { NextPageWithLayout } from "~/interface/page";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {
   loading: () => <Loading />,
@@ -46,7 +46,7 @@ const BG_STATUS = {
   cancle: "bg-cancle",
 };
 
-const Layout = DefaultLayout;
+const Layout = LayoutWithHeader;
 
 const OrderDetail: NextPageWithLayout = () => {
   const router: NextRouter = useRouter();

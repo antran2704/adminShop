@@ -17,8 +17,8 @@ import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { useRouter } from "next/router";
 import { initPagination } from "~/components/Pagination/initData";
 import { getOrders, getOrdersWithFilter } from "~/api-client";
-import DefaultLayout from "~/layouts/DefaultLayout";
 import { NextPageWithLayout } from "~/interface/page";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 interface Props {
   query: InferGetServerSidePropsType<typeof getServerSideProps>;
@@ -62,7 +62,7 @@ const dataFilterMethod: ISelectItem[] = [
   },
 ];
 
-const Layout = DefaultLayout;
+const Layout = LayoutWithHeader;
 
 const OrdersPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;

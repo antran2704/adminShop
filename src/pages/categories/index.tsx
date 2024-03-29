@@ -22,8 +22,8 @@ import {
   getCategoriesWithFilter,
   updateCategory,
 } from "~/api-client";
-import DefaultLayout from "~/layouts/DefaultLayout";
 import { NextPageWithLayout } from "~/interface/page";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 interface ISelectCategory {
   id: string;
@@ -36,7 +36,7 @@ interface Props {
   query: ParsedUrlQuery;
 }
 
-const Layout = DefaultLayout;
+const Layout = LayoutWithHeader;
 const CategoriesPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? Number(query.page) : 1;

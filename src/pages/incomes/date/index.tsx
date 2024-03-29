@@ -6,8 +6,8 @@ import { SelectDate } from "~/components/Select";
 import Statistic from "~/components/Statistic";
 import { axiosGet } from "~/ultils/configAxios";
 import { IGrowDate } from "~/interface";
-import DefaultLayout from "~/layouts/DefaultLayout";
 import { NextPageWithLayout } from "~/interface/page";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 const initOverviewDate: IGrowDate = {
   gross: 0,
@@ -19,7 +19,7 @@ const initOverviewDate: IGrowDate = {
   date: new Date().toLocaleDateString(),
 };
 
-const Layout = DefaultLayout;
+const Layout = LayoutWithHeader;
 
 const IncomeDatePage: NextPageWithLayout = () => {
   const [growDate, setGrowDate] = useState<IGrowDate>(initOverviewDate);

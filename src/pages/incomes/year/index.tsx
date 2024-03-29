@@ -17,8 +17,8 @@ import { axiosGet } from "~/ultils/configAxios";
 import { IGrow } from "~/interface";
 import { SelectItem } from "~/components/Select";
 import { ISelectItem } from "~/interface";
-import DefaultLayout from "~/layouts/DefaultLayout";
 import { NextPageWithLayout } from "~/interface/page";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 ChartJS.register(
   CategoryScale,
@@ -123,7 +123,7 @@ const initYears: ISelectItem[] = [
   },
 ];
 
-const Layout = DefaultLayout;
+const Layout = LayoutWithHeader;
 
 const IncomeYearPage: NextPageWithLayout = () => {
   const data = {

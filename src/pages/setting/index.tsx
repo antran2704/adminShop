@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { useCallback, useState } from "react";
+import { ReactElement, useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import Thumbnail from "~/components/Image/Thumbnail";
 import { InputText, InputPassword } from "~/components/InputField";
@@ -7,7 +7,9 @@ import Loading from "~/components/Loading";
 import Popup from "~/components/Popup";
 import { uploadImageOnServer } from "~/helper/handleImage";
 import { IUserInfor } from "~/interface";
+import { NextPageWithLayout } from "~/interface/page";
 import FormLayout from "~/layouts/FormLayout";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { loginReducer } from "~/store/slice";
 import { axiosPatch, axiosPost } from "~/ultils/configAxios";
@@ -24,7 +26,9 @@ const initPassword: IPassword = {
   reNewPassword: null,
 };
 
-const SettingPage = () => {
+const Layout = LayoutWithHeader;
+
+const SettingPage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
   const { infor } = useAppSelector((state) => state.user);
   const [user, setUser] = useState<IUserInfor>(infor);
@@ -302,3 +306,7 @@ const SettingPage = () => {
 };
 
 export default SettingPage;
+
+SettingPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
