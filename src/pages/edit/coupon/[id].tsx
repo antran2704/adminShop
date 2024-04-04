@@ -18,7 +18,6 @@ import { SelectDate, SelectTag } from "~/components/Select";
 import Loading from "~/components/Loading";
 import { deleteCoupon } from "~/api-client";
 import Popup from "~/components/Popup";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 interface Props {
   query: ParsedUrlQuery;
@@ -43,8 +42,6 @@ const initData: ICoupon = {
   discount_used_count: 0,
   discount_user_used: [],
 };
-
-const Layout = LayoutWithHeader;
 
 const EditCouponPage = (props: Props) => {
   const { query } = props;
@@ -554,11 +551,6 @@ const EditCouponPage = (props: Props) => {
 };
 
 export default EditCouponPage;
-
-
-EditCouponPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

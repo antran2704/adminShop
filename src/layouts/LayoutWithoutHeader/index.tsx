@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import DefaultLayout from "../DefaultLayout";
 
 interface Props {
@@ -7,7 +8,9 @@ interface Props {
 const LayoutWithoutHeader = ({ children }: Props) => {
   return (
     <DefaultLayout>
+      <Fragment>
         {children}
+      </Fragment>
     </DefaultLayout>
   );
 };

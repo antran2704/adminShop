@@ -51,7 +51,6 @@ import {
   uploadThumbnailProduct,
 } from "~/api-client";
 import { generateSlug } from "~/helper/generateSlug";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 enum TYPE_TAG {
   BASIC_INFOR = "basic_infor",
@@ -120,8 +119,6 @@ const initVariant: IVariantProduct = {
 interface Props {
   query: ParsedUrlQuery;
 }
-
-const Layout = LayoutWithHeader;
 
 const ProductEditPage = (props: Props) => {
   const { query } = props;
@@ -1333,10 +1330,6 @@ const ProductEditPage = (props: Props) => {
 };
 
 export default ProductEditPage;
-
-ProductEditPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

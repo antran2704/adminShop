@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { FC, useState, useEffect } from "react";
 import { BsArrowLeft } from "react-icons/bs";
 import { BiLogOut } from "react-icons/bi";
-import { listBody, listSetting, itemNav } from "./data";
+import { listBody, listSetting, itemNav } from "../../data/Navbar";
 import useViewport from "~/hooks/useViewport";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import ImageCus from "../Image/ImageCus";

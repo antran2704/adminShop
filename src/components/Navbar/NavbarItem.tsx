@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, useRef, useState, memo } from "react";
 import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
-import { itemNav } from "./data";
+import { itemNav } from "../../data/Navbar";
 
 interface Props {
   subNav: boolean;

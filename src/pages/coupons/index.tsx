@@ -1,6 +1,12 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { useState, useEffect, Fragment, useCallback, ReactElement } from "react";
+import {
+  useState,
+  useEffect,
+  Fragment,
+  useCallback,
+  ReactElement,
+} from "react";
 import { toast } from "react-toastify";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
@@ -232,7 +238,6 @@ const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
     }
 
     try {
-
       await deleteCoupon(selectItem.id);
       setShowPopup(false);
 
@@ -336,7 +341,10 @@ const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
                   <div className="flex items-center gap-2">
                     <ImageCus
                       title="product image"
-                      src={item.discount_thumbnail as string}
+                      src={
+                        ((process.env.NEXT_PUBLIC_IMAGE_ENDPOINT as string) +
+                          item.discount_thumbnail) as string
+                      }
                       className="min-w-[32px] w-8 h-8 rounded-full"
                     />
                     <Link

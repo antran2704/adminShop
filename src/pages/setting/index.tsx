@@ -9,7 +9,7 @@ import { uploadImageOnServer } from "~/helper/handleImage";
 import { IUserInfor } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 import FormLayout from "~/layouts/FormLayout";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { loginReducer } from "~/store/slice";
 import { axiosPatch, axiosPost } from "~/ultils/configAxios";
@@ -26,7 +26,7 @@ const initPassword: IPassword = {
   reNewPassword: null,
 };
 
-const Layout = LayoutWithHeader;
+const Layout = LayoutWithoutHeader;
 
 const SettingPage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();

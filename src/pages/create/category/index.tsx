@@ -17,7 +17,6 @@ import {
   getParentCategories,
   uploadThumbnailCategory,
 } from "~/api-client";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 const initData: IDataCategory = {
   parent_id: null,
@@ -32,7 +31,6 @@ const initData: IDataCategory = {
   childrens: [],
 };
 
-const Layout = LayoutWithHeader;
 
 const CreateCategoryPage = () => {
   const router = useRouter();
@@ -276,7 +274,3 @@ const CreateCategoryPage = () => {
 };
 
 export default CreateCategoryPage;
-
-CreateCategoryPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};

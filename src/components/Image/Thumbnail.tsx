@@ -52,7 +52,9 @@ const Thumbnail: FC<Props> = (props: Props) => {
           error ? "border-error" : ""
         } ${
           className ? className : "min-w-[100px] max-h-[400px] max-w-[400px]"
-        } rounded-md ${!url ? 'min-h-[260px] border-2 border-dashed' : ""} cursor-pointer overflow-hidden`}
+        } rounded-md ${
+          !url ? "min-h-[260px] border-2 border-dashed" : ""
+        } cursor-pointer overflow-hidden`}
       >
         {loading && (
           <p className="text-base font-medium text-center">Loading...</p>
@@ -64,7 +66,14 @@ const Thumbnail: FC<Props> = (props: Props) => {
           </>
         )}
         {url && !loading && (
-          <ImageCus src={url} title="Thumbanil" className="w-full h-full object-contain object-center" />
+          <ImageCus
+            src={
+              process.env.NEXT_PUBLIC_IMAGE_ENDPOINT +
+              url.replace("http://localhost:3001", "")
+            }
+            title="Thumbanil"
+            className="w-full h-full object-contain object-center"
+          />
         )}
         <input
           onChange={hanldeChangeThumbnail}

@@ -14,7 +14,6 @@ import {
   uploadBannerImage,
 } from "~/api-client";
 import { Banner } from "~/interface";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { NextPageWithLayout } from "~/interface/page";
 
 const initData: Banner = {
@@ -29,8 +28,6 @@ const initData: Banner = {
 interface Props {
   query: any;
 }
-
-const Layout = LayoutWithHeader;
 
 const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
   const router = useRouter();
@@ -276,10 +273,6 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
 };
 
 export default EditCategoryPage;
-
-EditCategoryPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

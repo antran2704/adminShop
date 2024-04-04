@@ -8,16 +8,21 @@ import { iconNoti, styleTypeNoti } from "./data";
 import { useRouter } from "next/router";
 import { Socket, io } from "socket.io-client";
 import { NotitficationType } from "~/enums";
+import Link from "next/link";
 
 const initNotification: Notification = {
   notifications: [],
   total: 0,
   totalUnread: 0,
 };
+
+let timmerRing: NodeJS.Timeout;
+
 const Notification = () => {
   const router = useRouter();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [ring, setRing] = useState<boolean>(false);
 
   const [notification, setNotification] =
     useState<Notification>(initNotification);
@@ -27,6 +32,12 @@ const Notification = () => {
   };
 
   const onNotification = (item: NotificationItem) => {
+    if (timmerRing) {
+      clearTimeout(timmerRing);
+    }
+
+    setRing(true);
+
     const newNotifications = notification.notifications;
     newNotifications.pop();
     newNotifications.unshift(item);
@@ -35,6 +46,10 @@ const Notification = () => {
       notifications: newNotifications,
       totalUnread: notification.totalUnread + 1,
     });
+
+    timmerRing = setTimeout(() => {
+      setRing(false);
+    }, 400);
   };
 
   const onClickNoti = async (data: NotificationItem) => {
@@ -88,7 +103,6 @@ const Notification = () => {
 
       if (status === 200) {
         setNotification(payload);
-        console.log(payload);
       }
     } catch (error) {
       console.log(error);
@@ -99,7 +113,6 @@ const Notification = () => {
     const URL = process.env.SOCKET_ENDPOINT || "http://localhost:3001";
     const socketInit = io(URL);
     socketInit.connect();
-    console.log("notifi");
 
     setSocket(socketInit);
     handleGetNotifications();
@@ -136,9 +149,16 @@ const Notification = () => {
           onClick={onShowModal}
           className={`relative flex items-center justify-center p-2 ${
             showModal ? "bg-slate-200" : "bg-slate-100 hover:bg-slate-200"
-          } rounded-full cursor-pointer`}
+          } ${
+            ring ? "bg-blue-400 hover:bg-blue-400" : ""
+          } rounded-full cursor-pointer ease-linear duration-100`}
         >
-          <FaRegBell className="text-2xl" />
+          <FaRegBell
+            className={`${
+              ring ? "animate_ring-bell text-white" : ""
+            } text-2xl ease-linear duration-100`}
+          />
+
           {notification.totalUnread > 0 && (
             <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-white text-xs bg-primary rounded-full z-0">
               {notification.totalUnread > 99 ? "99" : notification.totalUnread}
@@ -147,11 +167,11 @@ const Notification = () => {
         </div>
 
         <ul
-          className={`absolute ${
+          className={`scroll absolute ${
             showModal
               ? "top-full pointer-events-auto opacity-100"
               : "top-[120%] opacity-0 pointer-events-none"
-          } right-0 bg-white shadow-lg rounded-md border transition-all ease-linear duration-100 overflow-hidden z-10`}
+          } right-0 max-h-[600px] bg-white shadow-lg rounded-md border transition-all ease-linear duration-100 overflow-auto z-10`}
         >
           {notification.notifications.map(
             (item: NotificationItem, index: number) => (
@@ -195,10 +215,17 @@ const Notification = () => {
               </li>
             )
           )}
-          {notification.total > 5 && (
-            <button className="w-full text-center text-base hover:text-primary hover:bg-slate-100 px-5 py-2 border-t">
+          {notification.total > notification.notifications.length && (
+            <Link href="/notifications" className="block w-full text-center text-base hover:text-primary hover:bg-slate-100 px-5 py-2 border-t">
               Xem thêm
-            </button>
+            </Link>
+          )}
+          {!notification.notifications.length && (
+            <li
+              className={`flex items-center px-5 py-2 whitespace-nowrap gap-5`}
+            >
+              No notification
+            </li>
           )}
         </ul>
       </div>

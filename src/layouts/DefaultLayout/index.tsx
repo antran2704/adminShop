@@ -1,7 +1,5 @@
 import { useRouter } from "next/router";
 import { useState, useEffect, FC } from "react";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { loginReducer } from "~/store/slice";
@@ -56,14 +54,8 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
     <main className="flex items-start justify-between bg-[#f9fafb]">
       <Navbar />
       <div className="w-full min-h-screen">
-        {/* {infor._id && <Notification />} */}
         {children}
       </div>
-      <ToastContainer
-        autoClose={5000}
-        pauseOnFocusLoss={false}
-        pauseOnHover={false}
-      />
     </main>
   );
 };

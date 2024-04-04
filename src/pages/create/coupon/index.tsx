@@ -14,7 +14,6 @@ import Thumbnail from "~/components/Image/Thumbnail";
 import { uploadImageOnServer } from "~/helper/handleImage";
 import { SelectDate, SelectTag } from "~/components/Select";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 const initData: ICouponCreate = {
   discount_code: "",
@@ -33,7 +32,6 @@ const initData: ICouponCreate = {
   discount_public: true,
 };
 
-const Layout = LayoutWithHeader;
 
 const CreateCouponPage = () => {
   const router = useRouter();
@@ -397,7 +395,3 @@ const CreateCouponPage = () => {
 };
 
 export default CreateCouponPage;
-
-CreateCouponPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-}

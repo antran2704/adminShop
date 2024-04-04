@@ -77,7 +77,13 @@ const Gallery: FC<Props> = (props: Props) => {
               </div>
             </div>
 
-            <ImageCus src={url} className="w-full h-full" />
+            <ImageCus
+              src={
+                process.env.NEXT_PUBLIC_IMAGE_ENDPOINT +
+                url.replace("http://localhost:3001", "")
+              }
+              className="w-full h-full"
+            />
           </li>
         ))}
 

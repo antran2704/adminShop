@@ -10,7 +10,6 @@ import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Loading from "~/components/Loading";
 import { createBanner, uploadBannerImage } from "~/api-client";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 const initData: CreateBanner = {
   title: "",
@@ -20,7 +19,6 @@ const initData: CreateBanner = {
   path: null,
 };
 
-const Layout = LayoutWithHeader;
 
 const CreateCategoryPage = () => {
   const router = useRouter();
@@ -186,7 +184,3 @@ const CreateCategoryPage = () => {
 };
 
 export default CreateCategoryPage;
-
-CreateCategoryPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};

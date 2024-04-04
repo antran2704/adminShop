@@ -207,6 +207,7 @@ const OrdersPage: NextPageWithLayout<Props> = (props: Props) => {
           items={orders}
           loading={loading}
           message={message}
+          pagination={pagination}
         >
           <Fragment>
             {orders.map((order: IOrder) => (

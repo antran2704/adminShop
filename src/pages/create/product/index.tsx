@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState, useEffect, useCallback, ReactElement } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 
 import {
@@ -30,7 +30,6 @@ import {
   getParentCategories,
   uploadThumbnailProduct,
 } from "~/api-client";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 const initData: ICreateProduct = {
   title: "",
@@ -54,8 +53,6 @@ const initData: ICreateProduct = {
   barcode: null,
   sold: 0,
 };
-
-const Layout = LayoutWithHeader;
 
 const CreateProductPage = () => {
   const router = useRouter();
@@ -560,7 +557,3 @@ const CreateProductPage = () => {
 };
 
 export default CreateProductPage;
-
-CreateProductPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};

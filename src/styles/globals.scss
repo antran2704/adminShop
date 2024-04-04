@@ -203,6 +203,11 @@ body::-webkit-scrollbar {
   }
 }
 
+
+.animate_ring-bell {
+  animation: ringBell linear 0.4s forwards;
+}
+
 @keyframes spinner {
   0% {
     transform: rotate(0deg);
@@ -236,5 +241,27 @@ body::-webkit-scrollbar {
   }
   to {
     opacity: 0;
+  }
+}
+
+@keyframes ringBell {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-16deg);
+  }
+
+  50% {
+    transform: rotate(0deg);
+  }
+
+  75% {
+    transform: rotate(16deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
   }
 }

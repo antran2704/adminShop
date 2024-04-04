@@ -1,7 +1,8 @@
+import { ReactNode } from "react";
 import { AiOutlineSetting, AiOutlineShoppingCart } from "react-icons/ai";
 import { BiCategoryAlt, BiDollarCircle } from "react-icons/bi";
+import { MdNotificationsNone } from "react-icons/md";
 import { RxDashboard } from "react-icons/rx";
-import { ReactNode } from "react";
 import { HiOutlineUsers } from "react-icons/hi2";
 
 export interface itemNav {
@@ -71,6 +72,11 @@ const listBody: itemNav[] = [
         path: "/incomes/year",
       },
     ],
+  },
+  {
+    name: "Notifications",
+    path: "/notifications",
+    icon: <MdNotificationsNone />,
   },
   {
     name: "Customers",

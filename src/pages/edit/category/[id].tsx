@@ -28,7 +28,6 @@ import {
 } from "~/api-client";
 import Popup from "~/components/Popup";
 import { generateSlug } from "~/helper/generateSlug";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 const initData: IDataCategory = {
   _id: null,
@@ -42,8 +41,6 @@ const initData: IDataCategory = {
 interface Props {
   query: any;
 }
-
-const Layout = LayoutWithHeader;
 
 const EditCategoryPage = (props: Props) => {
   const router = useRouter();
@@ -425,10 +422,6 @@ const EditCategoryPage = (props: Props) => {
 };
 
 export default EditCategoryPage;
-
-EditCategoryPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

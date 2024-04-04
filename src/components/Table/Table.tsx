@@ -1,16 +1,19 @@
 import { FC, Fragment, memo, SetStateAction } from "react";
 import NoResult from "../NoResult";
+import PaginationTop from "../Pagination/PaginationTop";
+import { IPagination } from "~/interface";
 
 interface Props {
   children: JSX.Element;
   colHeadTabel: string[];
   items?: any[];
   selects?: string[];
-  setSelects?: (value: SetStateAction<string[]>) => void
+  setSelects?: (value: SetStateAction<string[]>) => void;
   isSelected?: boolean;
   selectAll?: boolean;
   message?: string | null;
   loading: boolean;
+  pagination?: IPagination;
 }
 
 const Table: FC<Props> = (props: Props) => {
@@ -21,13 +24,14 @@ const Table: FC<Props> = (props: Props) => {
     selects = [],
     message,
     loading,
+    pagination,
     isSelected = false,
     selectAll = false,
     setSelects,
   } = props;
 
   const onSelectCheckBoxAll = () => {
-    if(!setSelects) return;
+    if (!setSelects) return;
 
     if (selects.length === items.length) {
       setSelects([]);
@@ -39,6 +43,9 @@ const Table: FC<Props> = (props: Props) => {
 
   return (
     <Fragment>
+      {pagination && pagination.totalItems > pagination.pageSize && (
+        <div className="pb-5"><PaginationTop pagination={pagination} /></div>
+      )}
       <div className="scrollHidden overflow-x-auto">
         <div className="align-middle inline-block min-w-full shadow overflow-hidden bg-white shadow-dashboard rounded-lg border">
           <table className="min-w-full">

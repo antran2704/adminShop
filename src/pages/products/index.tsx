@@ -360,7 +360,13 @@ const ProductPage: NextPageWithLayout<Props> = (props: Props) => {
                   >
                     <ImageCus
                       title="product image"
-                      src={product.thumbnail as string}
+                      src={
+                        ((process.env.NEXT_PUBLIC_IMAGE_ENDPOINT as string) +
+                          product.thumbnail?.replace(
+                            "http://localhost:3001",
+                            ""
+                          )) as string
+                      }
                       className="min-w-[32px] w-8 h-8 rounded-full"
                     />
                     <p className="text-sm font-medium lg:max-w-[80%] lg:whitespace-normal whitespace-nowrap">

@@ -6,6 +6,7 @@ import Popup from "~/components/Popup";
 import PaginationCus from "~/components/Pagination";
 
 import { IPagination } from "~/interface/pagination";
+import PaginationTop from "~/components/Pagination/PaginationTop";
 
 interface Props {
   children: JSX.Element;

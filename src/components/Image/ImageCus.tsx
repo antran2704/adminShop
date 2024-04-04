@@ -9,7 +9,7 @@ interface Props {
 const ImageCus = (props: Props) => {
   const { title, className, src } = props;
   const imageRef = useRef<HTMLImageElement>(null);
-
+  
   async function loadImage(e: HTMLImageElement) {
     return new Promise((resolve) => {
       e.onload = () => resolve(e);

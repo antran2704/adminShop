@@ -1,10 +1,11 @@
 import "~/styles/globals.scss";
-import type { AppProps } from "next/app";
-import { usePathname } from "next/navigation";
 import { Provider } from "react-redux";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { store } from "../store";
 
-import LAYOUT from "~/layouts";
 import { useEffect } from "react";
 import { injectRouter } from "~/ultils/configAxios";
 import { useRouter } from "next/router";
@@ -12,20 +13,7 @@ import { AppPropsWithLayout } from "~/interface/page";
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const router = useRouter();
-
-  const pathName = usePathname();
-  let Layout;
   const getLayout = Component.getLayout ?? ((page) => page);
-  switch (pathName) {
-    case "/login":
-    case "/password/reset":
-    case "/check/password-key":
-      Layout = LAYOUT.LoginLayout;
-      break;
-
-    default:
-      Layout = LAYOUT.DefaultLayout;
-  }
 
   useEffect(() => {
     injectRouter(router);
@@ -34,6 +22,11 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <Provider store={store}>
       {getLayout(<Component {...pageProps} />)}
+      <ToastContainer
+        autoClose={5000}
+        pauseOnFocusLoss={false}
+        pauseOnHover={false}
+      />
     </Provider>
   );
 }

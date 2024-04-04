@@ -9,10 +9,15 @@ interface NotificationItem {
   createdAt: string;
 }
 
+interface TagNotification {
+  title: string;
+  value: "" | NotitficationType;
+}
+
 interface Notification {
   notifications: NotificationItem[];
   total: number;
   totalUnread: number;
 }
 
-export type { NotificationItem, Notification };
+export type { NotificationItem, Notification, TagNotification };
