@@ -14,7 +14,7 @@ const NoResult = (props: Props) => {
         className="w-full object-center"
       />
 
-      <p className="md:text-lg text-base font-medium">{title}</p>
+      <p className="md:text-lg text-base dark:text-darkText font-medium">{title}</p>
     </div>
   );
 };

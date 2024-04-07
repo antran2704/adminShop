@@ -12,7 +12,7 @@ const NotificationItem = (props: Props) => {
   const { data, onClick } = props;
 
   return (
-    <div onClick={() => onClick(data)} className="w-full flex items-center px-5 py-2 hover:bg-slate-100 dark:hover:bg-gray-900 cursor-pointer gap-5">
+    <div onClick={() => onClick(data)} className="w-full flex items-center px-5 py-2 cursor-pointer gap-5">
       <ImageCus
         src={iconNoti[data.type]}
         className="min-w-[32px] min-h-[32px] w-8 h-8 rounded-full"

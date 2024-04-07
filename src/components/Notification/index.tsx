@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import { FaRegBell } from "react-icons/fa";
+import { FaRegBell, FaRegMoon } from "react-icons/fa";
+import { MdOutlineWbSunny } from "react-icons/md";
+
 import { getNotifications, updateNotification } from "~/api-client";
 import { INotification, INotificationItem } from "~/interface";
-import ImageCus from "../Image/ImageCus";
-import { getDateTime } from "~/helper/datetime";
-import { iconNoti, styleTypeNoti } from "./data";
 import { useRouter } from "next/router";
 import { Socket, io } from "socket.io-client";
 import { NotitficationType } from "~/enums";
 import Link from "next/link";
 import NotificationItem from "./NotificationItem";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import { handleChangeMode } from "~/helper/darkMode";
 
 const initNotification: INotification = {
   notifications: [],
@@ -20,6 +21,9 @@ const initNotification: INotification = {
 let timmerRing: NodeJS.Timeout;
 
 const Notification = () => {
+  const { darkMode } = useAppSelector((state) => state.setting);
+  const dispatch = useAppDispatch();
+
   const router = useRouter();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -27,6 +31,10 @@ const Notification = () => {
 
   const [notification, setNotification] =
     useState<INotification>(initNotification);
+
+  const onChangeMode = () => {
+    handleChangeMode(darkMode, dispatch);
+  };
 
   const onShowModal = () => {
     setShowModal(!showModal);
@@ -143,21 +151,29 @@ const Notification = () => {
           onShowModal();
         }
       }}
-      className="sticky top-0 flex flex-col items-end bg-white dark:bg-[#1f2937cc] backdrop-blur-[8px] px-5 py-2 shadow rounded-l-md z-30"
+      className="sticky top-0 flex justify-end items-center bg-white dark:bg-[#1f2937cc] backdrop-blur-[8px] px-5 py-2 shadow rounded-l-md gap-2 z-30"
     >
-      <div className={`relative`}>
+      <button onClick={onChangeMode} className="p-2 hover:bg-slate-200 dark:text-darkText dark:hover:text-black rounded-full">
+        {!darkMode && <FaRegMoon className="text-xl" />}
+        {darkMode && (
+          <MdOutlineWbSunny className="text-xl" />
+        )}
+      </button>
+      <div className="relative">
         <div
           onClick={onShowModal}
           className={`relative flex items-center justify-center p-2 ${
-            showModal ? "bg-slate-200" : "bg-slate-100 dark:bg-transparent hover:bg-slate-200"
+            showModal
+              ? "bg-slate-200"
+              : "bg-slate-100 dark:bg-transparent hover:bg-slate-200"
           } ${
             ring ? "bg-blue-600 hover:bg-blue-400" : ""
           } rounded-full cursor-pointer ease-linear duration-100`}
         >
           <FaRegBell
-            className={`${
-              ring ? "animate_ring-bell text-white" : ""
-            } ${showModal ? 'dark:text-black' : 'dark:text-white'} text-2xl ease-linear duration-100`}
+            className={`${ring ? "animate_ring-bell text-white" : ""} ${
+              showModal ? "dark:text-black" : "dark:text-white"
+            } text-2xl ease-linear duration-100`}
           />
 
           {notification.totalUnread > 0 && (
@@ -166,7 +182,6 @@ const Notification = () => {
             </span>
           )}
         </div>
-
         <ul
           className={`scroll absolute ${
             showModal
@@ -177,16 +192,19 @@ const Notification = () => {
           {notification.notifications.map(
             (item: INotificationItem, index: number) => (
               <li
-              key={item._id}
-              onClick={() => onClickNoti(item)}
-              className={`${index > 0 ? "border-t" : ""}`}
-            >
-              <NotificationItem data={item} onClick={onClickNoti} />
-            </li>
+                key={item._id}
+                onClick={() => onClickNoti(item)}
+                className={`hover:bg-slate-100 border-b last:border-none`}
+              >
+                <NotificationItem data={item} onClick={onClickNoti} />
+              </li>
             )
           )}
           {notification.total > notification.notifications.length && (
-            <Link href="/notifications" className="block w-full text-center text-base hover:text-primary hover:bg-slate-100 px-5 py-2 border-t">
+            <Link
+              href="/notifications"
+              className="block w-full text-center text-base hover:text-primary hover:bg-slate-100 px-5 py-2 border-t"
+            >
               Xem thêm
             </Link>
           )}

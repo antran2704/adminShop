@@ -50,7 +50,7 @@ const Gallery: FC<Props> = (props: Props) => {
 
   return (
     <div className="w-full">
-      <span className="block text-base text-[#1E1E1E] dark:text-[#ecedee] font-medium mb-1">
+      <span className="block text-base text-[#1E1E1E] dark:text-darkText font-medium mb-1">
         Gallery
       </span>
 

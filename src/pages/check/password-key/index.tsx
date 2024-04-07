@@ -160,7 +160,7 @@ const CheckPasswordKeyPage = () => {
 
   return (
     <div className="bg_login flex items-center justify-center h-screen">
-      <div className="lg:min-w-[1000px] md:w-4/6 sm:w-5/6 w-full flex items-start bg-white rounded-lg shadow-xl overflow-hidden">
+      <div className="lg:min-w-[1000px] md:w-4/6 sm:w-5/6 w-full flex items-start bg-white dark:bg-[#1f2937] rounded-lg shadow-xl overflow-hidden">
         {!checkError && (
           <Fragment>
             <div className="lg:block hidden">
@@ -171,7 +171,7 @@ const CheckPasswordKeyPage = () => {
               />
             </div>
             <div className="lg:w-6/12 w-full md:px-10 px-5 pt-10 pb-20">
-              <h1 className="lg:text-3xl text-2xl w-fit font-medium mx-auto">
+              <h1 className="lg:text-3xl text-2xl dark:text-darkText w-fit font-medium mx-auto">
                 Reset Password
               </h1>
 
@@ -219,17 +219,17 @@ const CheckPasswordKeyPage = () => {
           <div className="w-full md:px-10 px-5 pt-10 pb-20 ">
             <div className="flex flex-col items-center justify-center gap-5">
               <ImageCus className="h-[200px]" src="/404_link.svg" />
-              <h1 className="lg:text-3xl text-2xl w-fit font-medium mx-auto">
+              <h1 className="lg:text-3xl text-2xl w-fit dark:text-darkText font-medium mx-auto">
                 Rất tiếc
               </h1>
-              <p className="w-3/4 text-base font-medium text-center">
+              <p className="w-3/4 text-base dark:text-darkText font-medium text-center">
                 Liên kết đặt lại mật khẩu không hợp lệ / đã hết hạn (chỉ hợp lệ
                 trong vòng 24 giờ), có thể do liên kết này đã được sử dụng.
               </p>
-              <p className="text-base font-medium">
+              <p className="text-base dark:text-darkText font-medium">
                 Vui lòng yêu cầu
                 <Link
-                  className="underline hover:text-primary px-1"
+                  className="underline dark:text-darkText hover:text-primary dark:hover:text-primary px-1"
                   href="/password/reset"
                 >
                   đặt lại mật khẩu mới

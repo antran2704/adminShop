@@ -23,7 +23,7 @@ const SelectDate: FC<Props> = (props: Props) => {
   return (
     <div className={`${className ? className : "w-full"} h-full`}>
       {title && (
-        <span className="block text-base text-[#1E1E1E] font-medium mb-1">
+        <span className="block text-base text-[#1E1E1E] dark:text-darkText font-medium mb-1">
           {title}
         </span>
       )}
@@ -35,7 +35,7 @@ const SelectDate: FC<Props> = (props: Props) => {
         onChange={onSelectDate}
         className={`w-full min-h-[40px] ${
           error && "border-error"
-        } rounded-md px-2 py-1 border-2 focus:border-[#4f46e5]`}
+        } dark:bg-[#27272a] dark:text-white rounded-md px-2 py-1 border-2 focus:border-[#4f46e5]`}
       />
     </div>
   );

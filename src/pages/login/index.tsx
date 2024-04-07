@@ -109,7 +109,7 @@ const LoginPage = () => {
 
   return (
     <div className="bg_login flex items-center justify-center h-screen">
-      <div className="lg:min-w-[1000px] md:w-4/6 sm:w-5/6 w-full flex items-start bg-white rounded-lg shadow-xl overflow-hidden">
+      <div className="lg:min-w-[1000px] md:w-4/6 sm:w-5/6 w-full flex items-start bg-white dark:bg-[#1f2937] rounded-lg shadow-xl overflow-hidden">
         <div className="lg:block hidden">
           <ImageCus
             src="/login_bg.svg"
@@ -118,7 +118,7 @@ const LoginPage = () => {
           />
         </div>
         <div className="lg:w-6/12 w-full md:px-10 px-5 pt-10 pb-20">
-          <h1 className="lg:text-3xl text-2xl w-fit font-medium mx-auto">
+          <h1 className="lg:text-3xl text-2xl dark:text-darkText w-fit font-medium mx-auto">
             Login
           </h1>
 
@@ -158,7 +158,7 @@ const LoginPage = () => {
 
               <div className="flex items-center justify-center">
                 <Link
-                  className="block hover:underline hover:text-primary text-sm my-5"
+                  className="block hover:underline dark:text-darkText hover:text-primary dark:hover:text-primary text-sm my-5"
                   href="/password/reset"
                 >
                   Quên mật khẩu

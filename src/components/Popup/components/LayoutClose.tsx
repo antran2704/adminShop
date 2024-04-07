@@ -1,9 +1,28 @@
+import { useEffect } from "react";
+
 interface Props {
+  dissableScroll?: boolean;
   onClose: () => void;
 }
 
 const LayoutClose = (props: Props) => {
-  const { onClose } = props;
+  const { onClose, dissableScroll = true } = props;
+
+
+  useEffect(() => {
+    if(dissableScroll) {
+      const el = document.querySelector("#body");
+
+      if(!el) return;
+
+      el.classList.add("dissableScroll");
+
+      return () => {
+        el.classList.remove("dissableScroll");
+      }
+    }
+  }, [])
+
   return (
     <div
       onClick={onClose}

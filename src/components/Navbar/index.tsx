@@ -61,7 +61,7 @@ const Navbar: FC = () => {
         } h-screen bg-white dark:bg-[#1f2937] rounded-tr-xl rounded-br-xl shadow-xl overflow-hidden transition-all ease-linear duration-200 z-[1000]`}
       >
         <button className="mb-5" onClick={handeShow}>
-          <BsArrowLeft className="text-3xl dark:text-[#ecedee]" />
+          <BsArrowLeft className="text-3xl dark:text-darkText" />
         </button>
 
         {infor?._id && (
@@ -71,11 +71,11 @@ const Navbar: FC = () => {
               className="min-w-[60px] w-[60px] min-h-[60px] h-[60px] object-cover border rounded-full"
               title="avartar"
             />
-            <h2 className="text-black dark:text-[#ecedee] text-xl font-medium">{infor.name}</h2>
+            <h2 className="text-black dark:text-darkText text-xl font-medium">{infor.name}</h2>
           </div>
         )}
         <div className="h-[60%] py-3 overflow-hidden">
-          <h3 className="text-black dark:text-[#ecedee] text-lg font-medium mb-3">Menu</h3>
+          <h3 className="text-black dark:text-darkText text-lg font-medium mb-3">Menu</h3>
           <ul className="scroll h-full pb-7 overflow-auto">
             {listBody.map((item: itemNav, index: number) => (
               <NavbarItem
@@ -87,7 +87,7 @@ const Navbar: FC = () => {
           </ul>
         </div>
         <div className="h-[30%] py-3 overflow-hidden">
-          <h3 className="text-black dark:text-[#ecedee] text-lg font-medium mb-3">Setting</h3>
+          <h3 className="text-black dark:text-darkText text-lg font-medium mb-3">Setting</h3>
           <ul className="scroll h-full pb-7 overflow-auto">
             {listSetting.map((item: itemNav, index: number) => (
               <NavbarItem
@@ -100,7 +100,7 @@ const Navbar: FC = () => {
             <li className="w-full">
               <button
                 onClick={handleLogOut}
-                className={`w-full flex items-center text-base font-medium px-3 py-2 my-1 hover:bg-primary text-black dark:text-[#ecedee] hover:text-white lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}
+                className={`w-full flex items-center text-base font-medium px-3 py-2 my-1 hover:bg-primary text-black dark:text-darkText hover:text-white lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}
               >
                 <BiLogOut />
                 <span>Logout</span>

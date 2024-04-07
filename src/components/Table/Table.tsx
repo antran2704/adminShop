@@ -86,7 +86,7 @@ const Table: FC<Props> = (props: Props) => {
                           key={index}
                           className="px-6 py-4 whitespace-no-wrap border-b"
                         >
-                          <div className="animate-pulse bg-white dark:bg-gray-600 w-[100px] h-5 mx-auto rounded"></div>
+                          <div className="animate-pulse bg-gray-300 dark:bg-gray-600 w-[100px] h-5 mx-auto rounded"></div>
                         </td>
                       ))}
                     </tr>
@@ -97,7 +97,7 @@ const Table: FC<Props> = (props: Props) => {
                 <tr>
                   <td
                     colSpan={colHeadTabel.length}
-                    className="px-6 py-4 whitespace-no-wrap"
+                    className="px-6 py-4 dark:bg-gray-800 whitespace-no-wrap"
                   >
                     <NoResult title={message as string} />
                   </td>

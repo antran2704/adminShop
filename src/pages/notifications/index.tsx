@@ -117,7 +117,7 @@ const NotificationPage: NextPageWithLayout = () => {
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
       <div className="w-full">
-        <h1 className="md:text-3xl text-2xl font-bold dark:text-[#ecedee] mb-1">Notifications</h1>
+        <h1 className="md:text-3xl text-2xl font-bold dark:text-darkText mb-1">Notifications</h1>
       </div>
       <div className="w-full pb-10">
         <div className="flex items-center gap-2">
@@ -129,7 +129,7 @@ const NotificationPage: NextPageWithLayout = () => {
                 tag.value === selectTag.value
                   ? "text-success border-success"
                   : ""
-              }  font-medium dark:text-[#ecedee] px-5 py-1 border-2 rounded-md`}
+              }  font-medium dark:text-darkText px-5 py-1 border-2 rounded-md`}
             >
               {tag.title}
             </button>
@@ -147,7 +147,7 @@ const NotificationPage: NextPageWithLayout = () => {
             <li
               key={item._id}
               onClick={() => onClickNoti(item)}
-              className={`${index > 0 ? "border-t" : ""}`}
+              className={`border-b last:border-none dark:hover:bg-gray-700`}
             >
               <NotificationItem data={item} onClick={onClickNoti} />
             </li>

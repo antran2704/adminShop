@@ -12,7 +12,9 @@ module.exports = {
         warn: "#ffb702",
         error: "#ff623d",
         pending: "#ffb702",
-        cancle: "#ff623d"
+        cancle: "#ff623d",
+        darkInput: "#31363F",
+        darkText: "#ecedee"
       },
     },
   },

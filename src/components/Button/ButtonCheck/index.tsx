@@ -30,7 +30,7 @@ const ButtonCheck: FC<Props> = (props: Props) => {
   return (
     <div className={`${width ? width : "w-full"}`}>
       {title && (
-        <span className="block text-base text-[#1E1E1E] font-medium mb-1">
+        <span className="block text-base text-[#1E1E1E] dark:text-darkText font-medium mb-1">
           {title}
         </span>
       )}

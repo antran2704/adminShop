@@ -94,6 +94,10 @@ body::-webkit-scrollbar {
   overflow: overlay;
 }
 
+.dissableScroll {
+  overflow-y: hidden;
+}
+
 .container__cus {
   max-width: 1280px;
 }

@@ -8,8 +8,7 @@ import Navbar from "~/components/Navbar";
 import Loading from "~/components/Loading";
 import { getUser } from "~/api-client";
 import { injectStore } from "~/ultils/configAxios";
-import { changeMode } from "~/store/slice/setting";
-import { checkDarkMode, handleChangeMode } from "~/helper/darkMode";
+import { checkDarkMode } from "~/helper/darkMode";
 
 interface Props {
   children: JSX.Element;
@@ -19,7 +18,6 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
   const router = useRouter();
 
   const { infor } = useAppSelector((state) => state.user);
-  const { darkMode } = useAppSelector((state) => state.setting);
   const dispatch = useAppDispatch();
   
   const [loading, setLoading] = useState<boolean>(true);
@@ -37,10 +35,6 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
     } catch (err) {
       router.push("/login");
     }
-  };
-
-  const onChangeMode = () => {
-    handleChangeMode(darkMode, dispatch);
   };
 
   useEffect(() => {
@@ -65,7 +59,6 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
     <main className="flex items-start justify-between bg-[#f9fafb] dark:bg-[#111827] transition-all ease-linear duration-100">
       <Navbar />
       <div className="w-full min-h-screen">
-        <button onClick={onChangeMode}>dark mode</button>
         {children}
       </div>
     </main>

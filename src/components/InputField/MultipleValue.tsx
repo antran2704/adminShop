@@ -92,7 +92,7 @@ const MultipleValue = (props: Props) => {
       <div className="flex items-center mb-1 gap-2">
         <span
           id={name}
-          className="block text-base text-[#1E1E1E] dark:text-[#ecedee] font-medium"
+          className="block text-base text-[#1E1E1E] dark:text-darkText font-medium"
         >
           {title}
         </span>
@@ -109,7 +109,7 @@ const MultipleValue = (props: Props) => {
           {items.map((value: ISelectItem, index: number) => (
             <li
               key={index}
-              className="flex items-center text-sm text-desc px-3 py-1 bg-slate-200 opacity-90 hover:opacity-100 rounded gap-2"
+              className="flex items-center text-sm text-desc px-3 py-1 bg-slate-200 dark:bg-white opacity-90 hover:opacity-100 rounded gap-2"
             >
               <span>{value.title}</span>
               <AiOutlineClose
@@ -130,7 +130,7 @@ const MultipleValue = (props: Props) => {
           onKeyUp={handleAddValue}
           onChange={onChange}
           type="text"
-          className={`flex-1 border-transparent bg-transparent pl-2 outline-none`}
+          className={`flex-1 border-transparent bg-transparent dark:text-white pl-2 outline-none`}
         />
       </div>
 

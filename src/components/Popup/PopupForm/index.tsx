@@ -23,19 +23,19 @@ const PopupForm = (props: Props) => {
       <div
         className={`scroll absolute top-0 bottom-0 ${
           show ? "right-0 opacity-100" : "-right-full opacity-0"
-        } lg:w-1/2 bg-white transition-all ease-in-out duration-200 overflow-y-auto z-20`}
+        } lg:w-1/2 bg-white dark:bg-[#1f2937] transition-all ease-in-out duration-200 overflow-y-auto z-20`}
       >
         <div className="flex items-center justify-between h-1/6 pb-2 px-5 border-b gap-10">
           <div>
-            <h2 className="md:text-xl sm:text-lg text-base font-medium text-text">
+            <h2 className="md:text-xl sm:text-lg text-base font-medium text-text dark:text-darkText">
               {title}
             </h2>
-            <p className="text-sm text-desc">{description}</p>
+            <p className="text-sm text-desc dark:text-darkText">{description}</p>
           </div>
 
           <AiOutlineCloseCircle
             onClick={onClose}
-            className="text-3xl min-w-[30px] cursor-pointer"
+            className="text-3xl dark:text-darkText min-w-[30px] cursor-pointer"
           />
         </div>
 

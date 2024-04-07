@@ -172,7 +172,7 @@ const Specifications = (props: Props) => {
   return (
     <div className={`${className ? className : "w-full"}`}>
       <div className="flex items-center justify-between mb-5 gap-5">
-        <span className="block text-base text-[#1E1E1E] dark:text-[#ecedee] font-medium">
+        <span className="block text-base text-[#1E1E1E] dark:text-darkText font-medium">
           Specifications
         </span>
         <button
@@ -187,10 +187,10 @@ const Specifications = (props: Props) => {
         (specification: ISpecificationsProduct, specificationIndex: number) => (
           <div
             key={specification.id}
-            className="py-4 mt-5 bg-[#f5f5fa] dark:bg-[#27272a] rounded-lg"
+            className="py-4 mt-5 bg-[#f5f5fa] dark:bg-[#191919] rounded-lg"
           >
             <div className="flex items-center justify-between px-4 pb-2 mb-5 border-b-2 gap-5">
-              <p className="text-base font-medium dark:text-[#ecedee]">{specification.name}</p>
+              <p className="text-base font-medium dark:text-darkText">{specification.name}</p>
               <button
                 onClick={() =>
                   onShowPopupSpecification({
@@ -319,7 +319,7 @@ const Specifications = (props: Props) => {
           onClose={() => onShowPopupSpecification(null)}
         >
           <div>
-            <p className="text-lg">
+            <p className="text-lg dark:text-darkText">
               Do you want delete specification
               <strong>{" " + selectSpecification.title}</strong>
             </p>
@@ -350,7 +350,7 @@ const Specifications = (props: Props) => {
           onClose={() => onShowPopupAttribute(null)}
         >
           <div>
-            <p className="text-lg">
+            <p className="text-lg dark:text-darkText ">
               Do you want delete attribute
               <strong>{" " + selectAttribute.title}</strong>
             </p>

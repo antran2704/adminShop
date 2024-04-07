@@ -44,7 +44,7 @@ const ShowItemsLayout = (props: Props) => {
   return (
     <section className="py-5 px-5">
       <div className="flex items-center justify-between mb-5 gap-5">
-        <h1 className="lg:text-2xl text-xl font-bold dark:text-[#ecedee]">{title}</h1>
+        <h1 className="lg:text-2xl text-xl font-bold dark:text-darkText">{title}</h1>
 
         {titleCreate && (
           <div className="flex items-center gap-2">
@@ -80,9 +80,9 @@ const ShowItemsLayout = (props: Props) => {
       </Fragment>
 
       {showPopup && selectItem?.id && handlePopup && (
-        <Popup title="Confirm Delete" show={showPopup} onClose={handlePopup}>
+        <Popup title="Confirm Delete" img="/popup/trash.svg" show={showPopup} onClose={handlePopup}>
           <div>
-            <p className="text-lg">
+            <p className="text-lg text-center dark:text-darkText">
               Do you want delete {title.toLowerCase()}{" "}
               <strong>{selectItem?.title}</strong>
             </p>

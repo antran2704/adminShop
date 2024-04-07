@@ -948,7 +948,7 @@ const ProductEditPage = (props: Props) => {
           <button
             onClick={() => onSelectTag(TYPE_TAG.BASIC_INFOR)}
             className={`text-lg ${
-              tag === TYPE_TAG.BASIC_INFOR ? "text-success border-success" : "dark:text-[#ecedee]"
+              tag === TYPE_TAG.BASIC_INFOR ? "text-success border-success" : "dark:text-darkText"
             }  font-medium px-2 pb-2 border-b-2 `}
           >
             Basic info
@@ -956,7 +956,7 @@ const ProductEditPage = (props: Props) => {
           <button
             onClick={() => onSelectTag(TYPE_TAG.COMPINATION)}
             className={`text-lg ${
-              tag === TYPE_TAG.COMPINATION ? "text-success border-success" : "dark:text-[#ecedee]"
+              tag === TYPE_TAG.COMPINATION ? "text-success border-success" : "dark:text-darkText"
             }  font-medium px-2 pb-2 border-b-2 `}
           >
             Compination

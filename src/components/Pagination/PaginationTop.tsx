@@ -56,7 +56,7 @@ const PaginationTop = (props: Props) => {
                 start <= 1 ? "opacity-40 pointer-events-none" : ""
               }`}
             >
-              <IoIosArrowDropleft className="hover:text-primary dark:text-[#ecedee] dark:hover:text-primary w-8 h-8 transition-all ease-linear duration-100" />
+              <IoIosArrowDropleft className="hover:text-primary dark:text-darkText dark:hover:text-primary w-8 h-8 transition-all ease-linear duration-100" />
             </button>
             <button
               onClick={() => onNextPage(pagination.currentPage + 1)}
@@ -66,10 +66,10 @@ const PaginationTop = (props: Props) => {
                   : ""
               }`}
             >
-              <IoIosArrowDropright className="hover:text-primary dark:text-[#ecedee] dark:hover:text-primary w-8 h-8 transition-all ease-linear duration-100" />
+              <IoIosArrowDropright className="hover:text-primary dark:text-darkText dark:hover:text-primary w-8 h-8 transition-all ease-linear duration-100" />
             </button>
           </div>
-          <div className="w-[120px] dark:text-[#ecedee]">
+          <div className="w-[120px] dark:text-darkText">
             {start} to {end} of {pagination.totalItems}
           </div>
         </Fragment>

@@ -18,7 +18,7 @@ const TippyInfor = (props: Props) => {
       placement="top"
     >
       <button>
-        <HiOutlineInformationCircle className="text-xl cursor-pointer" />
+        <HiOutlineInformationCircle className="text-xl cursor-pointer dark:text-darkText" />
       </button>
     </Tippy>
   );

@@ -57,7 +57,7 @@ const InputField: FC<IInputText> = (props: IInputText) => {
         <div className="flex items-center mb-1 gap-2">
           <span
             id={name}
-            className="block text-base text-[#1E1E1E]  dark:text-[#ecedee] font-medium"
+            className="block text-base text-[#1E1E1E]  dark:text-darkText font-medium"
           >
             {title}
           </span>
@@ -67,11 +67,11 @@ const InputField: FC<IInputText> = (props: IInputText) => {
       )}
 
       <div
-        className={`relative w-full ${SIZE[size]} rounded-md border-2 ${
+        className={`relative w-full ${SIZE[size]} rounded-md border-2 dark:border-transparent ${
           error && "border-error"
         } ${
           readonly ? "pointer-events-none cursor-not-allowed opacity-80" : ""
-        } focus:border-[#4f46e5] outline-none overflow-hidden`}
+        } focus:border-[#4f46e5] dark:focus:border-[#4f46e5] dark:bg-darkInput dark:text-white outline-none`}
       >
         <input
           required={required}
@@ -86,7 +86,7 @@ const InputField: FC<IInputText> = (props: IInputText) => {
           }}
           onInput={handleChangeValue}
           type={show ? "text" : "password"}
-          className={`w-full pr-8 border-0 outline-none`}
+          className={`w-full pr-8 bg-transparent border-0 outline-none`}
         />
 
         <button

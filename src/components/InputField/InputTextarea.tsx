@@ -54,7 +54,7 @@ const InputTextareaField: FC<ITextarea> = (props: ITextarea) => {
         <div className="flex items-center mb-1 gap-2">
           <span
             id={name}
-            className="block text-base text-[#1E1E1E] dark:text-[#ecedee] font-medium"
+            className="block text-base text-[#1E1E1E] dark:text-darkText font-medium"
           >
             {title}
           </span>
@@ -65,9 +65,9 @@ const InputTextareaField: FC<ITextarea> = (props: ITextarea) => {
 
       <textarea
         required={required}
-        className={`w-full rounded-md ${SIZE[size]} border-2  ${
+        className={`w-full rounded-md ${SIZE[size]} border-2 dark:border-transparent  ${
           error && "border-error"
-        } focus:border-[#4f46e5] dark:bg-[#27272a] dark:text-white outline-none`}
+        } focus:border-[#4f46e5] dark:focus:border-[#4f46e5] dark:bg-darkInput dark:text-white outline-none`}
         name={name}
         value={value}
         maxLength={120}

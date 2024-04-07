@@ -60,7 +60,7 @@ const TreeNode = (props: Props) => {
           categorySelect.title === title && "bg-primary text-white"
         } ${
           defaultSelect?.node_id === node_id && "bg-success text-white"
-        } dark:text-[#ecedee] cursor-pointer px-3 py-1 rounded-md gap-2`}
+        } dark:text-darkText cursor-pointer px-3 py-1 rounded-md gap-2`}
       >
         {childrens.length === 0 && <AiOutlineFile className="text-lg w-5" />}
         {childrens.length > 0 && !open && (

@@ -54,7 +54,7 @@ const InputField: FC<IInputText> = (props: IInputText) => {
         <div className="flex items-center mb-1 gap-2">
           <span
             id={name}
-            className="block text-base text-[#1E1E1E] dark:text-[#ecedee] font-medium"
+            className="block text-base text-[#1E1E1E] dark:text-darkText font-medium"
           >
             {title}
           </span>
@@ -77,11 +77,11 @@ const InputField: FC<IInputText> = (props: IInputText) => {
         onInput={handleChangeValue}
         maxLength={maxLength}
         type="text"
-        className={`w-full rounded-md ${SIZE[size]} border-2 ${
+        className={`w-full rounded-md ${SIZE[size]} border-2 dark:border-transparent ${
           error && "border-error"
         } ${
           readonly ? "pointer-events-none cursor-not-allowed opacity-80" : ""
-        } focus:border-[#4f46e5] dark:bg-[#27272a] dark:text-white outline-none`}
+        } focus:border-[#4f46e5] dark:focus:border-[#4f46e5] dark:bg-darkInput dark:text-white outline-none`}
       />
     </div>
   );

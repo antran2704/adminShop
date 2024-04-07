@@ -37,7 +37,7 @@ const NavbarItem: FC<Props> = (props: Props) => {
             className={`w-full flex items-center text-lg font-medium px-3 py-2 ${
               router.pathname === data.path
                 ? "bg-primary text-white"
-                : "hover:bg-primary text-black dark:text-[#ecedee] hover:text-white"
+                : "hover:bg-primary text-black dark:text-darkText hover:text-white"
             } lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}
             href={data.path}
           >
@@ -53,18 +53,18 @@ const NavbarItem: FC<Props> = (props: Props) => {
             onClick={handleCollapse}
             className="w-full flex items-center justify-between px-3 py-2 hover:bg-primary hover:text-white lg:rounded-lg rounded-tl-lg rounded-bl-lg transition-all ease-linear duration-200 cursor-pointer"
           >
-            <div className="w-full flex items-center text-lg dark:text-[#ecedee] font-medium gap-3">
+            <div className="w-full flex items-center text-lg dark:text-darkText font-medium gap-3">
               <span>{data.icon}</span>
               <span>{data.name}</span>
             </div>
             {!show && (
               <AiOutlinePlus
-                className={`lg:text-2xl text-xl lg:block dark:text-[#ecedee]`}
+                className={`lg:text-2xl text-xl lg:block dark:text-darkText`}
               />
             )}
             {show && (
               <AiOutlineMinus
-                className={`lg:text-2xl text-xl lg:block dark:text-[#ecedee]`}
+                className={`lg:text-2xl text-xl lg:block dark:text-darkText`}
               />
             )}
           </div>
@@ -79,7 +79,7 @@ const NavbarItem: FC<Props> = (props: Props) => {
                   className={`w-full flex items-center text-base font-medium px-3 py-2 my-1 ${
                     router.asPath.includes(item.path)
                       ? "bg-primary text-white"
-                      : "hover:bg-primary text-black dark:text-[#ecedee] hover:text-white"
+                      : "hover:bg-primary text-black dark:text-darkText hover:text-white"
                   } lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}
                   href={item.path}
                 >

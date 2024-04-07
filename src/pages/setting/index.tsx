@@ -26,8 +26,6 @@ const initPassword: IPassword = {
   reNewPassword: null,
 };
 
-const Layout = LayoutWithoutHeader;
-
 const SettingPage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
   const { infor } = useAppSelector((state) => state.user);
@@ -202,7 +200,7 @@ const SettingPage: NextPageWithLayout = () => {
     >
       <div>
         <div className="my-5">
-          <h3 className="md:text-lg text-base font-medium">
+          <h3 className="md:text-lg dark:text-white text-base font-medium">
             Tài khoản của bạn
           </h3>
         </div>
@@ -306,7 +304,3 @@ const SettingPage: NextPageWithLayout = () => {
 };
 
 export default SettingPage;
-
-SettingPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};
