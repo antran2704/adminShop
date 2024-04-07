@@ -1,6 +1,6 @@
 import qs from "qs";
 
-import { IQueryParam, NotificationItem } from "~/interface";
+import { IQueryParam, INotificationItem } from "~/interface";
 import { axiosGet, axiosPatch } from "~/ultils/configAxios";
 
 const getNotifications = async (page: number = 1, limit: number = 6) => {
@@ -12,7 +12,7 @@ const getNotifications = async (page: number = 1, limit: number = 6) => {
 const getNotificationsWithPage = async (
   page: number = 1,
   limit: number = 6,
-  query?: IQueryParam<Partial<NotificationItem>>
+  query?: IQueryParam<Partial<INotificationItem>>
 ) => {
   const parseQuery = qs.stringify(query);
   return await axiosGet(
@@ -22,7 +22,7 @@ const getNotificationsWithPage = async (
 
 const updateNotification = async (
   notification_id: string,
-  data: Partial<NotificationItem>
+  data: Partial<INotificationItem>
 ) => {
   return await axiosPatch(`/notifications/admin/${notification_id}`, data);
 };

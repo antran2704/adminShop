@@ -1,6 +1,12 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { useState, useEffect, Fragment, useCallback, ReactElement } from "react";
+import {
+  useState,
+  useEffect,
+  Fragment,
+  useCallback,
+  ReactElement,
+} from "react";
 import { toast } from "react-toastify";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
@@ -68,8 +74,11 @@ const CategoriesPage: NextPageWithLayout<Props> = (props: Props) => {
 
   const onReset = useCallback(() => {
     setFilter(null);
-    handleGetData();
-  }, [filter, categories]);
+    
+    if (!currentPage || currentPage === 1) {
+      handleGetData();
+    }
+  }, [filter, currentPage]);
 
   const onChangeSearch = useCallback(
     (name: string, value: string) => {
@@ -118,7 +127,7 @@ const CategoriesPage: NextPageWithLayout<Props> = (props: Props) => {
     setShowPopup(!showPopup);
   };
 
-  const handleGetData = async () => {
+  const handleGetData = useCallback(async () => {
     setMessage(null);
     setLoading(true);
 
@@ -156,7 +165,7 @@ const CategoriesPage: NextPageWithLayout<Props> = (props: Props) => {
         position: toast.POSITION.TOP_RIGHT,
       });
     }
-  };
+  }, [filter, currentPage]);
 
   const handleGetDataByFilter = useCallback(async () => {
     setMessage(null);
@@ -196,7 +205,7 @@ const CategoriesPage: NextPageWithLayout<Props> = (props: Props) => {
       });
       setLoading(false);
     }
-  }, [filter]);
+  }, [filter, currentPage]);
 
   const handleDeleteCategory = useCallback(async () => {
     if (!selectItem || !selectItem.id) {
@@ -282,7 +291,7 @@ const CategoriesPage: NextPageWithLayout<Props> = (props: Props) => {
             {categories.map((item: IDataCategory) => (
               <tr
                 key={item._id}
-                className="hover:bg-slate-100 border-b border-gray-300"
+                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
               >
                 <CelTable
                   type={typeCel.SELECT}
@@ -338,7 +347,6 @@ const CategoriesPage: NextPageWithLayout<Props> = (props: Props) => {
 };
 
 export default CategoriesPage;
-
 
 CategoriesPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

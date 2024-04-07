@@ -9,7 +9,7 @@ import { getDateTime } from "~/helper/datetime";
 import {
   IPagination,
   IQueryParam,
-  NotificationItem,
+  INotificationItem,
   TagNotification,
 } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
@@ -18,6 +18,7 @@ import PaginationCus from "~/components/Pagination";
 import { useRouter } from "next/router";
 import { NotitficationType } from "~/enums";
 import PaginationTop from "~/components/Pagination/PaginationTop";
+import NotificationItem from "~/components/Notification/NotificationItem";
 
 const Layout = LayoutWithoutHeader;
 
@@ -35,7 +36,7 @@ const NotificationPage: NextPageWithLayout = () => {
   const [selectTag, setSelectTag] = useState<TagNotification>(
     tagsNotification[initTag] ? tagsNotification[initTag] : tagsNotification[0]
   );
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [notifications, setNotifications] = useState<INotificationItem[]>([]);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
 
   const onSelectTag = (tag: TagNotification, index: number) => {
@@ -45,7 +46,7 @@ const NotificationPage: NextPageWithLayout = () => {
     setSelectTag(tag);
   };
 
-  const onClickNoti = async (data: NotificationItem) => {
+  const onClickNoti = async (data: INotificationItem) => {
     if (data.isReaded) {
       if (data.path) {
         if (data.type === NotitficationType.product) {
@@ -62,8 +63,8 @@ const NotificationPage: NextPageWithLayout = () => {
       const { status } = await updateNotification(data._id, { isReaded: true });
 
       if (status === 201) {
-        const newNotifications: NotificationItem[] = notifications.map(
-          (item: NotificationItem) => {
+        const newNotifications: INotificationItem[] = notifications.map(
+          (item: INotificationItem) => {
             if (item._id === data._id) {
               item.isReaded = true;
             }
@@ -90,7 +91,7 @@ const NotificationPage: NextPageWithLayout = () => {
   const handleGetNotifications = async (
     currentPage: number,
     limit: number,
-    query: IQueryParam<Partial<NotificationItem>> = {}
+    query: IQueryParam<Partial<INotificationItem>> = {}
   ) => {
     try {
       const { status, payload, pagination } = await getNotificationsWithPage(
@@ -116,7 +117,7 @@ const NotificationPage: NextPageWithLayout = () => {
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
       <div className="w-full">
-        <h1 className="md:text-3xl text-2xl font-bold mb-1">Notifications</h1>
+        <h1 className="md:text-3xl text-2xl font-bold dark:text-[#ecedee] mb-1">Notifications</h1>
       </div>
       <div className="w-full pb-10">
         <div className="flex items-center gap-2">
@@ -128,7 +129,7 @@ const NotificationPage: NextPageWithLayout = () => {
                 tag.value === selectTag.value
                   ? "text-success border-success"
                   : ""
-              }  font-medium px-5 py-1 border-2 rounded-md`}
+              }  font-medium dark:text-[#ecedee] px-5 py-1 border-2 rounded-md`}
             >
               {tag.title}
             </button>
@@ -138,48 +139,17 @@ const NotificationPage: NextPageWithLayout = () => {
         {pagination.totalItems > pagination.pageSize && (
           <PaginationTop pagination={pagination} />
         )}
-        
+
         <ul
-          className={`bg-white my-5 shadow-lg rounded-md border transition-all ease-linear duration-100 overflow-auto z-10`}
+          className={`bg-white dark:bg-gray-800 dark:text-white my-5 shadow-lg rounded-md border transition-all ease-linear duration-100 overflow-auto z-10`}
         >
-          {notifications.map((item: NotificationItem, index: number) => (
+          {notifications.map((item: INotificationItem, index: number) => (
             <li
               key={item._id}
               onClick={() => onClickNoti(item)}
-              className={`flex items-center px-5 py-2 hover:bg-slate-100 ${
-                index > 0 ? "border-t" : ""
-              } cursor-pointer gap-5`}
+              className={`${index > 0 ? "border-t" : ""}`}
             >
-              <ImageCus
-                src={iconNoti[item.type]}
-                className="min-w-[32px] min-h-[32px] w-8 h-8 rounded-full"
-              />
-              <div className="w-full flex items-center justify-between gap-5">
-                <div className="w-full">
-                  <p
-                    className={`lg:max-w-[600px] md:max-w-[500px] sm:max-w-[400px] max-w-[200px] w-[500px] text-start text-sm ${
-                      !item.isReaded ? "font-medium" : "font-normal"
-                    } line-clamp-2`}
-                  >
-                    {item.content}
-                  </p>
-                  <div className="flex items-center pt-2 gap-2">
-                    <p
-                      className={`text-white text-start whitespace-nowrap text-xs capitalize px-2 py-1 rounded-full ${
-                        styleTypeNoti[item.type]
-                      }`}
-                    >
-                      {item.type}
-                    </p>
-                    <p className="text-start whitespace-nowrap text-xs">
-                      {getDateTime(item.createdAt)}
-                    </p>
-                  </div>
-                </div>
-                {!item.isReaded && (
-                  <span className="block w-2 h-2 rounded-full bg-primary"></span>
-                )}
-              </div>
+              <NotificationItem data={item} onClick={onClickNoti} />
             </li>
           ))}
           {!notifications.length && (

@@ -111,14 +111,14 @@ const PasswordResetPage = () => {
                   <ButtonClassic
                     loading={loading}
                     title="Submit"
-                    size="L"
-                    className="w-full flex items-center justify-center h-[52px] bg-primary"
+                    size="M"
+                    className="w-full flex items-center justify-center h-10 bg-primary"
                   />
                 </div>
 
                 <div className="flex items-center justify-center">
                   <Link
-                    className="block hover:underline hover:text-primary my-5"
+                    className="block hover:underline hover:text-primary text-sm my-5"
                     href="/login"
                   >
                     Đăng nhập

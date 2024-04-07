@@ -16,16 +16,30 @@ const Search: FC<Props> = (props: Props) => {
   const router = useRouter();
 
   const handleFilter = () => {
-    router.replace({
-      query: { searchText: search },
-    });
-    onFilter();
+    const page = Number(router.query.page);
+
+    if (search) {
+      router.replace({
+        query: { searchText: search, page: "1" },
+      });
+    } else {
+      router.replace({
+        query: { page: "1" },
+      });
+    }
+
+    if (!page || page === 1) {
+      onFilter();
+    }
   };
 
   const handleReset = () => {
+    const page = Number(router.query.page);
+
     router.replace({
       query: {},
     });
+
     onReset();
   };
 

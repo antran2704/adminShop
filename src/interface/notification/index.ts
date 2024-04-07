@@ -1,6 +1,6 @@
 import { NotitficationType } from "~/enums";
 
-interface NotificationItem {
+interface INotificationItem {
   _id: string;
   content: string;
   type: NotitficationType;
@@ -14,10 +14,10 @@ interface TagNotification {
   value: "" | NotitficationType;
 }
 
-interface Notification {
-  notifications: NotificationItem[];
+interface INotification {
+  notifications: INotificationItem[];
   total: number;
   totalUnread: number;
 }
 
-export type { NotificationItem, Notification, TagNotification };
+export type { INotificationItem, INotification, TagNotification };

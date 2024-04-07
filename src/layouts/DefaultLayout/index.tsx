@@ -2,12 +2,14 @@ import { useRouter } from "next/router";
 import { useState, useEffect, FC } from "react";
 
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { loginReducer } from "~/store/slice";
+import { loginReducer } from "~/store/slice/user";
 
 import Navbar from "~/components/Navbar";
 import Loading from "~/components/Loading";
 import { getUser } from "~/api-client";
 import { injectStore } from "~/ultils/configAxios";
+import { changeMode } from "~/store/slice/setting";
+import { checkDarkMode, handleChangeMode } from "~/helper/darkMode";
 
 interface Props {
   children: JSX.Element;
@@ -17,8 +19,9 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
   const router = useRouter();
 
   const { infor } = useAppSelector((state) => state.user);
+  const { darkMode } = useAppSelector((state) => state.setting);
   const dispatch = useAppDispatch();
-
+  
   const [loading, setLoading] = useState<boolean>(true);
 
   const checkAuth = async () => {
@@ -36,6 +39,10 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
     }
   };
 
+  const onChangeMode = () => {
+    handleChangeMode(darkMode, dispatch);
+  };
+
   useEffect(() => {
     injectStore(dispatch);
 
@@ -46,14 +53,19 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    checkDarkMode(dispatch);
+  }, []);
+
   if (loading) {
     return <Loading />;
   }
 
   return (
-    <main className="flex items-start justify-between bg-[#f9fafb]">
+    <main className="flex items-start justify-between bg-[#f9fafb] dark:bg-[#111827] transition-all ease-linear duration-100">
       <Navbar />
       <div className="w-full min-h-screen">
+        <button onClick={onChangeMode}>dark mode</button>
         {children}
       </div>
     </main>

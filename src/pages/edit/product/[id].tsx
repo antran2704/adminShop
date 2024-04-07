@@ -1,7 +1,13 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { useRouter } from "next/router";
-import { useState, useEffect, useCallback, Fragment, ReactElement } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  Fragment,
+  ReactElement,
+} from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 
@@ -900,7 +906,36 @@ const ProductEditPage = (props: Props) => {
     handleGetData();
     handleGetCategories();
     handleGetCategoriesParent();
+
+    // console.log(router.asPath.split("#"))
   }, []);
+
+  // useEffect(() => {
+  //   if (variants.length > 0) {
+  //     const test: string[] = router.asPath.split("#");
+
+  //     if (test.length > 1) {
+  //       const element: HTMLElement | null = document.getElementById(test[1]);
+  //       console.log(variants);
+  //       console.log(element);
+  //       router.push(`#${test[1]}`);
+  //       if (element) {
+  //         element.classList.add("animate_warning");
+  //       }
+  //     }
+  //   }
+  // }, [variants]);
+
+  // const test: string[] = router.asPath.split("#");
+
+  // if (test.length > 1) {
+  //   const element: HTMLElement | null = document.getElementById(test[1]);
+  //   console.log(element)
+  //   if(element) {
+  //     element.scrollIntoView();
+  //   }
+  //   console.log("Ok");
+  // }
 
   return (
     <FormLayout
@@ -913,7 +948,7 @@ const ProductEditPage = (props: Props) => {
           <button
             onClick={() => onSelectTag(TYPE_TAG.BASIC_INFOR)}
             className={`text-lg ${
-              tag === TYPE_TAG.BASIC_INFOR ? "text-success border-success" : ""
+              tag === TYPE_TAG.BASIC_INFOR ? "text-success border-success" : "dark:text-[#ecedee]"
             }  font-medium px-2 pb-2 border-b-2 `}
           >
             Basic info
@@ -921,7 +956,7 @@ const ProductEditPage = (props: Props) => {
           <button
             onClick={() => onSelectTag(TYPE_TAG.COMPINATION)}
             className={`text-lg ${
-              tag === TYPE_TAG.COMPINATION ? "text-success border-success" : ""
+              tag === TYPE_TAG.COMPINATION ? "text-success border-success" : "dark:text-[#ecedee]"
             }  font-medium px-2 pb-2 border-b-2 `}
           >
             Compination
@@ -1187,8 +1222,11 @@ const ProductEditPage = (props: Props) => {
                   <Fragment>
                     {variants.map((variant: IVariantProduct, index: number) => (
                       <tr
+                        id={`item-${variant._id}`}
                         key={variant._id}
-                        className="hover:bg-slate-100 border-b border-gray-300"
+                        className={`border-b ${
+                          variant.inventory <= 0 ? "animate_warning" : ""
+                        } hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300`}
                       >
                         <CelTable
                           type={typeCel.SELECT_IMAGE}

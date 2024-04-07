@@ -203,9 +203,27 @@ body::-webkit-scrollbar {
   }
 }
 
+.dark {
+  .pagination {
+    .rc-pagination-item {
+      background-color: transparent;
+      color: white;
+    }
+
+    .rc-pagination-item-active {
+      background-color: var(--primary-color);
+      color: white;
+      cursor: not-allowed;
+    }
+  }
+}
 
 .animate_ring-bell {
   animation: ringBell linear 0.4s forwards;
+}
+
+.animate_warning {
+  animation: warning linear 0.8s;
 }
 
 @keyframes spinner {
@@ -263,5 +281,14 @@ body::-webkit-scrollbar {
 
   100% {
     transform: rotate(0deg);
+  }
+}
+
+@keyframes warning {
+  from {
+    background-color: #fda403;
+  }
+  to {
+    background-color: white;
   }
 }

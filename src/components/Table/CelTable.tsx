@@ -62,7 +62,7 @@ const CelTable: FC<Props> = (props: Props) => {
     case typeCel.TEXT:
       return (
         <td
-          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${
+          className={`px-6 py-4 whitespace-no-wrap font-medium ${
             className ? className : ""
           } sm:text-sm text-xs ${
             center ? "text-center" : "text-start"
@@ -75,11 +75,11 @@ const CelTable: FC<Props> = (props: Props) => {
     case typeCel.DATE:
       return (
         <td
-          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${
+          className={`px-6 py-4 whitespace-no-wrap font-medium ${
             className ? className : ""
           } ${
             center ? "text-center" : "text-start"
-          } text-blue-900 sm:text-sm text-xs whitespace-nowrap leading-5`}
+          } text-[#0072f5] sm:text-sm text-xs whitespace-nowrap leading-5`}
         >
           {getDateTime(value)}
         </td>
@@ -88,7 +88,7 @@ const CelTable: FC<Props> = (props: Props) => {
     case typeCel.INPUT:
       return (
         <td
-          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${
+          className={`px-6 py-4 whitespace-no-wrap font-medium ${
             className ? className : ""
           } ${
             center ? "text-center" : "text-start"
@@ -107,7 +107,7 @@ const CelTable: FC<Props> = (props: Props) => {
     case typeCel.INPUT_NUMBER:
       return (
         <td
-          className={`px-6 py-4 whitespace-no-wrap border-b font-medium ${
+          className={`px-6 py-4 whitespace-no-wrap font-medium ${
             className ? className : ""
           } ${
             center ? "text-center" : "text-start"
@@ -125,11 +125,11 @@ const CelTable: FC<Props> = (props: Props) => {
 
     case typeCel.LINK:
       return (
-        <td className="px-6 py-4 whitespace-no-wrap border-b">
+        <td className="px-6 py-4 whitespace-no-wrap">
           <Link
             target="_blank"
             href={href ? href : "/"}
-            className={`block sm:text-sm text-xs leading-5 text-gray-800 ${
+            className={`block sm:text-sm text-xs leading-5 text-gray-800 dark:text-white ${
               className ? className : ""
             } ${center ? "text-center" : "text-start"} font-medium`}
           >
@@ -140,7 +140,7 @@ const CelTable: FC<Props> = (props: Props) => {
 
     case typeCel.THUMBNAIL:
       return (
-        <td className="px-6 py-4 whitespace-no-wrap border-b">
+        <td className="px-6 py-4 whitespace-no-wrap">
           <Link
             href={href ? href : "/"}
             className={`block ${className ? className : 'w-[160px] h-[100px]'} mx-auto rounded overflow-hidden`}
@@ -156,7 +156,7 @@ const CelTable: FC<Props> = (props: Props) => {
 
     case typeCel.SELECT:
       return (
-        <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 leading-5">
+        <td className="px-6 py-4 whitespace-no-wrap text-blue-900 leading-5">
           <div className="flex items-center justify-center">
             <input
               checked={isSelected}
@@ -187,7 +187,7 @@ const CelTable: FC<Props> = (props: Props) => {
 
     case typeCel.STATUS:
       return (
-        <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 leading-5">
+        <td className="px-6 py-4 whitespace-no-wrap text-blue-900 leading-5">
           <p
             className={`w-fit font-medium text-white text-xs ${status} capitalize mx-auto px-5 py-2 rounded-lg whitespace-nowrap`}
           >
@@ -198,7 +198,7 @@ const CelTable: FC<Props> = (props: Props) => {
 
     case typeCel.BUTTON:
       return (
-        <td className="px-6 py-4 whitespace-no-wrap border-b sm:text-sm text-xs leading-5">
+        <td className="px-6 py-4 whitespace-no-wrap sm:text-sm text-xs leading-5">
           <button
             onClick={onClick}
             className="px-3 py-2 mx-auto border-error border-2 text-error rounded transition duration-300 hover:bg-error hover:text-white focus:outline-none"
@@ -213,7 +213,7 @@ const CelTable: FC<Props> = (props: Props) => {
 
     case typeCel.BUTTON_LINK:
       return (
-        <td className="whitespace-no-wrap border-b sm:text-sm text-xs leading-5">
+        <td className="whitespace-no-wrap sm:text-sm text-xs leading-5">
           <Link
             href={href ? href : "/"}
             className="block w-fit px-3 py-2 border-blue-700 border-2 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
@@ -225,7 +225,7 @@ const CelTable: FC<Props> = (props: Props) => {
 
     case typeCel.PUBLIC:
       return (
-        <td className="whitespace-no-wrap border-b sm:text-sm text-xs leading-5">
+        <td className="whitespace-no-wrap sm:text-sm text-xs leading-5">
           <ButtonCheck
             name="public"
             width="w-fit mx-auto"

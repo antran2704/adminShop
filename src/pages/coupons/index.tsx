@@ -76,8 +76,11 @@ const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
 
   const onReset = useCallback(() => {
     setFilter(null);
-    handleGetData();
-  }, [filter, coupons]);
+
+    if (!currentPage || currentPage === 1) {
+      handleGetData();
+    }
+  }, [filter, currentPage]);
 
   const onFilterByDate = useCallback(
     (value: string, name: string) => {
@@ -138,7 +141,7 @@ const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
     setShowPopup(!showPopup);
   }, [showPopup, selectItem]);
 
-  const handleGetData = async () => {
+  const handleGetData = useCallback(async () => {
     setMessage(null);
     setLoading(true);
 
@@ -180,7 +183,7 @@ const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
     }
 
     setLoading(false);
-  };
+  }, [filter, currentPage]);
 
   const handleGetDataByFilter = useCallback(async () => {
     setMessage(null);
@@ -226,7 +229,7 @@ const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
     }
 
     setLoading(false);
-  }, [filter]);
+  }, [filter, currentPage]);
 
   const handleDeleteCoupon = useCallback(async () => {
     if (!selectItem || !selectItem.id) {
@@ -328,7 +331,7 @@ const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
             {coupons.map((item: ICouponHome) => (
               <tr
                 key={item._id}
-                className="hover:bg-slate-100 border-b border-gray-300"
+                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
               >
                 <CelTable
                   type={typeCel.SELECT}

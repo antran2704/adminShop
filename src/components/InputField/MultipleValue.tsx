@@ -92,7 +92,7 @@ const MultipleValue = (props: Props) => {
       <div className="flex items-center mb-1 gap-2">
         <span
           id={name}
-          className="block text-base text-[#1E1E1E] font-medium"
+          className="block text-base text-[#1E1E1E] dark:text-[#ecedee] font-medium"
         >
           {title}
         </span>
@@ -130,7 +130,7 @@ const MultipleValue = (props: Props) => {
           onKeyUp={handleAddValue}
           onChange={onChange}
           type="text"
-          className={`flex-1 border-transparent outline-none`}
+          className={`flex-1 border-transparent bg-transparent pl-2 outline-none`}
         />
       </div>
 

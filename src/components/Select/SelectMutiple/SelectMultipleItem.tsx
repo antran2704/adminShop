@@ -70,7 +70,7 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
   }, [show]);
   return (
     <div className={`realtive  ${className ? className : ""} ${show ? "z-[21]" : "z-20"}`}>
-      <span className="block text-base text-[#1E1E1E] font-medium mb-1">
+      <span className="block text-base text-[#1E1E1E] dark:text-[#ecedee] font-medium mb-1">
         {title}
       </span>
      
@@ -85,7 +85,7 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
           className="flex items-center w-full justify-between gap-5"
         >
           {selects.length > 0 && selects.length < data.length && (
-            <p className="w-full line-clamp-1 select-none gap-2">
+            <p className="w-full line-clamp-1 dark:text-[#ecedee] select-none gap-2">
               {selects.map(
                 (item: ISelectItem, index: number) =>
                   `${item.title} ${index + 1 <= selects.length - 1 ? "," : ""}`
@@ -94,13 +94,13 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
           )}
 
           {selects.length === data.length && (
-            <p className="w-full line-clamp-1 select-none gap-2">
+            <p className="w-full line-clamp-1 dark:text-[#ecedee] select-none gap-2">
               All items selected
             </p>
           )}
 
           {selects.length === 0 && (
-            <p className="w-full text-gray-400 line-clamp-1 select-none gap-2">
+            <p className="w-full text-gray-400 dark:text-[#ecedee] line-clamp-1 select-none gap-2">
               Please select item...
             </p>
           )}

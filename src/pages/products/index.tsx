@@ -135,7 +135,7 @@ const ProductPage: NextPageWithLayout<Props> = (props: Props) => {
         position: toast.POSITION.TOP_RIGHT,
       });
     }
-  }, [filter]);
+  }, [filter, currentPage]);
 
   const onChangePublic = async (id: string, status: boolean) => {
     if (!id) {
@@ -161,10 +161,13 @@ const ProductPage: NextPageWithLayout<Props> = (props: Props) => {
 
   const onReset = useCallback(() => {
     setFilter(null);
-    handleGetData();
-  }, [filter]);
+    
+    if (!currentPage || currentPage === 1) {
+      handleGetData();
+    }
+  }, [filter, currentPage]);
 
-  const handleGetData = async () => {
+  const handleGetData = useCallback(async () => {
     setMessage(null);
     setLoading(true);
 
@@ -204,7 +207,7 @@ const ProductPage: NextPageWithLayout<Props> = (props: Props) => {
         position: toast.POSITION.TOP_RIGHT,
       });
     }
-  };
+  }, [filter, currentPage]);
 
   const handleGetCategories = async () => {
     try {
@@ -340,7 +343,7 @@ const ProductPage: NextPageWithLayout<Props> = (props: Props) => {
             {products.map((product: IProductHome) => (
               <tr
                 key={product._id}
-                className="hover:bg-slate-100 border-b border-gray-300"
+                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
               >
                 <CelTable
                   type={typeCel.SELECT}

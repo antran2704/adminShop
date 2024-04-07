@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { toast } from "react-toastify";
 import { getRefreshToken, logout } from "~/api-client";
-import { loginReducer, logoutReducer } from "~/store/slice";
+import { loginReducer, logoutReducer } from "~/store/slice/user";
 import { AppDispatch } from "~/store";
 import { NextRouter } from "next/router";
 
@@ -89,6 +89,7 @@ httpConfig.interceptors.response.use(
     if (!error.response.data) return Promise.reject(error);
     
     const response = error.response.data;
+    console.log("response:::", response)
 
     if (response.status === 500) {
       toast.error("Error in server, please try again", {
@@ -112,9 +113,8 @@ httpConfig.interceptors.response.use(
     }
 
     const originalRequest = error.config;
-
     if (response.status === 401) {
-      if (originalRequest.method === "post") {
+      if (router.pathname === "/login" && originalRequest.method === "post") {
         return Promise.reject(error);
       }
 

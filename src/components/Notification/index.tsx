@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaRegBell } from "react-icons/fa";
 import { getNotifications, updateNotification } from "~/api-client";
-import { Notification, NotificationItem } from "~/interface";
+import { INotification, INotificationItem } from "~/interface";
 import ImageCus from "../Image/ImageCus";
 import { getDateTime } from "~/helper/datetime";
 import { iconNoti, styleTypeNoti } from "./data";
@@ -9,8 +9,9 @@ import { useRouter } from "next/router";
 import { Socket, io } from "socket.io-client";
 import { NotitficationType } from "~/enums";
 import Link from "next/link";
+import NotificationItem from "./NotificationItem";
 
-const initNotification: Notification = {
+const initNotification: INotification = {
   notifications: [],
   total: 0,
   totalUnread: 0,
@@ -25,13 +26,13 @@ const Notification = () => {
   const [ring, setRing] = useState<boolean>(false);
 
   const [notification, setNotification] =
-    useState<Notification>(initNotification);
+    useState<INotification>(initNotification);
 
   const onShowModal = () => {
     setShowModal(!showModal);
   };
 
-  const onNotification = (item: NotificationItem) => {
+  const onNotification = (item: INotificationItem) => {
     if (timmerRing) {
       clearTimeout(timmerRing);
     }
@@ -52,7 +53,7 @@ const Notification = () => {
     }, 400);
   };
 
-  const onClickNoti = async (data: NotificationItem) => {
+  const onClickNoti = async (data: INotificationItem) => {
     if (data.isReaded) {
       if (data.path) {
         if (data.type === NotitficationType.product) {
@@ -69,8 +70,8 @@ const Notification = () => {
       const { status } = await updateNotification(data._id, { isReaded: true });
 
       if (status === 201) {
-        const notifications: NotificationItem[] =
-          notification.notifications.map((item: NotificationItem) => {
+        const notifications: INotificationItem[] =
+          notification.notifications.map((item: INotificationItem) => {
             if (item._id === data._id) {
               item.isReaded = true;
             }
@@ -142,21 +143,21 @@ const Notification = () => {
           onShowModal();
         }
       }}
-      className="sticky top-0 flex flex-col items-end bg-white px-5 py-2 border-b shadow z-30"
+      className="sticky top-0 flex flex-col items-end bg-white dark:bg-[#1f2937cc] backdrop-blur-[8px] px-5 py-2 shadow rounded-l-md z-30"
     >
       <div className={`relative`}>
         <div
           onClick={onShowModal}
           className={`relative flex items-center justify-center p-2 ${
-            showModal ? "bg-slate-200" : "bg-slate-100 hover:bg-slate-200"
+            showModal ? "bg-slate-200" : "bg-slate-100 dark:bg-transparent hover:bg-slate-200"
           } ${
-            ring ? "bg-blue-400 hover:bg-blue-400" : ""
+            ring ? "bg-blue-600 hover:bg-blue-400" : ""
           } rounded-full cursor-pointer ease-linear duration-100`}
         >
           <FaRegBell
             className={`${
               ring ? "animate_ring-bell text-white" : ""
-            } text-2xl ease-linear duration-100`}
+            } ${showModal ? 'dark:text-black' : 'dark:text-white'} text-2xl ease-linear duration-100`}
           />
 
           {notification.totalUnread > 0 && (
@@ -174,45 +175,14 @@ const Notification = () => {
           } right-0 max-h-[600px] bg-white shadow-lg rounded-md border transition-all ease-linear duration-100 overflow-auto z-10`}
         >
           {notification.notifications.map(
-            (item: NotificationItem, index: number) => (
+            (item: INotificationItem, index: number) => (
               <li
-                key={item._id}
-                onClick={() => onClickNoti(item)}
-                className={`flex items-center px-5 py-2 hover:bg-slate-100 ${
-                  index > 0 ? "border-t" : ""
-                } cursor-pointer gap-5`}
-              >
-                <ImageCus
-                  src={iconNoti[item.type]}
-                  className="min-w-[32px] min-h-[32px] w-8 h-8 rounded-full"
-                />
-                <div className="w-full flex items-center justify-between gap-5">
-                  <div className="w-full">
-                    <p
-                      className={`lg:max-w-[600px] md:max-w-[500px] sm:max-w-[400px] max-w-[200px] w-[500px] text-start text-sm ${
-                        !item.isReaded ? "font-medium" : "font-normal"
-                      } line-clamp-2`}
-                    >
-                      {item.content}
-                    </p>
-                    <div className="flex items-center pt-2 gap-2">
-                      <p
-                        className={`text-white text-start whitespace-nowrap text-xs capitalize px-2 py-1 rounded-full ${
-                          styleTypeNoti[item.type]
-                        }`}
-                      >
-                        {item.type}
-                      </p>
-                      <p className="text-start whitespace-nowrap text-xs">
-                        {getDateTime(item.createdAt)}
-                      </p>
-                    </div>
-                  </div>
-                  {!item.isReaded && (
-                    <span className="block w-2 h-2 rounded-full bg-primary"></span>
-                  )}
-                </div>
-              </li>
+              key={item._id}
+              onClick={() => onClickNoti(item)}
+              className={`${index > 0 ? "border-t" : ""}`}
+            >
+              <NotificationItem data={item} onClick={onClickNoti} />
+            </li>
             )
           )}
           {notification.total > notification.notifications.length && (

@@ -111,7 +111,7 @@ const BannersPage: NextPageWithLayout<Props> = (props: Props) => {
     setShowPopup(!showPopup);
   };
 
-  const handleGetData = async () => {
+  const handleGetData = useCallback(async () => {
     setMessage(null);
     setLoading(true);
 
@@ -146,7 +146,7 @@ const BannersPage: NextPageWithLayout<Props> = (props: Props) => {
         position: toast.POSITION.TOP_RIGHT,
       });
     }
-  };
+  }, [filter, currentPage]);
 
   const handleGetDataByFilter = useCallback(async () => {
     setMessage(null);
@@ -183,7 +183,7 @@ const BannersPage: NextPageWithLayout<Props> = (props: Props) => {
       });
       setLoading(false);
     }
-  }, [filter]);
+  }, [filter, currentPage]);
 
   const handleDeleteCategory = useCallback(async () => {
     if (!selectItem || !selectItem._id) {
@@ -265,10 +265,10 @@ const BannersPage: NextPageWithLayout<Props> = (props: Props) => {
           loading={loading}
         >
           <Fragment>
-            {banners.map((item: Banner) => (
+            {banners.map((item: Banner, index: number) => (
               <tr
                 key={item._id}
-                className="hover:bg-slate-100 border-b border-gray-300"
+                className={`hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-gray-300 last:border-none`}
               >
                 <CelTable
                   type={typeCel.SELECT}

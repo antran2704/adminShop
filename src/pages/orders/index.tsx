@@ -1,5 +1,11 @@
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
-import { useEffect, useState, useCallback, Fragment, ReactElement } from "react";
+import {
+  useEffect,
+  useState,
+  useCallback,
+  Fragment,
+  ReactElement,
+} from "react";
 
 import { IOrder } from "~/interface/order";
 import { IPagination } from "~/interface/pagination";
@@ -14,7 +20,6 @@ import { ButtonEdit } from "~/components/Button";
 import { IFilter, ISelectItem } from "~/interface";
 import { SelectDate, SelectItem } from "~/components/Select";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
-import { useRouter } from "next/router";
 import { initPagination } from "~/components/Pagination/initData";
 import { getOrders, getOrdersWithFilter } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
@@ -66,8 +71,7 @@ const Layout = LayoutWithHeader;
 
 const OrdersPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
-  const currentPage = query.page ? query.page : 1;
-  const router = useRouter();
+  const currentPage = query.page ? Number(query.page) : 1;
 
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [message, setMessage] = useState<string | null>(null);
@@ -85,17 +89,17 @@ const OrdersPage: NextPageWithLayout<Props> = (props: Props) => {
   const onSelect = useCallback(
     (value: string, name: string) => {
       setFilter({ ...filter, [name]: value });
-      // router.replace({
-      //   query: {},
-      // });
     },
     [filter]
   );
 
   const onReset = useCallback(() => {
     setFilter(null);
-    handleGetData();
-  }, [filter, orders]);
+
+    if (!currentPage || currentPage === 1) {
+      handleGetData();
+    }
+  }, [filter, currentPage]);
 
   const handleGetDataByFilter = useCallback(async () => {
     setLoading(true);
@@ -122,7 +126,7 @@ const OrdersPage: NextPageWithLayout<Props> = (props: Props) => {
     }
   }, [filter, currentPage]);
 
-  const handleGetData = async () => {
+  const handleGetData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await getOrders(currentPage);
@@ -145,9 +149,11 @@ const OrdersPage: NextPageWithLayout<Props> = (props: Props) => {
       setPagination(initPagination);
       setLoading(false);
     }
-  };
+  }, [filter, currentPage]);
 
   useEffect(() => {
+    console.log("currentPage:::", currentPage);
+
     if (filter) {
       handleGetDataByFilter();
     } else {
@@ -213,7 +219,7 @@ const OrdersPage: NextPageWithLayout<Props> = (props: Props) => {
             {orders.map((order: IOrder) => (
               <tr
                 key={order._id}
-                className="hover:bg-slate-100 border-b border-gray-300"
+                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
               >
                 <CelTable
                   type={typeCel.LINK}

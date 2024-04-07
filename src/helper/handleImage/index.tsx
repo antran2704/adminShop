@@ -1,5 +1,6 @@
 import axios from "axios";
 import { IThumbnail } from "~/interface/image";
+import { axiosPost } from "~/ultils/configAxios";
 
 const uploadImage = (el: Element) => {
   const target = el as HTMLInputElement;
@@ -10,7 +11,7 @@ const uploadImage = (el: Element) => {
 };
 
 const uploadImageOnServer = async (url: string, formData: FormData) => {
-  const payload = await axios.post(url, formData).then((res) => res.data);
+  const payload = await axiosPost(url, formData);
   return payload;
 };
 

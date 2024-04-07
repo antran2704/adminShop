@@ -13,7 +13,7 @@ const ButtonDelete = (props: Props) => {
       onClick={onClick}
       className={`${
         className ? className : ""
-      } block w-fit px-3 py-2 text-[#9ca3af] rounded transition duration-300 hover:text-error`}
+      } block w-fit px-3 py-2 text-[#9ca3af] dark:text-white rounded transition duration-300 hover:text-error dark:hover:text-error`}
     >
       <RiDeleteBin6Line className="text-xl" />
     </button>

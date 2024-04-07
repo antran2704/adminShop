@@ -8,7 +8,7 @@ import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
 import { InputText, InputPassword } from "~/components/InputField";
 import Loading from "~/components/Loading";
-import { loginReducer, logoutReducer } from "~/store/slice";
+import { loginReducer, logoutReducer } from "~/store/slice/user";
 import { AxiosResponseCus } from "~/interface";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { axiosPost } from "~/ultils/configAxios";
@@ -61,8 +61,6 @@ const LoginPage = () => {
         dispatch(logoutReducer(false))
         router.push("/");
       }
-
-      setLoading(false);
     } catch (err) {
       const error = err as AxiosError;
       if (error?.response) {
@@ -154,13 +152,13 @@ const LoginPage = () => {
               <ButtonClassic
                 loading={loading}
                 title="Login"
-                size="L"
-                className="w-full flex items-center justify-center h-[52px] bg-primary"
+                size="M"
+                className="w-full flex items-center justify-center h-12 bg-primary"
               />
 
               <div className="flex items-center justify-center">
                 <Link
-                  className="block hover:underline hover:text-primary my-5"
+                  className="block hover:underline hover:text-primary text-sm my-5"
                   href="/password/reset"
                 >
                   Quên mật khẩu

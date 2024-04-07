@@ -56,8 +56,6 @@ const OrderDetail: NextPageWithLayout = () => {
   const [message] = useState<string | null>(null);
   const [cancle, setCancle] = useState<string | null>(null);
 
-  console.log("order:::", data);
-
   const [loading, setLoading] = useState<boolean>(true);
   const [showPrint, setShowPrint] = useState<boolean>(false);
   const [showCancle, setShowCancle] = useState<boolean>(false);

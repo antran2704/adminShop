@@ -11,7 +11,7 @@ import { NextPageWithLayout } from "~/interface/page";
 import FormLayout from "~/layouts/FormLayout";
 import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { loginReducer } from "~/store/slice";
+import { loginReducer } from "~/store/slice/user";
 import { axiosPatch, axiosPost } from "~/ultils/configAxios";
 
 interface IPassword {

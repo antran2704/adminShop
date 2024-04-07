@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { RootState } from "..";
 import { IUserInfor } from "~/interface";
 
 interface IInitData {
@@ -30,7 +29,9 @@ const userSlice = createSlice({
   },
 });
 
-export const getUser = (state: RootState) => state.user;
+// export const getUser = (state: RootState) => state.user;
+
+const userReducer = userSlice.reducer;
 
 export const { loginReducer, logoutReducer } = userSlice.actions;
-export default userSlice.reducer;
+export default userReducer;

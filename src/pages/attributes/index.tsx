@@ -267,7 +267,7 @@ const AttributesPage: NextPageWithLayout<Props> = (props: Props) => {
             {attributes.map((item: IAttribute) => (
               <tr
                 key={item._id}
-                className="hover:bg-slate-100 border-b border-gray-300"
+                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
               >
                 <CelTable
                   type={typeCel.SELECT}

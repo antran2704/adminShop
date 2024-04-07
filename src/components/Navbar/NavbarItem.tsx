@@ -13,7 +13,6 @@ const NavbarItem: FC<Props> = (props: Props) => {
   const { subNav, data } = props;
   const router = useRouter();
   const [show, setShow] = useState(false);
-
   const elRef = useRef<HTMLUListElement>(null);
 
   const handleCollapse = (): void => {
@@ -36,9 +35,9 @@ const NavbarItem: FC<Props> = (props: Props) => {
         <li className="w-full mb-1">
           <Link
             className={`w-full flex items-center text-lg font-medium px-3 py-2 ${
-              router.asPath === data.path
+              router.pathname === data.path
                 ? "bg-primary text-white"
-                : "hover:bg-primary text-black hover:text-white"
+                : "hover:bg-primary text-black dark:text-[#ecedee] hover:text-white"
             } lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}
             href={data.path}
           >
@@ -54,15 +53,19 @@ const NavbarItem: FC<Props> = (props: Props) => {
             onClick={handleCollapse}
             className="w-full flex items-center justify-between px-3 py-2 hover:bg-primary hover:text-white lg:rounded-lg rounded-tl-lg rounded-bl-lg transition-all ease-linear duration-200 cursor-pointer"
           >
-            <div className="w-full flex items-center text-lg font-medium gap-3">
+            <div className="w-full flex items-center text-lg dark:text-[#ecedee] font-medium gap-3">
               <span>{data.icon}</span>
               <span>{data.name}</span>
             </div>
             {!show && (
-              <AiOutlinePlus className={`lg:text-2xl text-xl lg:block `} />
+              <AiOutlinePlus
+                className={`lg:text-2xl text-xl lg:block dark:text-[#ecedee]`}
+              />
             )}
             {show && (
-              <AiOutlineMinus className={`lg:text-2xl text-xl lg:block `} />
+              <AiOutlineMinus
+                className={`lg:text-2xl text-xl lg:block dark:text-[#ecedee]`}
+              />
             )}
           </div>
 
@@ -74,9 +77,9 @@ const NavbarItem: FC<Props> = (props: Props) => {
               <li key={index} className="w-full">
                 <Link
                   className={`w-full flex items-center text-base font-medium px-3 py-2 my-1 ${
-                    router.asPath === item.path
+                    router.asPath.includes(item.path)
                       ? "bg-primary text-white"
-                      : "hover:bg-primary text-black hover:text-white"
+                      : "hover:bg-primary text-black dark:text-[#ecedee] hover:text-white"
                   } lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}
                   href={item.path}
                 >

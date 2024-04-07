@@ -13,7 +13,7 @@ const PaginationTop = (props: Props) => {
 
   const [start, setStart] = useState<number>(0);
   const [end, setEnd] = useState<number>(0);
-  console.log("re-render paginatrion");
+  
   const onPrevPage = (page: number) => {
     if (start <= 1) return;
 
@@ -56,7 +56,7 @@ const PaginationTop = (props: Props) => {
                 start <= 1 ? "opacity-40 pointer-events-none" : ""
               }`}
             >
-              <IoIosArrowDropleft className="hover:text-primary w-8 h-8 transition-all ease-linear duration-100" />
+              <IoIosArrowDropleft className="hover:text-primary dark:text-[#ecedee] dark:hover:text-primary w-8 h-8 transition-all ease-linear duration-100" />
             </button>
             <button
               onClick={() => onNextPage(pagination.currentPage + 1)}
@@ -66,10 +66,10 @@ const PaginationTop = (props: Props) => {
                   : ""
               }`}
             >
-              <IoIosArrowDropright className="hover:text-primary w-8 h-8 transition-all ease-linear duration-100" />
+              <IoIosArrowDropright className="hover:text-primary dark:text-[#ecedee] dark:hover:text-primary w-8 h-8 transition-all ease-linear duration-100" />
             </button>
           </div>
-          <div className="w-[120px]">
+          <div className="w-[120px] dark:text-[#ecedee]">
             {start} to {end} of {pagination.totalItems}
           </div>
         </Fragment>

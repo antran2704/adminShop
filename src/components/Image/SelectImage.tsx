@@ -50,7 +50,7 @@ const SelectImage = (props: Props) => {
           className="w-full h-full"
         />
       </div>
-      <button onClick={handleOpenModal} className="text-sm">
+      <button onClick={handleOpenModal} className="text-sm dark:text-[#ecedee]">
         Change
       </button>
       

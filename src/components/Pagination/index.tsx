@@ -26,12 +26,12 @@ const PaginationCus = (props: Props) => {
       current={pagination.currentPage}
       onChange={onPagination}
       prevIcon={() => (
-        <button className="flex items-center justify-center hover:bg-primary hover:text-white w-10 h-10 border transition-all ease-linear duration-100">
+        <button className="flex items-center justify-center hover:bg-primary dark:text-[#ecedee] hover:text-white w-10 h-10 border transition-all ease-linear duration-100">
           <IoIosArrowBack />
         </button>
       )}
       nextIcon={() => (
-        <button className="flex items-center justify-center hover:bg-primary hover:text-white w-10 h-10 border transition-all ease-linear duration-100">
+        <button className="flex items-center justify-center hover:bg-primary dark:text-[#ecedee] hover:text-white w-10 h-10 border transition-all ease-linear duration-100">
           <IoIosArrowForward />
         </button>
       )}

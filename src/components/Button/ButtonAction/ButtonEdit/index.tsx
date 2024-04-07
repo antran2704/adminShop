@@ -20,7 +20,7 @@ const ButtonEdit = (props: Props) => {
           target={target}
           className={`${
             className ? className : ""
-          } block w-fit px-3 py-2 text-[#9ca3af] rounded transition duration-300 hover:text-success`}
+          } block w-fit px-3 py-2 text-[#9ca3af] dark:text-white dark:hover:text-success rounded transition duration-300 hover:text-success`}
         >
           <FaRegEdit className="text-xl" />
         </Link>
@@ -31,7 +31,7 @@ const ButtonEdit = (props: Props) => {
           onClick={onClick}
           className={`${
             className ? className : ""
-          } block w-fit px-3 py-2 text-[#9ca3af] rounded transition duration-300 hover:text-success`}
+          } block w-fit px-3 py-2 text-[#9ca3af] dark:text-white dark:hover:text-success rounded transition duration-300 hover:text-success`}
         >
           <FaRegEdit className="text-xl" />
         </button>

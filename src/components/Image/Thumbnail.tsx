@@ -41,7 +41,7 @@ const Thumbnail: FC<Props> = (props: Props) => {
     <div className="w-full">
       <span
         id="thumbnail"
-        className="block text-base text-[#1E1E1E] font-medium mb-1"
+        className="block text-base text-[#1E1E1E] dark:text-[#ecedee] font-medium mb-1"
       >
         Thumbnail
       </span>
@@ -57,12 +57,12 @@ const Thumbnail: FC<Props> = (props: Props) => {
         } cursor-pointer overflow-hidden`}
       >
         {loading && (
-          <p className="text-base font-medium text-center">Loading...</p>
+          <p className="text-base font-medium text-center dark:text-[#ecedee]">Loading...</p>
         )}
         {!url && !loading && (
           <>
-            <IoAdd className="md:text-6xl text-4xl" />
-            <p className="text-base font-medium text-center">Click to upload</p>
+            <IoAdd className="md:text-6xl text-4xl dark:text-[#ecedee]" />
+            <p className="text-base font-medium text-center dark:text-[#ecedee]">Click to upload</p>
           </>
         )}
         {url && !loading && (

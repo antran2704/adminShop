@@ -18,6 +18,7 @@ import { SelectDate, SelectTag } from "~/components/Select";
 import Loading from "~/components/Loading";
 import { deleteCoupon } from "~/api-client";
 import Popup from "~/components/Popup";
+import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 
 interface Props {
   query: ParsedUrlQuery;
@@ -177,7 +178,7 @@ const EditCouponPage = (props: Props) => {
 
       try {
         const { status, payload } = await uploadImageOnServer(
-          `${process.env.NEXT_PUBLIC_ENDPOINT_API}/discounts/uploadThumbnail`,
+          "/discounts/uploadThumbnail",
           formData
         );
 
@@ -207,7 +208,6 @@ const EditCouponPage = (props: Props) => {
       value.getHours() < 10 ? `0${value.getHours()}` : value.getHours();
     const minutes =
       value.getMinutes() < 10 ? `0${value.getMinutes()}` : value.getMinutes();
-    console.log(`${year}-${month}-${date}T${hours}:${minutes}`);
     return `${year}-${month}-${date}T${hours}:${minutes}`;
   };
 
@@ -465,7 +465,7 @@ const EditCouponPage = (props: Props) => {
           <InputNumber
             title="Minimum Amount"
             width="w-full"
-            value={data.discount_min_value.toString()}
+            value={formatBigNumber(data.discount_min_value)}
             name="discount_min_value"
             error={fieldsCheck.includes("discount_min_value")}
             placeholder="Minimum Amount"

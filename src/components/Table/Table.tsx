@@ -44,14 +44,16 @@ const Table: FC<Props> = (props: Props) => {
   return (
     <Fragment>
       {pagination && pagination.totalItems > pagination.pageSize && (
-        <div className="pb-5"><PaginationTop pagination={pagination} /></div>
+        <div className="pb-5">
+          <PaginationTop pagination={pagination} />
+        </div>
       )}
       <div className="scrollHidden overflow-x-auto">
-        <div className="align-middle inline-block min-w-full shadow overflow-hidden bg-white shadow-dashboard rounded-lg border">
+        <div className="align-middle inline-block min-w-full shadow overflow-hidden bg-white shadow-dashboard rounded-lg border dark:border-gray-400">
           <table className="min-w-full">
-            <thead className="bg-[#f4f5f7]">
+            <thead className="bg-[#f4f5f7] dark:bg-gray-800">
               <tr>
-                {selectAll && items.length > 0 && (
+                {!loading && selectAll && items.length > 0 && (
                   <th className="px-6 py-3 border-b border-gray-300 leading-4 tracking-wider">
                     <input
                       onChange={onSelectCheckBoxAll}
@@ -63,9 +65,9 @@ const Table: FC<Props> = (props: Props) => {
                 {colHeadTabel.map((item: string, index: number) => (
                   <th
                     key={index}
-                    className="border-b border-gray-300 leading-4 tracking-wider"
+                    className="border-b border-gray-300  leading-4 tracking-wider"
                   >
-                    <p className="text-sm text-[#707275] font-medium px-6 py-3">
+                    <p className="text-sm text-[#707275] dark:text-gray-400 font-medium px-6 py-3">
                       {item}
                     </p>
                   </th>
@@ -74,19 +76,22 @@ const Table: FC<Props> = (props: Props) => {
             </thead>
             <tbody className="bg-white">
               {!loading && <Fragment>{children}</Fragment>}
+
               {loading &&
-                [...new Array(6)].map((item: undefined, index: number) => (
-                  <tr key={index}>
-                    {colHeadTabel.map((item: string, index: number) => (
-                      <td
-                        key={index}
-                        className="px-6 py-4 whitespace-no-wrap border-b"
-                      >
-                        <div className="skelaton w-[100px] h-5 mx-auto"></div>
-                      </td>
-                    ))}
-                  </tr>
-                ))}
+                [...new Array(colHeadTabel.length)].map(
+                  (item: undefined, index: number) => (
+                    <tr className="dark:bg-gray-800 " key={index}>
+                      {colHeadTabel.map((item: string, index: number) => (
+                        <td
+                          key={index}
+                          className="px-6 py-4 whitespace-no-wrap border-b"
+                        >
+                          <div className="animate-pulse bg-white dark:bg-gray-600 w-[100px] h-5 mx-auto rounded"></div>
+                        </td>
+                      ))}
+                    </tr>
+                  )
+                )}
 
               {!loading && message && (
                 <tr>

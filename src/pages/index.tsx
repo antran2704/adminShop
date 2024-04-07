@@ -206,15 +206,15 @@ const HomePage: NextPageWithLayout = () => {
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
       <div className="w-full h-[10%] mb-5">
-        <h1 className="md:text-3xl text-2xl font-bold mb-1">
+        <h1 className="dark:text-[#ecedee] md:text-3xl text-2xl font-bold mb-1">
           Welcome Admin Dashboard Antrandev
         </h1>
-        <p className="text-lg font-medium">
+        <p className="dark:text-[#ecedee] text-lg font-medium">
           Manager your maketing's performence
         </p>
       </div>
       <div className="w-full lg:mb-10 mb-5">
-        <h2 className="text-title mb-4">Dashboard Overview</h2>
+        <h2 className="text-title mb-4 dark:text-[#ecedee]">Dashboard Overview</h2>
         <div className="h-full gap-10">
           <div className="relative w-full mb-10">
             <div
@@ -320,7 +320,7 @@ const HomePage: NextPageWithLayout = () => {
               {orders.map((order: IOrder) => (
                 <tr
                   key={order._id}
-                  className="hover:bg-slate-100 border-b border-gray-300"
+                  className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300"
                 >
                   <CelTable
                     type={typeCel.TEXT}
