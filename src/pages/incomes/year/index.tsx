@@ -231,7 +231,7 @@ const IncomeYearPage: NextPageWithLayout = () => {
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
       <div className="w-full">
-        <h1 className="md:text-3xl text-2xl font-bold">
+        <h1 className="md:text-3xl text-2xl font-bold dark:text-darkText">
           {" "}
           Dashboard Overview Income Year
         </h1>
@@ -250,21 +250,31 @@ const IncomeYearPage: NextPageWithLayout = () => {
         </div>
 
         <div className="mt-5">
-          <p className="text-lg font-medium text-center">
+          <p className="text-lg font-medium text-center dark:text-darkText">
             Thu nhập năm {selectGrowYear.year}
           </p>
           {growYear.updatedAt && (
-            <p className="text-lg font-medium text-center">
+            <p className="text-lg font-medium text-center dark:text-darkText">
               (Dữ liệu cập nhật lúc{" "}
               {new Date(growYear.updatedAt).toLocaleTimeString()} ngày{" "}
               {new Date(growYear.updatedAt).toLocaleDateString("en-GB")})
             </p>
           )}
           {!growYear.updatedAt && (
-            <p className="text-lg font-medium text-center">Chưa có dữ liệu</p>
+            <p className="text-lg font-medium text-center dark:text-darkText">
+              Chưa có dữ liệu
+            </p>
           )}
         </div>
         <div className="flex lg:flex-row flex-col items-start my-5 gap-10">
+          <div className="lg:w-6/12 w-full bg-white p-5 rounded-md">
+            <Bar
+              ref={chartYearRef}
+              className="w-full min-h-[400px]"
+              options={options}
+              data={dataBarYear}
+            />
+          </div>
           <div
             className={`grid md:grid-cols-2 grid-cols-1 lg:w-6/12 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300`}
           >
@@ -307,15 +317,6 @@ const IncomeYearPage: NextPageWithLayout = () => {
               to={growYear.cancle_orders}
               backgroundColor="bg-cancle"
               duration={0}
-            />
-          </div>
-
-          <div className="lg:w-6/12 w-full">
-            <Bar
-              ref={chartYearRef}
-              className="w-full min-h-[400px]"
-              options={options}
-              data={dataBarYear}
             />
           </div>
         </div>

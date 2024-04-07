@@ -295,7 +295,7 @@ const HomePage: NextPageWithLayout = () => {
                 duration={0.5}
               />
             </div>
-            <Bar ref={chartWeekRef} options={options} data={dataBarWeek} />
+            <div className="bg-white py-5 rounded-md"><Bar ref={chartWeekRef} options={options} data={dataBarWeek} /></div>
           </div>
         </div>
       </div>

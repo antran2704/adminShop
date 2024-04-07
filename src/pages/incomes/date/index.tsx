@@ -73,7 +73,7 @@ const IncomeDatePage: NextPageWithLayout = () => {
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
       <div className="w-full">
-        <h1 className="md:text-3xl text-2xl font-bold">
+        <h1 className="md:text-3xl text-2xl dark:text-darkText font-bold">
           {" "}
           Dashboard Overview Income Date
         </h1>
@@ -91,18 +91,18 @@ const IncomeDatePage: NextPageWithLayout = () => {
           />
 
           <div>
-            <h3 className="text-lg font-medium text-center">
+            <h3 className="text-lg font-medium text-center dark:text-darkText">
               Thu nhập ngày: {growDate.date}
             </h3>
             {growDate.updatedAt && (
-              <p className="text-lg font-medium text-center">
+              <p className="text-lg font-medium text-center dark:text-darkText">
                 (Dữ liệu cập nhật lúc{" "}
                 {new Date(growDate.updatedAt).toLocaleTimeString()} ngày{" "}
                 {new Date(growDate.updatedAt).toLocaleDateString("en-GB")})
               </p>
             )}
             {!growDate.updatedAt && (
-              <p className="text-lg font-medium text-center">Chưa có dữ liệu</p>
+              <p className="text-lg font-medium text-center dark:text-darkText">Chưa có dữ liệu</p>
             )}
           </div>
           <div

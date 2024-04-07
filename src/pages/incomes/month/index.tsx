@@ -37,6 +37,7 @@ const options = {
       position: "top" as const,
     },
   },
+  maintainAspectRatio: false,
   scales: {
     x: {
       stacked: true,
@@ -239,7 +240,7 @@ const IncomeMonthPage: NextPageWithLayout = () => {
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
       <div className="w-full">
-        <h1 className="md:text-3xl text-2xl font-bold">
+        <h1 className="md:text-3xl text-2xl font-bold dark:text-darkText">
           {" "}
           Dashboard Overview Income Month
         </h1>
@@ -266,20 +267,33 @@ const IncomeMonthPage: NextPageWithLayout = () => {
           />
         </div>
 
-        <div className="mt-5">
-          <p className="text-lg font-medium text-center">
+        <div className="my-5">
+          <p className="text-lg font-medium text-center dark:text-darkText">
             Thu nhập tháng {selectGrowMonth.month} năm {selectGrowMonth.year}
           </p>
           {growMonth.updatedAt && (
-            <p className="text-lg font-medium text-center">
+            <p className="text-lg font-medium text-center dark:text-darkText">
               (Dữ liệu cập nhật lúc{" "}
               {new Date(growMonth.updatedAt).toLocaleTimeString()} ngày{" "}
               {new Date(growMonth.updatedAt).toLocaleDateString("en-GB")})
             </p>
           )}
           {!growMonth.updatedAt && (
-            <p className="text-lg font-medium text-center">Chưa có dữ liệu</p>
+            <p className="text-lg font-medium text-center dark:text-darkText">
+              Chưa có dữ liệu
+            </p>
           )}
+        </div>
+
+        <div className="flex items-center justify-center">
+          <div className="lg:w-11/12 w-full">
+            <Bar
+              className="w-full min-h-[600px] bg-white p-5 rounded-md"
+              ref={chartMonthRef}
+              options={options}
+              data={dataBarMonth}
+            />
+          </div>
         </div>
 
         <div
@@ -326,8 +340,6 @@ const IncomeMonthPage: NextPageWithLayout = () => {
             duration={0}
           />
         </div>
-
-        <Bar ref={chartMonthRef} options={options} data={dataBarMonth} />
       </div>
     </section>
   );

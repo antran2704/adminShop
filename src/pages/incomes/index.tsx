@@ -716,7 +716,7 @@ const IncomePage: NextPageWithLayout = () => {
                 />
               </div>
 
-              <div className="lg:w-6/12 w-full">
+              <div className="lg:w-6/12 w-full bg-white py-5 rounded-md">
                 <Bar
                   className="w-full"
                   ref={chartWeekRef}
