@@ -30,7 +30,7 @@ const SelectTag = (props: Props) => {
       onClick={() => onSelect(value)}
       className={`${SIZE[size]} ${className ? className : ""} ${
         value === currentSelect ? "text-success border-success" : ""
-      }  font-medium px-4 py-1 border-2 rounded-lg`}
+      } dark:text-darkText font-medium px-4 py-1 border-2 rounded-lg`}
     >
       {title}
     </button>

@@ -13,14 +13,14 @@ import {
   TagNotification,
 } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
 import PaginationCus from "~/components/Pagination";
 import { useRouter } from "next/router";
 import { NotitficationType } from "~/enums";
 import PaginationTop from "~/components/Pagination/PaginationTop";
 import NotificationItem from "~/components/Notification/NotificationItem";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
-const Layout = LayoutWithoutHeader;
+const Layout = LayoutWithHeader;
 
 const tagsNotification: TagNotification[] = [
   { title: "All", value: "" },

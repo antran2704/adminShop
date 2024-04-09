@@ -1,20 +1,24 @@
-import { Fragment } from "react";
+import { useState, Fragment } from "react";
+
+import SideBar from "~/components/SideBar";
+import Navbar from "~/components/Navbar";
 import DefaultLayout from "../DefaultLayout";
-import Notification from "~/components/Notification";
-import { useAppSelector } from "~/store/hooks";
 
 interface Props {
   children: JSX.Element;
 }
 
 const LayoutWithHeader = ({ children }: Props) => {
-  const { infor } = useAppSelector((state) => state.user);
+  const [showSidebar, setShowSideBar] = useState<boolean>(false);
 
   return (
     <DefaultLayout>
       <Fragment>
-        {infor._id && <Notification />}
-        {children}
+        <SideBar showSideBar={showSidebar} setShowSideBar={setShowSideBar} />
+        <div className="w-full min-h-screen">
+          <Navbar showSideBar={showSidebar} setShowSideBar={setShowSideBar} />
+          {children}
+        </div>
       </Fragment>
     </DefaultLayout>
   );

@@ -2,6 +2,9 @@ import { FC, ChangeEvent, memo, useState } from "react";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { toast } from "react-toastify";
 import ImageCus from "./ImageCus";
+import { IOptionImage } from "~/interface";
+import { ECompressFormat, ETypeImage } from "~/enums";
+import { resizeImage } from "~/helper/handleImage";
 
 interface Props {
   gallery: string[];
@@ -9,9 +12,20 @@ interface Props {
   loading: boolean;
   error?: boolean;
   className?: string;
+  option?: IOptionImage;
   onChange: (source: File) => void;
   onDelete: (url: string) => void;
 }
+
+const initOption: IOptionImage = {
+  quality: 100,
+  maxHeight: 400,
+  maxWidth: 400,
+  minHeight: 200,
+  minWidth: 200,
+  type: ETypeImage.file,
+  compressFormat: ECompressFormat.WEBP,
+};
 
 const Gallery: FC<Props> = (props: Props) => {
   const {
@@ -20,13 +34,14 @@ const Gallery: FC<Props> = (props: Props) => {
     className = "w-[120px] h-[120px]",
     loading,
     error,
+    option = initOption,
     onChange,
     onDelete,
   } = props;
 
   const [selectImage, setSelect] = useState<string | null>(null);
 
-  const hanldeChangeGallery = (e: ChangeEvent<HTMLInputElement>) => {
+  const hanldeChangeGallery = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
       if (file && /^image\//.test(file.type)) {
@@ -38,7 +53,8 @@ const Gallery: FC<Props> = (props: Props) => {
           return;
         }
 
-        const source: File = file;
+        const newImage = (await resizeImage(file, option)) as File;
+        const source: File = newImage;
         onChange(source);
       } else {
         toast.error("Only upload file type image", {
@@ -97,13 +113,13 @@ const Gallery: FC<Props> = (props: Props) => {
             } rounded-md border-2 border-dashed cursor-pointer overflow-hidden`}
           >
             {!loading && (
-              <p className="text-sm font-medium text-center">
+              <p className="text-sm font-medium text-center dark:text-darkText">
                 {gallery.length} / {limited}
               </p>
             )}
 
             {loading && (
-              <p className="text-sm font-medium text-center">Loading...</p>
+              <p className="text-sm font-medium text-center dark:text-darkText">Loading...</p>
             )}
             <input
               onChange={hanldeChangeGallery}

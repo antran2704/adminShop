@@ -11,7 +11,15 @@ interface Props {
 }
 
 const SelectDate: FC<Props> = (props: Props) => {
-  const { className, title, name, type = "date", value, error, onSelect } = props;
+  const {
+    className,
+    title,
+    name,
+    type = "date",
+    value,
+    error,
+    onSelect,
+  } = props;
 
   const onSelectDate = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name;
@@ -35,7 +43,7 @@ const SelectDate: FC<Props> = (props: Props) => {
         onChange={onSelectDate}
         className={`w-full min-h-[40px] ${
           error && "border-error"
-        } dark:bg-[#27272a] dark:text-white rounded-md px-2 py-1 border-2 focus:border-[#4f46e5]`}
+        } dark:bg-darkInput dark:text-white dark:sche px-2 py-1 border-2 focus:border-[#4f46e5] dark:border-transparent rounded-md outline-none`}
       />
     </div>
   );

@@ -10,6 +10,9 @@ import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Loading from "~/components/Loading";
 import { createBanner, uploadBannerImage } from "~/api-client";
+import { ECompressFormat, ETypeImage } from "~/enums";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { NextPageWithLayout } from "~/interface/page";
 
 const initData: CreateBanner = {
   title: "",
@@ -19,8 +22,9 @@ const initData: CreateBanner = {
   path: null,
 };
 
+const Layout = LayoutWithHeader;
 
-const CreateCategoryPage = () => {
+const CreateCategoryPage: NextPageWithLayout = () => {
   const router = useRouter();
 
   const [data, setData] = useState<CreateBanner>(initData);
@@ -166,6 +170,15 @@ const CreateCategoryPage = () => {
             url={image}
             loading={loadingThumbnail}
             onChange={uploadThumbnail}
+            option={{
+              quality: 100,
+              maxHeight: 800,
+              maxWidth: 1300,
+              minHeight: 800,
+              minWidth: 1300,
+              compressFormat: ECompressFormat.JPEG,
+              type: ETypeImage.file,
+            }}
           />
 
           <ButtonCheck
@@ -184,3 +197,7 @@ const CreateCategoryPage = () => {
 };
 
 export default CreateCategoryPage;
+
+CreateCategoryPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};

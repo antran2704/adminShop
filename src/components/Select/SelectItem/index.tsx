@@ -32,7 +32,7 @@ const SelectItem: FC<Props> = (props: Props) => {
         value={value}
         name={name}
         onChange={onSelectItem}
-        className="w-full min-h-[40px] rounded-md px-2 py-1 border-2 focus:border-[#4f46e5]"
+        className="w-full min-h-[40px] dark:bg-darkInput dark:text-darkText dark:border-transparent rounded-md px-2 py-1 border-2 focus:border-[#4f46e5]"
       >
         {placeholder && (
           <option value="All" hidden>

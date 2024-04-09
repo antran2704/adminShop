@@ -69,16 +69,16 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
     }
   }, [show]);
   return (
-    <div className={`realtive  ${className ? className : ""} ${show ? "z-[21]" : "z-20"}`}>
+    <div className={`realtive ${className ? className : ""} ${show ? "z-[21]" : "z-20"}`}>
       <span className="block text-base text-[#1E1E1E] dark:text-darkText font-medium mb-1">
         {title}
       </span>
      
       <div
         ref={divRef}
-        className={`relative flex items-center w-full min-h-[36px] rounded-md px-2 py-1 ${
+        className={`relative flex items-center w-full min-h-[36px] dark:bg-darkInput rounded-md px-2 py-1 ${
           show && "border-[#4f46e5]"
-        } border-2 outline-none cursor-pointer z-10`}
+        } border-2 dark:border-transparent outline-none cursor-pointer z-10`}
       >
         <div
           onClick={() => onSetSelectIndex(selectIndex)}
@@ -108,11 +108,11 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
             {selects.length > 0 && (
               <MdOutlineClose
                 onClick={onClearAll}
-                className="ml-auto w-5 h-7"
+                className="ml-auto w-5 h-7 dark:text-darkText"
               />
             )}
-            {show && <MdKeyboardArrowUp className="ml-auto w-6 h-7" />}
-            {!show && <MdKeyboardArrowDown className="ml-auto w-6 h-7" />}
+            {show && <MdKeyboardArrowUp className="ml-auto w-6 h-7 dark:text-darkText" />}
+            {!show && <MdKeyboardArrowDown className="ml-auto w-6 h-7 dark:text-darkText" />}
           </div>
         </div>
 

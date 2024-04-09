@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { InputText, InputNumber } from "~/components/InputField";
-import { EDicount_type, EDiscount_applies } from "~/enums";
+import { ECompressFormat, EDicount_type, EDiscount_applies, ETypeImage } from "~/enums";
 import FormLayout from "~/layouts/FormLayout";
 
 import { ICoupon } from "~/interface";
@@ -19,6 +19,8 @@ import Loading from "~/components/Loading";
 import { deleteCoupon } from "~/api-client";
 import Popup from "~/components/Popup";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { NextPageWithLayout } from "~/interface/page";
 
 interface Props {
   query: ParsedUrlQuery;
@@ -44,7 +46,9 @@ const initData: ICoupon = {
   discount_user_used: [],
 };
 
-const EditCouponPage = (props: Props) => {
+const Layout = LayoutWithHeader;
+
+const EditCouponPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
   const { id } = query;
 
@@ -417,7 +421,7 @@ const EditCouponPage = (props: Props) => {
 
         <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <div>
-            <p className="text-base text-[#1E1E1E] font-medium mb-2">
+            <p className="text-base text-[#1E1E1E] dark:text-darkText font-medium mb-2">
               Coupon type
             </p>
             <div className="flex items-center gap-2">
@@ -440,7 +444,7 @@ const EditCouponPage = (props: Props) => {
           </div>
 
           <div>
-            <p className="text-base text-[#1E1E1E] font-medium mb-2">
+            <p className="text-base text-[#1E1E1E] dark:text-darkText font-medium mb-2">
               Discount
             </p>
             <div className="flex items-center gap-2">
@@ -499,6 +503,15 @@ const EditCouponPage = (props: Props) => {
             url={thumbnail}
             loading={loadingThumbnail}
             onChange={uploadThumbnail}
+            option={{
+              quality: 90,
+              maxHeight: 100,
+              maxWidth: 100,
+              minHeight: 100,
+              minWidth: 100,
+              compressFormat: ECompressFormat.WEBP,
+              type: ETypeImage.file,
+            }}
           />
         </div>
 
@@ -551,6 +564,10 @@ const EditCouponPage = (props: Props) => {
 };
 
 export default EditCouponPage;
+
+EditCouponPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

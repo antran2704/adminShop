@@ -11,6 +11,8 @@ import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import MultipleValue from "~/components/InputField/MultipleValue";
 import Loading from "~/components/Loading";
 import { createdAttribute } from "~/api-client";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { NextPageWithLayout } from "~/interface/page";
 
 const initData: IAttribute = {
   _id: "",
@@ -20,7 +22,9 @@ const initData: IAttribute = {
   variants: [],
 };
 
-const CreateAttributePage = () => {
+const Layout = LayoutWithHeader;
+
+const CreateAttributePage: NextPageWithLayout = () => {
   const router = useRouter();
 
   const [data, setData] = useState<IAttribute>(initData);
@@ -178,3 +182,7 @@ const CreateAttributePage = () => {
 };
 
 export default CreateAttributePage;
+
+CreateAttributePage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};

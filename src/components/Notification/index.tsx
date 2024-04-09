@@ -151,13 +151,15 @@ const Notification = () => {
           onShowModal();
         }
       }}
-      className="sticky top-0 flex justify-end items-center bg-white dark:bg-[#1f2937cc] backdrop-blur-[8px] px-5 py-2 shadow rounded-l-md gap-2 z-30"
+      className="flex items-center gap-2"
     >
-      <button onClick={onChangeMode} className="p-2 hover:bg-slate-200 dark:text-darkText dark:hover:text-black rounded-full">
+     
+      <button
+        onClick={onChangeMode}
+        className="p-2 hover:bg-slate-200 dark:text-darkText dark:hover:text-black rounded-full"
+      >
         {!darkMode && <FaRegMoon className="text-xl" />}
-        {darkMode && (
-          <MdOutlineWbSunny className="text-xl" />
-        )}
+        {darkMode && <MdOutlineWbSunny className="text-xl" />}
       </button>
       <div className="relative">
         <div

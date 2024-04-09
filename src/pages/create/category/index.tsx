@@ -17,6 +17,8 @@ import {
   getParentCategories,
   uploadThumbnailCategory,
 } from "~/api-client";
+import { ECompressFormat, ETypeImage } from "~/enums";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 const initData: IDataCategory = {
   parent_id: null,
@@ -31,6 +33,7 @@ const initData: IDataCategory = {
   childrens: [],
 };
 
+const Layout = LayoutWithHeader;
 
 const CreateCategoryPage = () => {
   const router = useRouter();
@@ -254,6 +257,15 @@ const CreateCategoryPage = () => {
             url={thumbnail}
             loading={loadingThumbnail}
             onChange={uploadThumbnail}
+            option={{
+              quality: 90,
+              maxHeight: 200,
+              maxWidth: 200,
+              minHeight: 200,
+              minWidth: 200,
+              compressFormat: ECompressFormat.WEBP,
+              type: ETypeImage.file,
+            }}
           />
 
           <ButtonCheck
@@ -274,3 +286,7 @@ const CreateCategoryPage = () => {
 };
 
 export default CreateCategoryPage;
+
+CreateCategoryPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};

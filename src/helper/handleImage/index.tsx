@@ -1,5 +1,6 @@
 import axios from "axios";
-import { IThumbnail } from "~/interface/image";
+import Resizer from "react-image-file-resizer";
+import { IOptionImage, IThumbnail } from "~/interface/image";
 import { axiosPost } from "~/ultils/configAxios";
 
 const uploadImage = (el: Element) => {
@@ -45,6 +46,28 @@ const deleteGallery = (index: number, gallery: IThumbnail[]) => {
   return gallery;
 };
 
+const resizeImage = (
+  file: File,
+  option: IOptionImage
+) => {
+  return new Promise((resolve) => {
+    Resizer.imageFileResizer(
+      file,
+      option.maxWidth,
+      option.maxHeight,
+      option.compressFormat,
+      option.quality,
+      0,
+      (uri) => {
+        resolve(uri);
+      },
+      option.type,
+      option.minWidth,
+      option.minHeight
+    );
+  });
+};
+
 export {
   uploadImage,
   deleteGallery,
@@ -52,4 +75,5 @@ export {
   deleteImagesInServer,
   uploadImageOnServer,
   uploadGalleryOnServer,
+  resizeImage,
 };

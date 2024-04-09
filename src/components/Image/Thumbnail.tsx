@@ -1,21 +1,41 @@
 import { FC, ChangeEvent, memo } from "react";
 import { IoAdd } from "react-icons/io5";
 import { toast } from "react-toastify";
-import { uploadImage } from "~/helper/handleImage";
+import { resizeImage, uploadImage } from "~/helper/handleImage";
 import ImageCus from "./ImageCus";
+import { IOptionImage } from "~/interface";
+import { ECompressFormat, ETypeImage } from "~/enums";
 
 interface Props {
   url: string | null;
+  option?: IOptionImage;
   className?: string;
   error?: boolean;
   loading: boolean;
   onChange: (source: File, urlBase64?: string) => void;
 }
 
-const Thumbnail: FC<Props> = (props: Props) => {
-  const { url, className, loading, error, onChange } = props;
+const initOption: IOptionImage = {
+  quality: 100,
+  maxHeight: 400,
+  maxWidth: 400,
+  minHeight: 200,
+  minWidth: 200,
+  type: ETypeImage.file,
+  compressFormat: ECompressFormat.WEBP,
+};
 
-  const hanldeChangeThumbnail = (e: ChangeEvent<HTMLInputElement>) => {
+const Thumbnail: FC<Props> = (props: Props) => {
+  const {
+    url,
+    className,
+    loading,
+    option = initOption,
+    error,
+    onChange,
+  } = props;
+
+  const hanldeChangeThumbnail = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
       if (file && /^image\//.test(file.type)) {
@@ -27,7 +47,8 @@ const Thumbnail: FC<Props> = (props: Props) => {
           return;
         }
 
-        const source: File = file;
+        const newImage = (await resizeImage(file, option)) as File;
+        const source: File = newImage;
         const url: string = uploadImage(e.target);
         onChange(source, url);
       } else {
@@ -50,19 +71,21 @@ const Thumbnail: FC<Props> = (props: Props) => {
         htmlFor="thumbnail_input"
         className={`flex flex-col items-center justify-center w-full ${
           error ? "border-error" : ""
-        } ${
-          className ? className : "min-w-[100px] max-h-[400px] max-w-[400px]"
-        } rounded-md ${
-          !url ? "min-h-[260px] border-2 border-dashed" : ""
+        } ${className ? className : "lg:min-h-[400px] md:min-h-[300px] min-h-[200px] max-h-[600px]"} rounded-md ${
+          !url ? "border-2 border-dashed" : ""
         } cursor-pointer overflow-hidden`}
       >
         {loading && (
-          <p className="text-base font-medium text-center dark:text-darkText">Loading...</p>
+          <p className="text-base font-medium text-center dark:text-darkText">
+            Loading...
+          </p>
         )}
         {!url && !loading && (
           <>
             <IoAdd className="md:text-6xl text-4xl dark:text-darkText" />
-            <p className="text-base font-medium text-center dark:text-darkText">Click to upload</p>
+            <p className="text-base font-medium text-center dark:text-darkText">
+              Click to upload
+            </p>
           </>
         )}
         {url && !loading && (
@@ -84,6 +107,8 @@ const Thumbnail: FC<Props> = (props: Props) => {
           className="hidden"
         />
       </label>
+
+      {/* <CropImage /> */}
     </div>
   );
 };

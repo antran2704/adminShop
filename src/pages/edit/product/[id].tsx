@@ -26,7 +26,7 @@ import {
   ISendProduct,
 } from "~/interface";
 
-import { typeCel } from "~/enums";
+import { ECompressFormat, ETypeImage, typeCel } from "~/enums";
 import { deleteImageInSever } from "~/helper/handleImage";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import generalBreadcrumbs from "~/helper/generateBreadcrumb";
@@ -57,6 +57,8 @@ import {
   uploadThumbnailProduct,
 } from "~/api-client";
 import { generateSlug } from "~/helper/generateSlug";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { NextPageWithLayout } from "~/interface/page";
 
 enum TYPE_TAG {
   BASIC_INFOR = "basic_infor",
@@ -126,7 +128,9 @@ interface Props {
   query: ParsedUrlQuery;
 }
 
-const ProductEditPage = (props: Props) => {
+const Layout = LayoutWithHeader;
+
+const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
   const { id } = query;
   const router = useRouter();
@@ -250,7 +254,7 @@ const ProductEditPage = (props: Props) => {
 
     if (key === "default") {
       if (Object.keys(showAttributes).length >= 4) {
-        toast.error("Maximum select attribute", {
+        toast.warn("Maximum select attribute", {
           position: toast.POSITION.TOP_RIGHT,
         });
 
@@ -1043,6 +1047,15 @@ const ProductEditPage = (props: Props) => {
                 url={thumbnail}
                 loading={loadingThumbnail}
                 onChange={uploadThumbnail}
+                option={{
+                  quality: 100,
+                  maxHeight: 200,
+                  maxWidth: 200,
+                  minHeight: 200,
+                  minWidth: 200,
+                  compressFormat: ECompressFormat.WEBP,
+                  type: ETypeImage.file,
+                }}
               />
 
               <Gallery
@@ -1051,6 +1064,15 @@ const ProductEditPage = (props: Props) => {
                 limited={6}
                 onChange={onUploadGallery}
                 onDelete={onRemoveGallary}
+                option={{
+                  quality: 90,
+                  maxHeight: 680,
+                  maxWidth: 680,
+                  minHeight: 680,
+                  minWidth: 680,
+                  compressFormat: ECompressFormat.JPEG,
+                  type: ETypeImage.file,
+                }}
               />
             </div>
 
@@ -1225,7 +1247,7 @@ const ProductEditPage = (props: Props) => {
                         id={`item-${variant._id}`}
                         key={variant._id}
                         className={`border-b ${
-                          variant.inventory <= 0 ? "animate_warning" : ""
+                          variant.inventory <= 0 ? "" : ""
                         } hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300`}
                       >
                         <CelTable
@@ -1368,6 +1390,10 @@ const ProductEditPage = (props: Props) => {
 };
 
 export default ProductEditPage;
+
+ProductEditPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

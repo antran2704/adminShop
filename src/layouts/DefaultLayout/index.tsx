@@ -4,11 +4,13 @@ import { useState, useEffect, FC } from "react";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { loginReducer } from "~/store/slice/user";
 
-import Navbar from "~/components/Navbar";
+import SideBar from "~/components/SideBar";
 import Loading from "~/components/Loading";
 import { getUser } from "~/api-client";
 import { injectStore } from "~/ultils/configAxios";
 import { checkDarkMode } from "~/helper/darkMode";
+import Notification from "~/components/Notification";
+import Navbar from "~/components/Navbar";
 
 interface Props {
   children: JSX.Element;
@@ -19,7 +21,7 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
 
   const { infor } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
-  
+
   const [loading, setLoading] = useState<boolean>(true);
 
   const checkAuth = async () => {
@@ -57,10 +59,13 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
 
   return (
     <main className="flex items-start justify-between bg-[#f9fafb] dark:bg-[#111827] transition-all ease-linear duration-100">
-      <Navbar />
+      {/* <SideBar showSideBar={showSidebar} setShowSideBar={setShowSideBar}/>
       <div className="w-full min-h-screen">
+        <Navbar showSideBar={showSidebar} setShowSideBar={setShowSideBar}/>
         {children}
-      </div>
+      </div> */}
+
+      {children}
     </main>
   );
 };

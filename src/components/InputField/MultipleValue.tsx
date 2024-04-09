@@ -101,9 +101,9 @@ const MultipleValue = (props: Props) => {
       </div>
 
       <div
-        className={`flex items-center flex-wrap w-full rounded-md px-2 py-2 border-2 ${
+        className={`flex items-center flex-wrap w-full dark:bg-darkInput rounded-md px-2 py-2 border-2 ${
           error && "border-error"
-        } focus:border-[#4f46e5] outline-none gap-2`}
+        } focus:border-[#4f46e5] dark:border-transparent outline-none gap-2`}
       >
         <ul className="flex flex-wrap items-center gap-2">
           {items.map((value: ISelectItem, index: number) => (
@@ -130,7 +130,7 @@ const MultipleValue = (props: Props) => {
           onKeyUp={handleAddValue}
           onChange={onChange}
           type="text"
-          className={`flex-1 border-transparent bg-transparent dark:text-white pl-2 outline-none`}
+          className={`flex-1 min-w-[260px] border-transparent bg-transparent dark:placeholder:text-white dark:text-white pl-2 outline-none`}
         />
       </div>
 

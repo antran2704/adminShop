@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, ReactElement } from "react";
 import { toast } from "react-toastify";
 
 import {
@@ -30,6 +30,9 @@ import {
   getParentCategories,
   uploadThumbnailProduct,
 } from "~/api-client";
+import { ECompressFormat, ETypeImage } from "~/enums";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { NextPageWithLayout } from "~/interface/page";
 
 const initData: ICreateProduct = {
   title: "",
@@ -54,7 +57,9 @@ const initData: ICreateProduct = {
   sold: 0,
 };
 
-const CreateProductPage = () => {
+const Layout = LayoutWithHeader;
+
+const CreateProductPage: NextPageWithLayout = () => {
   const router = useRouter();
 
   const [product, setProduct] = useState<ICreateProduct>(initData);
@@ -236,12 +241,8 @@ const CreateProductPage = () => {
   const onRemoveGallary = useCallback(
     async (url: string) => {
       try {
-        const payload = await deleteImageInSever(url);
-
-        if (payload.status === 201) {
-          const newGallery = gallery.filter((image) => image !== url);
-          setGallery(newGallery);
-        }
+        const newGallery = gallery.filter((image) => image !== url);
+        setGallery(newGallery);
       } catch (error) {
         toast.error("Remove image failed", {
           position: toast.POSITION.TOP_RIGHT,
@@ -470,6 +471,16 @@ const CreateProductPage = () => {
             url={thumbnail}
             loading={loadingThumbnail}
             onChange={uploadThumbnail}
+            option={{
+              quality: 100,
+              maxHeight: 200,
+              maxWidth: 200,
+              minHeight: 200,
+              minWidth: 200,
+              compressFormat: ECompressFormat.WEBP,
+              type: ETypeImage.file,
+            }}
+            className="lg:min-h-[400px] md:min-h-[300px] min-h-[200px]"
           />
 
           <Gallery
@@ -478,6 +489,15 @@ const CreateProductPage = () => {
             limited={6}
             onChange={onUploadGallery}
             onDelete={onRemoveGallary}
+            option={{
+              quality: 90,
+              maxHeight: 680,
+              maxWidth: 680,
+              minHeight: 680,
+              minWidth: 680,
+              compressFormat: ECompressFormat.JPEG,
+              type: ETypeImage.file,
+            }}
           />
         </div>
 
@@ -557,3 +577,7 @@ const CreateProductPage = () => {
 };
 
 export default CreateProductPage;
+
+CreateProductPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};

@@ -8,13 +8,11 @@ import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Loading from "~/components/Loading";
-import {
-  getBanner,
-  updateBanner,
-  uploadBannerImage,
-} from "~/api-client";
+import { getBanner, updateBanner, uploadBannerImage } from "~/api-client";
 import { Banner } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
+import { ECompressFormat, ETypeImage } from "~/enums";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 
 const initData: Banner = {
   _id: "",
@@ -28,6 +26,8 @@ const initData: Banner = {
 interface Props {
   query: any;
 }
+
+const Layout = LayoutWithHeader;
 
 const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
   const router = useRouter();
@@ -218,6 +218,15 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
               url={image}
               loading={loadingThumbnail}
               onChange={uploadThumbnail}
+              option={{
+                quality: 100,
+                maxHeight: 800,
+                maxWidth: 1300,
+                minHeight: 800,
+                minWidth: 1300,
+                compressFormat: ECompressFormat.JPEG,
+                type: ETypeImage.file,
+              }}
             />
           </div>
 
@@ -273,6 +282,11 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
 };
 
 export default EditCategoryPage;
+
+EditCategoryPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
+
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

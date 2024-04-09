@@ -9,6 +9,7 @@ import { uploadImageOnServer } from "~/helper/handleImage";
 import { IUserInfor } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 import FormLayout from "~/layouts/FormLayout";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { loginReducer } from "~/store/slice/user";
@@ -25,6 +26,8 @@ const initPassword: IPassword = {
   newPassword: null,
   reNewPassword: null,
 };
+
+const Layout = LayoutWithHeader;
 
 const SettingPage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
@@ -241,6 +244,7 @@ const SettingPage: NextPageWithLayout = () => {
             url={avartar}
             loading={loadingAvartar}
             onChange={uploadAvartar}
+            className="max-w-[200px] max-h-[200px] min-w-[200px] min-h-[200px]"
           />
         </div>
 
@@ -304,3 +308,7 @@ const SettingPage: NextPageWithLayout = () => {
 };
 
 export default SettingPage;
+
+SettingPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};

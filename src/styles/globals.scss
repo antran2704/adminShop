@@ -68,6 +68,12 @@ body::-webkit-scrollbar {
   overflow: overlay;
 }
 
+.dark {
+  input[type="date"] {
+    color-scheme: dark;
+  }
+}
+
 .scroll::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.15);
   border-radius: 10px;
