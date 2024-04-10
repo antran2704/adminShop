@@ -1,0 +1,51 @@
+{
+  "HomePage": {
+    "title": "Welcome Admin Dashboard Antrandev",
+    "subTitle": "Manager your shop's performance",
+    "dashBoard": {
+      "overview": "Overview"
+    },
+    "income": {
+      "today": "Income Today",
+      "subTotal": "Sub Total"
+    },
+    "order": {
+      "today": "Today order",
+      "success": "Success order",
+      "pending": "Pending order",
+      "process": "Process order",
+      "cancle": "Cancle order",
+      "recent": "Recent order"
+    }
+  },
+  "BannerPage": {
+    "title": "Banners",
+    "create": "Create banner"
+  },
+  "CategoriesPage": {
+    "title": "Danh sách thư mục",
+    "create": "Tạo thu mục"
+  },
+  "CreateBannerPage": {
+    "title": "Create banner",
+    "field": {
+      "title": "Title",
+      "thumbnail": "Thumbnail",
+      "public": "Public"
+    }
+  },
+  "CreateCategoryPage": {
+    "title": "Create category",
+    "field": {
+        "title": "Title",
+        "description": "Description",
+        "parent": "Parent category",
+        "thumbnail": "Thumbnail",
+        "public": "Public"
+      }
+  },
+  "Thumbnail": {
+    "upload": "Click to upload",
+    "loading": "Loading"
+  }
+}

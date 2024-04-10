@@ -5,13 +5,13 @@ import "react-image-crop/src/ReactCrop.scss";
 const src =
   "https://plus.unsplash.com/premium_photo-1676478746772-02c9709a32c6?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
-function generateDownload(canvas, crop) {
+function generateDownload(canvas: any, crop: any) {
   if (!crop || !canvas) {
     return;
   }
 
   canvas.toBlob(
-    (blob) => {
+    (blob: any) => {
       const previewUrl = window.URL.createObjectURL(blob);
 
       const anchor = document.createElement("a");
@@ -26,7 +26,7 @@ function generateDownload(canvas, crop) {
   );
 }
 
-function setCanvasImage(image, canvas, crop) {
+function setCanvasImage(image: any, canvas: any, crop: any) {
   if (!crop || !canvas || !image) {
     return;
   }
@@ -62,19 +62,19 @@ const CropImage = () => {
   const imgRef = useRef(null);
   const previewCanvasRef = useRef(null);
 
-  const [crop, setCrop] = useState({ unit: "px", width: 30, aspect: 1 });
-  const [completedCrop, setCompletedCrop] = useState(null);
+  const [crop, setCrop] = useState<any>({ unit: "px", width: 30, aspect: 1 });
+  const [completedCrop, setCompletedCrop] = useState<any>(null);
 
   // on selecting file we set load the image on to cropper
-  const onSelectFile = (e) => {
+  const onSelectFile = (e: any) => {
     if (e.target.files && e.target.files.length > 0) {
       console.log(e.target.files[0]);
-      const reader = URL.createObjectURL(e.target.files[0]);
+      const reader: any = URL.createObjectURL(e.target.files[0]);
       setUpImg(reader);
     }
   };
 
-  const onLoad = useCallback((img) => {
+  const onLoad = useCallback((img: any) => {
     imgRef.current = img;
   }, []);
 

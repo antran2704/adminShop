@@ -1,3 +1,7 @@
+interface typeHeadTable {
+  [k: string]: string[];
+}
+
 // header table for category - product
 const colHeadCategory: string[] = [
   "Name",
@@ -8,15 +12,26 @@ const colHeadCategory: string[] = [
 ];
 
 // header table for orders
-const colHeadOrder: string[] = [
-  "Order ID",
-  "Name",
-  "Method",
-  "Amout",
-  "Status",
-  "Created Date",
-  "Action",
-];
+const colHeadOrder: typeHeadTable = {
+  "vi-VN": [
+    "Mã đơn",
+    "Khách hàng",
+    "Phương thức thanh toán",
+    "Tổng tiền",
+    "Trạng thái",
+    "Ngày tạo",
+    "Chi tiết",
+  ],
+  "en-US": [
+    "Order ID",
+    "Name",
+    "Method",
+    "Amout",
+    "Status",
+    "Created Date",
+    "Action",
+  ],
+};
 
 // header table for order detail
 const colHeaderOrderDetail: string[] = [
@@ -62,7 +77,7 @@ const colHeaderVariants: string[] = [
   "Price",
   "Promotion Price",
   "Inventory",
-  "Action"
+  "Action",
 ];
 
 // header table for coupon
@@ -74,17 +89,13 @@ const colHeaderCoupon: string[] = [
   "Start Date",
   "End Date",
   "Status",
-  "Action"
+  "Action",
 ];
 
-const colHeaderBanner: string[] = [
-  "Title",
-  "Image",
-  "Published",
-  "Created Date",
-  "Action"
-];
-
+const colHeaderBanner: typeHeadTable = {
+  "en-US": ["Title", "Image", "Published", "Created Date", "Action"],
+  "vi-VN": ["Tiêu đề", "Ảnh", "Hiện", "Ngày tạo", "Chỉnh sửa"]
+};
 
 export {
   colHeadCategory,
@@ -95,5 +106,5 @@ export {
   colHeaderProduct,
   colHeaderVariants,
   colHeaderCoupon,
-  colHeaderBanner
+  colHeaderBanner,
 };

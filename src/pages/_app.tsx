@@ -11,6 +11,8 @@ import { injectRouter } from "~/ultils/configAxios";
 import { useRouter } from "next/router";
 import { AppPropsWithLayout } from "~/interface/page";
 
+import "../ultils/i18";
+
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const router = useRouter();
   const getLayout = Component.getLayout ?? ((page) => page);

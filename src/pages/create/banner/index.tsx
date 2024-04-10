@@ -13,6 +13,7 @@ import { createBanner, uploadBannerImage } from "~/api-client";
 import { ECompressFormat, ETypeImage } from "~/enums";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { NextPageWithLayout } from "~/interface/page";
+import { useTranslation } from "react-i18next";
 
 const initData: CreateBanner = {
   title: "",
@@ -26,6 +27,8 @@ const Layout = LayoutWithHeader;
 
 const CreateCategoryPage: NextPageWithLayout = () => {
   const router = useRouter();
+
+  const { t } = useTranslation();
 
   const [data, setData] = useState<CreateBanner>(initData);
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
@@ -137,14 +140,14 @@ const CreateCategoryPage: NextPageWithLayout = () => {
 
   return (
     <FormLayout
-      title="Create Banner"
+      title={t("CreateBannerPage.title")}
       backLink="/banners"
       onSubmit={handleOnSubmit}
     >
       <div className="lg:w-2/4 w-full mx-auto">
         <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputText
-            title="Title"
+            title={t("CreateBannerPage.field.title")}
             width="w-full"
             value={data.title}
             error={fieldsCheck.includes("title")}
@@ -182,7 +185,7 @@ const CreateCategoryPage: NextPageWithLayout = () => {
           />
 
           <ButtonCheck
-            title="Public"
+            title={t("CreateBannerPage.field.public")}
             name="isPublic"
             width="w-fit"
             isChecked={data.isPublic}

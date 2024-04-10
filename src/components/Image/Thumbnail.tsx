@@ -5,9 +5,11 @@ import { resizeImage, uploadImage } from "~/helper/handleImage";
 import ImageCus from "./ImageCus";
 import { IOptionImage } from "~/interface";
 import { ECompressFormat, ETypeImage } from "~/enums";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   url: string | null;
+  title?: string;
   option?: IOptionImage;
   className?: string;
   error?: boolean;
@@ -28,12 +30,15 @@ const initOption: IOptionImage = {
 const Thumbnail: FC<Props> = (props: Props) => {
   const {
     url,
+    title = "Thumbnail",
     className,
     loading,
     option = initOption,
     error,
     onChange,
   } = props;
+
+  const { t } = useTranslation();
 
   const hanldeChangeThumbnail = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -58,33 +63,38 @@ const Thumbnail: FC<Props> = (props: Props) => {
       }
     }
   };
+
   return (
     <div className="w-full">
       <span
         id="thumbnail"
         className="block text-base text-[#1E1E1E] dark:text-darkText font-medium mb-1"
       >
-        Thumbnail
+        {title}
       </span>
 
       <label
         htmlFor="thumbnail_input"
         className={`flex flex-col items-center justify-center w-full ${
           error ? "border-error" : ""
-        } ${className ? className : "lg:min-h-[400px] md:min-h-[300px] min-h-[200px] max-h-[600px]"} rounded-md ${
+        } ${
+          className
+            ? className
+            : "lg:min-h-[400px] md:min-h-[300px] min-h-[200px] max-h-[600px]"
+        } rounded-md ${
           !url ? "border-2 border-dashed" : ""
         } cursor-pointer overflow-hidden`}
       >
         {loading && (
           <p className="text-base font-medium text-center dark:text-darkText">
-            Loading...
+          {t("Thumbnail.loading")}...
           </p>
         )}
         {!url && !loading && (
           <>
             <IoAdd className="md:text-6xl text-4xl dark:text-darkText" />
             <p className="text-base font-medium text-center dark:text-darkText">
-              Click to upload
+            {t("Thumbnail.upload")}
             </p>
           </>
         )}

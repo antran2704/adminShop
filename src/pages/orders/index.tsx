@@ -24,6 +24,7 @@ import { initPagination } from "~/components/Pagination/initData";
 import { getOrders, getOrdersWithFilter } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   query: InferGetServerSidePropsType<typeof getServerSideProps>;
@@ -72,6 +73,8 @@ const Layout = LayoutWithHeader;
 const OrdersPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? Number(query.page) : 1;
+
+  const { t, i18n } = useTranslation();
 
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [message, setMessage] = useState<string | null>(null);
@@ -209,7 +212,7 @@ const OrdersPage: NextPageWithLayout<Props> = (props: Props) => {
         </Search>
 
         <Table
-          colHeadTabel={colHeadTable}
+          colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
           items={orders}
           loading={loading}
           message={message}

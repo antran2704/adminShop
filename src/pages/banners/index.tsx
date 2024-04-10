@@ -23,6 +23,7 @@ import {
 } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { useTranslation } from "react-i18next";
 
 interface ISelectBanner {
   _id: string;
@@ -38,6 +39,8 @@ const Layout = LayoutWithHeader;
 const BannersPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? Number(query.page) : 1;
+
+  const { t, i18n } = useTranslation();
 
   const [banners, setBanners] = useState<Banner[]>([]);
   const [selectBanners, setSelectBanners] = useState<string[]>([]);
@@ -233,8 +236,8 @@ const BannersPage: NextPageWithLayout<Props> = (props: Props) => {
 
   return (
     <ShowItemsLayout
-      title="Banners"
-      titleCreate="Create banner"
+      title={t("BannerPage.title")}
+      titleCreate={t("BannerPage.create")}
       link="/create/banner"
       selectItem={{
         title: selectItem?.title ? selectItem.title : "",
@@ -246,21 +249,13 @@ const BannersPage: NextPageWithLayout<Props> = (props: Props) => {
       handlePopup={handlePopup}
     >
       <Fragment>
-        {/* <Search
-          search={filter?.search || ""}
-          onReset={onReset}
-          onSearch={onChangeSearch}
-          onFilter={handleGetDataByFilter}
-          placeholder="Search by category name..."
-        /> */}
-
         <Table
           items={banners}
           selects={selectBanners}
           setSelects={setSelectBanners}
           selectAll={true}
           isSelected={selectBanners.length === banners.length ? true : false}
-          colHeadTabel={colHeadTable}
+          colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
           message={message}
           loading={loading}
         >

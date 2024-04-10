@@ -1,0 +1,51 @@
+{
+  "HomePage": {
+    "title": "Chào mừng tới Admin Antrandev",
+    "subTitle": "Quản lý hiệu suất bán hàng của bạn",
+    "dashBoard": {
+      "overview": "Tổng quan"
+    },
+    "income": {
+      "today": "Thu nhập hôm nay",
+      "subTotal": "Thu nhập tạm tính"
+    },
+    "order": {
+      "today": "Đơn hàng hôm nay",
+      "success": "Đơn hàng thành công",
+      "pending": "Chờ xác nhận",
+      "process": "Đang chuẩn bị hàng",
+      "cancle": "Đơn hủy",
+      "recent": "Đơn hàng gần đây"
+    }
+  },
+  "BannerPage": {
+    "title": "Danh sách banner",
+    "create": "Tạo banner"
+  },
+  "CategoriesPage": {
+    "title": "Danh sách thư mục",
+    "create": "Tạo thu mục"
+  },
+  "CreateBannerPage": {
+    "title": "Tạo banner",
+    "field": {
+      "title": "Tiêu đề",
+      "thumbnail": "Hình ảnh",
+      "public": "Hiện"
+    }
+  },
+  "CreateCategoryPage": {
+    "title": "Tạo thư mục",
+    "field": {
+        "title": "Tiêu đề",
+        "description": "Mô tả",
+        "parent": "Thư mục cha",
+        "thumbnail": "Hình ảnh",
+        "public": "Hiện"
+      }
+  },
+  "Thumbnail": {
+    "upload": "Ấn để tải ảnh",
+    "loading": "Đang tải"
+  }
+}

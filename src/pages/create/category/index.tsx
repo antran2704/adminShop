@@ -19,6 +19,7 @@ import {
 } from "~/api-client";
 import { ECompressFormat, ETypeImage } from "~/enums";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { useTranslation } from "react-i18next";
 
 const initData: IDataCategory = {
   parent_id: null,
@@ -37,6 +38,8 @@ const Layout = LayoutWithHeader;
 
 const CreateCategoryPage = () => {
   const router = useRouter();
+
+  const { t } = useTranslation();
 
   const [data, setData] = useState<IDataCategory>(initData);
   const [categories, setCategories] = useState<IObjectCategory>({});
@@ -199,14 +202,14 @@ const CreateCategoryPage = () => {
 
   return (
     <FormLayout
-      title="Create category"
+      title={t("CreateCategoryPage.title")}
       backLink="/categories"
       onSubmit={handleOnSubmit}
     >
       <div className="lg:w-2/4 w-full mx-auto">
         <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputText
-            title="Title"
+            title={t("CreateCategoryPage.field.title")}
             width="w-full"
             value={data.title}
             error={fieldsCheck.includes("title")}
@@ -216,7 +219,7 @@ const CreateCategoryPage = () => {
           />
 
           <InputText
-            title="Description"
+            title={t("CreateCategoryPage.field.description")}
             width="w-full"
             error={fieldsCheck.includes("description")}
             value={data.description}
@@ -228,7 +231,7 @@ const CreateCategoryPage = () => {
 
         <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputText
-            title="Parent Category"
+            title={t("CreateCategoryPage.field.parent")}
             width="w-full"
             value={categorySelect.title ? categorySelect.title : ""}
             name="parent_id"
@@ -269,7 +272,7 @@ const CreateCategoryPage = () => {
           />
 
           <ButtonCheck
-            title="Public"
+            title={t("CreateCategoryPage.field.public")}
             name="public"
             width="w-fit"
             isChecked={data.public}

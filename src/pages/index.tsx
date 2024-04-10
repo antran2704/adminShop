@@ -38,6 +38,7 @@ import { orderStatus } from "~/components/Table/statusCel";
 import { ButtonEdit } from "~/components/Button";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { useTranslation } from "react-i18next";
 
 ChartJS.register(
   CategoryScale,
@@ -60,6 +61,7 @@ const options = {
       text: "Overview in week",
     },
   },
+  maintainAspectRatio: false,
 };
 
 interface IOverview {
@@ -114,6 +116,8 @@ const HomePage: NextPageWithLayout = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [show, setShow] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const { t, i18n } = useTranslation();
 
   const handleGetOverviews = async () => {
     try {
@@ -207,14 +211,16 @@ const HomePage: NextPageWithLayout = () => {
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
       <div className="w-full h-[10%] mb-5">
         <h1 className="dark:text-darkText md:text-3xl text-2xl font-bold mb-1">
-          Welcome Admin Dashboard Antrandev
+          {t("HomePage.title")}
         </h1>
         <p className="dark:text-darkText text-lg font-medium">
-          Manager your maketing's performence
+          {t("HomePage.subTitle")}
         </p>
       </div>
       <div className="w-full lg:mb-10 mb-5">
-        <h2 className="text-title mb-4 dark:text-darkText">Dashboard Overview</h2>
+        <h2 className="text-title mb-4 dark:text-darkText">
+          {t("HomePage.dashBoard.overview")}
+        </h2>
         <div className="h-full gap-10">
           <div className="relative w-full mb-10">
             <div
@@ -223,7 +229,7 @@ const HomePage: NextPageWithLayout = () => {
               } gap-2 overflow-hidden transition-all ease-in-out duration-300`}
             >
               <Statistic
-                title="Thu nhập hôm nay"
+                title={t("HomePage.income.today")}
                 IconElement={<BiDollarCircle className="text-4xl" />}
                 to={overviews.gross}
                 backgroundColor="bg-[#5032fd]"
@@ -232,7 +238,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title="Đơn hàng hôm nay"
+                title={t("HomePage.order.today")}
                 IconElement={<AiOutlineShoppingCart className="text-4xl" />}
                 to={overviews.total_orders.length}
                 backgroundColor="bg-[#0891b2]"
@@ -240,7 +246,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title="Tổng đơn hàng thành công"
+                title={t("HomePage.order.success")}
                 IconElement={<BiPackage className="text-4xl" />}
                 to={overviews.delivered_orders}
                 backgroundColor="bg-[#0891b2]"
@@ -248,7 +254,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title="Chờ xác nhận"
+                title={t("HomePage.order.pending")}
                 IconElement={<BiPackage className="text-4xl" />}
                 to={overviews.pending_orders}
                 backgroundColor="bg-warn"
@@ -256,7 +262,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title="Đang chuẩn bị hàng"
+                title={t("HomePage.order.process")}
                 IconElement={<BiCircleThreeQuarter className="text-4xl" />}
                 to={overviews.processing_orders}
                 backgroundColor="bg-primary"
@@ -264,7 +270,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title="Tổng đơn hủy"
+                title={t("HomePage.order.cancle")}
                 IconElement={<BiMinusCircle className="text-4xl" />}
                 to={overviews.cancle_orders}
                 backgroundColor="bg-cancle"
@@ -286,7 +292,7 @@ const HomePage: NextPageWithLayout = () => {
           </div>
           <div className="lg:w-3/4 w-full h-full bg-[#f4f7ff] rounded-xl p-5 mx-auto">
             <div>
-              <p>Thu nhập tạm tính</p>
+              <p>{t("HomePage.income.subTotal")}</p>
               <SpringCount
                 className="text-lg font-bold"
                 from={0}
@@ -295,13 +301,22 @@ const HomePage: NextPageWithLayout = () => {
                 duration={0.5}
               />
             </div>
-            <div className="bg-white py-5 rounded-md"><Bar ref={chartWeekRef} options={options} data={dataBarWeek} /></div>
+            <div className="py-5 rounded-md">
+              <Bar
+                ref={chartWeekRef}
+                className="min-h-[500px]"
+                options={options}
+                data={dataBarWeek}
+              />
+            </div>
           </div>
         </div>
       </div>
       <div className="w-full pb-10">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-title dark:text-darkText">Recent Order</h2>
+          <h2 className="text-title dark:text-darkText">
+            {t("HomePage.order.recent")}
+          </h2>
           <Link
             href={"/orders"}
             className="text-base font-medium text-primary hover:underline"
@@ -311,7 +326,7 @@ const HomePage: NextPageWithLayout = () => {
         </div>
         <div>
           <Table
-            colHeadTabel={colHeadTable}
+            colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
             items={orders}
             loading={loading}
             message={message}
@@ -367,7 +382,7 @@ const HomePage: NextPageWithLayout = () => {
       </div>
     </section>
   );
-}
+};
 
 export default HomePage;
 
