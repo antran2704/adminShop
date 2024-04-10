@@ -29,7 +29,7 @@ const Translation = () => {
           />
           {initListLanguages[i18n.resolvedLanguage as string].title}
         </p>
-        <ul className="absolute top-[110%] group-hover:top-full right-0 min-w-[160px] bg-white border-2 dark:border-none rounded opacity-0 group-hover:opacity-100 transition-all ease-linear duration-100 overflow-hidden">
+        <ul className="absolute top-[110%] group-hover:top-full right-0 min-w-[160px] bg-white border-2 dark:border-none rounded opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all ease-linear duration-100 overflow-hidden">
           {Object.keys(initListLanguages).map((keyLng: string) => (
             <li key={keyLng} className="w-full">
               <button

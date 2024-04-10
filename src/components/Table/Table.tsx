@@ -67,7 +67,7 @@ const Table: FC<Props> = (props: Props) => {
                     key={index}
                     className="border-b border-gray-300  leading-4 tracking-wider"
                   >
-                    <p className="text-sm text-[#707275] dark:text-gray-400 font-medium px-6 py-3">
+                    <p className="text-sm text-[#707275] dark:text-gray-400 min-w-fit whitespace-nowrap font-medium px-6 py-3">
                       {item}
                     </p>
                   </th>

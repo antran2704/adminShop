@@ -33,6 +33,7 @@ import {
 } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { useTranslation } from "react-i18next";
 
 interface ISelectProduct {
   id: string | null;
@@ -53,6 +54,9 @@ const Layout = LayoutWithHeader;
 const ProductPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? Number(query.page) : 1;
+
+  const { t, i18n } = useTranslation();
+
   const [categories, setCategories] = useState<ISelectItem[]>([]);
   const [products, setProducts] = useState<IProductHome[]>([]);
   const [selectProduct, setSelectProduct] =
@@ -302,8 +306,8 @@ const ProductPage: NextPageWithLayout<Props> = (props: Props) => {
 
   return (
     <ShowItemsLayout
-      title="Products"
-      titleCreate="Create product"
+      title={t("ProductsPage.title")}
+      titleCreate={t("ProductsPage.create")}
       link="/create/product"
       selectItem={selectProduct}
       pagination={pagination}
@@ -317,11 +321,11 @@ const ProductPage: NextPageWithLayout<Props> = (props: Props) => {
           onReset={onReset}
           onSearch={onChangeSearch}
           onFilter={handleGetDataByFilter}
-          placeholder="Search by product name..."
+          placeholder={t("ProductsPage.search")}
         >
           <SelectItem
             name="category"
-            placeholder="Category"
+            placeholder={t("ProductsPage.filter.category")}
             value={filter?.category ? filter.category : "all"}
             data={categories}
             onSelect={onSelect}
@@ -335,7 +339,7 @@ const ProductPage: NextPageWithLayout<Props> = (props: Props) => {
           setSelects={setSelectProducts}
           selectAll={true}
           isSelected={selectProducts.length === products.length ? true : false}
-          colHeadTabel={colHeadTable}
+          colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
           message={message}
           loading={loading}
         >

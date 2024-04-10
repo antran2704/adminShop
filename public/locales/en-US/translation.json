@@ -23,8 +23,17 @@
     "create": "Create banner"
   },
   "CategoriesPage": {
-    "title": "Danh sách thư mục",
-    "create": "Tạo thu mục"
+    "title": "Categories",
+    "create": "Create category",
+    "search": "Search by category name..."
+  },
+  "ProductsPage": {
+    "title": "Products",
+    "create": "Create product",
+    "search": "Search by product name...",
+    "filter": {
+      "category": "Category"
+    }
   },
   "CreateBannerPage": {
     "title": "Create banner",
@@ -37,15 +46,82 @@
   "CreateCategoryPage": {
     "title": "Create category",
     "field": {
-        "title": "Title",
-        "description": "Description",
-        "parent": "Parent category",
-        "thumbnail": "Thumbnail",
-        "public": "Public"
-      }
+      "title": "Title",
+      "description": "Description",
+      "parent": "Parent category",
+      "thumbnail": "Thumbnail",
+      "public": "Public"
+    }
+  },
+  "CreateProductPage": {
+    "title": "Create product",
+    "field": {
+      "title": "title",
+      "shortDescription": "Overview",
+      "description": "Description",
+      "categories": "Select categories",
+      "defaultCategory": "Default category",
+      "thumbnail": "Thumbnail",
+      "gallery": "Gallery",
+      "price": "Price",
+      "promotionPrice": "Promotion Price",
+      "inventory": "Inventory",
+      "SKU": "SKU",
+      "barcode": "Barcode",
+      "public": "Public"
+    }
+  },
+  "EditBannerPage": {
+    "title": "Edit banner"
+  },
+  "EditCategoryPage": {
+    "title": "Edit category"
+  },
+  "EditProductPage": {
+    "title": "Update",
+    "sold": "Sold",
+    "tag": {
+      "basic": "Basic infor",
+      "compination": "Compination"
+    },
+    "compination": {
+      "attribute": "Select attribute",
+      "select": "Select",
+      "generate": "Generate Variants",
+      "clear": "Clear Variants"
+    }
   },
   "Thumbnail": {
     "upload": "Click to upload",
     "loading": "Loading"
+  },
+  "Search": {
+    "filter": "Filter",
+    "reset": "Reset"
+  },
+  "Specifications": {
+    "title": "Specifications",
+    "remove": "Remove",
+    "attribute": "Attribute",
+    "name": "Name",
+    "value": "Value",
+    "addPopup": {
+      "title": "Add Specification Value",
+      "description": "Add your Specification values from here",
+      "inpTitle": "Specification Title",
+      "cancle": "Cancle",
+      "add": "Add"
+    },
+    "specificationPopup": {
+      "description": "Do you want delete specification"
+    },
+    "attributePopup": {
+      "description": "Do you want delete attribute"
+    }
+  },
+  "Action": {
+    "cancle": "Cancle",
+    "delete": "Delete",
+    "change": "Change"
   }
 }

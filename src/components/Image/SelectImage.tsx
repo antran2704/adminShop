@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Popup from "../Popup";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   url: string | null;
@@ -11,6 +12,9 @@ interface Props {
 
 const SelectImage = (props: Props) => {
   const { url, className, images, name, onChange } = props;
+
+  const { t } = useTranslation();
+
   const [open, setOpen] = useState<boolean>(false);
   const [show, setShow] = useState<boolean>(false);
 
@@ -50,8 +54,8 @@ const SelectImage = (props: Props) => {
           className="w-full h-full"
         />
       </div>
-      <button onClick={handleOpenModal} className="text-sm dark:text-darkText">
-        Change
+      <button onClick={handleOpenModal} className="text-sm dark:text-darkText whitespace-nowrap">
+        {t("Action.change")}
       </button>
       
       {open && (

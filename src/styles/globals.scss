@@ -69,7 +69,8 @@ body::-webkit-scrollbar {
 }
 
 .dark {
-  input[type="date"] {
+  input[type="date"],
+  input[type="datetime-local"] {
     color-scheme: dark;
   }
 }

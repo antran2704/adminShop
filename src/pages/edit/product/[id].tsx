@@ -59,6 +59,7 @@ import {
 import { generateSlug } from "~/helper/generateSlug";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { NextPageWithLayout } from "~/interface/page";
+import { useTranslation } from "react-i18next";
 
 enum TYPE_TAG {
   BASIC_INFOR = "basic_infor",
@@ -134,6 +135,8 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
   const { id } = query;
   const router = useRouter();
+
+  const { t, i18n } = useTranslation();
 
   const [tag, setTag] = useState<string>(TYPE_TAG.BASIC_INFOR);
 
@@ -943,7 +946,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
 
   return (
     <FormLayout
-      title={`Update Product ${title}`}
+      title={`${t("EditProductPage.title")} ${title}`}
       backLink="/products"
       onSubmit={handleOnSubmit}
     >
@@ -952,18 +955,22 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
           <button
             onClick={() => onSelectTag(TYPE_TAG.BASIC_INFOR)}
             className={`text-lg ${
-              tag === TYPE_TAG.BASIC_INFOR ? "text-success border-success" : "dark:text-darkText"
+              tag === TYPE_TAG.BASIC_INFOR
+                ? "text-success border-success"
+                : "dark:text-darkText"
             }  font-medium px-2 pb-2 border-b-2 `}
           >
-            Basic info
+            {t("EditProductPage.tag.basic")}
           </button>
           <button
             onClick={() => onSelectTag(TYPE_TAG.COMPINATION)}
             className={`text-lg ${
-              tag === TYPE_TAG.COMPINATION ? "text-success border-success" : "dark:text-darkText"
+              tag === TYPE_TAG.COMPINATION
+                ? "text-success border-success"
+                : "dark:text-darkText"
             }  font-medium px-2 pb-2 border-b-2 `}
           >
-            Compination
+            {t("EditProductPage.tag.compination")}
           </button>
         </div>
 
@@ -971,7 +978,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
           <div className="lg:w-2/4 w-full mx-auto">
             <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
               <InputTextarea
-                title="Title"
+                title={t("CreateProductPage.field.title")}
                 width="w-full"
                 value={product.title || ""}
                 error={fieldsCheck.includes("title")}
@@ -983,7 +990,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
               />
 
               <InputTextarea
-                title="Short description"
+                title={t("CreateProductPage.field.shortDescription")}
                 width="w-full"
                 error={fieldsCheck.includes("shortDescription")}
                 value={product.shortDescription || ""}
@@ -994,7 +1001,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
               />
 
               <InputTextarea
-                title="Description"
+                title={t("CreateProductPage.field.description")}
                 width="w-full"
                 error={fieldsCheck.includes("description")}
                 value={product.description || ""}
@@ -1006,7 +1013,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
 
             <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
               <MultipleValue
-                title="Categories"
+                title={t("CreateProductPage.field.categories")}
                 width="w-full"
                 items={mutipleCategories}
                 name="categories"
@@ -1033,7 +1040,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
 
               <SelectItem
                 width="w-full"
-                title="Default category"
+                title={t("CreateProductPage.field.defaultCategory")}
                 name="category"
                 value={defaultCategory ? defaultCategory : ""}
                 onSelect={onSelectDefaultCategory}
@@ -1078,7 +1085,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
 
             <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
               <InputNumber
-                title="Price"
+                title={t("CreateProductPage.field.price")}
                 width="w-full"
                 error={fieldsCheck.includes("price")}
                 value={formatBigNumber(product.price)}
@@ -1087,7 +1094,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
               />
 
               <InputNumber
-                title="Promotion Price"
+                title={t("CreateProductPage.field.promotionPrice")}
                 width="w-full"
                 value={formatBigNumber(product.promotion_price)}
                 error={fieldsCheck.includes("promotion_price")}
@@ -1096,7 +1103,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
               />
 
               <InputNumber
-                title="Inventory"
+                title={t("CreateProductPage.field.inventory")}
                 width="w-full"
                 readonly={variants.length > 0 ? true : false}
                 infor="If product have variations, you can't edit input"
@@ -1109,7 +1116,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
 
             <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
               <InputText
-                title="SKU"
+                title={t("CreateProductPage.field.SKU")}
                 width="w-full"
                 value={product.sku || ""}
                 error={fieldsCheck.includes("sku")}
@@ -1120,7 +1127,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
               />
 
               <InputText
-                title="Barcode"
+                title={t("CreateProductPage.field.barcode")}
                 width="w-full"
                 value={product.barcode || ""}
                 error={fieldsCheck.includes("barcode")}
@@ -1130,7 +1137,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
               />
 
               <InputNumber
-                title="Sold"
+                title={t("EditProductPage.sold")}
                 width="w-full"
                 value={product.sold.toString()}
                 name="sold"
@@ -1148,7 +1155,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
             <div className="w-full flex lg:flex-nowrap flex-wrap items-end justify-between mt-5 gap-5">
               {product._id && (
                 <ButtonCheck
-                  title="Public"
+                  title={t("CreateProductPage.field.public")}
                   name="public"
                   width="w-fit"
                   isChecked={product.public}
@@ -1160,7 +1167,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
                 onClick={handlePopup}
                 className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
               >
-                Delete
+                {t("Action.delete")}
               </button>
             </div>
 
@@ -1184,7 +1191,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
                   onClick={onGenerateVariants}
                   className="text-sm bg-success text-white px-5 py-2 rounded-md"
                 >
-                  Generate Variants
+                  {t("EditProductPage.compination.generate")}
                 </button>
               )}
 
@@ -1194,9 +1201,9 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
                     onClick={() =>
                       setShowClearVariants(!showPopupClearVariants)
                     }
-                    className="text-sm bg-success text-white px-5 py-2 rounded-md"
+                    className="text-sm bg-error text-white px-5 py-2 rounded-md"
                   >
-                    Clear Variants
+                    {t("EditProductPage.compination.clear")}
                   </button>
 
                   {showPopupClearVariants && (
@@ -1237,7 +1244,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
             {variants.length > 0 && (
               <div className="mt-5">
                 <Table
-                  colHeadTabel={colHeadTable}
+                  colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
                   message={""}
                   loading={loading}
                 >
@@ -1331,10 +1338,11 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
               <Popup
                 title="Variant"
                 show={showPopupVariant}
+                img="/popup/trash.svg"
                 onClose={() => onShowPopupVariant(null)}
               >
                 <div>
-                  <p className="text-lg">
+                  <p className="text-lg dark:text-darkText">
                     Do you want delete variant
                     <strong>{" " + selectVariant.title}</strong>
                   </p>
@@ -1343,7 +1351,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
                       onClick={() => onShowPopupVariant()}
                       className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"
                     >
-                      Cancle
+                      {t("Action.cancle")}
                     </button>
                     <button
                       onClick={() =>
@@ -1351,7 +1359,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
                       }
                       className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
                     >
-                      Delete
+                      {t("Action.delete")}
                     </button>
                   </div>
                 </div>
@@ -1363,6 +1371,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
         {showPopup && (
           <Popup
             title="Xác nhận xóa sản phẩm"
+            img="/popup/trash.svg"
             show={showPopup}
             onClose={handlePopup}
           >
@@ -1372,13 +1381,13 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
                   onClick={handlePopup}
                   className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-90 hover:opacity-100 rounded-md transition-cus"
                 >
-                  Cancle
+                  {t("Action.cancle")}
                 </button>
                 <button
                   onClick={handleDeleteProduct}
                   className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-90 hover:opacity-100 rounded-md"
                 >
-                  Delete
+                  {t("Action.delete")}
                 </button>
               </div>
             </div>

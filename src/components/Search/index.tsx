@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { FC, memo, useEffect, useState, useCallback } from "react";
 import { InputText } from "../InputField";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   placeholder?: string;
@@ -14,6 +15,8 @@ interface Props {
 const Search: FC<Props> = (props: Props) => {
   const { search, placeholder, children, onReset, onSearch, onFilter } = props;
   const router = useRouter();
+
+  const { t } = useTranslation();
 
   const handleFilter = () => {
     const page = Number(router.query.page);
@@ -63,13 +66,13 @@ const Search: FC<Props> = (props: Props) => {
           onClick={handleFilter}
           className={`flex md:w-fit w-full items-center justify-center h-10 text-lg text-white bg-primary font-medium px-8 py-1 rounded-md`}
         >
-          Fillter
+          {t("Search.filter")}
         </button>
         <button
           onClick={handleReset}
           className={`flex md:w-fit w-full items-center justify-center h-10 text-lg text-text bg-[#e5e7eb] font-medium px-8 py-1 rounded-md`}
         >
-          Reset
+          {t("Search.reset")}
         </button>
       </div>
     </div>

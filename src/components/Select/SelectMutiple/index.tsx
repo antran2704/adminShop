@@ -2,6 +2,7 @@ import { FC, useState, memo } from "react";
 
 import { ISelectItem } from "~/interface";
 import SelectMutipleItem from "./SelectMultipleItem";
+import { useTranslation } from "react-i18next";
 
 interface IObjectSelect {
   [key: string]: ISelectItem[];
@@ -18,6 +19,9 @@ interface Props {
 
 const SelectMultipleWrap: FC<Props> = (props: Props) => {
   const { className, data, selects, selectItem, removeItem, selectAll } = props;
+
+  const { t } = useTranslation();
+
   const [selectIndex, setSelectIndex] = useState<number | null>(null);
 
   const onSetSelectIndex = (value: number | null) => {
@@ -29,11 +33,19 @@ const SelectMultipleWrap: FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`grid ${className ? className : "lg:grid-cols-4 md:grid-cols-3 grid-cols-2"} gap-5`}>
+    <div
+      className={`grid ${
+        className ? className : "lg:grid-cols-4 md:grid-cols-3 grid-cols-2"
+      } gap-5`}
+    >
       {Object.keys(data || {}).map((key: any, index: number) => (
         <SelectMutipleItem
           key={key}
-          title={`Select ${key === "default" ? "Atrribute" : key}`}
+          title={`${t("EditProductPage.compination.select")} ${
+            key === "default"
+              ? `${t("EditProductPage.compination.attribute")}`
+              : key
+          }`}
           data={data[key]}
           show={selectIndex === index ? true : false}
           name={key}

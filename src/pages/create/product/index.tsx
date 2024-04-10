@@ -33,6 +33,7 @@ import {
 import { ECompressFormat, ETypeImage } from "~/enums";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { NextPageWithLayout } from "~/interface/page";
+import { useTranslation } from "react-i18next";
 
 const initData: ICreateProduct = {
   title: "",
@@ -61,6 +62,8 @@ const Layout = LayoutWithHeader;
 
 const CreateProductPage: NextPageWithLayout = () => {
   const router = useRouter();
+
+  const { t } = useTranslation();
 
   const [product, setProduct] = useState<ICreateProduct>(initData);
   const [categories, setCategories] = useState<IObjectCategory>({});
@@ -391,14 +394,14 @@ const CreateProductPage: NextPageWithLayout = () => {
 
   return (
     <FormLayout
-      title="Create Product"
+      title={t("CreateProductPage.title")}
       backLink="/products"
       onSubmit={handleOnSubmit}
     >
       <div className="lg:w-2/4 w-full mx-auto">
         <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputText
-            title="Title"
+            title={t("CreateProductPage.field.title")}
             width="w-full"
             value={product.title}
             error={fieldsCheck.includes("title")}
@@ -408,7 +411,7 @@ const CreateProductPage: NextPageWithLayout = () => {
           />
 
           <InputTextarea
-            title="Short description"
+            title={t("CreateProductPage.field.shortDescription")}
             width="w-full"
             error={fieldsCheck.includes("shortDescription")}
             value={product.shortDescription}
@@ -419,7 +422,7 @@ const CreateProductPage: NextPageWithLayout = () => {
           />
 
           <InputTextarea
-            title="Description"
+            title={t("CreateProductPage.field.description")}
             width="w-full"
             error={fieldsCheck.includes("description")}
             value={product.description}
@@ -431,7 +434,7 @@ const CreateProductPage: NextPageWithLayout = () => {
 
         <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <MultipleValue
-            title="Categories"
+            title={t("CreateProductPage.field.categories")}
             width="w-full"
             items={mutipleCategories}
             name="categories"
@@ -457,7 +460,7 @@ const CreateProductPage: NextPageWithLayout = () => {
 
           <SelectItem
             width="w-full"
-            title="Default category"
+            title={t("CreateProductPage.field.defaultCategory")}
             name="category"
             value={defaultCategory ? defaultCategory : ""}
             onSelect={onSelectDefaultCategory}
@@ -503,7 +506,7 @@ const CreateProductPage: NextPageWithLayout = () => {
 
         <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputNumber
-            title="Price"
+            title={t("CreateProductPage.field.price")}
             width="w-full"
             error={fieldsCheck.includes("price")}
             value={formatBigNumber(product.price)}
@@ -512,7 +515,7 @@ const CreateProductPage: NextPageWithLayout = () => {
           />
 
           <InputNumber
-            title="Promotion Price"
+            title={t("CreateProductPage.field.promotionPrice")}
             width="w-full"
             value={formatBigNumber(product.promotion_price)}
             error={fieldsCheck.includes("promotion_price")}
@@ -521,7 +524,7 @@ const CreateProductPage: NextPageWithLayout = () => {
           />
 
           <InputNumber
-            title="Inventory"
+            title={t("CreateProductPage.field.inventory")}
             width="w-full"
             value={formatBigNumber(product.inventory)}
             error={fieldsCheck.includes("inventory")}
@@ -532,7 +535,7 @@ const CreateProductPage: NextPageWithLayout = () => {
 
         <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputText
-            title="SKU"
+            title={t("CreateProductPage.field.SKU")}
             width="w-full"
             value={product.sku || ""}
             error={fieldsCheck.includes("sku")}
@@ -543,7 +546,7 @@ const CreateProductPage: NextPageWithLayout = () => {
           />
 
           <InputText
-            title="Barcode"
+            title={t("CreateProductPage.field.barcode")}
             width="w-full"
             value={product.barcode || ""}
             error={fieldsCheck.includes("barcode")}
@@ -562,7 +565,7 @@ const CreateProductPage: NextPageWithLayout = () => {
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
           <ButtonCheck
-            title="Public"
+            title={t("CreateProductPage.field.public")}
             name="public"
             width="w-fit"
             isChecked={product.public}

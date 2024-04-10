@@ -37,6 +37,7 @@ import { generateSlug } from "~/helper/generateSlug";
 import { ECompressFormat, ETypeImage } from "~/enums";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { NextPageWithLayout } from "~/interface/page";
+import { useTranslation } from "react-i18next";
 
 const initData: IDataCategory = {
   _id: null,
@@ -56,6 +57,9 @@ const Layout = LayoutWithHeader;
 const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
   const router = useRouter();
   const { query } = props;
+
+  const { t } = useTranslation();
+
   const [title, setTitle] = useState<string | null>(null);
   const [data, setData] = useState<IDataCategory>(initData);
   const [categories, setCategories] = useState<IObjectCategory>({});
@@ -321,7 +325,7 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
 
   return (
     <FormLayout
-      title={`Edit category ${title ? title : ""}`}
+      title={`${t("EditCategoryPage.title")} ${title ? title : ""}`}
       backLink="/categories"
       onSubmit={handleOnSubmit}
     >
@@ -329,7 +333,7 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
         <div className="lg:w-2/4 w-full mx-auto">
           <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
             <InputText
-              title="Title"
+              title={t("CreateCategoryPage.field.title")}
               error={fieldsCheck.includes("title")}
               width="w-full"
               value={data.title}
@@ -338,7 +342,7 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
             />
 
             <InputText
-              title="Description"
+              title={t("CreateCategoryPage.field.description")}
               width="w-full"
               value={data.description}
               name="description"
@@ -349,7 +353,7 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
 
           <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
             <InputText
-              title="Parent Category"
+              title={t("CreateCategoryPage.field.parent")}
               width="w-full"
               value={categorySelect.title ? categorySelect.title : ""}
               name="parent_id"
@@ -393,7 +397,7 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
           <div className="w-full flex lg:flex-nowrap flex-wrap items-end justify-between mt-5 gap-5">
             {data?._id && (
               <ButtonCheck
-                title="Public"
+                title={t("CreateCategoryPage.field.public")}
                 name="public"
                 width="w-fit"
                 isChecked={data.public}

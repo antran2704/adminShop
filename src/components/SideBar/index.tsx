@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { FC, useState, useEffect, Dispatch, SetStateAction } from "react";
+import { useEffect, Dispatch, SetStateAction } from "react";
 import { BsArrowLeft } from "react-icons/bs";
 import { BiLogOut } from "react-icons/bi";
 import { listBody, listSetting, itemNav } from "../../data/Navbar";
@@ -9,7 +9,6 @@ import ImageCus from "../Image/ImageCus";
 import SideBarItem from "./SideBarItem";
 import { logout } from "~/api-client";
 import { loginReducer, logoutReducer } from "~/store/slice/user";
-import { IoMdSettings } from "react-icons/io";
 
 interface Props {
   showSideBar: boolean;
@@ -51,13 +50,6 @@ const SideBar = (props: Props) => {
 
   return (
     <>
-     {/* <button
-        className="fixed flex items-center justify-center w-10 h-10 -right-2 bottom-20 bg-black rounded-md opacity-60 hover:opacity-100 z-10"
-        onClick={handeShow}
-      >
-        <IoMdSettings  className="text-xl text-white" />
-      </button> */}
-      
       {/* Navbar on PC */}
       <nav
         className={`xl:sticky fixed top-0 xl:left-0 ${

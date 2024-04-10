@@ -13,6 +13,7 @@ import { Banner } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 import { ECompressFormat, ETypeImage } from "~/enums";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { useTranslation } from "react-i18next";
 
 const initData: Banner = {
   _id: "",
@@ -32,6 +33,9 @@ const Layout = LayoutWithHeader;
 const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
   const router = useRouter();
   const { query } = props;
+
+  const { t } = useTranslation();
+
   const [title, setTitle] = useState<string | null>(null);
 
   const [data, setData] = useState<Banner>(initData);
@@ -186,7 +190,7 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
 
   return (
     <FormLayout
-      title={`Edit category ${title ? title : ""}`}
+      title={`${t("EditBannerPage.title")} ${title ? title : ""}`}
       backLink="/categories"
       onSubmit={handleOnSubmit}
     >
@@ -194,7 +198,7 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
         <div className="lg:w-2/4 w-full mx-auto">
           <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
             <InputText
-              title="Title"
+              title={t("CreateBannerPage.field.title")}
               error={fieldsCheck.includes("title")}
               width="w-full"
               value={data.title}
@@ -233,7 +237,7 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
           <div className="w-full flex lg:flex-nowrap flex-wrap items-end justify-between mt-5 gap-5">
             {data?._id && (
               <ButtonCheck
-                title="Public"
+                title={t("CreateBannerPage.field.public")}
                 name="public"
                 width="w-fit"
                 isChecked={data.isPublic}
@@ -245,7 +249,7 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
               // onClick={handlePopup}
               className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
             >
-              Delete
+              {t("Action.delete")}
             </button>
           </div>
         </div>
@@ -286,7 +290,6 @@ export default EditCategoryPage;
 EditCategoryPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
 };
-
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   return {

@@ -24,7 +24,16 @@
   },
   "CategoriesPage": {
     "title": "Danh sách thư mục",
-    "create": "Tạo thu mục"
+    "create": "Tạo thư mục",
+    "search": "Tìm theo tên thư mục..."
+  },
+  "ProductsPage": {
+    "title": "Danh sách sản phẩm",
+    "create": "Tạo sản phẩm",
+    "search": "Tìm theo tên sản phẩm...",
+    "filter": {
+      "category": "Thư mục"
+    }
   },
   "CreateBannerPage": {
     "title": "Tạo banner",
@@ -37,15 +46,81 @@
   "CreateCategoryPage": {
     "title": "Tạo thư mục",
     "field": {
-        "title": "Tiêu đề",
-        "description": "Mô tả",
-        "parent": "Thư mục cha",
-        "thumbnail": "Hình ảnh",
-        "public": "Hiện"
-      }
+      "title": "Tiêu đề",
+      "description": "Mô tả",
+      "parent": "Thư mục cha",
+      "thumbnail": "Hình ảnh",
+      "public": "Hiện"
+    }
+  },
+  "CreateProductPage": {
+    "title": "Tạo sản phẩm",
+    "field": {
+      "title": "Tiêu đề",
+      "shortDescription": "Tổng quan sản phẩm",
+      "description": "Mô tả",
+      "categories": "Lựa chọn thư mục",
+      "defaultCategory": "Thư mục mặc định",
+      "thumbnail": "Hình ảnh",
+      "gallery": "Hình ảnh sản phẩm",
+      "price": "Gía sản phẩm",
+      "promotionPrice": "Gía giảm của sản phẩm",
+      "inventory": "Tồn kho",
+      "SKU": "Mã SKU",
+      "barcode": "Mã Barcode",
+      "public": "Hiện"
+    }
+  },
+  "EditBannerPage": {
+    "title": "Chỉnh sửa banner"
+  },
+  "EditCategoryPage": {
+    "title": "Chỉnh sửa thư mục"
+  },
+  "EditProductPage": {
+    "title": "Chỉnh sửa sản phẩm",
+    "sold": "Đã bán",
+    "tag": {
+      "basic": "Thông tin cơ bản",
+      "compination": "Sản phẩm con"
+    },
+    "compination": {
+      "attribute": "Thuộc tính",
+      "select": "Lựa chọn",
+      "generate": "Tạo",
+      "clear": "Xóa"
+    }
   },
   "Thumbnail": {
     "upload": "Ấn để tải ảnh",
     "loading": "Đang tải"
+  },
+  "Search": {
+    "filter": "Lọc",
+    "reset": "Xóa lọc"
+  },
+  "Specifications": {
+    "title": "Thông số kỹ thuật",
+    "remove": "Gỡ bỏ",
+    "attribute": "Thuộc tính",
+    "name": "Tên",
+    "value": "Giá trị",
+    "addPopup": {
+      "title": "Thêm thông số kỹ thuật",
+      "description": "Thêm thông số kỹ thuật tại đây",
+      "inpTitle": "Tiêu đề",
+      "add": "Thêm"
+    },
+    "specificationPopup": {
+      "description": "Bạn có muốn xóa thông số"
+    },
+    "attributePopup": {
+      "description": "Bạn có muốn xóa thuộc tính"
+    }
+  },
+  "Action": {
+    "cancle": "Hủy",
+    "delete": "Xóa",
+    "change": "Thay đổi"
   }
 }
