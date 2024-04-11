@@ -13,6 +13,7 @@ import Loading from "~/components/Loading";
 import { createdAttribute } from "~/api-client";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { NextPageWithLayout } from "~/interface/page";
+import { useTranslation } from "react-i18next";
 
 const initData: IAttribute = {
   _id: "",
@@ -26,6 +27,8 @@ const Layout = LayoutWithHeader;
 
 const CreateAttributePage: NextPageWithLayout = () => {
   const router = useRouter();
+
+  const { t } = useTranslation();
 
   const [data, setData] = useState<IAttribute>(initData);
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
@@ -129,14 +132,14 @@ const CreateAttributePage: NextPageWithLayout = () => {
 
   return (
     <FormLayout
-      title="Create attribute"
+      title={t("CreateAttributePage.title")}
       backLink="/attributes"
       onSubmit={handleOnSubmit}
     >
       <div className="lg:w-2/4 w-full mx-auto">
         <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputText
-            title="Attribute Title"
+            title={t("CreateAttributePage.field.title")}
             width="w-full"
             value={data.name}
             error={fieldsCheck.includes("name")}
@@ -146,7 +149,7 @@ const CreateAttributePage: NextPageWithLayout = () => {
           />
 
           <InputText
-            title="Attribute Code"
+            title={t("CreateAttributePage.field.code")}
             width="w-full"
             value={data.code}
             name="code"
@@ -155,11 +158,11 @@ const CreateAttributePage: NextPageWithLayout = () => {
           />
 
           <MultipleValue
-            title="Variants"
+            title={t("CreateAttributePage.variants.title")}
             width="w-full"
             items={data.variants as ISelectItem[]}
             name="variants"
-            placeholder="Press enter to add variant"
+            placeholder={t("CreateAttributePage.variants.placeholder")}
             error={fieldsCheck.includes("variants")}
             getAttributes={changeVariants}
           />
@@ -167,7 +170,7 @@ const CreateAttributePage: NextPageWithLayout = () => {
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
           <ButtonCheck
-            title="Public"
+            title={t("CreateAttributePage.field.public")}
             name="public"
             width="w-fit"
             isChecked={data.public}

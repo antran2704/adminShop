@@ -33,6 +33,7 @@ import {
 } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { useTranslation } from "react-i18next";
 
 interface ISelectCoupon {
   id: string;
@@ -48,6 +49,8 @@ const Layout = LayoutWithHeader;
 const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? Number(query.page) : 1;
+
+  const { t, i18n } = useTranslation();
 
   const [coupons, setCoupons] = useState<ICouponHome[]>([]);
   const [selectCoupons, setSelectCoupons] = useState<string[]>([]);
@@ -277,8 +280,8 @@ const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
 
   return (
     <ShowItemsLayout
-      title="Coupons"
-      titleCreate="Create Coupons"
+      title={t("CouponsPage.title")}
+      titleCreate={t("CouponsPage.create")}
       link="/create/coupon"
       selectItem={{
         title: selectItem?.title ? selectItem.title : "",
@@ -295,12 +298,12 @@ const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
           onReset={onReset}
           onSearch={onChangeSearch}
           onFilter={handleGetDataByFilter}
-          placeholder="Search by coupon code/name..."
+          placeholder={t("CouponsPage.search")}
         >
           <Fragment>
             <SelectDate
               className="lg:w-3/12 md:w-4/12 w-full"
-              title="Start Date"
+              title={t("CouponsPage.filter.startDate")}
               name="start_date"
               value={filter?.start_date || ""}
               type="date"
@@ -308,7 +311,7 @@ const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
             />
             <SelectDate
               className="lg:w-3/12 md:w-4/12 w-full"
-              title="End Date"
+              title={t("CouponsPage.filter.endDate")}
               name="end_date"
               value={filter?.end_date || ""}
               type="date"
@@ -323,7 +326,7 @@ const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
           setSelects={setSelectCoupons}
           selectAll={true}
           isSelected={selectCoupons.length === coupons.length ? true : false}
-          colHeadTabel={colHeadTable}
+          colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
           message={message}
           loading={loading}
         >

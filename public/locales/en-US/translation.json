@@ -35,6 +35,20 @@
       "category": "Category"
     }
   },
+  "AttributesPage": {
+    "title": "Attributes",
+    "create": "Create attribute",
+    "search": "Search by attribute name..."
+  },
+  "CouponsPage": {
+    "title": "Coupons",
+    "create": "Create coupon",
+    "search": "Search by coupon code/name...",
+    "filter": {
+      "startDate": "Start date",
+      "endDate": "End date"
+    }
+  },
   "CreateBannerPage": {
     "title": "Create banner",
     "field": {
@@ -71,6 +85,37 @@
       "public": "Public"
     }
   },
+  "CreateAttributePage": {
+    "title": "Create attribute",
+    "field": {
+      "title": "Attribute Title",
+      "code": "Attribute Code",
+      "public": "Public"
+    },
+    "variants": {
+      "title": "Variants",
+      "placeholder": "Press enter to add variant"
+    }
+  },
+  "CreateCouponPage": {
+    "title": "Create coupon",
+    "field": {
+      "title": "Title",
+      "code": "Code",
+      "public": "Public",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "value": "Value",
+      "minimumValue": "Minimum Amount",
+      "quantity": "Coupon quantity",
+      "perUser": "Coupon per user"
+    },
+    "type": {
+      "title": "Coupon type",
+      "percentage": "Percentage",
+      "fixedAmount": "Fixed Amount"
+    }
+  },
   "EditBannerPage": {
     "title": "Edit banner"
   },
@@ -89,6 +134,19 @@
       "select": "Select",
       "generate": "Generate Variants",
       "clear": "Clear Variants"
+    }
+  },
+  "EditAttributePage": {
+    "title": "Attributes value",
+    "create": "Add value",
+    "addPopup": {
+      "title": "Add Attribute Value",
+      "description": "Add your attribute values and necessary information from here",
+      "inpTitle": "Attribute Title"
+    },
+    "updatePopup": {
+      "title": "Update Attribute Value",
+      "description": "Update your attribute values"
     }
   },
   "Thumbnail": {
@@ -122,6 +180,7 @@
   "Action": {
     "cancle": "Cancle",
     "delete": "Delete",
-    "change": "Change"
+    "change": "Change",
+    "add": "Add"
   }
 }

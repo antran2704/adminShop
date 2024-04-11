@@ -35,6 +35,20 @@
       "category": "Thư mục"
     }
   },
+  "AttributesPage": {
+    "title": "Danh sách thuộc tính",
+    "create": "Tạo thuộc tính",
+    "search": "Tìm kiếm bằng tên thuộc tính..."
+  },
+  "CouponsPage": {
+    "title": "Danh sách mã giảm giá",
+    "create": "Tạo mã giảm",
+    "search": "Tìm kiếm theo tên/mã...",
+    "filter": {
+      "startDate": "Ngày bắt đầu",
+      "endDate": "Ngày kết thúc"
+    }
+  },
   "CreateBannerPage": {
     "title": "Tạo banner",
     "field": {
@@ -71,6 +85,37 @@
       "public": "Hiện"
     }
   },
+  "CreateAttributePage": {
+    "title": "Tạo thuộc tính",
+    "field": {
+      "title": "Tiêu đề",
+      "code": "Mã thuộc tính",
+      "public": "Hiện"
+    },
+    "variants": {
+      "title": "Biến thể",
+      "placeholder": "Nhấn enter để thêm"
+    }
+  },
+  "CreateCouponPage": {
+    "title": "Tạo mã giảm giá",
+    "field": {
+      "title": "Tên",
+      "code": "Mã",
+      "public": "Hiện",
+      "startDate": "Ngày bắt đầu",
+      "endDate": "Ngày kết thúc",
+      "value": "Giá trị",
+      "minimumValue": "Giá trị tối thiểu",
+      "quantity": "Số lượng mã giảm giá",
+      "perUser": "Số lượng mỗi người"
+    },
+    "type": {
+      "title": "Thể loại",
+      "percentage": "Phần trăm",
+      "fixedAmount": "Số tiền"
+    }
+  },
   "EditBannerPage": {
     "title": "Chỉnh sửa banner"
   },
@@ -89,6 +134,19 @@
       "select": "Lựa chọn",
       "generate": "Tạo",
       "clear": "Xóa"
+    }
+  },
+  "EditAttributePage": {
+    "title": "Danh sách giá trị của thuộc tính",
+    "create": "Thêm giá trị",
+    "addPopup": {
+      "title": "Thêm giá trị mới",
+      "description": "Thêm giá trị tại đây",
+      "inpTitle": "Tiêu đề"
+    },
+    "updatePopup": {
+      "title": "Thay đổi giá trị",
+      "description": "Thay đổi giá trị tại đây"
     }
   },
   "Thumbnail": {
@@ -121,6 +179,7 @@
   "Action": {
     "cancle": "Hủy",
     "delete": "Xóa",
-    "change": "Thay đổi"
+    "change": "Thay đổi",
+    "add": "Thêm"
   }
 }

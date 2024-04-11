@@ -1,6 +1,12 @@
 import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { useState, useEffect, Fragment, useCallback, ReactElement } from "react";
+import {
+  useState,
+  useEffect,
+  Fragment,
+  useCallback,
+  ReactElement,
+} from "react";
 import { toast } from "react-toastify";
 
 import { typeCel } from "~/enums";
@@ -22,6 +28,7 @@ import {
 } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { useTranslation } from "react-i18next";
 
 interface ISelectAttribute {
   id: string | null;
@@ -42,6 +49,8 @@ const Layout = LayoutWithHeader;
 const AttributesPage: NextPageWithLayout<Props> = (props: Props) => {
   const { query } = props;
   const currentPage = query.page ? Number(query.page) : 1;
+
+  const { t, i18n } = useTranslation();
 
   const [attributes, setAttribute] = useState<IAttribute[]>([]);
   const [selectAttributes, setSelectAttributes] = useState<string[]>([]);
@@ -230,8 +239,8 @@ const AttributesPage: NextPageWithLayout<Props> = (props: Props) => {
 
   return (
     <ShowItemsLayout
-      title="Attributes"
-      titleCreate="Create attribute"
+      title={t("AttributesPage.title")}
+      titleCreate={t("AttributesPage.create")}
       link="/create/attribute"
       selectItem={{
         title: selectItem?.title ? selectItem.title : "",
@@ -248,7 +257,7 @@ const AttributesPage: NextPageWithLayout<Props> = (props: Props) => {
           onReset={onReset}
           onSearch={onChangeSearch}
           onFilter={handleGetDataByFilter}
-          placeholder="Search by attribute name..."
+          placeholder={t("AttributesPage.search")}
         />
 
         <Table
@@ -259,7 +268,7 @@ const AttributesPage: NextPageWithLayout<Props> = (props: Props) => {
           isSelected={
             selectAttributes.length === attributes.length ? true : false
           }
-          colHeadTabel={colHeadTable}
+          colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
           message={message}
           loading={loading}
         >

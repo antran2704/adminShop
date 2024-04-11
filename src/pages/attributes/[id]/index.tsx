@@ -1,7 +1,13 @@
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
-import { useState, useEffect, Fragment, useCallback, ReactElement } from "react";
+import {
+  useState,
+  useEffect,
+  Fragment,
+  useCallback,
+  ReactElement,
+} from "react";
 import { toast } from "react-toastify";
 
 import { typeCel } from "~/enums";
@@ -27,6 +33,7 @@ import {
 } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { useTranslation } from "react-i18next";
 
 interface ISelectAttribute {
   id: string | null;
@@ -62,6 +69,8 @@ const AttributeValuesPage: NextPageWithLayout<Props> = (props: Props) => {
   const { id } = query;
 
   const router = useRouter();
+
+  const { t, i18n } = useTranslation();
 
   const [attributes, setAttribute] = useState<IVariant[]>([]);
   const [message, setMessage] = useState<string | null>(null);
@@ -333,8 +342,8 @@ const AttributeValuesPage: NextPageWithLayout<Props> = (props: Props) => {
 
   return (
     <ShowItemsLayout
-      title="Attribute Values"
-      titleCreate="Add value"
+      title={t("EditAttributePage.title")}
+      titleCreate={t("EditAttributePage.create")}
       selectItem={{
         title: selectItem?.title ? selectItem.title : "",
         id: selectItem?.id || null,
@@ -347,7 +356,7 @@ const AttributeValuesPage: NextPageWithLayout<Props> = (props: Props) => {
     >
       <Fragment>
         <Table
-          colHeadTabel={colHeadTable}
+          colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
           message={message}
           loading={loadingTable}
         >
@@ -395,8 +404,8 @@ const AttributeValuesPage: NextPageWithLayout<Props> = (props: Props) => {
 
         {/* Popup Form for update */}
         <PopupForm
-          title="Update Attribute Value"
-          description="Update your attribute values and necessary information from here"
+          title={t("EditAttributePage.updatePopup.title")}
+          description={t("EditAttributePage.updatePopup.description")}
           show={showFormUpdate}
           onClose={handlePopupFormUpdate}
         >
@@ -405,7 +414,7 @@ const AttributeValuesPage: NextPageWithLayout<Props> = (props: Props) => {
               <div className="flex flex-col justify-between h-full">
                 <div className="w-full flex flex-col px-5 gap-5">
                   <InputText
-                    title="Attribute Title"
+                    title={t("EditAttributePage.addPopup.inpTitle")}
                     width="w-full"
                     value={selectItem.title}
                     name="title"
@@ -415,7 +424,7 @@ const AttributeValuesPage: NextPageWithLayout<Props> = (props: Props) => {
                   />
 
                   <ButtonCheck
-                    title="Public"
+                    title={t("CreateAttributePage.field.public")}
                     name="public"
                     width="w-fit"
                     isChecked={selectItem.public}
@@ -428,13 +437,13 @@ const AttributeValuesPage: NextPageWithLayout<Props> = (props: Props) => {
                     onClick={() => handlePopupFormUpdate()}
                     className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
                   >
-                    Cancle
+                    {t("Action.cancle")}
                   </button>
                   <button
                     onClick={handleUpdate}
                     className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
                   >
-                    Update
+                    {t("Action.add")}
                   </button>
                 </div>
               </div>
@@ -444,8 +453,8 @@ const AttributeValuesPage: NextPageWithLayout<Props> = (props: Props) => {
 
         {/* Popup Form for add value */}
         <PopupForm
-          title="Add Attribute Value"
-          description="Add your attribute values and necessary information from here"
+          title={t("EditAttributePage.addPopup.title")}
+          description={t("EditAttributePage.addPopup.description")}
           show={showFormCreate}
           onClose={handlePopupFormCreate}
         >
@@ -453,7 +462,7 @@ const AttributeValuesPage: NextPageWithLayout<Props> = (props: Props) => {
             <div className="flex flex-col justify-between h-full">
               <div className="w-full flex flex-col px-5 gap-5">
                 <InputText
-                  title="Attribute Title"
+                  title={t("EditAttributePage.addPopup.inpTitle")}
                   width="w-full"
                   name="name"
                   value={newVarinat.name}
@@ -463,7 +472,7 @@ const AttributeValuesPage: NextPageWithLayout<Props> = (props: Props) => {
                 />
 
                 <ButtonCheck
-                  title="Public"
+                  title={t("CreateAttributePage.field.public")}
                   name="public"
                   width="w-fit"
                   isChecked={newVarinat.public}
@@ -476,13 +485,13 @@ const AttributeValuesPage: NextPageWithLayout<Props> = (props: Props) => {
                   onClick={() => handlePopupFormCreate()}
                   className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
                 >
-                  Cancle
+                  {t("Action.cancle")}
                 </button>
                 <button
                   onClick={handleAddVarinat}
                   className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
                 >
-                  Add
+                  {t("Action.add")}
                 </button>
               </div>
             </div>
