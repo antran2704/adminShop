@@ -368,7 +368,7 @@ const ProductPage: NextPageWithLayout<Props> = (props: Props) => {
                     <ImageCus
                       title="product image"
                       src={
-                        ((process.env.NEXT_PUBLIC_IMAGE_ENDPOINT as string) +
+                        ((process.env.NEXT_PUBLIC_ENDPOINT_API as string) +
                           product.thumbnail?.replace(
                             "http://localhost:3001",
                             ""

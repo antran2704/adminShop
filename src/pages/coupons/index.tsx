@@ -348,7 +348,7 @@ const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
                     <ImageCus
                       title="product image"
                       src={
-                        ((process.env.NEXT_PUBLIC_IMAGE_ENDPOINT as string) +
+                        ((process.env.NEXT_PUBLIC_ENDPOINT_API as string) +
                           item.discount_thumbnail) as string
                       }
                       className="min-w-[32px] w-8 h-8 rounded-full"

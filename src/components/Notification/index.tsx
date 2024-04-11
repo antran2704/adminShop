@@ -109,7 +109,7 @@ const Notification = () => {
   };
 
   useEffect(() => {
-    const URL = process.env.SOCKET_ENDPOINT || "http://localhost:3001";
+    const URL = process.env.NEXT_PUBLIC_SOCKET_ENDPOINT as string;
     const socketInit = io(URL);
     socketInit.connect();
 
