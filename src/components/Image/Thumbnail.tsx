@@ -87,23 +87,20 @@ const Thumbnail: FC<Props> = (props: Props) => {
       >
         {loading && (
           <p className="text-base font-medium text-center dark:text-darkText">
-          {t("Thumbnail.loading")}...
+            {t("Thumbnail.loading")}...
           </p>
         )}
         {!url && !loading && (
           <>
             <IoAdd className="md:text-6xl text-4xl dark:text-darkText" />
             <p className="text-base font-medium text-center dark:text-darkText">
-            {t("Thumbnail.upload")}
+              {t("Thumbnail.upload")}
             </p>
           </>
         )}
         {url && !loading && (
           <ImageCus
-            src={
-              process.env.NEXT_PUBLIC_IMAGE_ENDPOINT +
-              url.replace("http://localhost:3001", "")
-            }
+            src={process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + url}
             title="Thumbanil"
             className="w-full h-full object-contain object-center"
           />

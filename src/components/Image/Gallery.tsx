@@ -94,10 +94,7 @@ const Gallery: FC<Props> = (props: Props) => {
             </div>
 
             <ImageCus
-              src={
-                process.env.NEXT_PUBLIC_IMAGE_ENDPOINT +
-                url.replace("http://localhost:3001", "")
-              }
+              src={process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + url}
               className="w-full h-full"
             />
           </li>
@@ -119,7 +116,9 @@ const Gallery: FC<Props> = (props: Props) => {
             )}
 
             {loading && (
-              <p className="text-sm font-medium text-center dark:text-darkText">Loading...</p>
+              <p className="text-sm font-medium text-center dark:text-darkText">
+                Loading...
+              </p>
             )}
             <input
               onChange={hanldeChangeGallery}
