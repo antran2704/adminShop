@@ -146,7 +146,7 @@ const CelTable: FC<Props> = (props: Props) => {
             className={`block ${className ? className : 'w-[160px] h-[100px]'} mx-auto rounded overflow-hidden`}
           >
             <img
-              src={value}
+              src={process.env.NEXT_PUBLIC_ENDPOINT_API + value}
               alt={value}
               className="w-full h-full object-cover object-center"
             />
