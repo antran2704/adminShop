@@ -49,6 +49,19 @@
       "endDate": "Ngày kết thúc"
     }
   },
+  "LoginPage": {
+    "title": "Đăng nhập",
+    "email": {
+      "title": "Email",
+      "placeholder": "Email của bạn..."
+    },
+    "password": {
+      "title": "Password",
+      "placeholder": "Mật khẩu..."
+    },
+    "submit": "Đăng nhập",
+    "forgetPassword": "Quên mật khẩu"
+  },
   "CreateBannerPage": {
     "title": "Tạo banner",
     "field": {

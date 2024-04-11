@@ -376,7 +376,7 @@ const ProductPage: NextPageWithLayout<Props> = (props: Props) => {
                       }
                       className="min-w-[32px] w-8 h-8 rounded-full"
                     />
-                    <p className="text-sm font-medium lg:max-w-[80%] lg:whitespace-normal whitespace-nowrap">
+                    <p className="text-sm font-medium lg:max-w-[80%] line-clamp-3 lg:whitespace-normal whitespace-nowrap">
                       {product.title}
                     </p>
                   </Link>

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaRegBell, FaRegMoon } from "react-icons/fa";
-import { MdOutlineWbSunny } from "react-icons/md";
+import { FaRegBell } from "react-icons/fa";
 
 import { getNotifications, updateNotification } from "~/api-client";
 import { INotification, INotificationItem } from "~/interface";
@@ -9,8 +8,6 @@ import { Socket, io } from "socket.io-client";
 import { NotitficationType } from "~/enums";
 import Link from "next/link";
 import NotificationItem from "./NotificationItem";
-import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { handleChangeMode } from "~/helper/darkMode";
 
 const initNotification: INotification = {
   notifications: [],
@@ -21,9 +18,6 @@ const initNotification: INotification = {
 let timmerRing: NodeJS.Timeout;
 
 const Notification = () => {
-  const { darkMode } = useAppSelector((state) => state.setting);
-  const dispatch = useAppDispatch();
-
   const router = useRouter();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -31,10 +25,6 @@ const Notification = () => {
 
   const [notification, setNotification] =
     useState<INotification>(initNotification);
-
-  const onChangeMode = () => {
-    handleChangeMode(darkMode, dispatch);
-  };
 
   const onShowModal = () => {
     setShowModal(!showModal);
@@ -153,14 +143,6 @@ const Notification = () => {
       }}
       className="flex items-center gap-2"
     >
-     
-      <button
-        onClick={onChangeMode}
-        className="p-2 hover:bg-slate-200 dark:text-darkText dark:hover:text-black rounded-full"
-      >
-        {!darkMode && <FaRegMoon className="text-xl" />}
-        {darkMode && <MdOutlineWbSunny className="text-xl" />}
-      </button>
       <div className="relative">
         <div
           onClick={onShowModal}

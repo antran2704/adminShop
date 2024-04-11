@@ -3,6 +3,7 @@ import { useAppSelector } from "~/store/hooks";
 import Notification from "../Notification";
 import { Dispatch, SetStateAction } from "react";
 import Translation from "../Translation";
+import DarkMode from "../DarkMode";
 
 interface Props {
   showSideBar: boolean;
@@ -25,7 +26,7 @@ const Navbar = (props: Props) => {
 
       <div className="flex items-center gap-2">
         <Translation />
-
+        <DarkMode />
         {infor._id && <Notification />}
       </div>
     </div>

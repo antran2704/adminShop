@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { NotitficationType } from "~/enums";
 
 interface INotificationItem {
@@ -7,6 +8,10 @@ interface INotificationItem {
   path: string | null;
   isReaded: boolean;
   createdAt: string;
+}
+
+interface IconNoti {
+  [k: string]: ReactNode;
 }
 
 interface TagNotification {
@@ -20,4 +25,4 @@ interface INotification {
   totalUnread: number;
 }
 
-export type { INotificationItem, INotification, TagNotification };
+export type { INotificationItem, INotification, TagNotification, IconNoti };

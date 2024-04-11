@@ -49,6 +49,19 @@
       "endDate": "End date"
     }
   },
+  "LoginPage": {
+    "title": "Login",
+    "email": {
+      "title": "Email",
+      "placeholder": "Your email..."
+    },
+    "password": {
+      "title": "Password",
+      "placeholder": "Your password..."
+    },
+    "submit": "Login",
+    "forgetPassword": "Forget password"
+  },
   "CreateBannerPage": {
     "title": "Create banner",
     "field": {

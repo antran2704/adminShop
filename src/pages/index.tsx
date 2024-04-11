@@ -371,7 +371,7 @@ const HomePage: NextPageWithLayout = () => {
                   />
                   <CelTable type={typeCel.GROUP}>
                     <div className="flex items-center justify-center">
-                      <ButtonEdit link={`/orders/${order._id}`} />
+                      <ButtonEdit link={`/orders/${order.order_id}`} />
                     </div>
                   </CelTable>
                 </tr>

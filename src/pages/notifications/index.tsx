@@ -1,11 +1,7 @@
 import { ReactElement, useEffect, useState } from "react";
-import { IoIosArrowDropright, IoIosArrowDropleft } from "react-icons/io";
 
 import { getNotificationsWithPage, updateNotification } from "~/api-client";
-import ImageCus from "~/components/Image/ImageCus";
-import { iconNoti, styleTypeNoti } from "~/components/Notification/data";
 import { initPagination } from "~/components/Pagination/initData";
-import { getDateTime } from "~/helper/datetime";
 import {
   IPagination,
   IQueryParam,
@@ -147,7 +143,7 @@ const NotificationPage: NextPageWithLayout = () => {
             <li
               key={item._id}
               onClick={() => onClickNoti(item)}
-              className={`border-b last:border-none dark:hover:bg-gray-700`}
+              className={`border-b last:border-none dark:hover:bg-gray-700 hover:bg-slate-200`}
             >
               <NotificationItem data={item} onClick={onClickNoti} />
             </li>

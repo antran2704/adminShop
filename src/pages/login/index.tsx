@@ -2,7 +2,7 @@ import { AxiosError } from "axios";
 import { getCookies } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, ReactElement } from "react";
 
 import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
@@ -13,6 +13,9 @@ import { AxiosResponseCus } from "~/interface";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { axiosPost } from "~/ultils/configAxios";
 import { getUser } from "~/api-client";
+import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
+import { NextPageWithLayout } from "~/interface/page";
+import { useTranslation } from "react-i18next";
 
 interface IDataSend {
   email: string | null;
@@ -24,10 +27,14 @@ const initData: IDataSend = {
   password: null,
 };
 
-const LoginPage = () => {
+const Layout = LayoutWithoutHeader;
+
+const LoginPage: NextPageWithLayout = () => {
   const router = useRouter();
   const { logout } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
+
+  const { t } = useTranslation();
 
   const [data, setData] = useState<IDataSend>(initData);
 
@@ -53,12 +60,17 @@ const LoginPage = () => {
 
     setLoading(true);
 
+    const sendData: IDataSend = {
+      email: data.email?.toLowerCase() as string,
+      password: data.password,
+    };
+
     try {
-      const { status, payload } = await axiosPost("/admin/login", data);
+      const { status, payload } = await axiosPost("/admin/login", sendData);
 
       if (status === 200) {
         dispatch(loginReducer(payload));
-        dispatch(logoutReducer(false))
+        dispatch(logoutReducer(false));
         router.push("/");
       }
     } catch (err) {
@@ -108,68 +120,70 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="bg_login flex items-center justify-center h-screen">
-      <div className="lg:min-w-[1000px] md:w-4/6 sm:w-5/6 w-full flex items-start bg-white dark:bg-[#1f2937] rounded-lg shadow-xl overflow-hidden">
-        <div className="lg:block hidden">
-          <ImageCus
-            src="/login_bg.svg"
-            title="Login"
-            className="w-[500px] h-[600px]"
-          />
-        </div>
-        <div className="lg:w-6/12 w-full md:px-10 px-5 pt-10 pb-20">
-          <h1 className="lg:text-3xl text-2xl dark:text-darkText w-fit font-medium mx-auto">
-            Login
-          </h1>
+    <div className="lg:min-w-[1000px] md:w-4/6 sm:w-5/6 w-full flex items-start bg-white dark:bg-[#1f2937] rounded-lg shadow-xl  transition-all ease-linear duration-100 overflow-hidden">
+      <div className="lg:block hidden">
+        <ImageCus
+          src="/login_bg.svg"
+          title="Login"
+          className="w-[500px] h-[600px]"
+        />
+      </div>
+      <div className="lg:w-6/12 w-full md:px-10 px-5 pt-10 pb-20">
+        <h1 className="lg:text-3xl text-2xl dark:text-darkText w-fit font-medium mx-auto">
+          {t("LoginPage.title")}
+        </h1>
 
-          <form onSubmit={onLogin} method="POST" className="flex flex-col">
-            <div className="flex flex-col items-start mt-5 gap-5">
-              <InputText
-                title="Email"
-                width="w-full"
-                value={data.email || ""}
-                name="email"
-                required={true}
-                size="M"
-                placeholder="Your Email..."
-                getValue={onChangeData}
-              />
-              <InputPassword
-                title="Email"
-                width="w-full"
-                value={data.password || ""}
-                placeholder={"Password..."}
-                name="password"
-                required={true}
-                size="M"
-                getValue={onChangeData}
-              />
+        <form onSubmit={onLogin} method="POST" className="flex flex-col">
+          <div className="flex flex-col items-start mt-5 gap-5">
+            <InputText
+              title={t("LoginPage.email.title")}
+              width="w-full"
+              value={data.email || ""}
+              name="email"
+              required={true}
+              size="M"
+              placeholder={t("LoginPage.email.placeholder")}
+              getValue={onChangeData}
+            />
+            <InputPassword
+              title={t("LoginPage.password.title")}
+              width="w-full"
+              value={data.password || ""}
+              placeholder={t("LoginPage.password.placeholder")}
+              name="password"
+              required={true}
+              size="M"
+              getValue={onChangeData}
+            />
 
-              {message && <p className="text-base text-error">{message}</p>}
+            {message && <p className="text-base text-error">{message}</p>}
+          </div>
+
+          <div className="mt-5">
+            <ButtonClassic
+              loading={loading}
+              title={t("LoginPage.submit")}
+              size="M"
+              className="w-full flex items-center justify-center h-12 bg-primary"
+            />
+
+            <div className="flex items-center justify-center">
+              <Link
+                className="block hover:underline dark:text-darkText hover:text-primary dark:hover:text-primary text-sm my-5"
+                href="/password/reset"
+              >
+                {t("LoginPage.forgetPassword")}
+              </Link>
             </div>
-
-            <div className="mt-5">
-              <ButtonClassic
-                loading={loading}
-                title="Login"
-                size="M"
-                className="w-full flex items-center justify-center h-12 bg-primary"
-              />
-
-              <div className="flex items-center justify-center">
-                <Link
-                  className="block hover:underline dark:text-darkText hover:text-primary dark:hover:text-primary text-sm my-5"
-                  href="/password/reset"
-                >
-                  Quên mật khẩu
-                </Link>
-              </div>
-            </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   );
 };
 
 export default LoginPage;
+
+LoginPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};

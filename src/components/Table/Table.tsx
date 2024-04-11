@@ -50,7 +50,7 @@ const Table: FC<Props> = (props: Props) => {
       )}
       <div className="scrollHidden overflow-x-auto">
         <div className="align-middle inline-block min-w-full shadow overflow-hidden bg-white shadow-dashboard rounded-lg border dark:border-gray-400">
-          <table className="min-w-full">
+          <table className="min-w-full transition-all ease-linear duration-100">
             <thead className="bg-[#f4f5f7] dark:bg-gray-800">
               <tr>
                 {!loading && selectAll && items.length > 0 && (

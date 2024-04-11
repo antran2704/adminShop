@@ -1,10 +1,12 @@
 import { AxiosError } from "axios";
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, ReactElement, useState } from "react";
 import { toast } from "react-toastify";
 import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
 import { InputText } from "~/components/InputField";
+import { NextPageWithLayout } from "~/interface/page";
+import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
 import { axiosPost } from "~/ultils/configAxios";
 
 interface IDataSend {
@@ -15,7 +17,9 @@ const initData: IDataSend = {
   email: null,
 };
 
-const PasswordResetPage = () => {
+const Layout = LayoutWithoutHeader;
+
+const PasswordResetPage: NextPageWithLayout = () => {
   const [data, setData] = useState<IDataSend>(initData);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -39,7 +43,7 @@ const PasswordResetPage = () => {
 
     try {
       const { status } = await axiosPost("/admin/forget-password/send-email", {
-        email: data.email,
+        email: data.email.toLowerCase(),
       });
 
       if (status === 201) {
@@ -75,72 +79,76 @@ const PasswordResetPage = () => {
   };
 
   return (
-    <div className="bg_login flex items-center justify-center h-screen">
-      <div className="lg:min-w-[1000px] md:w-4/6 sm:w-5/6 w-full flex items-start bg-white dark:bg-[#1f2937] rounded-lg shadow-xl overflow-hidden">
-        <div className="lg:block hidden">
-          <ImageCus
-            src="/forget_password.svg"
-            title="Login"
-            className="w-[500px] h-[600px]"
-          />
-        </div>
-        <div className="lg:w-6/12 w-full md:px-10 px-5 pt-10 pb-20 ">
-          {!sendSuccess && (
-            <div className="w-full">
-              <h1 className="lg:text-3xl text-2xl dark:text-darkText w-fit font-medium mx-auto">
-                Forget Password
-              </h1>
+    <div className="lg:min-w-[1000px] md:w-4/6 sm:w-5/6 w-full flex items-start bg-white dark:bg-[#1f2937] rounded-lg transition-all ease-linear duration-100 shadow-xl overflow-hidden">
+      <div className="lg:block hidden">
+        <ImageCus
+          src="/forget_password.svg"
+          title="Login"
+          className="w-[500px] h-[600px]"
+        />
+      </div>
+      <div className="lg:w-6/12 w-full md:px-10 px-5 pt-10 pb-20 ">
+        {!sendSuccess && (
+          <div className="w-full">
+            <h1 className="lg:text-3xl text-2xl dark:text-darkText w-fit font-medium mx-auto">
+              Forget Password
+            </h1>
 
-              <form onSubmit={onSubmit} method="POST" className="flex flex-col">
-                <div className="flex flex-col items-start mt-5 gap-5">
-                  <InputText
-                    title="Email"
-                    width="w-full"
-                    value={data.email || ""}
-                    name="email"
-                    required={true}
-                    size="M"
-                    placeholder="Your Email..."
-                    getValue={onChangeData}
-                  />
+            <form onSubmit={onSubmit} method="POST" className="flex flex-col">
+              <div className="flex flex-col items-start mt-5 gap-5">
+                <InputText
+                  title="Email"
+                  width="w-full"
+                  value={data.email || ""}
+                  name="email"
+                  required={true}
+                  size="M"
+                  placeholder="Your Email..."
+                  getValue={onChangeData}
+                />
 
-                  {message && <p className="text-base text-error">{message}</p>}
-                </div>
+                {message && <p className="text-base text-error">{message}</p>}
+              </div>
 
-                <div className="mt-5">
-                  <ButtonClassic
-                    loading={loading}
-                    title="Submit"
-                    size="M"
-                    className="w-full flex items-center justify-center h-10 bg-primary"
-                  />
-                </div>
+              <div className="mt-5">
+                <ButtonClassic
+                  loading={loading}
+                  title="Submit"
+                  size="M"
+                  className="w-full flex items-center justify-center h-10 bg-primary"
+                />
+              </div>
 
-                <div className="flex items-center justify-center">
-                  <Link
-                    className="block hover:underline dark:text-darkText hover:text-primary dark:hover:text-primary text-sm my-5"
-                    href="/login"
-                  >
-                    Đăng nhập
-                  </Link>
-                </div>
-              </form>
-            </div>
-          )}
+              <div className="flex items-center justify-center">
+                <Link
+                  className="block hover:underline dark:text-darkText hover:text-primary dark:hover:text-primary text-sm my-5"
+                  href="/login"
+                >
+                  Đăng nhập
+                </Link>
+              </div>
+            </form>
+          </div>
+        )}
 
-          {sendSuccess && (
-            <div className="flex flex-col items-center justify-center gap-5">
-              <ImageCus className="w-20 h-20" src="/check.gif" />
-              <h1 className="lg:text-3xl text-2xl dark:text-darkText w-fit font-medium mx-auto">
-                Send successfully
-              </h1>
-              <p className="text-base font-medium dark:text-darkText">Please check your email</p>
-            </div>
-          )}
-        </div>
+        {sendSuccess && (
+          <div className="flex flex-col items-center justify-center gap-5">
+            <ImageCus className="w-20 h-20" src="/check.gif" />
+            <h1 className="lg:text-3xl text-2xl dark:text-darkText w-fit font-medium mx-auto">
+              Send successfully
+            </h1>
+            <p className="text-base font-medium dark:text-darkText">
+              Please check your email
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default PasswordResetPage;
+
+PasswordResetPage.getLayout = function getLayout(page: ReactElement) {
+  return <Layout>{page}</Layout>;
+};
