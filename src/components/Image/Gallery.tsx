@@ -94,7 +94,7 @@ const Gallery: FC<Props> = (props: Props) => {
             </div>
 
             <ImageCus
-              src={process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + url}
+              src={process.env.NEXT_PUBLIC_ENDPOINT_API + url}
               className="w-full h-full"
             />
           </li>

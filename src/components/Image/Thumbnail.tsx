@@ -100,7 +100,7 @@ const Thumbnail: FC<Props> = (props: Props) => {
         )}
         {url && !loading && (
           <ImageCus
-            src={process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + url}
+            src={process.env.NEXT_PUBLIC_ENDPOINT_API + url}
             title="Thumbanil"
             className="w-full h-full object-contain object-center"
           />
