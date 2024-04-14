@@ -1,5 +1,3 @@
-import { GetServerSideProps } from "next";
-import { ParsedUrlQuery } from "querystring";
 import {
   useState,
   useEffect,
@@ -15,8 +13,6 @@ import { typeCel } from "~/enums";
 
 import { IFilter, IDataCategory, IPagination } from "~/interface";
 
-import { deleteImageInSever } from "~/helper/handleImage";
-
 import Search from "~/components/Search";
 import { Table, CelTable } from "~/components/Table";
 import { colHeadCategory as colHeadTable } from "~/components/Table/colHeadTable";
@@ -31,6 +27,8 @@ import {
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "next/router";
+import Loading from "~/components/Loading";
 
 interface ISelectCategory {
   id: string;
@@ -39,13 +37,11 @@ interface ISelectCategory {
   thumbnail: string;
 }
 
-interface Props {
-  query: ParsedUrlQuery;
-}
-
 const Layout = LayoutWithHeader;
-const CategoriesPage: NextPageWithLayout<Props> = (props: Props) => {
-  const { query } = props;
+const CategoriesPage: NextPageWithLayout = () => {
+  const router = useRouter();
+  const { query } = router;
+
   const currentPage = query.page ? Number(query.page) : 1;
 
   const { t, i18n } = useTranslation();
@@ -58,7 +54,7 @@ const CategoriesPage: NextPageWithLayout<Props> = (props: Props) => {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectItem, setSelectItem] = useState<ISelectCategory | null>(null);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [filter, setFilter] = useState<IFilter | null>(null);
+  const [filter, setFilter] = useState<IFilter | null>(query.searchText ? ({ search: query.searchText } as IFilter) : null);
 
   const onSelectCheckBox = useCallback(
     (id: string) => {
@@ -77,7 +73,7 @@ const CategoriesPage: NextPageWithLayout<Props> = (props: Props) => {
 
   const onReset = useCallback(() => {
     setFilter(null);
-    
+
     if (!currentPage || currentPage === 1) {
       handleGetData();
     }
@@ -220,7 +216,6 @@ const CategoriesPage: NextPageWithLayout<Props> = (props: Props) => {
     }
 
     try {
-      await deleteImageInSever(selectItem.thumbnail);
       await deleteCategory(selectItem.id);
       setShowPopup(false);
 
@@ -254,6 +249,10 @@ const CategoriesPage: NextPageWithLayout<Props> = (props: Props) => {
       setSelectCategories([]);
     }
   }, [categories, currentPage]);
+
+  if(!router.isReady) {
+    return <Loading />
+  }
 
   return (
     <ShowItemsLayout
@@ -353,12 +352,4 @@ export default CategoriesPage;
 
 CategoriesPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  return {
-    props: {
-      query,
-    },
-  };
 };

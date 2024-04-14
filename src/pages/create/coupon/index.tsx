@@ -88,10 +88,11 @@ const CreateCouponPage: NextPageWithLayout = () => {
 
   const onSelectDate = (value: string, name: string) => {
     if (name === "discount_start_date" && new Date(value) < new Date()) {
-      toast.info("Start date must be greater than the current time!!!", {
+      toast.warn("Start date must be greater than the current time!!!", {
         position: toast.POSITION.TOP_RIGHT,
       });
 
+      setFieldsCheck([...fieldsCheck, "discount_start_date"]);
       return;
     }
 
@@ -100,9 +101,11 @@ const CreateCouponPage: NextPageWithLayout = () => {
       (new Date(value) < new Date() ||
         new Date(data.discount_start_date) >= new Date(value))
     ) {
-      toast.info("End date must be greater than the Start date!!!", {
+      toast.warn("End date must be greater than the Start date!!!", {
         position: toast.POSITION.TOP_RIGHT,
       });
+
+      setFieldsCheck([...fieldsCheck, "discount_end_date"]);
 
       return;
     }
@@ -287,6 +290,11 @@ const CreateCouponPage: NextPageWithLayout = () => {
             type="datetime-local"
             value={data.discount_start_date}
             error={fieldsCheck.includes("discount_start_date")}
+            message={
+              fieldsCheck.includes("discount_start_date")
+                ? "Start date must be greater than the current time!!!"
+                : null
+            }
             onSelect={onSelectDate}
           />
           <SelectDate
@@ -300,6 +308,11 @@ const CreateCouponPage: NextPageWithLayout = () => {
             name="discount_end_date"
             value={data.discount_end_date}
             error={fieldsCheck.includes("discount_end_date")}
+            message={
+              fieldsCheck.includes("discount_end_date")
+                ? "End date must be greater than the Start date!!!"
+                : null
+            }
             onSelect={onSelectDate}
           />
         </div>

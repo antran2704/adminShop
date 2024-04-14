@@ -37,8 +37,6 @@ const Search: FC<Props> = (props: Props) => {
   };
 
   const handleReset = () => {
-    const page = Number(router.query.page);
-
     router.replace({
       query: {},
     });

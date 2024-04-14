@@ -1,4 +1,3 @@
-import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { useRouter } from "next/router";
 import {
@@ -27,7 +26,6 @@ import {
 } from "~/interface";
 
 import { ECompressFormat, ETypeImage, typeCel } from "~/enums";
-import { deleteImageInSever } from "~/helper/handleImage";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import generalBreadcrumbs from "~/helper/generateBreadcrumb";
 
@@ -125,16 +123,11 @@ const initVariant: IVariantProduct = {
   public: true,
 };
 
-interface Props {
-  query: ParsedUrlQuery;
-}
-
 const Layout = LayoutWithHeader;
 
-const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
-  const { query } = props;
-  const { id } = query;
+const ProductEditPage: NextPageWithLayout = () => {
   const router = useRouter();
+  const productId = router.query.id as string;
 
   const { t, i18n } = useTranslation();
 
@@ -319,7 +312,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
     if (index > keys.length - 1) {
       variant.title = `${product.title} ${variant.options.join(" / ")}`;
       variant._id = uuidv4();
-      variant.product_id = id as string;
+      variant.product_id = product._id as string;
       result.push(variant);
 
       return result;
@@ -691,7 +684,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
         barcode: product.barcode,
       };
 
-      const payload = await updateProduct(id as string, sendData);
+      const payload = await updateProduct(product._id as string, sendData);
 
       if (payload.status === 201) {
         toast.success("Success updated product", {
@@ -707,7 +700,7 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
     }
   };
 
-  const handleGetData = async () => {
+  const handleGetData = async (id: string) => {
     setLoading(true);
 
     try {
@@ -910,12 +903,12 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
   };
 
   useEffect(() => {
-    handleGetData();
+    if (!productId) return;
+
+    handleGetData(productId);
     handleGetCategories();
     handleGetCategoriesParent();
-
-    // console.log(router.asPath.split("#"))
-  }, []);
+  }, [productId, router.isReady]);
 
   // useEffect(() => {
   //   if (variants.length > 0) {
@@ -943,6 +936,10 @@ const ProductEditPage: NextPageWithLayout<Props> = (props: Props) => {
   //   }
   //   console.log("Ok");
   // }
+
+  if(!router.isReady) {
+    return <Loading />
+  }
 
   return (
     <FormLayout
@@ -1402,12 +1399,4 @@ export default ProductEditPage;
 
 ProductEditPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  return {
-    props: {
-      query,
-    },
-  };
 };

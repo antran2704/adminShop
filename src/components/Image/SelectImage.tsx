@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Popup from "../Popup";
 import { useTranslation } from "react-i18next";
+import ImageCus from "./ImageCus";
 
 interface Props {
   url: string | null;
@@ -44,15 +45,7 @@ const SelectImage = (props: Props) => {
         } rounded-full overflow-hidden`}
         onClick={handleShowImage}
       >
-        <img
-          src={
-            url
-              ? url
-              : "https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg"
-          }
-          alt="thumbnail"
-          className="w-full h-full"
-        />
+        <ImageCus className="w-full h-full" src={(process.env.NEXT_PUBLIC_ENDPOINT_API) as string + url}/>
       </div>
       <button onClick={handleOpenModal} className="text-sm dark:text-darkText whitespace-nowrap">
         {t("Action.change")}
@@ -67,10 +60,11 @@ const SelectImage = (props: Props) => {
                 onClick={() => onSelectImage(image)}
                 className="rounded-md overflow-hidden min-h-[260px] max-h-[260px]"
               >
-                <img
-                  src={image}
+                {/* <img
+                  src={process.env.NEXT_PUBLIC_ENDPOINT_API + image}
                   className="object-cover object-center h-full"
-                />
+                /> */}
+                <ImageCus className="object-cover object-center h-full" src={(process.env.NEXT_PUBLIC_ENDPOINT_API) as string + image}/>
               </button>
             ))}
           </div>
@@ -80,10 +74,11 @@ const SelectImage = (props: Props) => {
       {show && url && (
         <Popup title="Image" show={show} onClose={handleShowImage}>
           <div className="md:w-3/4 w-full mx-auto pb-5 overflow-hidden">
-            <img
+            {/* <img
               src={url}
               className="h-full w-full object-contain object-center rounded-lg"
-            />
+            /> */}
+             <ImageCus className="h-full w-full object-contain object-center rounded-lg" src={(process.env.NEXT_PUBLIC_ENDPOINT_API) as string + url}/>
           </div>
         </Popup>
       )}

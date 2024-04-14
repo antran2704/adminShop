@@ -1,5 +1,3 @@
-import { GetServerSideProps } from "next";
-import { ParsedUrlQuery } from "querystring";
 import { useRouter } from "next/router";
 import { useState, useCallback, useEffect, ReactElement } from "react";
 import { toast } from "react-toastify";
@@ -28,10 +26,6 @@ import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { NextPageWithLayout } from "~/interface/page";
 import { useTranslation } from "react-i18next";
 
-interface Props {
-  query: ParsedUrlQuery;
-}
-
 const initData: ICoupon = {
   _id: "",
   discount_code: "",
@@ -54,17 +48,16 @@ const initData: ICoupon = {
 
 const Layout = LayoutWithHeader;
 
-const EditCouponPage: NextPageWithLayout<Props> = (props: Props) => {
-  const { query } = props;
-  const { id } = query;
+const EditCouponPage: NextPageWithLayout = () => {
+  const router = useRouter();
+
+  const couponId = router.query.id as string;
 
   const { t } = useTranslation();
 
-  const router = useRouter();
-
   const [data, setData] = useState<ICoupon>(initData);
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
-
+  
   const [discountType, setDiscountType] = useState<EDicount_type>(
     EDicount_type.PERCENTAGE
   );
@@ -110,10 +103,11 @@ const EditCouponPage: NextPageWithLayout<Props> = (props: Props) => {
 
   const onSelectDate = (value: string, name: string) => {
     if (name === "discount_start_date" && new Date(value) < new Date()) {
-      toast.info("Start date must be greater than the current time!!!", {
+      toast.warn("Start date must be greater than the current time!!!", {
         position: toast.POSITION.TOP_RIGHT,
       });
 
+      setFieldsCheck([...fieldsCheck, "discount_start_date"]);
       return;
     }
 
@@ -122,9 +116,11 @@ const EditCouponPage: NextPageWithLayout<Props> = (props: Props) => {
       (new Date(value) < new Date() ||
         new Date(data.discount_start_date) >= new Date(value))
     ) {
-      toast.info("End date must be greater than the Start date!!!", {
+      toast.warn("End date must be greater than the Start date!!!", {
         position: toast.POSITION.TOP_RIGHT,
       });
+
+      setFieldsCheck([...fieldsCheck, "discount_end_date"]);
 
       return;
     }
@@ -223,7 +219,7 @@ const EditCouponPage: NextPageWithLayout<Props> = (props: Props) => {
     return `${year}-${month}-${date}T${hours}:${minutes}`;
   };
 
-  const handleGetData = async () => {
+  const handleGetData = async (id: string) => {
     setLoading(true);
 
     try {
@@ -347,7 +343,7 @@ const EditCouponPage: NextPageWithLayout<Props> = (props: Props) => {
     }
 
     try {
-      const payload = await axiosPatch(`/discounts/${id}`, {
+      const payload = await axiosPatch(`/discounts/${data._id}`, {
         ...data,
         discount_code: data.discount_code.toUpperCase(),
         discount_thumbnail: thumbnail,
@@ -370,8 +366,14 @@ const EditCouponPage: NextPageWithLayout<Props> = (props: Props) => {
   };
 
   useEffect(() => {
-    handleGetData();
-  }, []);
+    if (!couponId) return;
+
+    handleGetData(couponId);
+  }, [couponId, router.isReady]);
+
+  if (!router.isReady) {
+    return <Loading />;
+  }
 
   return (
     <FormLayout
@@ -410,6 +412,11 @@ const EditCouponPage: NextPageWithLayout<Props> = (props: Props) => {
             type="datetime-local"
             value={data.discount_start_date}
             error={fieldsCheck.includes("discount_start_date")}
+            message={
+              fieldsCheck.includes("discount_start_date")
+                ? "Start date must be greater than the current time!!!"
+                : null
+            }
             onSelect={onSelectDate}
           />
           <SelectDate
@@ -423,6 +430,11 @@ const EditCouponPage: NextPageWithLayout<Props> = (props: Props) => {
             name="discount_end_date"
             value={data.discount_end_date}
             error={fieldsCheck.includes("discount_end_date")}
+            message={
+              fieldsCheck.includes("discount_end_date")
+                ? "End date must be greater than the Start date!!!"
+                : null
+            }
             onSelect={onSelectDate}
           />
         </div>
@@ -546,6 +558,7 @@ const EditCouponPage: NextPageWithLayout<Props> = (props: Props) => {
           <Popup
             title="Xác nhận xóa mã giảm giá"
             show={showPopup}
+            img="/popup/trash.svg"
             onClose={handlePopup}
           >
             <div>
@@ -575,12 +588,4 @@ export default EditCouponPage;
 
 EditCouponPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  return {
-    props: {
-      query,
-    },
-  };
 };

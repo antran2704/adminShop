@@ -1,4 +1,3 @@
-import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { ParsedUrlQuery } from "querystring";
 import {
@@ -58,17 +57,13 @@ const initPagination: IPagination = {
   pageSize: 0,
 };
 
-interface Props {
-  query: ParsedUrlQuery;
-}
-
 const Layout = LayoutWithHeader;
 
-const AttributeValuesPage: NextPageWithLayout<Props> = (props: Props) => {
-  const { query } = props;
-  const { id } = query;
-
+const AttributeValuesPage = () => {
   const router = useRouter();
+
+  const { query } = router;
+  const { id } = query;
 
   const { t, i18n } = useTranslation();
 
@@ -508,12 +503,4 @@ export default AttributeValuesPage;
 
 AttributeValuesPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  return {
-    props: {
-      query,
-    },
-  };
 };

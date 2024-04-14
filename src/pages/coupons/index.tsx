@@ -1,5 +1,3 @@
-import { GetServerSideProps } from "next";
-import { ParsedUrlQuery } from "querystring";
 import {
   useState,
   useEffect,
@@ -34,20 +32,20 @@ import {
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "next/router";
+import Loading from "~/components/Loading";
 
 interface ISelectCoupon {
   id: string;
   title: string;
 }
 
-interface Props {
-  query: ParsedUrlQuery;
-}
-
 const Layout = LayoutWithHeader;
 
-const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
-  const { query } = props;
+const CouponsPage: NextPageWithLayout = () => {
+  const router = useRouter();
+
+  const { query } = router;
   const currentPage = query.page ? Number(query.page) : 1;
 
   const { t, i18n } = useTranslation();
@@ -60,7 +58,7 @@ const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectItem, setSelectItem] = useState<ISelectCoupon | null>(null);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [filter, setFilter] = useState<IFilter | null>(null);
+  const [filter, setFilter] = useState<IFilter | null>(query.searchText ? ({ search: query.searchText } as IFilter) : null);
 
   const onSelectCheckBox = useCallback(
     (id: string) => {
@@ -278,6 +276,10 @@ const CouponsPage: NextPageWithLayout<Props> = (props: Props) => {
     }
   }, [coupons, currentPage]);
 
+  if(!router.isReady) {
+    return <Loading />
+  }
+
   return (
     <ShowItemsLayout
       title={t("CouponsPage.title")}
@@ -431,12 +433,4 @@ export default CouponsPage;
 
 CouponsPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  return {
-    props: {
-      query,
-    },
-  };
 };

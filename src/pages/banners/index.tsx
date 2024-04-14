@@ -1,6 +1,11 @@
-import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
-import { useState, useEffect, Fragment, useCallback, ReactElement } from "react";
+import {
+  useState,
+  useEffect,
+  Fragment,
+  useCallback,
+  ReactElement,
+} from "react";
 import { toast } from "react-toastify";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
@@ -8,8 +13,6 @@ import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 import { typeCel } from "~/enums";
 
 import { IFilter, IPagination, Banner } from "~/interface";
-
-import { deleteImageInSever } from "~/helper/handleImage";
 
 import { Table, CelTable } from "~/components/Table";
 import { colHeaderBanner as colHeadTable } from "~/components/Table/colHeadTable";
@@ -24,6 +27,8 @@ import {
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "next/router";
+import Loading from "~/components/Loading";
 
 interface ISelectBanner {
   _id: string;
@@ -31,13 +36,11 @@ interface ISelectBanner {
   image: string;
 }
 
-interface Props {
-  query: ParsedUrlQuery;
-}
-
 const Layout = LayoutWithHeader;
-const BannersPage: NextPageWithLayout<Props> = (props: Props) => {
-  const { query } = props;
+const BannersPage: NextPageWithLayout = () => {
+  const router = useRouter();
+  const { query } = router;
+
   const currentPage = query.page ? Number(query.page) : 1;
 
   const { t, i18n } = useTranslation();
@@ -65,18 +68,6 @@ const BannersPage: NextPageWithLayout<Props> = (props: Props) => {
       }
     },
     [selectBanners]
-  );
-
-  const onReset = useCallback(() => {
-    setFilter(null);
-    handleGetData();
-  }, [filter, banners]);
-
-  const onChangeSearch = useCallback(
-    (name: string, value: string) => {
-      setFilter({ ...filter, [name]: value });
-    },
-    [filter]
   );
 
   const onChangePublish = async (id: string, status: boolean) => {
@@ -198,7 +189,6 @@ const BannersPage: NextPageWithLayout<Props> = (props: Props) => {
     }
 
     try {
-      await deleteImageInSever(selectItem.image);
       await deleteBanner(selectItem._id);
       setShowPopup(false);
 
@@ -220,11 +210,6 @@ const BannersPage: NextPageWithLayout<Props> = (props: Props) => {
   }, [selectItem]);
 
   useEffect(() => {
-    // if (filter) {
-    //   handleGetDataByFilter();
-    // } else {
-    //   handleGetData();
-    // }
     handleGetData();
   }, [currentPage]);
 
@@ -233,6 +218,10 @@ const BannersPage: NextPageWithLayout<Props> = (props: Props) => {
       setSelectBanners([]);
     }
   }, [banners, currentPage]);
+
+  if (!router.isReady) {
+    return <Loading />;
+  }
 
   return (
     <ShowItemsLayout
@@ -321,12 +310,4 @@ export default BannersPage;
 
 BannersPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  return {
-    props: {
-      query,
-    },
-  };
 };

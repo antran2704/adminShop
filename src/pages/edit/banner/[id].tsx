@@ -1,6 +1,11 @@
-import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { useState, useEffect, Fragment, ReactElement } from "react";
+import {
+  useState,
+  useEffect,
+  Fragment,
+  ReactElement,
+  useCallback,
+} from "react";
 import { toast } from "react-toastify";
 import FormLayout from "~/layouts/FormLayout";
 import { InputText } from "~/components/InputField";
@@ -8,12 +13,18 @@ import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Loading from "~/components/Loading";
-import { getBanner, updateBanner, uploadBannerImage } from "~/api-client";
+import {
+  deleteBanner,
+  getBanner,
+  updateBanner,
+  uploadBannerImage,
+} from "~/api-client";
 import { Banner } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 import { ECompressFormat, ETypeImage } from "~/enums";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { useTranslation } from "react-i18next";
+import Popup from "~/components/Popup";
 
 const initData: Banner = {
   _id: "",
@@ -24,15 +35,11 @@ const initData: Banner = {
   path: null,
 };
 
-interface Props {
-  query: any;
-}
-
 const Layout = LayoutWithHeader;
 
-const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
+const EditCategoryPage: NextPageWithLayout = () => {
   const router = useRouter();
-  const { query } = props;
+  const banerId = router.query.id as string;
 
   const { t } = useTranslation();
 
@@ -44,7 +51,12 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
   const [image, setImage] = useState<string | null>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
+
+  const handlePopup = () => {
+    setShowPopup(!showPopup);
+  };
 
   const changeValue = (name: string, value: string) => {
     if (fieldsCheck.includes(name)) {
@@ -57,6 +69,26 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
   const changePublic = (name: string, value: boolean) => {
     setData({ ...data, [name]: value });
   };
+
+  const handleDeleteCategory = useCallback(async () => {
+    if (!data._id) return;
+
+    try {
+      await deleteBanner(data._id);
+      setShowPopup(false);
+
+      toast.success("Success delete banner", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      router.push("/banners");
+    } catch (error) {
+      toast.error("Error delete banner", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      console.log(error);
+    }
+  }, [data]);
 
   const uploadThumbnail = async (source: File) => {
     if (source) {
@@ -148,9 +180,8 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
     }
   };
 
-  const handleGetData = async () => {
+  const handleGetData = async (id: string) => {
     setLoading(true);
-    const id = query.id;
 
     try {
       const data = await getBanner(id);
@@ -185,8 +216,14 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
   };
 
   useEffect(() => {
-    handleGetData();
-  }, []);
+    if (!banerId) return;
+
+    handleGetData(banerId);
+  }, [banerId, router.isReady]);
+
+  if (!router.isReady) {
+    return <Loading />;
+  }
 
   return (
     <FormLayout
@@ -246,7 +283,7 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
             )}
 
             <button
-              // onClick={handlePopup}
+              onClick={handlePopup}
               className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
             >
               {t("Action.delete")}
@@ -256,10 +293,11 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
 
         {loading && <Loading />}
 
-        {/* {showPopup && (
+        {showPopup && (
           <Popup
-            title="Xác nhận xóa thư mục"
+            title="Xác nhận xóa Banner"
             show={showPopup}
+            img="/popup/trash.svg"
             onClose={handlePopup}
           >
             <div>
@@ -279,7 +317,7 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
               </div>
             </div>
           </Popup>
-        )} */}
+        )}
       </Fragment>
     </FormLayout>
   );
@@ -289,12 +327,4 @@ export default EditCategoryPage;
 
 EditCategoryPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  return {
-    props: {
-      query,
-    },
-  };
 };

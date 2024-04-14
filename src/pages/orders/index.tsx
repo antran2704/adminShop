@@ -1,4 +1,3 @@
-import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import {
   useEffect,
   useState,
@@ -25,10 +24,8 @@ import { getOrders, getOrdersWithFilter } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { useTranslation } from "react-i18next";
-
-interface Props {
-  query: InferGetServerSidePropsType<typeof getServerSideProps>;
-}
+import { useRouter } from "next/router";
+import Loading from "~/components/Loading";
 
 const dataFilterStatus: ISelectItem[] = [
   {
@@ -70,15 +67,20 @@ const dataFilterMethod: ISelectItem[] = [
 
 const Layout = LayoutWithHeader;
 
-const OrdersPage: NextPageWithLayout<Props> = (props: Props) => {
-  const { query } = props;
+const OrdersPage: NextPageWithLayout = () => {
+  const router = useRouter();
+
+  const { query } = router;
   const currentPage = query.page ? Number(query.page) : 1;
 
-  const { t, i18n } = useTranslation();
-
+  const { i18n } = useTranslation();
+  
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [message, setMessage] = useState<string | null>(null);
-  const [filter, setFilter] = useState<IFilter | null>(null);
+  const [filter, setFilter] = useState<IFilter | null>(
+    query.searchText ? ({ search: query.searchText } as IFilter) : null
+  );
+
   const [loading, setLoading] = useState<boolean>(true);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
 
@@ -131,6 +133,7 @@ const OrdersPage: NextPageWithLayout<Props> = (props: Props) => {
 
   const handleGetData = useCallback(async () => {
     setLoading(true);
+
     try {
       const response = await getOrders(currentPage);
       if (response.status === 200) {
@@ -155,14 +158,16 @@ const OrdersPage: NextPageWithLayout<Props> = (props: Props) => {
   }, [filter, currentPage]);
 
   useEffect(() => {
-    console.log("currentPage:::", currentPage);
-
     if (filter) {
       handleGetDataByFilter();
     } else {
       handleGetData();
     }
   }, [currentPage]);
+
+  if (!router.isReady) {
+    return <Loading />;
+  }
 
   return (
     <ShowItemsLayout title="Orders" pagination={pagination}>
@@ -275,8 +280,4 @@ export default OrdersPage;
 
 OrdersPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  return { props: { query } };
 };

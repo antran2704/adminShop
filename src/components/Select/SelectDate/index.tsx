@@ -7,6 +7,7 @@ interface Props {
   value: string;
   type: "date" | "datetime-local";
   error?: boolean;
+  message?: string | null;
   onSelect: (name: string, value: string) => void;
 }
 
@@ -17,6 +18,7 @@ const SelectDate: FC<Props> = (props: Props) => {
     name,
     type = "date",
     value,
+    message,
     error,
     onSelect,
   } = props;
@@ -45,6 +47,7 @@ const SelectDate: FC<Props> = (props: Props) => {
           error && "border-error"
         } dark:bg-darkInput dark:text-white px-2 py-1 border-2 focus:border-[#4f46e5] dark:border-transparent rounded-md outline-none`}
       />
+      {message && <p className="text-base text-error">{message}</p>}
     </div>
   );
 };

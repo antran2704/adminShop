@@ -34,6 +34,7 @@ import {
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "next/router";
 
 interface ISelectProduct {
   id: string | null;
@@ -45,14 +46,12 @@ const initSelectProduct: ISelectProduct = {
   title: "",
 };
 
-interface Props {
-  query: ParsedUrlQuery;
-}
-
 const Layout = LayoutWithHeader;
 
-const ProductPage: NextPageWithLayout<Props> = (props: Props) => {
-  const { query } = props;
+const ProductPage: NextPageWithLayout = () => {
+  const router = useRouter();
+
+  const { query } = router;
   const currentPage = query.page ? Number(query.page) : 1;
 
   const { t, i18n } = useTranslation();
@@ -67,7 +66,7 @@ const ProductPage: NextPageWithLayout<Props> = (props: Props) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [filter, setFilter] = useState<IFilter | null>(null);
+  const [filter, setFilter] = useState<IFilter | null>(query.searchText ? ({ search: query.searchText } as IFilter) : null);
 
   const onSelectCheckBox = useCallback(
     (id: string) => {
@@ -444,12 +443,4 @@ export default ProductPage;
 
 ProductPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  return {
-    props: {
-      query,
-    },
-  };
 };

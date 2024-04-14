@@ -109,8 +109,12 @@ const Notification = () => {
   };
 
   useEffect(() => {
-    const URL = process.env.NEXT_PUBLIC_SOCKET_ENDPOINT as string;
-    const socketInit = io(URL);
+    // const URL = process.env.NEXT_PUBLIC_SOCKET_ENDPOINT as string;
+    const URL = "/api/socket";
+    // const socketInit = io(URL);
+    const socketInit = io(URL, {
+      path: "/api/socket",
+    });
     socketInit.connect();
 
     setSocket(socketInit);

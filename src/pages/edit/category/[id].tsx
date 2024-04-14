@@ -1,4 +1,3 @@
-import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import {
   useState,
@@ -10,7 +9,6 @@ import {
 import { toast } from "react-toastify";
 
 import generalBreadcrumbs from "~/helper/generateBreadcrumb";
-import { deleteImageInSever } from "~/helper/handleImage";
 
 import {
   IDataCategory,
@@ -48,15 +46,11 @@ const initData: IDataCategory = {
   thumbnail: null,
 };
 
-interface Props {
-  query: any;
-}
-
 const Layout = LayoutWithHeader;
 
-const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
+const EditCategoryPage: NextPageWithLayout = () => {
   const router = useRouter();
-  const { query } = props;
+  const categoryId = router.query.id as string;
 
   const { t } = useTranslation();
 
@@ -145,10 +139,6 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
     if (!data._id) return;
 
     try {
-      if (data.thumbnail) {
-        await deleteImageInSever(data.thumbnail as string);
-      }
-
       await deleteCategory(data._id as string);
       setShowPopup(false);
 
@@ -237,9 +227,8 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
     }
   };
 
-  const handleGetData = async () => {
+  const handleGetData = async (id: string) => {
     setLoading(true);
-    const id = query.id;
 
     try {
       const data = await getCategory(id);
@@ -314,14 +303,20 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
   };
 
   useEffect(() => {
+    if (!categoryId) return;
+
     Promise.all([
-      handleGetData(),
+      handleGetData(categoryId),
       handleGetCategories(),
       handleGetCategoriesParent(),
     ]).then(() => {
       setLoading(false);
     });
-  }, []);
+  }, [categoryId, router.isReady]);
+
+  if(!router.isReady) {
+    return <Loading />
+  }
 
   return (
     <FormLayout
@@ -420,6 +415,7 @@ const EditCategoryPage: NextPageWithLayout<Props> = (props: Props) => {
           <Popup
             title="Xác nhận xóa thư mục"
             show={showPopup}
+            img="/popup/trash.svg"
             onClose={handlePopup}
           >
             <div>
@@ -449,12 +445,4 @@ export default EditCategoryPage;
 
 EditCategoryPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  return {
-    props: {
-      query,
-    },
-  };
 };

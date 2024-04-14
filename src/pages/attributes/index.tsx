@@ -1,4 +1,3 @@
-import { GetServerSideProps } from "next";
 import { ParsedUrlQuery } from "querystring";
 import {
   useState,
@@ -29,6 +28,7 @@ import {
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "next/router";
 
 interface ISelectAttribute {
   id: string | null;
@@ -40,14 +40,12 @@ const initSelect: ISelectAttribute = {
   title: "",
 };
 
-interface Props {
-  query: ParsedUrlQuery;
-}
-
 const Layout = LayoutWithHeader;
 
-const AttributesPage: NextPageWithLayout<Props> = (props: Props) => {
-  const { query } = props;
+const AttributesPage: NextPageWithLayout = () => {
+  const router = useRouter();
+
+  const { query } = router;
   const currentPage = query.page ? Number(query.page) : 1;
 
   const { t, i18n } = useTranslation();
@@ -60,7 +58,7 @@ const AttributesPage: NextPageWithLayout<Props> = (props: Props) => {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectItem, setSelectItem] = useState<ISelectAttribute>(initSelect);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [filter, setFilter] = useState<IFilter | null>(null);
+  const [filter, setFilter] = useState<IFilter | null>(query.searchText ? ({ search: query.searchText } as IFilter) : null);
 
   const onSelectCheckBox = useCallback(
     (id: string) => {
@@ -331,12 +329,4 @@ export default AttributesPage;
 
 AttributesPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  return {
-    props: {
-      query,
-    },
-  };
 };
