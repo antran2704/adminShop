@@ -5,8 +5,12 @@ import { MdNotificationsNone } from "react-icons/md";
 import { RxDashboard } from "react-icons/rx";
 import { HiOutlineUsers } from "react-icons/hi2";
 
+export interface nameNave {
+  [key: string]: string;
+}
+
 export interface itemNav {
-  name: string;
+  name: nameNave;
   path: string;
   icon?: ReactNode;
   children?: itemNav[];
@@ -14,72 +18,117 @@ export interface itemNav {
 
 const listBody: itemNav[] = [
   {
-    name: "Dashboard",
+    name: {
+      "en-US": "Dashboard",
+      "vi-VN": "Trang chủ",
+    },
     path: "/",
     icon: <RxDashboard />,
   },
   {
-    name: "Catalog",
+    name: {
+      "en-US": "Catalog",
+      "vi-VN": "Mục lục",
+    },
     path: "/",
     icon: <BiCategoryAlt />,
     children: [
       {
-        name: "Banners",
+        name: {
+          "en-US": "Banners",
+          "vi-VN": "Banners",
+        },
         path: "/banners",
       },
       {
-        name: "Categories",
+        name: {
+          "en-US": "Categories",
+          "vi-VN": "Thư mục",
+        },
         path: "/categories",
       },
       {
-        name: "Products",
+        name: {
+          "en-US": "Products",
+          "vi-VN": "Sản phẩm",
+        },
         path: "/products",
       },
       {
-        name: "Attributes",
+        name: {
+          "en-US": "Attributes",
+          "vi-VN": "Thuộc tính",
+        },
         path: "/attributes",
       },
       {
-        name: "Coupons",
+        name: {
+          "en-US": "Coupons",
+          "vi-VN": "Mã giảm giá",
+        },
         path: "/coupons",
       },
     ],
   },
   {
-    name: "Orders",
+    name: {
+      "en-US": "Order",
+      "vi-VN": "Đơn hàng",
+    },
     path: "/orders",
     icon: <AiOutlineShoppingCart />,
   },
   {
-    name: "Income",
+    name: {
+      "en-US": "Income",
+      "vi-VN": "Thu nhập",
+    },
     path: "/",
     icon: <BiDollarCircle />,
     children: [
       {
-        name: "Date",
+        name: {
+          "en-US": "Date",
+          "vi-VN": "Trong ngày",
+        },
         path: "/incomes/date",
       },
       {
-        name: "Week",
+        name: {
+          "en-US": "Week",
+          "vi-VN": "Theo tuần",
+        },
         path: "/incomes/week",
       },
       {
-        name: "Month",
+        name: {
+          "en-US": "Month",
+          "vi-VN": "Theo tháng",
+        },
         path: "/incomes/month",
       },
       {
-        name: "Year",
+        name: {
+          "en-US": "Year",
+          "vi-VN": "Theo năm",
+        },
         path: "/incomes/year",
       },
     ],
   },
   {
-    name: "Notifications",
+    name: {
+      "en-US": "Notifications",
+      "vi-VN": "Thông báo",
+    },
     path: "/notifications",
     icon: <MdNotificationsNone />,
   },
   {
-    name: "Customers",
+    name: {
+      "en-US": "Customers",
+      "vi-VN": "Khách hàng",
+    },
     path: "/customer",
     icon: <HiOutlineUsers />,
   },
@@ -87,10 +136,13 @@ const listBody: itemNav[] = [
 
 const listSetting: itemNav[] = [
   {
-    name: "Setting",
+    name: {
+      "en-US": "Setting",
+      "vi-VN": "Chỉnh sửa",
+    },
     path: "/setting",
     icon: <AiOutlineSetting />,
-  }
+  },
 ];
 
 export { listBody, listSetting };

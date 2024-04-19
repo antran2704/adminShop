@@ -115,6 +115,7 @@ const Notification = () => {
     const socketInit = io(URL, {
       path: "/api/socket",
     });
+
     socketInit.connect();
 
     setSocket(socketInit);
