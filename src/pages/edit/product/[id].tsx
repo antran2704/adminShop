@@ -52,6 +52,7 @@ import {
   getParentCategories,
   getProduct,
   updateProduct,
+  updateVariations,
   uploadThumbnailProduct,
 } from "~/api-client";
 import { generateSlug } from "~/helper/generateSlug";
@@ -159,6 +160,8 @@ const ProductEditPage: NextPageWithLayout = () => {
   >([]);
 
   const [variants, setVariants] = useState<IVariantProduct[]>([]);
+  const [removeVariants, setRemoveVariants] = useState<string[]>([]);
+  console.log("remve", removeVariants);
   const [attributes, setAtrributes] = useState<IObjAttibute>({});
   const [showAttributes, setShowAttributes] = useState<IObjectSelectAttribute>(
     {}
@@ -275,6 +278,15 @@ const ProductEditPage: NextPageWithLayout = () => {
 
   const onClearVariants = () => {
     setVariants([]);
+
+    if (product.variants.length > 0) {
+      let items: string[] = [];
+      items = product.variants.map(
+        (variant: IVariantProduct) => variant._id
+      ) as string[];
+
+      setRemoveVariants(items as string[]);
+    }
   };
 
   const onGenerateVariants = () => {
@@ -636,8 +648,15 @@ const ProductEditPage: NextPageWithLayout = () => {
       let variations_id: string[] = [];
       let inventory: number = 0;
 
+      if (removeVariants.length > 0) {
+        await updateVariations(removeVariants);
+      }
+
       if (variants.length > 0) {
-        const variationsRes = await createVariations(variants);
+        const variationsRes = await createVariations(
+          product._id as string,
+          variants
+        );
 
         if (variationsRes.status !== 201) {
           toast.error("Error in updated variations", {
@@ -900,6 +919,7 @@ const ProductEditPage: NextPageWithLayout = () => {
     );
     setVariants(newVariants);
     setPopupVariant(false);
+    setRemoveVariants([...removeVariants, id]);
   };
 
   useEffect(() => {
@@ -937,8 +957,8 @@ const ProductEditPage: NextPageWithLayout = () => {
   //   console.log("Ok");
   // }
 
-  if(!router.isReady) {
-    return <Loading />
+  if (!router.isReady) {
+    return <Loading />;
   }
 
   return (

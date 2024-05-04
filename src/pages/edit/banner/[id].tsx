@@ -50,7 +50,7 @@ const EditCategoryPage: NextPageWithLayout = () => {
 
   const [image, setImage] = useState<string | null>(null);
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
 
