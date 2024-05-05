@@ -100,10 +100,11 @@ httpConfig.interceptors.response.use(
     }
 
     if (response.status === 403) {
-      toast.error("Forbidden, please login", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      handleLogout();
+      // toast.error("Forbidden, please login", {
+      //   position: toast.POSITION.TOP_RIGHT,
+      // });
+      // handleLogout();
+      router.push("/")
       return Promise.reject(error);
     }
 

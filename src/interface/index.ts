@@ -16,3 +16,4 @@ export * from "./keyToken";
 export * from "./options";
 export * from "./banner";
 export * from "./notification";
+export * from "./permission";

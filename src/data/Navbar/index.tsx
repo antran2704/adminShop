@@ -80,6 +80,17 @@ const listBody: itemNav[] = [
   },
   {
     name: {
+      "en-US": "Notifications",
+      "vi-VN": "Thông báo",
+    },
+    path: "/notifications",
+    icon: <MdNotificationsNone />,
+  },
+];
+
+const listPermisson: itemNav[] = [
+  {
+    name: {
       "en-US": "Income",
       "vi-VN": "Thu nhập",
     },
@@ -118,14 +129,6 @@ const listBody: itemNav[] = [
   },
   {
     name: {
-      "en-US": "Notifications",
-      "vi-VN": "Thông báo",
-    },
-    path: "/notifications",
-    icon: <MdNotificationsNone />,
-  },
-  {
-    name: {
       "en-US": "Customers",
       "vi-VN": "Khách hàng",
     },
@@ -145,4 +148,4 @@ const listSetting: itemNav[] = [
   },
 ];
 
-export { listBody, listSetting };
+export { listBody, listSetting, listPermisson };

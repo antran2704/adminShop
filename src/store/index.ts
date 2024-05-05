@@ -7,6 +7,7 @@ export const store = configureStore({
     user: userReducer,
     setting: settingReducer,
   },
+  // devTools: false
 });
 
 export type AppDispatch = typeof store.dispatch;

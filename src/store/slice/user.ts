@@ -4,6 +4,7 @@ import { IUserInfor } from "~/interface";
 interface IInitData {
   infor: IUserInfor;
   logout: boolean;
+  permissions: string[];
 }
 
 const initialState: IInitData = {
@@ -14,6 +15,7 @@ const initialState: IInitData = {
     avartar: null,
   },
   logout: false,
+  permissions: [],
 };
 
 const userSlice = createSlice({
@@ -26,6 +28,9 @@ const userSlice = createSlice({
     logoutReducer: (state, action) => {
       state.logout = action.payload;
     },
+    setPermisson: (state, action) => {
+      state.permissions = action.payload;
+    },
   },
 });
 
@@ -33,5 +38,5 @@ const userSlice = createSlice({
 
 const userReducer = userSlice.reducer;
 
-export const { loginReducer, logoutReducer } = userSlice.actions;
+export const { loginReducer, logoutReducer, setPermisson } = userSlice.actions;
 export default userReducer;

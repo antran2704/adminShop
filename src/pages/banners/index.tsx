@@ -29,6 +29,7 @@ import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 import Loading from "~/components/Loading";
+import usePermission from "~/hooks/usePermisson";
 
 interface ISelectBanner {
   _id: string;
@@ -44,6 +45,8 @@ const BannersPage: NextPageWithLayout = () => {
   const currentPage = query.page ? Number(query.page) : 1;
 
   const { t, i18n } = useTranslation();
+
+  const permission = usePermission("1111");
 
   const [banners, setBanners] = useState<Banner[]>([]);
   const [selectBanners, setSelectBanners] = useState<string[]>([]);
@@ -226,7 +229,7 @@ const BannersPage: NextPageWithLayout = () => {
   return (
     <ShowItemsLayout
       title={t("BannerPage.title")}
-      titleCreate={t("BannerPage.create")}
+      titleCreate={permission ? t("BannerPage.create") : null}
       link="/create/banner"
       selectItem={{
         title: selectItem?.title ? selectItem.title : "",

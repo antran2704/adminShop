@@ -6,10 +6,14 @@ const getUser = async () => {
 
 const logout = async () => {
   return await axiosPost("/admin/logout", {});
-}
+};
 
 const getRefreshToken = async () => {
   return await axiosGet("/admin/refreshToken");
 };
 
-export { getRefreshToken, getUser, logout };
+const getPermission = async (userId: string) => {
+  return await axiosGet(`/admin/permission/${userId}`);
+};
+
+export { getRefreshToken, getUser, logout, getPermission };

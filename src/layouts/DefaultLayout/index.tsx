@@ -2,10 +2,10 @@ import { useRouter } from "next/router";
 import { useState, useEffect, FC } from "react";
 
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { loginReducer } from "~/store/slice/user";
+import { loginReducer, setPermisson } from "~/store/slice/user";
 
 import Loading from "~/components/Loading";
-import { getUser } from "~/api-client";
+import { getPermission, getUser } from "~/api-client";
 import { injectStore } from "~/ultils/configAxios";
 import { checkDarkMode } from "~/helper/darkMode";
 
@@ -20,6 +20,20 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
   const dispatch = useAppDispatch();
 
   const [loading, setLoading] = useState<boolean>(true);
+
+  const handleGetPermission = async (userId: string) => {
+    if (!userId) return;
+
+    try {
+      const { status, payload } = await getPermission(userId);
+
+      if (status === 200) {
+        dispatch(setPermisson(payload));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const checkAuth = async () => {
     setLoading(true);
@@ -49,6 +63,12 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
   useEffect(() => {
     checkDarkMode(dispatch);
   }, []);
+
+  useEffect(() => {
+    if (!infor._id) return;
+
+    handleGetPermission(infor._id);
+  }, [infor]);
 
   if (loading) {
     return <Loading />;
