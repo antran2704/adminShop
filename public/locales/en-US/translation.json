@@ -49,6 +49,11 @@
       "endDate": "End date"
     }
   },
+  "BlogsPage": {
+    "title": "Blogs",
+    "create": "Create blog",
+    "search": "Search by name..."
+  },
   "LoginPage": {
     "title": "Login",
     "email": {

@@ -192,7 +192,7 @@ const EditCategoryPage: NextPageWithLayout = () => {
       public: data.public,
       parent_id: categorySelect.node_id,
       breadcrumbs,
-      slug: generateSlug(data.title),
+      slug: generateSlug(`${data.title} ${data._id}`),
     };
 
     setLoading(true);

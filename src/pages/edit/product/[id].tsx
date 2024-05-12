@@ -684,7 +684,7 @@ const ProductEditPage: NextPageWithLayout = () => {
         title: product.title,
         description: product.description,
         shortDescription: product.shortDescription,
-        slug: generateSlug(product.title),
+        slug: generateSlug(generateSlug(`${product.title} ${product._id}`)),
         meta_title: product.title,
         meta_description: product.description,
         thumbnail,

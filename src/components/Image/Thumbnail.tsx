@@ -1,7 +1,7 @@
 import { FC, ChangeEvent, memo } from "react";
 import { IoAdd } from "react-icons/io5";
 import { toast } from "react-toastify";
-import { resizeImage, uploadImage } from "~/helper/handleImage";
+import { checkImage, resizeImage, uploadImage } from "~/helper/handleImage";
 import ImageCus from "./ImageCus";
 import { IOptionImage } from "~/interface";
 import { ECompressFormat, ETypeImage } from "~/enums";
@@ -43,24 +43,14 @@ const Thumbnail: FC<Props> = (props: Props) => {
   const hanldeChangeThumbnail = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files[0];
-      if (file && /^image\//.test(file.type)) {
-        if (file.size > 500000) {
-          toast.error("File size is larger than 500000 bytes", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
+      const isValidImage: boolean = checkImage(file, 500000);
 
-          return;
-        }
+      if (!isValidImage) return;
 
-        const newImage = (await resizeImage(file, option)) as File;
-        const source: File = newImage;
-        const url: string = uploadImage(e.target);
-        onChange(source, url);
-      } else {
-        toast.error("Only upload file type image", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
+      const newImage = (await resizeImage(file, option)) as File;
+      const source: File = newImage;
+      const url: string = uploadImage(e.target);
+      onChange(source, url);
     }
   };
 

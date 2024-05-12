@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import ImageCus from "./ImageCus";
 import { IOptionImage } from "~/interface";
 import { ECompressFormat, ETypeImage } from "~/enums";
-import { resizeImage } from "~/helper/handleImage";
+import { checkImage, resizeImage } from "~/helper/handleImage";
 
 interface Props {
   gallery: string[];
@@ -42,25 +42,16 @@ const Gallery: FC<Props> = (props: Props) => {
   const [selectImage, setSelect] = useState<string | null>(null);
 
   const hanldeChangeGallery = async (e: ChangeEvent<HTMLInputElement>) => {
+   
     if (e.target.files) {
       const file = e.target.files[0];
-      if (file && /^image\//.test(file.type)) {
-        if (file.size > 500000) {
-          toast.error("File size is larger than 500000 bytes", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
+      const isValidImage: boolean = checkImage(file, 500000);
 
-          return;
-        }
-
-        const newImage = (await resizeImage(file, option)) as File;
-        const source: File = newImage;
-        onChange(source);
-      } else {
-        toast.error("Only upload file type image", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
+      if (!isValidImage) return;
+      
+      const newImage = (await resizeImage(file, option)) as File;
+      const source: File = newImage;
+      onChange(source);
     }
   };
 

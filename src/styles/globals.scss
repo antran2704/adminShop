@@ -51,6 +51,36 @@ $MOBILE-width: 0px;
   }
 }
 
+@mixin scroll() {
+  &::-webkit-scrollbar {
+    background-color: transparent;
+    width: 4px;
+    height: 2px;
+    overflow: overlay;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    overflow: overlay;
+  }
+}
+
+@mixin scrollHidden() {
+  &::-webkit-scrollbar {
+    background-color: transparent;
+    width: 1px;
+    height: 1px;
+    overflow: overlay;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 10px;
+    overflow: overlay;
+  }
+}
+
 body {
   overflow-x: hidden;
 }
@@ -301,5 +331,55 @@ body::-webkit-scrollbar {
   }
   to {
     background-color: white;
+  }
+}
+
+// Css Quill editor
+.quill__image {
+  margin: 0 auto;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.quill {
+  height: 80vh;
+  border-radius: 6px;
+  border: 1px solid;
+  overflow: hidden;
+
+  & .ql-editor {
+    @include scroll();
+
+    padding: 12px 16px 80px;
+  }
+
+  & .ql-toolbar.ql-snow {
+    border: none;
+    border-bottom: 1px solid #ccc;
+  }
+
+  & .ql-container.ql-snow {
+    border: none;
+  }
+}
+
+.dark {
+  .quill {
+    background-color: white;
+    // border: 1px solid white;
+
+    // .ql-header,
+    // .ql-picker-label {
+    //   color: white;
+    // }
+
+    // .ql-fill,
+    // .ql-fill {
+    //   fill: white;
+    // }
+
+    // .ql-stroke {
+    //   stroke: white;
+    // }
   }
 }

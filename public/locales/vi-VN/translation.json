@@ -49,6 +49,11 @@
       "endDate": "Ngày kết thúc"
     }
   },
+  "BlogsPage": {
+    "title": "Danh sác bài viết",
+    "create": "Tạo bài viết",
+    "search": "Tìm kiếm theo tiêu đề..."
+  },
   "LoginPage": {
     "title": "Đăng nhập",
     "email": {
