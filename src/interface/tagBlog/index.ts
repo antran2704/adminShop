@@ -7,6 +7,6 @@ interface ITagBlog {
   updatedAt: string;
 }
 
-type ICreateBlog = Omit<ITagBlog, "_id" | "updatedAt">;
+type ICreateTagBlog = Omit<ITagBlog, "_id" | "updatedAt">;
 
-export type { ITagBlog, ICreateBlog };
+export type { ITagBlog, ICreateTagBlog };

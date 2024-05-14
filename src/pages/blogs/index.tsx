@@ -1,13 +1,24 @@
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { Fragment, ReactElement, useCallback, useEffect, useState } from "react";
+import {
+  Fragment,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
-import { IBlog, IFilter, IPagination } from "~/interface";
+import { IBlog, IFilter, IHomeBlog, IPagination } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 
-import { getBlogs, updateBlog } from "~/api-client";
+import {
+  deleteBlog,
+  getBlogs,
+  getBlogsWithFilter,
+  updateBlog,
+} from "~/api-client";
 
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
@@ -37,7 +48,7 @@ const BlogsPage: NextPageWithLayout = () => {
   const { query } = router;
   const currentPage = query.page ? Number(query.page) : 1;
 
-  const [blogs, setBlogs] = useState<IBlog[]>([]);
+  const [blogs, setBlogs] = useState<IHomeBlog[]>([]);
   const [selectBlogs, setSelectBlogs] = useState<string[]>([]);
   const [selectItem, setSelectItem] = useState<Pick<
     IBlog,
@@ -112,7 +123,7 @@ const BlogsPage: NextPageWithLayout = () => {
     setFilter(null);
 
     if (!currentPage || currentPage === 1) {
-      // handleGetData();
+      handleGetData();
     }
   }, [filter, currentPage]);
 
@@ -150,7 +161,7 @@ const BlogsPage: NextPageWithLayout = () => {
             updatedAt: item.updatedAt,
           };
         });
-        setBlogs(data)
+        setBlogs(data);
         setPagination(response.pagination);
         setLoading(false);
       }
@@ -167,40 +178,39 @@ const BlogsPage: NextPageWithLayout = () => {
     setMessage(null);
     setLoading(true);
 
-    // try {
-    //   const response = await getCategoriesWithFilter(filter, currentPage);
-    //   if (response.status === 200) {
-    //     if (response.payload.length === 0) {
-    //       setCategories([]);
-    //       setMessage("No category");
-    //       setLoading(false);
-    //       return;
-    //     }
+    try {
+      const response = await getBlogsWithFilter(filter, {}, currentPage);
+      if (response.status === 200) {
+        if (response.payload.length === 0) {
+          setBlogs([]);
+          setMessage("No category");
+          setLoading(false);
+          return;
+        }
 
-    //     const data: IDataCategory[] = response.payload.map(
-    //       (item: IDataCategory) => {
-    //         return {
-    //           _id: item._id,
-    //           title: item.title,
-    //           slug: item.slug,
-    //           public: item.public,
-    //           parent_id: item.parent_id,
-    //           thumbnail: item.thumbnail,
-    //           createdAt: item.createdAt,
-    //         };
-    //       }
-    //     );
-    //     setPagination(response.pagination);
-    //     setCategories(data);
-    //     setLoading(false);
-    //   }
-    // } catch (error) {
-    //   setMessage("Error in server");
-    //   toast.error("Error in server, please try again", {
-    //     position: toast.POSITION.TOP_RIGHT,
-    //   });
-    //   setLoading(false);
-    // }
+        const data: IHomeBlog[] = response.payload.map((item: IHomeBlog) => {
+          return {
+            _id: item._id,
+            author: item.author,
+            title: item.title,
+            slug: item.slug,
+            thumbnail: item.thumbnail,
+            tags: item.tags,
+            public: item.public,
+            updatedAt: item.updatedAt,
+          };
+        });
+        setPagination(response.pagination);
+        setBlogs(data);
+        setLoading(false);
+      }
+    } catch (error) {
+      setMessage("Error in server");
+      toast.error("Error in server, please try again", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      setLoading(false);
+    }
   }, [filter, currentPage]);
 
   const getContent = (newContent: string) => {
@@ -208,6 +218,36 @@ const BlogsPage: NextPageWithLayout = () => {
     console.log(newContent);
     // setContend(newContent);
   };
+
+  const handleDeleteBlog = useCallback(async () => {
+    if (!selectItem || !selectItem._id) {
+      setShowPopup(false);
+      toast.error("False delete blog", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      return;
+    }
+
+    try {
+      await deleteBlog(selectItem._id);
+      setShowPopup(false);
+
+      if (filter) {
+        handleGetDataByFilter();
+      } else {
+        handleGetData();
+      }
+
+      toast.success("Success delete category", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (error) {
+      toast.error("Error delete category", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      console.log(error);
+    }
+  }, [selectItem]);
 
   useEffect(() => {
     if (filter) {
@@ -217,8 +257,8 @@ const BlogsPage: NextPageWithLayout = () => {
     }
   }, [currentPage]);
 
-  if(!router.isReady) {
-    return <Loading />
+  if (!router.isReady) {
+    return <Loading />;
   }
 
   return (
@@ -234,7 +274,7 @@ const BlogsPage: NextPageWithLayout = () => {
         id: selectItem?._id || null,
       }}
       pagination={pagination}
-      handleDelete={() => {}}
+      handleDelete={handleDeleteBlog}
       showPopup={showPopup}
       handlePopup={handlePopup}
     >
@@ -260,7 +300,7 @@ const BlogsPage: NextPageWithLayout = () => {
           loading={loading}
         >
           <Fragment>
-            {blogs.map((item: IBlog) => (
+            {blogs.map((item: IHomeBlog) => (
               <tr
                 key={item._id}
                 className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
@@ -277,11 +317,11 @@ const BlogsPage: NextPageWithLayout = () => {
                   value={item.title}
                   href={`/edit/category/${item._id}`}
                 />
-                <CelTable
+                {/* <CelTable
                   type={typeCel.THUMBNAIL}
                   value={item.thumbnail as string}
                   href={`/edit/category/${item._id}`}
-                />
+                /> */}
                 <CelTable
                   id={item._id as string}
                   type={typeCel.PUBLIC}

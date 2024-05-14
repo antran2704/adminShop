@@ -8,7 +8,7 @@ import {
 } from "~/ultils/configAxios";
 
 const getBlogs = async (page: number = 1) => {
-  return await axiosGet(`/admin/blogs/?page=${page}`);
+  return await axiosGet(`/admin/blogs?page=${page}`);
 };
 
 const getBlog = async (blog_id: string) => {
