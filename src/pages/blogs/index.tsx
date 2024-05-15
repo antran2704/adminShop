@@ -26,19 +26,11 @@ import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 import { Table, CelTable } from "~/components/Table";
 import { colHeadBlog as colHeadTable } from "~/components/Table/colHeadTable";
 import { ButtonDelete, ButtonEdit } from "~/components/Button";
-import EditorCus from "~/components/Editor";
 import { initPagination } from "~/components/Pagination/initData";
 import Search from "~/components/Search";
 import Loading from "~/components/Loading";
 
 import { typeCel } from "~/enums";
-
-const CustomEditor = dynamic(
-  () => {
-    return import("~/components/Editor");
-  },
-  { ssr: false }
-);
 
 const Layout = LayoutWithHeader;
 const BlogsPage: NextPageWithLayout = () => {
@@ -59,7 +51,6 @@ const BlogsPage: NextPageWithLayout = () => {
   const [filter, setFilter] = useState<IFilter | null>(
     query.searchText ? ({ search: query.searchText } as IFilter) : null
   );
-  const [content, setContend] = useState<string>("");
   const [message, setMessage] = useState<string | null>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -213,12 +204,6 @@ const BlogsPage: NextPageWithLayout = () => {
     }
   }, [filter, currentPage]);
 
-  const getContent = (newContent: string) => {
-    if (!newContent) return;
-    console.log(newContent);
-    // setContend(newContent);
-  };
-
   const handleDeleteBlog = useCallback(async () => {
     if (!selectItem || !selectItem._id) {
       setShowPopup(false);
@@ -262,9 +247,6 @@ const BlogsPage: NextPageWithLayout = () => {
   }
 
   return (
-    // <div className="container__cus p-5 mx-auto">
-    //   <CustomEditor getContent={getContent} />
-    // </div>
     <ShowItemsLayout
       title={t("BlogsPage.title")}
       titleCreate={t("BlogsPage.create")}
@@ -317,11 +299,11 @@ const BlogsPage: NextPageWithLayout = () => {
                   value={item.title}
                   href={`/edit/category/${item._id}`}
                 />
-                {/* <CelTable
+                <CelTable
                   type={typeCel.THUMBNAIL}
                   value={item.thumbnail as string}
                   href={`/edit/category/${item._id}`}
-                /> */}
+                />
                 <CelTable
                   id={item._id as string}
                   type={typeCel.PUBLIC}

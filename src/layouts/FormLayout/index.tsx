@@ -28,7 +28,7 @@ const FormLayout: ForwardRefRenderFunction<HTMLUListElement, props> = (
         {children}
       </ul>
 
-      <div className="fixed bottom-0 w-full flex lg:flex-nowrap flex-wrap items-center justify-between bg-[#ffffffbf] dark:bg-[#1f293733] backdrop-blur-[6px] py-4 px-5 border-t-2 dark:border-transparent lg:gap-5 gap-2">
+      <div className="fixed bottom-0 w-full flex lg:flex-nowrap flex-wrap items-center justify-between bg-[#ffffffbf] dark:bg-[#1f293733] backdrop-blur-[6px] py-4 px-5 border-t-2 dark:border-transparent lg:gap-5 gap-2 z-10">
         <button
           onClick={() => router.push(backLink)}
           className="w-fit text-lg text-white font-medium bg-[#111926] px-5 py-1 opacity-90 hover:opacity-100 border-2 rounded-md"
@@ -39,7 +39,7 @@ const FormLayout: ForwardRefRenderFunction<HTMLUListElement, props> = (
 
       <button
         onClick={onSubmit}
-        className="fixed bottom-[18px] right-5 w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
+        className="fixed bottom-[18px] right-5 w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md z-10"
       >
         Save
       </button>

@@ -1,23 +1,32 @@
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { ReactElement, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import { CreateBanner, ICreateBlog, ISelectItem } from "~/interface";
+import { ICreateBlog, ISelectItem, ITagBlog } from "~/interface";
 import FormLayout from "~/layouts/FormLayout";
 import { InputText, InputTextarea } from "~/components/InputField";
 import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Loading from "~/components/Loading";
-import { createBanner, uploadBannerImage } from "~/api-client";
+import { createBlog, getTagBlogs, uploadBlogImage } from "~/api-client";
 import { ECompressFormat, ETypeImage } from "~/enums";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { NextPageWithLayout } from "~/interface/page";
 import { useTranslation } from "react-i18next";
-import MultipleValue from "~/components/InputField/MultipleValue";
 import SelectMultipleItem from "~/components/Select/SelectMultipleItem";
+import { useAppSelector } from "~/store/hooks";
+
+const CustomEditor = dynamic(
+  () => {
+    return import("~/components/Editor");
+  },
+  { ssr: false }
+);
 
 const initData: ICreateBlog = {
+  author: "",
   title: "",
   content: "",
   description: "",
@@ -26,24 +35,21 @@ const initData: ICreateBlog = {
   tags: [],
 };
 
-const initDataSelect: ISelectItem[] = [
-  { _id: "1", title: "test 1" },
-  { _id: "2", title: "test 2" },
-  { _id: "3", title: "test 3" },
-];
-
 const Layout = LayoutWithHeader;
 
 const CreateCategoryPage: NextPageWithLayout = () => {
   const router = useRouter();
 
   const { t } = useTranslation();
+  const { user } = useAppSelector((state) => state);
 
   const [data, setData] = useState<ICreateBlog>(initData);
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
-  const [mutipleTag, setMultipleTag] = useState<ISelectItem[]>([]);
 
+  const [tags, setTags] = useState<ISelectItem[]>([]);
+  const [selectTag, setSelectTag] = useState<ISelectItem[]>([]);
   const [image, setImage] = useState<string | null>(null);
+  const [content, setContend] = useState<string>("");
 
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
@@ -73,7 +79,7 @@ const CreateCategoryPage: NextPageWithLayout = () => {
       setLoadingThumbnail(true);
 
       try {
-        const { status, payload } = await uploadBannerImage(formData);
+        const { status, payload } = await uploadBlogImage(formData);
 
         if (status === 201) {
           setImage(payload);
@@ -89,9 +95,15 @@ const CreateCategoryPage: NextPageWithLayout = () => {
     }
   };
 
-  const changeMultipleTag = (select: ISelectItem[]) => {
-    console.log(select)
-    // setMultipleTag(values);
+  const changeSelectTag = (select: ISelectItem[]) => {
+    // console.log(select);
+    setSelectTag(select);
+  };
+
+  const handleChangeContent = (newContent: string) => {
+    if (!newContent) return;
+    console.log(newContent);
+    setContend(newContent);
   };
 
   const checkData = (data: any) => {
@@ -103,6 +115,24 @@ const CreateCategoryPage: NextPageWithLayout = () => {
     return fields;
   };
 
+  const handleGetTags = async () => {
+    try {
+      const { status, payload } = await getTagBlogs(1);
+
+      if (status === 200) {
+        const tagsBlog: ISelectItem[] = payload.map((item: ITagBlog) => ({
+          _id: item._id,
+          title: item.title,
+        }));
+
+        setTags(tagsBlog);
+        // setSelectTag(tagsBlog);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleOnSubmit = async () => {
     const fields = checkData([
       {
@@ -110,7 +140,11 @@ const CreateCategoryPage: NextPageWithLayout = () => {
         value: data.title,
       },
       {
-        name: "image",
+        name: "description",
+        value: data.description,
+      },
+      {
+        name: "thumbnail",
         value: image,
       },
     ]);
@@ -123,21 +157,32 @@ const CreateCategoryPage: NextPageWithLayout = () => {
       return;
     }
 
+    if (!user.infor._id) return;
+
     setLoading(true);
 
-    const sendData: CreateBanner = {
-      ...data,
-      image: image as string,
+    const sendData: ICreateBlog = {
+      author: user.infor._id,
+      title: data.title,
+      description: data.description,
+      meta_title: data.title,
+      meta_description: data.description,
+      thumbnail: image as string,
+      content,
+      tags: selectTag.map((tag: ISelectItem) => tag._id) as string[],
+      public: data.public,
     };
 
+    console.log(sendData);
+    return;
     try {
-      const payload = await createBanner(sendData);
+      const payload = await createBlog(sendData);
 
       if (payload.status === 201) {
-        toast.success("Success create banner", {
+        toast.success("Success create blog", {
           position: toast.POSITION.TOP_RIGHT,
         });
-        router.push("/banners");
+        router.push("/blogs");
       }
 
       setLoading(false);
@@ -148,6 +193,10 @@ const CreateCategoryPage: NextPageWithLayout = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    handleGetTags();
+  }, []);
 
   return (
     <FormLayout
@@ -168,7 +217,7 @@ const CreateCategoryPage: NextPageWithLayout = () => {
           />
 
           <InputTextarea
-            title="Meta Title"
+            title="Description"
             width="w-full"
             value={data.description}
             error={fieldsCheck.includes("description")}
@@ -178,17 +227,19 @@ const CreateCategoryPage: NextPageWithLayout = () => {
           />
 
           <SelectMultipleItem
-            title={t("CreateProductPage.field.categories")}
+            title={t("CreateProductPage.field.tags")}
             width="w-full"
-            select={mutipleTag}
-            data={initDataSelect}
-            name="categories"
+            select={selectTag}
+            data={tags}
+            name="tags"
             placeholder="Please select tag"
-            error={fieldsCheck.includes("categories")}
-            getSelect={changeMultipleTag}
+            error={fieldsCheck.includes("tags")}
+            getSelect={changeSelectTag}
           />
         </div>
-
+        <div className="w-full py-5">
+          <CustomEditor content={content} getContent={handleChangeContent} />
+        </div>
         <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <Thumbnail
             error={fieldsCheck.includes("thumbnail")}
@@ -214,7 +265,6 @@ const CreateCategoryPage: NextPageWithLayout = () => {
             onChange={changePublic}
           />
         </div>
-
         {loading && <Loading />}
       </div>
     </FormLayout>

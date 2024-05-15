@@ -21,9 +21,18 @@ interface IBlog {
 
 type IHomeBlog = Omit<IBlog, "meta_title" | "meta_description" | "content">;
 
-type ICreateBlog = Omit<
+type ICreateBlog = Pick<
   IBlog,
-  "_id" | "updatedAt" | "author" | "slug" | "meta_title" | "meta_description"
->;
+  | "title"
+  | "meta_title"
+  | "description"
+  | "thumbnail"
+  | "meta_description"
+  | "content"
+  | "public"
+> & {
+  author: string;
+  tags: string[];
+};
 
 export type { IBlog, AuthorBlog, TagBlog, ICreateBlog, IHomeBlog };

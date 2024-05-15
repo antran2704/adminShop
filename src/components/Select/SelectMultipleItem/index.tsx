@@ -37,38 +37,32 @@ const MultipleValue = (props: Props) => {
 
   const [text, setText] = useState<string>("");
   const [message, setMessage] = useState<string | null>(null);
-  const [selectItems, setSelectItems] = useState<ISelectItem[]>(select);
 
   const [open, setOpen] = useState<boolean>(false);
 
   const handleDeleteValue = (data: ISelectItem) => {
-    const newSelect = selectItems.filter((value) => value._id !== data._id);
-    setSelectItems(newSelect);
-    // getAttributes(name, values);
+    const newSelect = select.filter((value) => value._id !== data._id);
+    getSelect(newSelect);
   };
 
   const onSelectAll = () => {
-    if (selectItems.length === data.length) {
-      setSelectItems([]);
+    if (select.length === data.length) {
+      getSelect([]);
     } else {
-      setSelectItems([...data]);
+      getSelect([...data]);
     }
   };
 
   const onSelectItem = (data: ISelectItem) => {
-    const isExit = selectItems.some((item) => item._id === data._id);
+    const isExit = select.some((item) => item._id === data._id);
 
     if (isExit) {
-      const newSelect = selectItems.filter((item) => item._id !== data._id);
-      setSelectItems(newSelect);
+      const newSelect = select.filter((item) => item._id !== data._id);
+      getSelect(newSelect);
     } else {
-      setSelectItems([...selectItems, data]);
+      getSelect([...select, data]);
     }
   };
-
-  useEffect(() => {
-    getSelect(selectItems);
-  }, [selectItems]);
 
   return (
     <div className={`${width ? width : "w-full"}`}>
@@ -91,7 +85,7 @@ const MultipleValue = (props: Props) => {
         } focus:border-[#4f46e5] dark:border-transparent outline-none gap-2`}
       >
         <ul className="flex flex-wrap items-center gap-2">
-          {selectItems.map((value: ISelectItem, index: number) => (
+          {select.map((value: ISelectItem, index: number) => (
             <li
               onClick={(e: MouseEvent<HTMLLIElement>) => {
                 e.stopPropagation();
@@ -108,7 +102,7 @@ const MultipleValue = (props: Props) => {
           ))}
         </ul>
 
-        {!selectItems.length && (
+        {!select.length && (
           <input
             readOnly
             id={name}
@@ -126,7 +120,7 @@ const MultipleValue = (props: Props) => {
             open
               ? "top-[120%] opacity-100 pointer-events-auto"
               : "top-[130%] opacity-0 pointer-events-none"
-          } scroll left-0 w-full max-h-[160px] bg-white border-2 rounded-md shadow-md overflow-y-auto transition-all ease-linear duration-200 z-0`}
+          } scroll left-0 w-full max-h-[160px] bg-white border-2 rounded-md shadow-md overflow-y-auto transition-all ease-linear duration-200 z-[1]`}
         >
           <li
             onClick={(e: MouseEvent<HTMLLIElement>) => {
@@ -134,7 +128,7 @@ const MultipleValue = (props: Props) => {
               onSelectAll();
             }}
             className={`w-full text-base ${
-              selectItems.length === data.length ? "bg-gray-200" : ""
+              select.length === data.length ? "bg-gray-200" : ""
             } px-5 py-1 border-b-2 border-gray-300 cursor-pointer transition-all ease-linear duration-100`}
           >
             Select All
@@ -148,7 +142,7 @@ const MultipleValue = (props: Props) => {
                 onSelectItem(item);
               }}
               className={`w-full text-base ${
-                selectItems.find(
+                select.find(
                   (selectItem: ISelectItem) => selectItem._id === item._id
                 ) && "bg-gray-200"
               } px-5 py-1 cursor-pointer transition-all ease-linear duration-100`}

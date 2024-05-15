@@ -12,6 +12,7 @@ import { checkImage, resizeImage } from "~/helper/handleImage";
 import { IOptionImage } from "~/interface";
 
 import useDebounce from "~/hooks/useDebounce";
+import SpinLoading from "../Loading/SpinLoading";
 
 const initOption: IOptionImage = {
   quality: 100,
@@ -93,10 +94,10 @@ const Editor = (props: Props) => {
   const quillRef = useRef(null);
 
   const [value, setValue] = useState<string>(content);
+  const [loading, setLoading] = useState<boolean>(false);
   const newValue = useDebounce(value, debounce);
 
   const uploadImage = async () => {
-    // console.log(quillRef.current)
     if (!quillRef.current) return;
 
     const quill: ReactQuill = quillRef.current;
@@ -110,7 +111,7 @@ const Editor = (props: Props) => {
     input.click();
 
     input.onchange = async () => {
-      // setLoadImg(true);
+      setLoading(true);
       // setLoadMessage("Hình ảnh đang tải lên...")
       if (!input.files) return;
 
@@ -140,6 +141,8 @@ const Editor = (props: Props) => {
         editor.setSelection({ index: newPosition, length: 1 });
         editor.insertText(newPosition, "\n");
       }
+
+      setLoading(false);
     };
   };
 
@@ -184,15 +187,23 @@ const Editor = (props: Props) => {
   }, [newValue]);
 
   return (
-    <ReactQuill
-      modules={modules}
-      formats={formats}
-      ref={quillRef}
-      theme="snow"
-      value={value}
-      onChange={onChangeContent}
-      placeholder={placeholder}
-    />
+    <div className="relative overflow-hidden z-0">
+      <ReactQuill
+        modules={modules}
+        formats={formats}
+        ref={quillRef}
+        theme="snow"
+        value={value}
+        onChange={onChangeContent}
+        placeholder={placeholder}
+      />
+
+      {loading && (
+        <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black/40 rounded-md">
+          <SpinLoading className="text-3xl text-white" />
+        </div>
+      )}
+    </div>
   );
 };
 
