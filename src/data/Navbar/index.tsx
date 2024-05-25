@@ -68,6 +68,20 @@ const listBody: itemNav[] = [
         },
         path: "/coupons",
       },
+      {
+        name: {
+          "en-US": "Blog",
+          "vi-VN": "Blog",
+        },
+        path: "/blogs",
+      },
+      {
+        name: {
+          "en-US": "Tag Blog",
+          "vi-VN": "Tag Blog",
+        },
+        path: "/tag-blogs",
+      },
     ],
   },
   {

@@ -90,7 +90,6 @@ const Editor = (props: Props) => {
     placeholder = "Enter your content...",
     getContent,
   } = props;
-
   const quillRef = useRef(null);
 
   const [value, setValue] = useState<string>(content);

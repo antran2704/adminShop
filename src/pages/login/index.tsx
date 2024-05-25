@@ -9,7 +9,6 @@ import ImageCus from "~/components/Image/ImageCus";
 import { InputText, InputPassword } from "~/components/InputField";
 import Loading from "~/components/Loading";
 import { loginReducer, logoutReducer } from "~/store/slice/user";
-import { AxiosResponseCus } from "~/interface";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { axiosPost } from "~/ultils/configAxios";
 import { getUser } from "~/api-client";
@@ -76,8 +75,7 @@ const LoginPage: NextPageWithLayout = () => {
     } catch (err) {
       const error = err as AxiosError;
       if (error?.response) {
-        const { status, data: responseErr } =
-          error.response as unknown as AxiosResponseCus;
+        const { status, data: responseErr }: any = error.response;
 
         if (status === 400) {
           setMessage(responseErr.message);

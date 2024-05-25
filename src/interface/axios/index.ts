@@ -1,10 +1,15 @@
-interface AxiosResponseCus {
+interface IResponseSuccess<T> {
   status: number;
-  data: any;
+  payload: T;
+}
+
+interface IResponseError {
+  status: number;
+  message: string;
 }
 
 interface AxiosRequestHeadersCus {
   [key: string]: string;
 }
 
-export type { AxiosResponseCus, AxiosRequestHeadersCus };
+export type { IResponseSuccess, AxiosRequestHeadersCus, IResponseError };

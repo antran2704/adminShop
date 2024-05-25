@@ -8,7 +8,6 @@ import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
 import { InputPassword } from "~/components/InputField";
 import Loading from "~/components/Loading";
-import { AxiosResponseCus } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
 import { axiosPost } from "~/ultils/configAxios";
@@ -96,8 +95,7 @@ const CheckPasswordKeyPage: NextPageWithLayout = () => {
         setLoading(false);
         return;
       }
-      const { status, data: payload } =
-        error.response as unknown as AxiosResponseCus;
+      const { status, data: payload }: any = error.response;
 
       if (status === 500) {
         toast.error("Server is busy, please try again", {

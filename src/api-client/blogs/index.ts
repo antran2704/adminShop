@@ -33,7 +33,7 @@ const createBlog = async (payload: ICreateBlog) => {
   return await axiosPost("/admin/blogs", payload);
 };
 
-const updateBlog = async (blog_id: string, options?: Partial<IBlog>) => {
+const updateBlog = async (blog_id: string, options?: Partial<ICreateBlog>) => {
   return await axiosPatch(`/admin/blogs/${blog_id}`, {
     ...options,
   });

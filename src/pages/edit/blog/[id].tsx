@@ -3,20 +3,34 @@ import { useRouter } from "next/router";
 import { ReactElement, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import { ICreateBlog, ISelectItem, ITagBlog } from "~/interface";
+import {
+  IBlog,
+  ICreateBlog,
+  IResponseSuccess,
+  ISelectItem,
+  ITagBlog,
+} from "~/interface";
 import FormLayout from "~/layouts/FormLayout";
 import { InputText, InputTextarea } from "~/components/InputField";
 import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Loading from "~/components/Loading";
-import { createBlog, getTagBlogs, uploadBlogImage } from "~/api-client";
+import {
+  createBlog,
+  deleteBlog,
+  getBlog,
+  getTagBlogs,
+  updateBlog,
+  uploadBlogImage,
+} from "~/api-client";
 import { ECompressFormat, ETypeImage } from "~/enums";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { NextPageWithLayout } from "~/interface/page";
 import { useTranslation } from "react-i18next";
 import SelectMultipleItem from "~/components/Select/SelectMultipleItem";
 import { useAppSelector } from "~/store/hooks";
+import Popup from "~/components/Popup";
 
 const CustomEditor = dynamic(
   () => {
@@ -25,25 +39,28 @@ const CustomEditor = dynamic(
   { ssr: false }
 );
 
-const initData: ICreateBlog = {
-  author: "",
+const initData: IBlog = {
+  _id: "",
+  author: null,
   title: "",
   content: "",
   description: "",
   thumbnail: "",
   public: true,
   tags: [],
+  slug: "",
 };
 
 const Layout = LayoutWithHeader;
 
-const CreateCategoryPage: NextPageWithLayout = () => {
+const EditBlogPage: NextPageWithLayout = () => {
   const router = useRouter();
+  const blogIdParam: string = router.query.id as string;
 
   const { t } = useTranslation();
-  const { user } = useAppSelector((state) => state);
+  const user = useAppSelector((state) => state.user);
 
-  const [data, setData] = useState<ICreateBlog>(initData);
+  const [data, setData] = useState<IBlog>(initData);
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
 
   const [tags, setTags] = useState<ISelectItem[]>([]);
@@ -51,8 +68,13 @@ const CreateCategoryPage: NextPageWithLayout = () => {
   const [image, setImage] = useState<string | null>(null);
   const [content, setContend] = useState<string>("");
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
+
+  const handlePopup = () => {
+    setShowPopup(!showPopup);
+  };
 
   const changeValue = (name: string, value: string) => {
     if (fieldsCheck.includes(name)) {
@@ -96,13 +118,11 @@ const CreateCategoryPage: NextPageWithLayout = () => {
   };
 
   const changeSelectTag = (select: ISelectItem[]) => {
-    // console.log(select);
     setSelectTag(select);
   };
 
   const handleChangeContent = (newContent: string) => {
     if (!newContent) return;
-    console.log(newContent);
     setContend(newContent);
   };
 
@@ -113,6 +133,60 @@ const CreateCategoryPage: NextPageWithLayout = () => {
       router.push(`#${fields[0]}`);
     }
     return fields;
+  };
+
+  const handleDeleteBlog = async () => {
+    if (!blogIdParam) {
+      setShowPopup(false);
+      toast.error("False delete blog", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await deleteBlog(blogIdParam);
+      setShowPopup(false);
+
+      toast.success("Success delete blog", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      router.push("/blogs");
+    } catch (error) {
+      toast.error("Error delete blog", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      setLoading(false);
+      console.log(error);
+    }
+  };
+
+  const handleGetData = async (blogId: string) => {
+    if (!blogId) return;
+    setLoading(true);
+
+    try {
+      const { status, payload }: IResponseSuccess<IBlog> = await getBlog(
+        blogId
+      );
+
+      if (status === 200) {
+        setData(payload);
+        setContend(payload.content);
+        setImage(payload.thumbnail);
+        setSelectTag(payload.tags);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Error get data", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+
+    setLoading(false);
   };
 
   const handleGetTags = async () => {
@@ -157,7 +231,7 @@ const CreateCategoryPage: NextPageWithLayout = () => {
       return;
     }
 
-    if (!user.infor._id) return;
+    if (!user.infor._id || !blogIdParam) return;
 
     setLoading(true);
 
@@ -174,18 +248,16 @@ const CreateCategoryPage: NextPageWithLayout = () => {
     };
 
     try {
-      const payload = await createBlog(sendData);
+      const payload = await updateBlog(blogIdParam, sendData);
 
       if (payload.status === 201) {
-        toast.success("Success create blog", {
+        toast.success("Success update blog", {
           position: toast.POSITION.TOP_RIGHT,
         });
         router.push("/blogs");
       }
-
-      setLoading(false);
     } catch (error) {
-      toast.error("Error in create category", {
+      toast.error("Error in update blog", {
         position: toast.POSITION.TOP_RIGHT,
       });
       setLoading(false);
@@ -196,10 +268,16 @@ const CreateCategoryPage: NextPageWithLayout = () => {
     handleGetTags();
   }, []);
 
+  useEffect(() => {
+    if (blogIdParam) {
+      handleGetData(blogIdParam);
+    }
+  }, [blogIdParam]);
+
   return (
     <FormLayout
       title={t("CreateBannerPage.title")}
-      backLink="/banners"
+      backLink="/blogs"
       onSubmit={handleOnSubmit}
     >
       <div className="lg:w-2/4 w-full mx-auto">
@@ -236,7 +314,9 @@ const CreateCategoryPage: NextPageWithLayout = () => {
           />
         </div>
         <div className="w-full py-5">
-          <CustomEditor content={content} getContent={handleChangeContent} />
+          {data._id && (
+            <CustomEditor content={content} getContent={handleChangeContent} />
+          )}
         </div>
         <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <Thumbnail
@@ -254,23 +334,60 @@ const CreateCategoryPage: NextPageWithLayout = () => {
               type: ETypeImage.file,
             }}
           />
+        </div>
 
-          <ButtonCheck
-            title={t("CreateBannerPage.field.public")}
-            name="isPublic"
-            width="w-fit"
-            isChecked={data.public}
-            onChange={changePublic}
-          />
+        <div className="w-full flex lg:flex-nowrap flex-wrap items-end justify-between mt-5 gap-5">
+          {data?._id && (
+            <ButtonCheck
+              title={t("CreateBannerPage.field.public")}
+              name="public"
+              width="w-fit"
+              isChecked={data.public}
+              onChange={changePublic}
+            />
+          )}
+
+          <button
+            onClick={handlePopup}
+            className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
+          >
+            {t("Action.delete")}
+          </button>
         </div>
         {loading && <Loading />}
+
+        {showPopup && (
+          <Popup
+            title="Xác nhận xóa Blog"
+            show={showPopup}
+            img="/popup/trash.svg"
+            onClose={handlePopup}
+          >
+            <div>
+              <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
+                <button
+                  onClick={handlePopup}
+                  className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-90 hover:opacity-100 rounded-md transition-cus"
+                >
+                  Cancle
+                </button>
+                <button
+                  onClick={handleDeleteBlog}
+                  className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-90 hover:opacity-100 rounded-md"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </Popup>
+        )}
       </div>
     </FormLayout>
   );
 };
 
-export default CreateCategoryPage;
+export default EditBlogPage;
 
-CreateCategoryPage.getLayout = function getLayout(page: ReactElement) {
+EditBlogPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
 };

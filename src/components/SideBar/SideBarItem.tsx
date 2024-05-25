@@ -12,10 +12,10 @@ interface Props {
 
 const NavbarItem: FC<Props> = (props: Props) => {
   const { subNav, data } = props;
+
   const router = useRouter();
   const [show, setShow] = useState(false);
   const elRef = useRef<HTMLUListElement>(null);
-
   const { i18n } = useTranslation();
 
   const handleCollapse = (): void => {
@@ -24,7 +24,7 @@ const NavbarItem: FC<Props> = (props: Props) => {
       const currentHeight = el.clientHeight;
 
       if (currentHeight === 0) {
-        el.style.height = el.scrollHeight + "px";
+        el.style.height = "fit-content";
       } else {
         el.style.height = "0px";
       }
@@ -45,7 +45,9 @@ const NavbarItem: FC<Props> = (props: Props) => {
             href={data.path}
           >
             <span>{data.icon}</span>
-            <span className="whitespace-nowrap">{data.name[i18n.resolvedLanguage as string]}</span>
+            <span className="whitespace-nowrap">
+              {data.name[i18n.resolvedLanguage as string]}
+            </span>
           </Link>
         </li>
       )}
@@ -58,7 +60,9 @@ const NavbarItem: FC<Props> = (props: Props) => {
           >
             <div className="w-full flex items-center text-lg dark:text-darkText font-medium gap-3">
               <span>{data.icon}</span>
-              <span className="whitespace-nowrap">{data.name[i18n.resolvedLanguage as string]}</span>
+              <span className="whitespace-nowrap">
+                {data.name[i18n.resolvedLanguage as string]}
+              </span>
             </div>
             {!show && (
               <AiOutlinePlus
@@ -77,19 +81,13 @@ const NavbarItem: FC<Props> = (props: Props) => {
             className={`lg:w-full h-0 pl-5 transition-all ease-linear duration-300 overflow-hidden`}
           >
             {data.children?.map((item: itemNav, index: number) => (
-              <li key={index} className="w-full">
-                <Link
-                  className={`w-full flex items-center text-base font-medium px-3 py-2 my-1 ${
-                    router.asPath.includes(item.path)
-                      ? "bg-primary text-white"
-                      : "hover:bg-primary text-black dark:text-darkText hover:text-white"
-                  } lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}
-                  href={item.path}
-                >
-                  {item?.icon && <span>{item.icon}</span>}
-                  <span className="whitespace-nowrap">{item.name[i18n.resolvedLanguage as string]}</span>
-                </Link>
-              </li>
+              <NavbarItem
+                key={index}
+                subNav={
+                  item.children && item.children.length > 0 ? true : false
+                }
+                data={item as itemNav}
+              />
             ))}
           </ul>
         </li>

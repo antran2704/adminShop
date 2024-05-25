@@ -6,7 +6,7 @@ type TagBlog = Pick<ITagBlog, "_id" | "slug" | "title">;
 
 interface IBlog {
   _id: string;
-  author: AuthorBlog;
+  author: AuthorBlog | null;
   title: string;
   description: string;
   meta_title?: string;
@@ -16,7 +16,7 @@ interface IBlog {
   slug: string;
   tags: TagBlog[];
   public: boolean;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
 type IHomeBlog = Omit<IBlog, "meta_title" | "meta_description" | "content">;
