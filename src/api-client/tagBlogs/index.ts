@@ -1,4 +1,5 @@
 import qs from "qs";
+import { uploadImageOnServer } from "~/helper/handleImage";
 import { IBlog, ICreateTagBlog, IFilter, IQueryParam } from "~/interface";
 import {
   axiosDelete,
@@ -41,6 +42,13 @@ const updateTagBlog = async (
   });
 };
 
+const uploadTagBlogImage = async (formData: FormData) => {
+  return await uploadImageOnServer(
+    `${process.env.NEXT_PUBLIC_ENDPOINT_API}/admin/blogs-tag/uploadImage`,
+    formData
+  );
+};
+
 const deleteTagBlog = async (tag_id: string) => {
   return await axiosDelete(`/admin/blogs-tag/${tag_id}`);
 };
@@ -50,6 +58,7 @@ export {
   getTagBlogsWithFilter,
   getTagBlog,
   updateTagBlog,
+  uploadTagBlogImage,
   createTagBlog,
-  deleteTagBlog
+  deleteTagBlog,
 };

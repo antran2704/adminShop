@@ -14,6 +14,12 @@ const colHeadBlog: typeHeadTable = {
   "vi-VN": ["", "Tên", "Ảnh", "Hiện", "Ngày tạo", "Chỉnh sửa"],
 };
 
+// header table for tag blog
+const colHeadTagBlog: typeHeadTable = {
+  "en-US": ["", "Name", "Thumnail", "Publish", "Created Date", "Action"],
+  "vi-VN": ["", "Tên", "Ảnh", "Hiện", "Ngày tạo", "Chỉnh sửa"],
+};
+
 // header table for orders
 const colHeadOrder: typeHeadTable = {
   "vi-VN": [
@@ -147,4 +153,5 @@ export {
   colHeaderCoupon,
   colHeaderBanner,
   colHeadBlog,
+  colHeadTagBlog
 };

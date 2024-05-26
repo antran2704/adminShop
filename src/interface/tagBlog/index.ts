@@ -4,9 +4,9 @@ interface ITagBlog {
   thumbnail: string;
   slug: string;
   public: boolean;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
-type ICreateTagBlog = Omit<ITagBlog, "_id" | "updatedAt">;
+type ICreateTagBlog = Omit<ITagBlog, "_id" | "updatedAt" | "slug">;
 
 export type { ITagBlog, ICreateTagBlog };

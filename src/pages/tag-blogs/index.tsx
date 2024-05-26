@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import {
   Fragment,
@@ -10,14 +9,14 @@ import {
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
-import { IBlog, IFilter, IHomeBlog, IPagination } from "~/interface";
+import { IFilter, IPagination, ITagBlog } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 
 import {
-  deleteBlog,
-  getBlogs,
-  getBlogsWithFilter,
-  updateBlog,
+  deleteTagBlog,
+  getTagBlogs,
+  getTagBlogsWithFilter,
+  updateTagBlog,
 } from "~/api-client";
 
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
@@ -33,17 +32,17 @@ import Loading from "~/components/Loading";
 import { typeCel } from "~/enums";
 
 const Layout = LayoutWithHeader;
-const BlogsPage: NextPageWithLayout = () => {
+const TagBlogsPage: NextPageWithLayout = () => {
   const { t, i18n } = useTranslation();
 
   const router = useRouter();
   const { query } = router;
   const currentPage = query.page ? Number(query.page) : 1;
 
-  const [blogs, setBlogs] = useState<IHomeBlog[]>([]);
+  const [tagBlogs, setTagBlogs] = useState<ITagBlog[]>([]);
   const [selectBlogs, setSelectBlogs] = useState<string[]>([]);
   const [selectItem, setSelectItem] = useState<Pick<
-    IBlog,
+    ITagBlog,
     "_id" | "title" | "thumbnail"
   > | null>(null);
 
@@ -87,10 +86,10 @@ const BlogsPage: NextPageWithLayout = () => {
     }
 
     try {
-      const payload = await updateBlog(id, { public: status });
+      const payload = await updateTagBlog(id, { public: status });
 
       if (payload.status === 201) {
-        toast.success("Success updated blog", {
+        toast.success("Success updated tag", {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
@@ -130,29 +129,17 @@ const BlogsPage: NextPageWithLayout = () => {
     setLoading(true);
 
     try {
-      const response = await getBlogs(currentPage);
+      const response = await getTagBlogs(currentPage);
 
       if (response.status === 200) {
         if (response.payload.length === 0) {
-          setBlogs([]);
-          setMessage("No blog");
+          setTagBlogs([]);
+          setMessage("No Tag");
           setLoading(false);
           return;
         }
 
-        const data: IBlog[] = response.payload.map((item: IBlog) => {
-          return {
-            _id: item._id,
-            author: item.author,
-            title: item.title,
-            slug: item.slug,
-            thumbnail: item.thumbnail,
-            tags: item.tags,
-            public: item.public,
-            updatedAt: item.updatedAt,
-          };
-        });
-        setBlogs(data);
+        setTagBlogs(response.payload);
         setPagination(response.pagination);
         setLoading(false);
       }
@@ -170,29 +157,17 @@ const BlogsPage: NextPageWithLayout = () => {
     setLoading(true);
 
     try {
-      const response = await getBlogsWithFilter(filter, {}, currentPage);
+      const response = await getTagBlogsWithFilter(filter, {}, currentPage);
       if (response.status === 200) {
         if (response.payload.length === 0) {
-          setBlogs([]);
-          setMessage("No category");
+          setTagBlogs([]);
+          setMessage("No item");
           setLoading(false);
           return;
         }
 
-        const data: IHomeBlog[] = response.payload.map((item: IHomeBlog) => {
-          return {
-            _id: item._id,
-            author: item.author,
-            title: item.title,
-            slug: item.slug,
-            thumbnail: item.thumbnail,
-            tags: item.tags,
-            public: item.public,
-            updatedAt: item.updatedAt,
-          };
-        });
         setPagination(response.pagination);
-        setBlogs(data);
+        setTagBlogs(response.payload);
         setLoading(false);
       }
     } catch (error) {
@@ -214,7 +189,7 @@ const BlogsPage: NextPageWithLayout = () => {
     }
 
     try {
-      await deleteBlog(selectItem._id);
+      await deleteTagBlog(selectItem._id);
       setShowPopup(false);
 
       if (filter) {
@@ -250,7 +225,7 @@ const BlogsPage: NextPageWithLayout = () => {
     <ShowItemsLayout
       title={t("BlogsPage.title")}
       titleCreate={t("BlogsPage.create")}
-      link="/create/blog"
+      link="/create/tag-blog"
       selectItem={{
         title: selectItem?.title ? selectItem.title : "",
         id: selectItem?._id || null,
@@ -270,7 +245,7 @@ const BlogsPage: NextPageWithLayout = () => {
         />
 
         <Table
-          items={blogs}
+          items={tagBlogs}
           // selects={selectCategories}
           // setSelects={setSelectCategories}
           // selectAll={true}
@@ -282,7 +257,7 @@ const BlogsPage: NextPageWithLayout = () => {
           loading={loading}
         >
           <Fragment>
-            {blogs.map((item: IHomeBlog) => (
+            {tagBlogs.map((item: ITagBlog) => (
               <tr
                 key={item._id}
                 className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
@@ -297,12 +272,12 @@ const BlogsPage: NextPageWithLayout = () => {
                 <CelTable
                   type={typeCel.LINK}
                   value={item.title}
-                  href={`/edit/blog/${item._id}`}
+                  href={`/edit/tag-blog/${item._id}`}
                 />
                 <CelTable
                   type={typeCel.THUMBNAIL}
                   value={item.thumbnail as string}
-                  href={`/edit/blog/${item._id}`}
+                  href={`/edit/tag-blog/${item._id}`}
                 />
                 <CelTable
                   id={item._id as string}
@@ -317,7 +292,7 @@ const BlogsPage: NextPageWithLayout = () => {
                 />
                 <CelTable type={typeCel.GROUP}>
                   <div className="flex items-center justify-center gap-2">
-                    <ButtonEdit link={`/edit/blog/${item._id}`} />
+                    <ButtonEdit link={`/edit/tag-blog/${item._id}`} />
 
                     <ButtonDelete
                       onClick={() =>
@@ -339,7 +314,7 @@ const BlogsPage: NextPageWithLayout = () => {
   );
 };
 
-export default BlogsPage;
-BlogsPage.getLayout = function getLayout(page: ReactElement) {
+export default TagBlogsPage;
+TagBlogsPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
 };
