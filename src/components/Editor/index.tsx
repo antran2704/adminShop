@@ -133,7 +133,7 @@ const Editor = (props: Props) => {
         editor.insertEmbed(
           position,
           "image",
-          process.env.NEXT_PUBLIC_ENDPOINT_API + payload
+          process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + payload
         );
         // editor.formatLine(position, position, "align", "center");
         const newPosition: number = position + 1;
