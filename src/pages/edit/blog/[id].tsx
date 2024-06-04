@@ -9,6 +9,8 @@ import {
   IResponseSuccess,
   ISelectItem,
   ITagBlog,
+  TagBlog,
+  TagBlogUpdate,
 } from "~/interface";
 import FormLayout from "~/layouts/FormLayout";
 import { InputText, InputTextarea } from "~/components/InputField";
@@ -63,8 +65,10 @@ const EditBlogPage: NextPageWithLayout = () => {
   const [data, setData] = useState<IBlog>(initData);
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
 
+  const [listTags, setListTags] = useState<ITagBlog[]>([]);
   const [tags, setTags] = useState<ISelectItem[]>([]);
   const [selectTag, setSelectTag] = useState<ISelectItem[]>([]);
+
   const [image, setImage] = useState<string | null>(null);
   const [content, setContend] = useState<string>("");
 
@@ -174,10 +178,15 @@ const EditBlogPage: NextPageWithLayout = () => {
       );
 
       if (status === 200) {
+        const tags: ISelectItem[] = payload.tags.map((item: TagBlog) => ({
+          _id: item.tag._id,
+          title: item.tag.title,
+        }));
+
         setData(payload);
         setContend(payload.content);
         setImage(payload.thumbnail);
-        setSelectTag(payload.tags);
+        setSelectTag(tags);
       }
     } catch (error) {
       console.log(error);
@@ -200,7 +209,7 @@ const EditBlogPage: NextPageWithLayout = () => {
         }));
 
         setTags(tagsBlog);
-        // setSelectTag(tagsBlog);
+        setListTags(payload);
       }
     } catch (error) {
       console.log(error);
@@ -235,6 +244,17 @@ const EditBlogPage: NextPageWithLayout = () => {
 
     setLoading(true);
 
+    const listTagSend = selectTag.map((tag: ISelectItem) => {
+      const item = listTags.find((item: ITagBlog) => item._id === tag._id);
+
+      if (item) {
+        return {
+          tag: item._id,
+          slug: item.slug,
+        };
+      }
+    });
+
     const sendData: ICreateBlog = {
       author: user.infor._id,
       title: data.title,
@@ -243,7 +263,7 @@ const EditBlogPage: NextPageWithLayout = () => {
       meta_description: data.description,
       thumbnail: image as string,
       content,
-      tags: selectTag.map((tag: ISelectItem) => tag._id) as string[],
+      tags: listTagSend as TagBlogUpdate[],
       public: data.public,
     };
 
@@ -326,11 +346,11 @@ const EditBlogPage: NextPageWithLayout = () => {
             onChange={uploadThumbnail}
             option={{
               quality: 100,
-              maxHeight: 800,
-              maxWidth: 1300,
-              minHeight: 800,
-              minWidth: 1300,
-              compressFormat: ECompressFormat.JPEG,
+              maxHeight: 600,
+              maxWidth: 600,
+              minHeight: 600,
+              minWidth: 600,
+              compressFormat: ECompressFormat.WEBP,
               type: ETypeImage.file,
             }}
           />

@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { ReactElement, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import { ICreateBlog, ISelectItem, ITagBlog } from "~/interface";
+import { ICreateBlog, ISelectItem, ITagBlog, TagBlogUpdate } from "~/interface";
 import FormLayout from "~/layouts/FormLayout";
 import { InputText, InputTextarea } from "~/components/InputField";
 import Thumbnail from "~/components/Image/Thumbnail";
@@ -46,6 +46,7 @@ const CreateCategoryPage: NextPageWithLayout = () => {
   const [data, setData] = useState<ICreateBlog>(initData);
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
 
+  const [listTags, setListTags] = useState<ITagBlog[]>([]);
   const [tags, setTags] = useState<ISelectItem[]>([]);
   const [selectTag, setSelectTag] = useState<ISelectItem[]>([]);
   const [image, setImage] = useState<string | null>(null);
@@ -96,7 +97,7 @@ const CreateCategoryPage: NextPageWithLayout = () => {
   };
 
   const changeSelectTag = (select: ISelectItem[]) => {
-    // console.log(select);
+    console.log(select);
     setSelectTag(select);
   };
 
@@ -125,8 +126,8 @@ const CreateCategoryPage: NextPageWithLayout = () => {
           title: item.title,
         }));
 
+        setListTags(payload);
         setTags(tagsBlog);
-        // setSelectTag(tagsBlog);
       }
     } catch (error) {
       console.log(error);
@@ -161,6 +162,17 @@ const CreateCategoryPage: NextPageWithLayout = () => {
 
     setLoading(true);
 
+    const listTagSend = selectTag.map((tag: ISelectItem) => {
+      const item = listTags.find((item: ITagBlog) => item._id === tag._id);
+
+      if (item) {
+        return {
+          tag: item._id,
+          slug: item.slug,
+        };
+      }
+    });
+
     const sendData: ICreateBlog = {
       author: user.infor._id,
       title: data.title,
@@ -169,7 +181,7 @@ const CreateCategoryPage: NextPageWithLayout = () => {
       meta_description: data.description,
       thumbnail: image as string,
       content,
-      tags: selectTag.map((tag: ISelectItem) => tag._id) as string[],
+      tags: listTagSend as TagBlogUpdate[],
       public: data.public,
     };
 
@@ -246,11 +258,11 @@ const CreateCategoryPage: NextPageWithLayout = () => {
             onChange={uploadThumbnail}
             option={{
               quality: 100,
-              maxHeight: 800,
-              maxWidth: 1300,
-              minHeight: 800,
-              minWidth: 1300,
-              compressFormat: ECompressFormat.JPEG,
+              maxHeight: 600,
+              maxWidth: 600,
+              minHeight: 600,
+              minWidth: 600,
+              compressFormat: ECompressFormat.WEBP,
               type: ETypeImage.file,
             }}
           />

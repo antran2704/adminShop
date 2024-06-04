@@ -2,7 +2,20 @@ import { ITagBlog } from "../tagBlog";
 import { IUserInfor } from "../user";
 
 type AuthorBlog = Pick<IUserInfor, "_id" | "name">;
-type TagBlog = Pick<ITagBlog, "_id" | "slug" | "title">;
+
+type TagBlog = {
+  tag: {
+    _id: string;
+    title: string;
+    slug: string;
+  };
+  slug: string;
+};
+
+type TagBlogUpdate = {
+  tag: string;
+  slug: string;
+};
 
 interface IBlog {
   _id: string;
@@ -31,8 +44,8 @@ type ICreateBlog = Pick<
   | "content"
   | "public"
 > & {
+  tags: TagBlogUpdate[];
   author: string;
-  tags: string[];
 };
 
-export type { IBlog, AuthorBlog, TagBlog, ICreateBlog, IHomeBlog };
+export type { IBlog, AuthorBlog, TagBlog, TagBlogUpdate, ICreateBlog, IHomeBlog };
