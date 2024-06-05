@@ -1,6 +1,5 @@
 import { FC, ChangeEvent, memo } from "react";
 import { IoAdd } from "react-icons/io5";
-import { toast } from "react-toastify";
 import { checkImage, resizeImage, uploadImage } from "~/helper/handleImage";
 import ImageCus from "./ImageCus";
 import { IOptionImage } from "~/interface";

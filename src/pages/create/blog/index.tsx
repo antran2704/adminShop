@@ -257,11 +257,11 @@ const CreateCategoryPage: NextPageWithLayout = () => {
             loading={loadingThumbnail}
             onChange={uploadThumbnail}
             option={{
-              quality: 100,
+              quality: 80,
               maxHeight: 600,
               maxWidth: 600,
-              minHeight: 600,
-              minWidth: 600,
+              minHeight: 400,
+              minWidth: 400,
               compressFormat: ECompressFormat.WEBP,
               type: ETypeImage.file,
             }}
