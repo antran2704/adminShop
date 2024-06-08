@@ -8,6 +8,7 @@ import Loading from "~/components/Loading";
 import { getPermission, getUser } from "~/api-client";
 import { injectStore } from "~/ultils/configAxios";
 import { checkDarkMode } from "~/helper/darkMode";
+import SpinLoading from "~/components/Loading/SpinLoading";
 
 interface Props {
   children: JSX.Element;
@@ -71,7 +72,7 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
   }, [infor]);
 
   if (loading) {
-    return <Loading />;
+    return <SpinLoading className="text-3xl" />;
   }
 
   return (

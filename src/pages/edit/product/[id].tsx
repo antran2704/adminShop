@@ -1,4 +1,3 @@
-import { ParsedUrlQuery } from "querystring";
 import { useRouter } from "next/router";
 import {
   useState,
@@ -161,7 +160,7 @@ const ProductEditPage: NextPageWithLayout = () => {
 
   const [variants, setVariants] = useState<IVariantProduct[]>([]);
   const [removeVariants, setRemoveVariants] = useState<string[]>([]);
-  console.log("remve", removeVariants);
+
   const [attributes, setAtrributes] = useState<IObjAttibute>({});
   const [showAttributes, setShowAttributes] = useState<IObjectSelectAttribute>(
     {}
@@ -169,7 +168,7 @@ const ProductEditPage: NextPageWithLayout = () => {
   const [selectAttributes, setSelectAttributes] =
     useState<IObjectSelectAttribute>({});
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
   const [loadingGallery, setLoadingGallery] = useState<boolean>(false);
 
@@ -930,33 +929,6 @@ const ProductEditPage: NextPageWithLayout = () => {
     handleGetCategoriesParent();
   }, [productId, router.isReady]);
 
-  // useEffect(() => {
-  //   if (variants.length > 0) {
-  //     const test: string[] = router.asPath.split("#");
-
-  //     if (test.length > 1) {
-  //       const element: HTMLElement | null = document.getElementById(test[1]);
-  //       console.log(variants);
-  //       console.log(element);
-  //       router.push(`#${test[1]}`);
-  //       if (element) {
-  //         element.classList.add("animate_warning");
-  //       }
-  //     }
-  //   }
-  // }, [variants]);
-
-  // const test: string[] = router.asPath.split("#");
-
-  // if (test.length > 1) {
-  //   const element: HTMLElement | null = document.getElementById(test[1]);
-  //   console.log(element)
-  //   if(element) {
-  //     element.scrollIntoView();
-  //   }
-  //   console.log("Ok");
-  // }
-
   if (!router.isReady) {
     return <Loading />;
   }
@@ -966,6 +938,7 @@ const ProductEditPage: NextPageWithLayout = () => {
       title={`${t("EditProductPage.title")} ${title}`}
       backLink="/products"
       onSubmit={handleOnSubmit}
+      loading={loading}
     >
       <Fragment>
         <div className="flex items-center py-5 gap-2">
@@ -1187,8 +1160,6 @@ const ProductEditPage: NextPageWithLayout = () => {
                 {t("Action.delete")}
               </button>
             </div>
-
-            {loading && <Loading />}
           </div>
         )}
 

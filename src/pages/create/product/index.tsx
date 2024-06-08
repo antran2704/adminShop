@@ -34,6 +34,7 @@ import { ECompressFormat, ETypeImage } from "~/enums";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { NextPageWithLayout } from "~/interface/page";
 import { useTranslation } from "react-i18next";
+import SpinLoading from "~/components/Loading/SpinLoading";
 
 const initData: ICreateProduct = {
   title: "",
@@ -417,7 +418,7 @@ const CreateProductPage: NextPageWithLayout = () => {
             value={product.shortDescription}
             name="shortDescription"
             placeholder="Input short description about product"
-            rows={2}
+            rows={4}
             getValue={changeValue}
           />
 
@@ -573,7 +574,7 @@ const CreateProductPage: NextPageWithLayout = () => {
           />
         </div>
 
-        {loading && <Loading />}
+        {loading && <SpinLoading className="text-3xl" />}
       </div>
     </FormLayout>
   );

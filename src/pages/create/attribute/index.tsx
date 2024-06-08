@@ -134,6 +134,7 @@ const CreateAttributePage: NextPageWithLayout = () => {
     <FormLayout
       title={t("CreateAttributePage.title")}
       backLink="/attributes"
+      loading={loading}
       onSubmit={handleOnSubmit}
     >
       <div className="lg:w-2/4 w-full mx-auto">
@@ -177,8 +178,6 @@ const CreateAttributePage: NextPageWithLayout = () => {
             onChange={changePublic}
           />
         </div>
-
-        {loading && <Loading />}
       </div>
     </FormLayout>
   );

@@ -322,6 +322,7 @@ const EditCategoryPage: NextPageWithLayout = () => {
     <FormLayout
       title={`${t("EditCategoryPage.title")} ${title ? title : ""}`}
       backLink="/categories"
+      loading={loading}
       onSubmit={handleOnSubmit}
     >
       <Fragment>
@@ -408,8 +409,6 @@ const EditCategoryPage: NextPageWithLayout = () => {
             </button>
           </div>
         </div>
-
-        {loading && <Loading />}
 
         {showPopup && (
           <Popup

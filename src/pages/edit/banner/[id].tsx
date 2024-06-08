@@ -230,6 +230,7 @@ const EditCategoryPage: NextPageWithLayout = () => {
       title={`${t("EditBannerPage.title")} ${title ? title : ""}`}
       backLink="/categories"
       onSubmit={handleOnSubmit}
+      loading={loading}
     >
       <Fragment>
         <div className="lg:w-2/4 w-full mx-auto">
@@ -290,8 +291,6 @@ const EditCategoryPage: NextPageWithLayout = () => {
             </button>
           </div>
         </div>
-
-        {loading && <Loading />}
 
         {showPopup && (
           <Popup

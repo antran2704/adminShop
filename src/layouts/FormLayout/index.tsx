@@ -1,9 +1,11 @@
 import { useRouter } from "next/router";
 import { forwardRef, ForwardRefRenderFunction, Ref } from "react";
+import SpinLoading from "~/components/Loading/SpinLoading";
 
 interface props {
   children: JSX.Element;
   title: string;
+  loading?: boolean;
   backLink?: string;
   onSubmit: () => void;
 }
@@ -12,14 +14,17 @@ const FormLayout: ForwardRefRenderFunction<HTMLUListElement, props> = (
   props: props,
   ref: Ref<HTMLUListElement> | undefined
 ) => {
-  const { children, title, backLink = "/", onSubmit } = props;
+  const { children, title, backLink = "/", loading = false, onSubmit } = props;
 
   const router = useRouter();
 
   return (
     // <LayoutWithHeader>
     <section className="scrollHidden relative w-full overflow-auto">
-      <ul ref={ref} className="scrollHidden min-h-screen pb-24 px-5 gap-3 overflow-auto">
+      <ul
+        ref={ref}
+        className="scrollHidden min-h-screen pb-24 px-5 gap-3 overflow-auto"
+      >
         <div className="flex items-center justify-between py-5 z-20">
           <h1 className="lg:text-xl text-lg font-semibold dark:text-darkText max-w-[60%] line-clamp-1">
             {title}
@@ -43,7 +48,11 @@ const FormLayout: ForwardRefRenderFunction<HTMLUListElement, props> = (
       >
         Save
       </button>
+
+      {/* loading */}
+      {loading && <SpinLoading className="text-3xl" />}
     </section>
+
     // </LayoutWithHeader>
   );
 };

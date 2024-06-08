@@ -205,6 +205,7 @@ const EditBlogPage: NextPageWithLayout = () => {
     <FormLayout
       title={t("CreateBannerPage.title")}
       backLink="/blogs"
+      loading={loading}
       onSubmit={handleOnSubmit}
     >
       <div className="lg:w-2/4 w-full mx-auto">
@@ -255,7 +256,6 @@ const EditBlogPage: NextPageWithLayout = () => {
             {t("Action.delete")}
           </button>
         </div>
-        {loading && <Loading />}
 
         {showPopup && (
           <Popup

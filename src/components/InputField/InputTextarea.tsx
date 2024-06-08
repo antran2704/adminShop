@@ -70,7 +70,7 @@ const InputTextareaField: FC<ITextarea> = (props: ITextarea) => {
         } focus:border-[#4f46e5] dark:focus:border-[#4f46e5] dark:bg-darkInput dark:text-white outline-none`}
         name={name}
         value={value}
-        maxLength={120}
+        maxLength={maxLength}
         onInput={handleChangeValue}
         onKeyUp={(e) => {
           if (enableEnter) {

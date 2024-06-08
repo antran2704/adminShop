@@ -204,6 +204,7 @@ const CreateCategoryPage = () => {
     <FormLayout
       title={t("CreateCategoryPage.title")}
       backLink="/categories"
+      loading={loading}
       onSubmit={handleOnSubmit}
     >
       <div className="lg:w-2/4 w-full mx-auto">
@@ -281,8 +282,6 @@ const CreateCategoryPage = () => {
         </div>
 
         <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3"></div>
-
-        {loading && <Loading />}
       </div>
     </FormLayout>
   );

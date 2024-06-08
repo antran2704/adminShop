@@ -88,7 +88,7 @@
   "CreateProductPage": {
     "title": "Create product",
     "field": {
-      "title": "title",
+      "title": "Title",
       "shortDescription": "Overview",
       "description": "Description",
       "categories": "Select categories",

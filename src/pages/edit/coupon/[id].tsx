@@ -379,6 +379,7 @@ const EditCouponPage: NextPageWithLayout = () => {
     <FormLayout
       title="Edit coupon"
       backLink="/coupons"
+      loading={loading}
       onSubmit={handleOnSubmit}
     >
       <div className="lg:w-2/4 w-full mx-auto">
@@ -551,8 +552,6 @@ const EditCouponPage: NextPageWithLayout = () => {
             {t("Action.delete")}
           </button>
         </div>
-
-        {loading && <Loading />}
 
         {showPopup && (
           <Popup

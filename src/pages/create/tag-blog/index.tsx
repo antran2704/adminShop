@@ -146,6 +146,7 @@ const CreateCategoryPage: NextPageWithLayout = () => {
     <FormLayout
       title={t("CreateBannerPage.title")}
       backLink="/banners"
+      loading={loading}
       onSubmit={handleOnSubmit}
     >
       <div className="lg:w-2/4 w-full mx-auto">
@@ -186,8 +187,7 @@ const CreateCategoryPage: NextPageWithLayout = () => {
             onChange={changePublic}
           />
         </div>
-        {loading && <Loading />}
-      </div>
+       </div>
     </FormLayout>
   );
 };
