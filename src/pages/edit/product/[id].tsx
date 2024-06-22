@@ -161,6 +161,7 @@ const ProductEditPage: NextPageWithLayout = () => {
   const [variants, setVariants] = useState<IVariantProduct[]>([]);
   const [removeVariants, setRemoveVariants] = useState<string[]>([]);
 
+
   const [attributes, setAtrributes] = useState<IObjAttibute>({});
   const [showAttributes, setShowAttributes] = useState<IObjectSelectAttribute>(
     {}
@@ -544,20 +545,6 @@ const ProductEditPage: NextPageWithLayout = () => {
     async (url: string) => {
       const newGallery = gallery.filter((image) => image !== url);
       setGallery(newGallery);
-      // try {
-      //   const payload = await deleteImageInSever(url);
-
-      //   if (payload.status === 201) {
-      //     const newGallery = gallery.filter((image) => image !== url);
-      //     setGallery(newGallery);
-      //   }
-      // } catch (error) {
-      //   toast.error("Remove image failed", {
-      //     position: toast.POSITION.TOP_RIGHT,
-      //   });
-
-      //   console.log(error);
-      // }
     },
     [gallery, loadingGallery]
   );

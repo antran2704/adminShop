@@ -33,6 +33,7 @@ import { getOrder, updateOrder, updatePaymentStatusOrder } from "~/api-client";
 import { getValueCoupon } from "~/helper/number/coupon";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { NO_IMAGE } from "~/common/images";
 
 const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {
   loading: () => <Loading />,
@@ -362,7 +363,7 @@ const OrderDetail: NextPageWithLayout = () => {
                   />
                   <CelTable
                     type={typeCel.THUMBNAIL}
-                    value={item.product.thumbnail as string}
+                    value={item.product?.thumbnail as string || NO_IMAGE}
                     href={`/edit/product/${item.product._id}`}
                     className="w-20 h-20"
                   />

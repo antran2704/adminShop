@@ -118,12 +118,12 @@ const LoginPage: NextPageWithLayout = () => {
   }
 
   return (
-    <div className="lg:min-w-[1000px] md:w-4/6 sm:w-5/6 w-full flex items-start bg-white dark:bg-[#1f2937] rounded-lg shadow-xl  transition-all ease-linear duration-100 overflow-hidden">
-      <div className="lg:block hidden">
+    <div className="lg:w-8/12 md:w-4/6 sm:w-5/6 w-full flex items-start bg-white dark:bg-[#1f2937] rounded-lg shadow-xl  transition-all ease-linear duration-100 overflow-hidden">
+      <div className="lg:block lg:w-6/12 hidden">
         <ImageCus
           src="/login_bg.svg"
           title="Login"
-          className="w-[500px] h-[600px]"
+          className="w-[500px] h-[600px] mx-auto"
         />
       </div>
       <div className="lg:w-6/12 w-full md:px-10 px-5 pt-10 pb-20">
