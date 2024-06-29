@@ -3,8 +3,8 @@ import { IUserInfor } from "~/interface";
 
 interface IInitData {
   infor: IUserInfor;
-  logout: boolean;
-  permissions: string[];
+  permission: string;
+  role: string;
 }
 
 const initialState: IInitData = {
@@ -14,8 +14,8 @@ const initialState: IInitData = {
     email: "",
     avartar: null,
   },
-  logout: false,
-  permissions: [],
+  permission: "",
+  role: "",
 };
 
 const userSlice = createSlice({
@@ -25,18 +25,14 @@ const userSlice = createSlice({
     loginReducer: (state, action) => {
       state.infor = action.payload;
     },
-    logoutReducer: (state, action) => {
-      state.logout = action.payload;
-    },
     setPermisson: (state, action) => {
-      state.permissions = action.payload;
+      state.permission = action.payload.permission;
+      state.role = action.payload.role;
     },
   },
 });
 
-// export const getUser = (state: RootState) => state.user;
-
 const userReducer = userSlice.reducer;
 
-export const { loginReducer, logoutReducer, setPermisson } = userSlice.actions;
+export const { loginReducer, setPermisson } = userSlice.actions;
 export default userReducer;

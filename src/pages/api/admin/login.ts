@@ -34,7 +34,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         try {
           const response = JSON.parse(body);
           const status = response.status;
-          
+
           if (status === 200) {
             const data: IKeyToken = {
               accessToken: response.payload.accessToken.value,
@@ -42,29 +42,25 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
               apiKey: response.payload.apiKey,
               publicKey: response.payload.publicKey,
             };
-            
+
             setCookie("accessToken", data.accessToken, {
               req,
               res,
-              httpOnly: true,
               maxAge: response.payload.accessToken.exp,
             });
             setCookie("publicKey", data.publicKey, {
               req,
               res,
-              httpOnly: true,
               maxAge: response.payload.refreshToken.exp,
             });
             setCookie("refreshToken", data.refreshToken, {
               req,
               res,
-              httpOnly: true,
               maxAge: response.payload.refreshToken.exp,
             });
             setCookie("apiKey", data.apiKey, {
               req,
               res,
-              httpOnly: true,
               maxAge: response.payload.refreshToken.exp,
             });
           }

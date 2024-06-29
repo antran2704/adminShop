@@ -4,11 +4,12 @@ import { useState, useEffect, FC } from "react";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { loginReducer, setPermisson } from "~/store/slice/user";
 
-import Loading from "~/components/Loading";
 import { getPermission, getUser } from "~/api-client";
+
 import { injectStore } from "~/ultils/configAxios";
 import { checkDarkMode } from "~/helper/darkMode";
 import SpinLoading from "~/components/Loading/SpinLoading";
+import { checkCookieAuth } from "~/helper/cookie";
 
 interface Props {
   children: JSX.Element;
@@ -52,13 +53,18 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
   };
 
   useEffect(() => {
+    // init store of redux for axios
     injectStore(dispatch);
+    const isCheck: boolean = checkCookieAuth();
 
-    if (!infor._id) {
-      checkAuth();
+    if (!isCheck) {
+      router.push("/login");
       return;
     }
-    setLoading(false);
+
+    if (!infor._id && isCheck) {
+      checkAuth();
+    }
   }, []);
 
   useEffect(() => {

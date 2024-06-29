@@ -9,8 +9,9 @@ import {
   axiosDelete,
   axiosGet,
   axiosPatch,
-  axiosPost,
 } from "~/ultils/configAxios";
+
+const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
 const getCoupons = async (
   page: number = 1,
@@ -18,7 +19,7 @@ const getCoupons = async (
   headers?: Partial<AxiosRequestHeadersCus>
 ) => {
   const parseQuery = qs.stringify(select);
-  return await axiosGet(`/discounts?page=${page}&${parseQuery}`, {
+  return await axiosGet(BASE_URL + `/discounts?page=${page}&${parseQuery}`, {
     headers,
   });
 };
@@ -32,7 +33,7 @@ const getCouponsWithFilter = async (
   const parseQuery = qs.stringify(select);
 
   return await axiosGet(
-    `/discounts/search?search=${filter?.search || ""}&start_date=${
+    BASE_URL + `/discounts/search?search=${filter?.search || ""}&start_date=${
       filter?.start_date || ""
     }&end_date=${filter?.end_date || ""}&${parseQuery}&page=${page}`,
     {
@@ -46,11 +47,11 @@ const updateCoupon = async (
   data: Partial<ICoupon>,
   headers?: Partial<AxiosRequestHeadersCus>
 ) => {
-  return await axiosPatch(`/discounts/${coupon_id}`, data, { headers });
+  return await axiosPatch(BASE_URL + `/discounts/${coupon_id}`, data, { headers });
 };
 
 const deleteCoupon = async (coupon_id: string, headers?: Partial<AxiosRequestHeadersCus>) => {
-  return await axiosDelete(`/discounts/${coupon_id}`, {headers});
+  return await axiosDelete(BASE_URL + `/discounts/${coupon_id}`, {headers});
 };
 
 export { getCoupons, getCouponsWithFilter, updateCoupon, deleteCoupon };

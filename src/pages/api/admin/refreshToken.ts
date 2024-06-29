@@ -38,7 +38,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             setCookie("accessToken", response.payload.newAccessToken, {
               req,
               res,
-              httpOnly: true,
             });
           }
 

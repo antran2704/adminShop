@@ -130,7 +130,7 @@ const HomePage: NextPageWithLayout = () => {
         setOverviews(payload);
       }
     } catch (error) {
-      console.log(error);
+      return error;
     }
   };
 
@@ -174,7 +174,7 @@ const HomePage: NextPageWithLayout = () => {
         chartWeekRef.current.update();
       }
     } catch (error: any) {
-      console.log(error);
+      return error;
     }
   };
 

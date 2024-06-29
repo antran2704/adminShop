@@ -8,12 +8,14 @@ import {
   axiosPost,
 } from "~/ultils/configAxios";
 
+const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
+
 const getBlogs = async (page: number = 1) => {
-  return await axiosGet(`/admin/blogs?page=${page}`);
+  return await axiosGet(BASE_URL + `/admin/blogs?page=${page}`);
 };
 
 const getBlog = async (blog_id: string) => {
-  return await axiosGet(`/admin/blogs/id/${blog_id}`);
+  return await axiosGet(BASE_URL + `/admin/blogs/id/${blog_id}`);
 };
 
 const getBlogsWithFilter = async (
@@ -23,31 +25,31 @@ const getBlogsWithFilter = async (
 ) => {
   const parseQuery = qs.stringify(query);
   return await axiosGet(
-    `/admin/blogs/search?search=${filter?.search || ""}${
+    BASE_URL + `/admin/blogs/search?search=${filter?.search || ""}${
       parseQuery && "&" + parseQuery
     }&page=${page}`
   );
 };
 
 const createBlog = async (payload: ICreateBlog) => {
-  return await axiosPost("/admin/blogs", payload);
+  return await axiosPost(BASE_URL + "/admin/blogs", payload);
 };
 
 const updateBlog = async (blog_id: string, options?: Partial<ICreateBlog>) => {
-  return await axiosPatch(`/admin/blogs/${blog_id}`, {
+  return await axiosPatch(BASE_URL + `/admin/blogs/${blog_id}`, {
     ...options,
   });
 };
 
 const uploadBlogImage = async (formData: FormData) => {
   return await uploadImageOnServer(
-    `${process.env.NEXT_PUBLIC_ENDPOINT_API}/admin/blogs/uploadImage`,
+    BASE_URL + `${process.env.NEXT_PUBLIC_ENDPOINT_API}/admin/blogs/uploadImage`,
     formData
   );
 };
 
 const deleteBlog = async (blog_id: string) => {
-  return await axiosDelete(`/admin/blogs/${blog_id}`);
+  return await axiosDelete(BASE_URL + `/admin/blogs/${blog_id}`);
 };
 
 export {

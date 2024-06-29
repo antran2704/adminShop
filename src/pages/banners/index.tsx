@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
-import { typeCel } from "~/enums";
+import { EPermission, ERole, typeCel } from "~/enums";
 
 import { IFilter, IPagination, Banner } from "~/interface";
 
@@ -29,7 +29,8 @@ import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 import Loading from "~/components/Loading";
-import usePermission from "~/hooks/usePermisson";
+import useAbility from "~/hooks/useAbility";
+import Can from "~/components/Ability/Can";
 
 interface ISelectBanner {
   _id: string;
@@ -46,7 +47,7 @@ const BannersPage: NextPageWithLayout = () => {
 
   const { t, i18n } = useTranslation();
 
-  const permission = usePermission("1111");
+  const { isCan } = useAbility([ERole.ADMIN], [EPermission.ADMIN]);
 
   const [banners, setBanners] = useState<Banner[]>([]);
   const [selectBanners, setSelectBanners] = useState<string[]>([]);
@@ -229,7 +230,7 @@ const BannersPage: NextPageWithLayout = () => {
   return (
     <ShowItemsLayout
       title={t("BannerPage.title")}
-      titleCreate={permission ? t("BannerPage.create") : null}
+      titleCreate={isCan ? t("BannerPage.create") : null}
       link="/create/banner"
       selectItem={{
         title: selectItem?.title ? selectItem.title : "",
@@ -286,19 +287,21 @@ const BannersPage: NextPageWithLayout = () => {
                   value={item.createdAt}
                 />
                 <CelTable type={typeCel.GROUP}>
-                  <div className="flex items-center justify-center gap-2">
-                    <ButtonEdit link={`/edit/banner/${item._id}`} />
+                  <Can I={ERole.ADMIN} A={EPermission.ADMIN}>
+                    <div className="flex items-center justify-center gap-2">
+                      <ButtonEdit link={`/edit/banner/${item._id}`} />
 
-                    <ButtonDelete
-                      onClick={() =>
-                        onSelectDeleteItem(
-                          item._id as string,
-                          item.title,
-                          item.image as string
-                        )
-                      }
-                    />
-                  </div>
+                      <ButtonDelete
+                        onClick={() =>
+                          onSelectDeleteItem(
+                            item._id as string,
+                            item.title,
+                            item.image as string
+                          )
+                        }
+                      />
+                    </div>
+                  </Can>
                 </CelTable>
               </tr>
             ))}

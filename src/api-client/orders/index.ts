@@ -3,8 +3,10 @@ import { IFilter } from "~/interface";
 import { IOrderCancle, statusOrder } from "~/interface/order";
 import { axiosGet, axiosPatch } from "~/ultils/configAxios";
 
+const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
+
 const getOrders = async (page: number = 1) => {
-  return await axiosGet(`/orders?page=${page}`);
+  return await axiosGet(BASE_URL + `/orders?page=${page}`);
 };
 
 const getOrdersWithFilter = async (
@@ -12,7 +14,7 @@ const getOrdersWithFilter = async (
   page: number = 1
 ) => {
   return await axiosGet(
-    `${process.env.NEXT_PUBLIC_ENDPOINT_API}/orders/search?search=${
+    BASE_URL + `${process.env.NEXT_PUBLIC_ENDPOINT_API}/orders/search?search=${
       filter?.search || ""
     }&status=${filter?.status || ""}&payment_method=${
       filter?.payment_method || ""
@@ -23,7 +25,7 @@ const getOrdersWithFilter = async (
 };
 
 const getOrder = async (order_id: string) => {
-  return await axiosGet(`/orders/order_id/${order_id}`);
+  return await axiosGet(BASE_URL + `/orders/order_id/${order_id}`);
 };
 
 const updateOrder = async (
@@ -31,7 +33,7 @@ const updateOrder = async (
   status: statusOrder,
   options?: Partial<IOrderCancle>
 ) => {
-  return await axiosPatch(`/orders/status/${order_id}`, {
+  return await axiosPatch(BASE_URL + `/orders/status/${order_id}`, {
     status,
     ...options,
   });
@@ -42,7 +44,7 @@ const updatePaymentStatusOrder = async (
   status: PaymentStatus,
   options?: Partial<IOrderCancle>
 ) => {
-  return await axiosPatch(`/orders/payment_status/${order_id}`, {
+  return await axiosPatch(BASE_URL + `/orders/payment_status/${order_id}`, {
     payment_status: status,
     ...options
   });

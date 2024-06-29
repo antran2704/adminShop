@@ -13,8 +13,7 @@ import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import ImageCus from "../Image/ImageCus";
 import SideBarItem from "./SideBarItem";
 import { logout } from "~/api-client";
-import { loginReducer, logoutReducer } from "~/store/slice/user";
-import usePermission from "~/hooks/usePermisson";
+import { loginReducer } from "~/store/slice/user";
 import { PERMISION } from "~/data/Permission";
 
 interface Props {
@@ -32,7 +31,7 @@ const SideBar = (props: Props) => {
   const { infor } = useAppSelector((state) => state.user);
 
   // Check permission
-  const permission = usePermission(PERMISION.ADMIN);
+  const permission = true;
 
   const handeShow = () => {
     setShowSideBar(!showSideBar);
@@ -48,7 +47,6 @@ const SideBar = (props: Props) => {
       avartar: null,
     };
     dispatch(loginReducer(userInfor));
-    dispatch(logoutReducer(true));
     router.push("/login");
   };
 

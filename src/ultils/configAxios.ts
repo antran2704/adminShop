@@ -1,12 +1,13 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { toast } from "react-toastify";
-import { getRefreshToken, logout } from "~/api-client";
-import { loginReducer, logoutReducer } from "~/store/slice/user";
+import { getRefreshToken } from "~/api-client";
+import { loginReducer } from "~/store/slice/user";
 import { AppDispatch } from "~/store";
 import { NextRouter } from "next/router";
+import { clearCookieAuth } from "~/helper/cookie";
 
 const httpConfig = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_ENDPOINT_API,
+  timeout: 30000,
 });
 
 const axiosGet = async (
@@ -19,7 +20,7 @@ const axiosGet = async (
 
 const axiosPost = async <T>(
   path: string,
-  data: T,
+  data?: T,
   config?: AxiosRequestConfig | undefined
 ) => {
   const payload = await httpConfig.post(path, data, { ...config });
@@ -55,6 +56,8 @@ export const injectRouter = (_router: NextRouter) => {
   router = _router;
 };
 
+const URL_SKIP: string[] = ["/login"];
+
 const handleLogout = () => {
   const userInfor = {
     _id: null,
@@ -63,15 +66,10 @@ const handleLogout = () => {
     avartar: null,
   };
 
-  logout();
   dispatch(loginReducer(userInfor));
-  dispatch(logoutReducer(true));
+  clearCookieAuth();
   router.push("/login");
 };
-
-httpConfig.interceptors.response.use((config) => {
-  return config;
-});
 
 httpConfig.interceptors.response.use(
   function (response) {
@@ -87,9 +85,8 @@ httpConfig.interceptors.response.use(
     }
 
     if (!error.response.data) return Promise.reject(error);
-    
+
     const response = error.response.data;
-    console.log("response:::", response)
 
     if (response.status === 500) {
       toast.error("Error in server, please try again", {
@@ -100,11 +97,7 @@ httpConfig.interceptors.response.use(
     }
 
     if (response.status === 403) {
-      // toast.error("Forbidden, please login", {
-      //   position: toast.POSITION.TOP_RIGHT,
-      // });
-      // handleLogout();
-      router.push("/")
+      router.push("/");
       return Promise.reject(error);
     }
 
@@ -114,11 +107,13 @@ httpConfig.interceptors.response.use(
     }
 
     const originalRequest = error.config;
-    if (response.status === 401) {
-      if (router.pathname === "/login" && originalRequest.method === "post") {
-        return Promise.reject(error);
-      }
+    const url: string = originalRequest.url;
 
+    if (URL_SKIP.includes(url)) {
+      return Promise.reject(error);
+    }
+
+    if (response.status === 401) {
       if (!isRefresh && !originalRequest._retry) {
         isRefresh = true;
 
@@ -130,9 +125,7 @@ httpConfig.interceptors.response.use(
           return Promise.resolve(httpConfig(originalRequest));
         }
       } else {
-        if (router.pathname !== "/login") {
-          handleLogout();
-        }
+        handleLogout();
         isRefresh = false;
       }
     }

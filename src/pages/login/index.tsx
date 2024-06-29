@@ -1,20 +1,19 @@
 import { AxiosError } from "axios";
-import { getCookies } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState, FormEvent, useEffect, ReactElement } from "react";
+import { useTranslation } from "react-i18next";
 
 import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
 import { InputText, InputPassword } from "~/components/InputField";
 import Loading from "~/components/Loading";
-import { loginReducer, logoutReducer } from "~/store/slice/user";
-import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { axiosPost } from "~/ultils/configAxios";
-import { getUser } from "~/api-client";
+import { loginReducer } from "~/store/slice/user";
+import { useAppDispatch } from "~/store/hooks";
+import { login } from "~/api-client";
 import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
 import { NextPageWithLayout } from "~/interface/page";
-import { useTranslation } from "react-i18next";
+import { checkCookieAuth } from "~/helper/cookie";
 
 interface IDataSend {
   email: string | null;
@@ -30,7 +29,7 @@ const Layout = LayoutWithoutHeader;
 
 const LoginPage: NextPageWithLayout = () => {
   const router = useRouter();
-  const { logout } = useAppSelector((state) => state.user);
+
   const dispatch = useAppDispatch();
 
   const { t } = useTranslation();
@@ -65,11 +64,13 @@ const LoginPage: NextPageWithLayout = () => {
     };
 
     try {
-      const { status, payload } = await axiosPost("/admin/login", sendData);
+      const { status, payload } = await login(
+        sendData.email as string,
+        sendData.password as string
+      );
 
       if (status === 200) {
         dispatch(loginReducer(payload));
-        dispatch(logoutReducer(false));
         router.push("/");
       }
     } catch (err) {
@@ -91,26 +92,17 @@ const LoginPage: NextPageWithLayout = () => {
     }
   };
 
-  const handleCheckLogin = async () => {
-    try {
-      const { status, payload } = await getUser();
-
-      if (status === 200) {
-        router.push("/");
-        dispatch(loginReducer(payload));
-      }
-    } catch (error) {
+  useEffect(() => {
+    const isCheck: boolean = checkCookieAuth();
+    
+    if (!isCheck) {
       setCheckLogin(false);
     }
-  };
 
-  useEffect(() => {
-    if (!logout) {
-      handleCheckLogin();
+    if (isCheck) {
+      router.push("/");
       return;
     }
-
-    setCheckLogin(false);
   }, []);
 
   if (checkLogin) {

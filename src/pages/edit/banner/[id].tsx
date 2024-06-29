@@ -21,10 +21,11 @@ import {
 } from "~/api-client";
 import { Banner } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
-import { ECompressFormat, ETypeImage } from "~/enums";
+import { ECompressFormat, EPermission, ERole, ETypeImage } from "~/enums";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { useTranslation } from "react-i18next";
 import Popup from "~/components/Popup";
+import useAbility from "~/hooks/useAbility";
 
 const initData: Banner = {
   _id: "",
@@ -42,6 +43,11 @@ const EditCategoryPage: NextPageWithLayout = () => {
   const banerId = router.query.id as string;
 
   const { t } = useTranslation();
+
+  const { isCan, abilityLoading } = useAbility(
+    [ERole.ADMIN],
+    [EPermission.ADMIN]
+  );
 
   const [title, setTitle] = useState<string | null>(null);
 
@@ -97,7 +103,7 @@ const EditCategoryPage: NextPageWithLayout = () => {
         setFieldsCheck(newFieldsCheck);
         ("image");
       }
-      
+
       const formData: FormData = new FormData();
       formData.append("image", source);
       setLoadingThumbnail(true);
@@ -216,12 +222,18 @@ const EditCategoryPage: NextPageWithLayout = () => {
   };
 
   useEffect(() => {
-    if (!banerId) return;
+    if (!banerId || !isCan || abilityLoading) return;
 
     handleGetData(banerId);
-  }, [banerId, router.isReady]);
+  }, [banerId, router.isReady, isCan, abilityLoading]);
 
-  if (!router.isReady) {
+  useEffect(() => {
+    if (!isCan && !abilityLoading) {
+      router.push("/banners");
+    }
+  }, [isCan, abilityLoading]);
+
+  if (!router.isReady || abilityLoading) {
     return <Loading />;
   }
 
