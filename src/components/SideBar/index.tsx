@@ -6,7 +6,7 @@ import {
   listBody,
   listSetting,
   itemNav,
-  listPermisson,
+  // listPermisson,
 } from "../../data/Navbar";
 import useViewport from "~/hooks/useViewport";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
@@ -28,10 +28,7 @@ const SideBar = (props: Props) => {
   const width = useViewport();
 
   const dispatch = useAppDispatch();
-  const { infor } = useAppSelector((state) => state.user);
-
-  // Check permission
-  const permission = true;
+  const { infor, role, permission } = useAppSelector((state) => state.user);
 
   const handeShow = () => {
     setShowSideBar(!showSideBar);
@@ -90,22 +87,36 @@ const SideBar = (props: Props) => {
             Menu
           </h3>
           <ul className="scroll h-full pb-7 overflow-auto">
-            {listBody.map((item: itemNav, index: number) => (
-              <SideBarItem
-                key={index}
-                subNav={item?.children ? true : false}
-                data={item}
-              />
-            ))}
+            {listBody.map((item: itemNav, index: number) => {
+              if (item.role && item.role === role) {
+                return (
+                  <SideBarItem
+                    key={index}
+                    subNav={item?.children ? true : false}
+                    data={item}
+                  />
+                );
+              }
 
-            {permission &&
+              if (!item.role) {
+                return (
+                  <SideBarItem
+                    key={index}
+                    subNav={item?.children ? true : false}
+                    data={item}
+                  />
+                );
+              }
+            })}
+
+            {/* {permission &&
               listPermisson.map((item: itemNav, index: number) => (
                 <SideBarItem
                   key={index}
                   subNav={item?.children ? true : false}
                   data={item}
                 />
-              ))}
+              ))} */}
           </ul>
         </div>
         <div className="h-[30%] py-3 overflow-hidden">
