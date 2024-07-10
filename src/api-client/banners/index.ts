@@ -30,7 +30,7 @@ const updateBanner = async (
 
 const uploadBannerImage = async (formData: FormData) => {
   return await uploadImageOnServer(
-    BASE_URL + `${process.env.NEXT_PUBLIC_ENDPOINT_API}/banners/uploadImage`,
+    BASE_URL + `/banners/uploadImage`,
     formData
   );
 };

@@ -43,7 +43,7 @@ const updateBlog = async (blog_id: string, options?: Partial<ICreateBlog>) => {
 
 const uploadBlogImage = async (formData: FormData) => {
   return await uploadImageOnServer(
-    BASE_URL + `${process.env.NEXT_PUBLIC_ENDPOINT_API}/admin/blogs/uploadImage`,
+    BASE_URL + `/admin/blogs/uploadImage`,
     formData
   );
 };

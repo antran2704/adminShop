@@ -52,7 +52,7 @@ const updateCategory = async (
 
 const uploadThumbnailCategory = async (formData: FormData) => {
   return await uploadImageOnServer(
-    BASE_URL + `${process.env.NEXT_PUBLIC_ENDPOINT_API}/admin/categories/uploadThumbnail`,
+    BASE_URL + `/admin/categories/uploadThumbnail`,
     formData
   );
 };

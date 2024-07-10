@@ -41,7 +41,7 @@ const updateProduct = async (
 
 const uploadThumbnailProduct = async (formData: FormData) => {
   return await uploadImageOnServer(
-    BASE_URL + `${process.env.NEXT_PUBLIC_ENDPOINT_API}/admin/products/uploadImage`,
+    BASE_URL + `/admin/products/uploadImage`,
     formData
   );
 };
