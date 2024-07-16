@@ -13,7 +13,7 @@ import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { loginReducer } from "~/store/slice/user";
-import { axiosPatch, axiosPost } from "~/ultils/configAxios";
+import { axiosPatch, axiosPost } from "~/configs/configAxios";
 
 interface IPassword {
   password: string | null;

@@ -6,7 +6,7 @@ import {
   axiosGet,
   axiosPatch,
   axiosPost,
-} from "~/ultils/configAxios";
+} from "~/configs/configAxios";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
@@ -25,9 +25,10 @@ const getBlogsWithFilter = async (
 ) => {
   const parseQuery = qs.stringify(query);
   return await axiosGet(
-    BASE_URL + `/admin/blogs/search?search=${filter?.search || ""}${
-      parseQuery && "&" + parseQuery
-    }&page=${page}`
+    BASE_URL +
+      `/admin/blogs/search?search=${filter?.search || ""}${
+        parseQuery && "&" + parseQuery
+      }&page=${page}`
   );
 };
 

@@ -15,13 +15,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     req.url = req.url.replace(/^\/api/, "");
   }
 
-  const { accessToken, publicKey, apiKey } = getCookies({ req, res });
+  // const { accessToken, publicKey, apiKey } = getCookies({ req, res });
 
-  if (accessToken && publicKey && apiKey) {
-    req.headers.Authorization = `Bear ${accessToken}`;
-    req.headers["public-key"] = `Key ${publicKey}`;
-    req.headers["x-api-key"] = `Key ${apiKey}`;
-  }
+  // if (accessToken && publicKey && apiKey) {
+  //   req.headers.Authorization = `Bear ${accessToken}`;
+  //   req.headers["public-key"] = `Key ${publicKey}`;
+  //   req.headers["x-api-key"] = `Key ${apiKey}`;
+  // }
 
   return new Promise<void>((resolve, reject) => {
     proxy.web(req, res, {

@@ -25,6 +25,9 @@ const userSlice = createSlice({
     loginReducer: (state, action) => {
       state.infor = action.payload;
     },
+    logoutReducer: (state) => {
+      state.infor = initialState.infor;
+    },
     setPermisson: (state, action) => {
       state.permission = action.payload.permission;
       state.role = action.payload.role;
@@ -34,5 +37,5 @@ const userSlice = createSlice({
 
 const userReducer = userSlice.reducer;
 
-export const { loginReducer, setPermisson } = userSlice.actions;
+export const { loginReducer, setPermisson, logoutReducer } = userSlice.actions;
 export default userReducer;

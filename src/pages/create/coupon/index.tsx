@@ -14,7 +14,7 @@ import FormLayout from "~/layouts/FormLayout";
 
 import { ICouponCreate } from "~/interface";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
-import { axiosPost } from "~/ultils/configAxios";
+import { axiosPost } from "~/configs/configAxios";
 import Thumbnail from "~/components/Image/Thumbnail";
 import { uploadImageOnServer } from "~/helper/handleImage";
 import { SelectDate, SelectTag } from "~/components/Select";

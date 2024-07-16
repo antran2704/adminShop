@@ -27,7 +27,7 @@ import { Table, CelTable } from "~/components/Table";
 import { typeCel } from "~/enums";
 import Link from "next/link";
 import SpringCount from "~/components/SpringCount";
-import { axiosGet } from "~/ultils/configAxios";
+import { axiosGet } from "~/configs/configAxios";
 import { getFirstDayInWeek } from "~/helper/datetime";
 import { IGrowDate } from "~/interface";
 import Statistic from "~/components/Statistic";
@@ -38,7 +38,8 @@ import { orderStatus } from "~/components/Table/statusCel";
 import { ButtonEdit } from "~/components/Button";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 ChartJS.register(
   CategoryScale,
@@ -118,7 +119,7 @@ const HomePage: NextPageWithLayout = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const { t, i18n } = useTranslation();
-
+  
   const handleGetOverviews = async () => {
     try {
       const date = new Date().toLocaleDateString("en-GB");
@@ -202,9 +203,9 @@ const HomePage: NextPageWithLayout = () => {
 
   useEffect(() => {
     const firstDay = getFirstDayInWeek(new Date().toDateString());
-    handleGetGrossInWeek(firstDay);
-    handleGetOverviews();
-    handleGetData();
+    // handleGetGrossInWeek(firstDay);
+    // handleGetOverviews();
+    // handleGetData();
   }, []);
 
   return (
@@ -385,6 +386,12 @@ const HomePage: NextPageWithLayout = () => {
 };
 
 export default HomePage;
+
+export const getStaticProps = async ({ locale }: { locale: string }) => ({
+  props: {
+    ...(await serverSideTranslations(locale ?? "en", ["common"])),
+  },
+});
 
 HomePage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

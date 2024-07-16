@@ -13,7 +13,7 @@ import {
 import { Bar } from "react-chartjs-2";
 
 import Statistic from "~/components/Statistic";
-import { axiosGet } from "~/ultils/configAxios";
+import { axiosGet } from "~/configs/configAxios";
 import { IGrow, IGrowDate } from "~/interface";
 import { SelectItem } from "~/components/Select";
 import { ISelectItem } from "~/interface";

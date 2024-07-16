@@ -4,7 +4,7 @@ import { BiDollarCircle, BiPackage, BiMinusCircle } from "react-icons/bi";
 
 import { SelectDate } from "~/components/Select";
 import Statistic from "~/components/Statistic";
-import { axiosGet } from "~/ultils/configAxios";
+import { axiosGet } from "~/configs/configAxios";
 import { IGrowDate } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
