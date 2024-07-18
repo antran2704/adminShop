@@ -48,7 +48,7 @@ const TagBlogsPage: NextPageWithLayout = () => {
 
   const [pagination, setPagination] = useState<IPagination>(initPagination);
   const [filter, setFilter] = useState<IFilter | null>(
-    query.searchText ? ({ search: query.searchText } as IFilter) : null
+    query.searchText ? ({ search: query.searchText } as IFilter) : null,
   );
   const [message, setMessage] = useState<string | null>(null);
 
@@ -68,14 +68,14 @@ const TagBlogsPage: NextPageWithLayout = () => {
       const isExit = selectBlogs.find((select: string) => select === id);
       if (isExit) {
         const newSelects = selectBlogs.filter(
-          (select: string) => select !== id
+          (select: string) => select !== id,
         );
         setSelectBlogs(newSelects);
       } else {
         setSelectBlogs([...selectBlogs, id]);
       }
     },
-    [selectBlogs]
+    [selectBlogs],
   );
 
   const onChangePublish = async (id: string, status: boolean) => {
@@ -103,7 +103,7 @@ const TagBlogsPage: NextPageWithLayout = () => {
   const onSelectDeleteItem = (
     _id: string,
     title: string,
-    thumbnail: string
+    thumbnail: string,
   ) => {
     setSelectItem({ _id, title, thumbnail });
     handlePopup();
@@ -121,7 +121,7 @@ const TagBlogsPage: NextPageWithLayout = () => {
     (name: string, value: string) => {
       setFilter({ ...filter, [name]: value });
     },
-    [filter]
+    [filter],
   );
 
   const handleGetData = useCallback(async () => {
@@ -299,7 +299,7 @@ const TagBlogsPage: NextPageWithLayout = () => {
                         onSelectDeleteItem(
                           item._id as string,
                           item.title,
-                          item.thumbnail as string
+                          item.thumbnail as string,
                         )
                       }
                     />

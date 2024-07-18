@@ -136,9 +136,8 @@ const EditBlogPage: NextPageWithLayout = () => {
     setLoading(true);
 
     try {
-      const { status, payload }: IResponseSuccess<ITagBlog> = await getTagBlog(
-        tagId
-      );
+      const { status, payload }: IResponseSuccess<ITagBlog> =
+        await getTagBlog(tagId);
 
       if (status === 200) {
         setData(payload);

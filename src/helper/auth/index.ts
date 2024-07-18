@@ -2,7 +2,7 @@ import { IAuthLocal } from "~/interface";
 
 const checkPermission = (
   permissions: string[],
-  permission: string
+  permission: string,
 ): boolean => {
   if (!permissions.includes(permission)) return false;
 

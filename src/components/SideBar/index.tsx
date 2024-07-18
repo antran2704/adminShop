@@ -39,7 +39,7 @@ const SideBar = (props: Props) => {
     await logout();
 
     dispatch(logoutReducer());
-    clearAuthLocal();  
+    clearAuthLocal();
     router.push("/login");
   };
 

@@ -38,7 +38,7 @@ const CustomEditor = dynamic(
   () => {
     return import("~/components/Editor");
   },
-  { ssr: false }
+  { ssr: false },
 );
 
 const initData: IBlog = {
@@ -99,7 +99,7 @@ const EditBlogPage: NextPageWithLayout = () => {
         setFieldsCheck(newFieldsCheck);
         ("image");
       }
-      
+
       const formData: FormData = new FormData();
       formData.append("image", source);
       setLoadingThumbnail(true);
@@ -173,9 +173,8 @@ const EditBlogPage: NextPageWithLayout = () => {
     setLoading(true);
 
     try {
-      const { status, payload }: IResponseSuccess<IBlog> = await getBlog(
-        blogId
-      );
+      const { status, payload }: IResponseSuccess<IBlog> =
+        await getBlog(blogId);
 
       if (status === 200) {
         const tags: ISelectItem[] = payload.tags.map((item: TagBlog) => ({

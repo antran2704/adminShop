@@ -138,7 +138,7 @@ const CreateCategoryPage = () => {
     try {
       let breadcrumbs: string[] = generalBreadcrumbs(
         categorySelect.node_id || null,
-        categories
+        categories,
       );
 
       const payload = await createCategory({

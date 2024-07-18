@@ -1,7 +1,7 @@
 const getValueCoupon = (
   subTotal: number,
   couponValue: number,
-  couponType: string
+  couponType: string,
 ) => {
   if (couponType === "percentage") {
     return (subTotal * couponValue) / 100;

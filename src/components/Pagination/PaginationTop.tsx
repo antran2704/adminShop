@@ -13,7 +13,7 @@ const PaginationTop = (props: Props) => {
 
   const [start, setStart] = useState<number>(0);
   const [end, setEnd] = useState<number>(0);
-  
+
   const onPrevPage = (page: number) => {
     if (start <= 1) return;
 

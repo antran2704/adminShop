@@ -21,14 +21,14 @@ const getBlog = async (blog_id: string) => {
 const getBlogsWithFilter = async (
   filter: IFilter | null,
   query?: IQueryParam<Partial<IBlog>>,
-  page: number = 1
+  page: number = 1,
 ) => {
   const parseQuery = qs.stringify(query);
   return await axiosGet(
     BASE_URL +
       `/admin/blogs/search?search=${filter?.search || ""}${
         parseQuery && "&" + parseQuery
-      }&page=${page}`
+      }&page=${page}`,
   );
 };
 
@@ -45,7 +45,7 @@ const updateBlog = async (blog_id: string, options?: Partial<ICreateBlog>) => {
 const uploadBlogImage = async (formData: FormData) => {
   return await uploadImageOnServer(
     BASE_URL + `/admin/blogs/uploadImage`,
-    formData
+    formData,
   );
 };
 

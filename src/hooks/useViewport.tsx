@@ -14,7 +14,7 @@ const useViewport = () => {
 
   useEffect(() => {
     updateWidth();
-  }, [])
+  }, []);
 
   return width;
 };

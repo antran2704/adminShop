@@ -7,7 +7,7 @@ const orderStatus = {
   delivered: "bg-success",
   pending: "bg-pending",
   cancle: "bg-cancle",
-  processing: "bg-primary"
+  processing: "bg-primary",
 };
 
 export { productStatus, orderStatus };

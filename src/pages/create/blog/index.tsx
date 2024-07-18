@@ -22,7 +22,7 @@ const CustomEditor = dynamic(
   () => {
     return import("~/components/Editor");
   },
-  { ssr: false }
+  { ssr: false },
 );
 
 const initData: ICreateBlog = {

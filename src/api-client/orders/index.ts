@@ -11,16 +11,17 @@ const getOrders = async (page: number = 1) => {
 
 const getOrdersWithFilter = async (
   filter: IFilter | null,
-  page: number = 1
+  page: number = 1,
 ) => {
   return await axiosGet(
-    BASE_URL + `${process.env.NEXT_PUBLIC_ENDPOINT_API}/orders/search?search=${
-      filter?.search || ""
-    }&status=${filter?.status || ""}&payment_method=${
-      filter?.payment_method || ""
-    }&start_date=${filter?.start_date || ""}&end_date=${
-      filter?.end_date || ""
-    }&page=${page}`
+    BASE_URL +
+      `${process.env.NEXT_PUBLIC_ENDPOINT_API}/orders/search?search=${
+        filter?.search || ""
+      }&status=${filter?.status || ""}&payment_method=${
+        filter?.payment_method || ""
+      }&start_date=${filter?.start_date || ""}&end_date=${
+        filter?.end_date || ""
+      }&page=${page}`,
   );
 };
 
@@ -31,7 +32,7 @@ const getOrder = async (order_id: string) => {
 const updateOrder = async (
   order_id: string,
   status: statusOrder,
-  options?: Partial<IOrderCancle>
+  options?: Partial<IOrderCancle>,
 ) => {
   return await axiosPatch(BASE_URL + `/orders/status/${order_id}`, {
     status,
@@ -42,12 +43,18 @@ const updateOrder = async (
 const updatePaymentStatusOrder = async (
   order_id: string,
   status: PaymentStatus,
-  options?: Partial<IOrderCancle>
+  options?: Partial<IOrderCancle>,
 ) => {
   return await axiosPatch(BASE_URL + `/orders/payment_status/${order_id}`, {
     payment_status: status,
-    ...options
+    ...options,
   });
 };
 
-export { getOrders, getOrdersWithFilter, getOrder, updateOrder, updatePaymentStatusOrder };
+export {
+  getOrders,
+  getOrdersWithFilter,
+  getOrder,
+  updateOrder,
+  updatePaymentStatusOrder,
+};

@@ -66,35 +66,37 @@ const ProductPage: NextPageWithLayout = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [filter, setFilter] = useState<IFilter | null>(query.searchText ? ({ search: query.searchText } as IFilter) : null);
+  const [filter, setFilter] = useState<IFilter | null>(
+    query.searchText ? ({ search: query.searchText } as IFilter) : null,
+  );
 
   const onSelectCheckBox = useCallback(
     (id: string) => {
       const isExit = selectProducts.find((select: string) => select === id);
       if (isExit) {
         const newSelects = selectProducts.filter(
-          (select: string) => select !== id
+          (select: string) => select !== id,
         );
         setSelectProducts(newSelects);
       } else {
         setSelectProducts([...selectProducts, id]);
       }
     },
-    [selectProducts]
+    [selectProducts],
   );
 
   const onChangeSearch = useCallback(
     (name: string, value: string) => {
       setFilter({ ...filter, [name]: value });
     },
-    [filter]
+    [filter],
   );
 
   const onSelect = useCallback(
     (value: string, name: string) => {
       setFilter({ ...filter, [name]: value });
     },
-    [filter]
+    [filter],
   );
 
   const handleGetDataByFilter = useCallback(async () => {
@@ -124,7 +126,7 @@ const ProductPage: NextPageWithLayout = () => {
               thumbnail: item.thumbnail,
               public: item.public,
             };
-          }
+          },
         );
         setPagination(response.pagination);
         setProducts(data);
@@ -164,7 +166,7 @@ const ProductPage: NextPageWithLayout = () => {
 
   const onReset = useCallback(() => {
     setFilter(null);
-    
+
     if (!currentPage || currentPage === 1) {
       handleGetData();
     }
@@ -196,7 +198,7 @@ const ProductPage: NextPageWithLayout = () => {
               thumbnail: item.thumbnail,
               public: item.public,
             };
-          }
+          },
         );
         setPagination(response.pagination);
         setProducts(data);
@@ -229,7 +231,7 @@ const ProductPage: NextPageWithLayout = () => {
               _id: item._id,
               title: item.title,
             };
-          }
+          },
         );
 
         setCategories(data);
@@ -370,7 +372,7 @@ const ProductPage: NextPageWithLayout = () => {
                         ((process.env.NEXT_PUBLIC_ENDPOINT_API as string) +
                           product.thumbnail?.replace(
                             "http://localhost:3001",
-                            ""
+                            "",
                           )) as string
                       }
                       className="min-w-[32px] w-8 h-8 rounded-full"

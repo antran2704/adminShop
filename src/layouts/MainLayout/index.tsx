@@ -42,7 +42,7 @@ const MainLayout = ({ children }: Props) => {
 
     try {
       const { status, payload }: IResponse<IUserInfor> = await getInfoUser();
-      
+
       if (status === 200) {
         dispatch(loginReducer(payload));
       }

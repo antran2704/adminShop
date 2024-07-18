@@ -39,7 +39,7 @@ const CreateAttributePage: NextPageWithLayout = () => {
     (name: string, value: boolean) => {
       setData({ ...data, [name]: value });
     },
-    [data]
+    [data],
   );
 
   const changeVariants = useCallback(
@@ -50,7 +50,7 @@ const CreateAttributePage: NextPageWithLayout = () => {
       }
       setData({ ...data, variants: values });
     },
-    [data, fieldsCheck]
+    [data, fieldsCheck],
   );
 
   const changeValue = useCallback(
@@ -61,7 +61,7 @@ const CreateAttributePage: NextPageWithLayout = () => {
       }
       setData({ ...data, [name]: value });
     },
-    [data, fieldsCheck]
+    [data, fieldsCheck],
   );
 
   const checkData = (data: any) => {

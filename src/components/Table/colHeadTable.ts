@@ -4,25 +4,25 @@ interface typeHeadTable {
 
 // header table for category - product
 const colHeadCategory: typeHeadTable = {
-  "en": ["Name", "Thumnail", "Publish", "Created Date", "Action"],
-  "vi": ["Tên", "Ảnh", "Hiện", "Ngày tạo", "Chỉnh sửa"],
+  en: ["Name", "Thumnail", "Publish", "Created Date", "Action"],
+  vi: ["Tên", "Ảnh", "Hiện", "Ngày tạo", "Chỉnh sửa"],
 };
 
 // header table for blog
 const colHeadBlog: typeHeadTable = {
-  "en": ["", "Name", "Thumnail", "Publish", "Created Date", "Action"],
-  "vi": ["", "Tên", "Ảnh", "Hiện", "Ngày tạo", "Chỉnh sửa"],
+  en: ["", "Name", "Thumnail", "Publish", "Created Date", "Action"],
+  vi: ["", "Tên", "Ảnh", "Hiện", "Ngày tạo", "Chỉnh sửa"],
 };
 
 // header table for tag blog
 const colHeadTagBlog: typeHeadTable = {
-  "en": ["", "Name", "Thumnail", "Publish", "Created Date", "Action"],
-  "vi": ["", "Tên", "Ảnh", "Hiện", "Ngày tạo", "Chỉnh sửa"],
+  en: ["", "Name", "Thumnail", "Publish", "Created Date", "Action"],
+  vi: ["", "Tên", "Ảnh", "Hiện", "Ngày tạo", "Chỉnh sửa"],
 };
 
 // header table for orders
 const colHeadOrder: typeHeadTable = {
-  "vi": [
+  vi: [
     "Mã đơn",
     "Khách hàng",
     "Phương thức thanh toán",
@@ -31,7 +31,7 @@ const colHeadOrder: typeHeadTable = {
     "Ngày tạo",
     "Chi tiết",
   ],
-  "en": [
+  en: [
     "Order ID",
     "Name",
     "Method",
@@ -56,19 +56,19 @@ const colHeaderOrderDetail: string[] = [
 
 // header table for attribute
 const colHeaderAttribute: typeHeadTable = {
-  "en": ["Code", "Name", "Published", "Created Date", "Action"],
-  "vi": ["Mã", "Tên", "Hiện", "Ngày tạo", "Chỉnh sửa"],
+  en: ["Code", "Name", "Published", "Created Date", "Action"],
+  vi: ["Mã", "Tên", "Hiện", "Ngày tạo", "Chỉnh sửa"],
 };
 
 // header table for attribute value
 const colHeaderAttributeValue: typeHeadTable = {
-  "en": ["Name", "Published", "Action"],
-  "vi": ["Tên", "Hiện", "Chỉnh sửa"],
+  en: ["Name", "Published", "Action"],
+  vi: ["Tên", "Hiện", "Chỉnh sửa"],
 };
 
 // header table for product
 const colHeaderProduct: typeHeadTable = {
-  "en": [
+  en: [
     "Product Name",
     "Category",
     "Price",
@@ -78,7 +78,7 @@ const colHeaderProduct: typeHeadTable = {
     "Published",
     "Action",
   ],
-  "vi": [
+  vi: [
     "Tên",
     "Thư mục",
     "Giá",
@@ -91,7 +91,7 @@ const colHeaderProduct: typeHeadTable = {
 };
 
 const colHeaderVariants: typeHeadTable = {
-  "en": [
+  en: [
     "Image",
     "Compination",
     "SKU",
@@ -101,21 +101,12 @@ const colHeaderVariants: typeHeadTable = {
     "Inventory",
     "Action",
   ],
-  "vi": [
-    "Ảnh",
-    "Tên",
-    "SKU",
-    "Barcode",
-    "Giá",
-    "Giá giảm",
-    "Tồn kho",
-    "Xóa",
-  ],
+  vi: ["Ảnh", "Tên", "SKU", "Barcode", "Giá", "Giá giảm", "Tồn kho", "Xóa"],
 };
 
 // header table for coupon
 const colHeaderCoupon: typeHeadTable = {
-  "en": [
+  en: [
     "Name",
     "Code",
     "Discount",
@@ -125,7 +116,7 @@ const colHeaderCoupon: typeHeadTable = {
     "Status",
     "Action",
   ],
-  "vi": [
+  vi: [
     "Tên",
     "Mã",
     "Giá trị",
@@ -138,8 +129,8 @@ const colHeaderCoupon: typeHeadTable = {
 };
 
 const colHeaderBanner: typeHeadTable = {
-  "en": ["Title", "Image", "Published", "Created Date", "Action"],
-  "vi": ["Tiêu đề", "Ảnh", "Hiện", "Ngày tạo", "Chỉnh sửa"],
+  en: ["Title", "Image", "Published", "Created Date", "Action"],
+  vi: ["Tiêu đề", "Ảnh", "Hiện", "Ngày tạo", "Chỉnh sửa"],
 };
 
 export {
@@ -153,5 +144,5 @@ export {
   colHeaderCoupon,
   colHeaderBanner,
   colHeadBlog,
-  colHeadTagBlog
+  colHeadTagBlog,
 };

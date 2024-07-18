@@ -67,9 +67,9 @@ const LoginPage: NextPageWithLayout = () => {
     try {
       const { status, payload }: IResponse<ILogin> = await login(
         sendData.email as string,
-        sendData.password as string
+        sendData.password as string,
       );
-      
+
       if (status === 200) {
         setAuthLocal("accessToken", payload.accessToken.value);
         setAuthLocal("refreshToken", payload.refreshToken.value);

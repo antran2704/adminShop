@@ -26,7 +26,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const options = {
@@ -162,7 +162,7 @@ const IncomeYearPage: NextPageWithLayout = () => {
 
   const handleGetGrossInYear = async (year: string) => {
     const { status, payload } = await axiosGet(
-      `/gross-month/year?gross_year=${year}`
+      `/gross-month/year?gross_year=${year}`,
     );
 
     if (status === 200) {
@@ -187,7 +187,7 @@ const IncomeYearPage: NextPageWithLayout = () => {
   const handleGetGrossYear = async (year: string) => {
     try {
       const { status, payload } = await axiosGet(
-        `/gross-year/year?gross_year=${year}`
+        `/gross-year/year?gross_year=${year}`,
       );
 
       if (status === 200) {

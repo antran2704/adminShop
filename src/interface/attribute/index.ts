@@ -6,7 +6,7 @@ interface IVariant {
   public: boolean;
 }
 
-type INewVariant = Omit<IVariant, "_id">
+type INewVariant = Omit<IVariant, "_id">;
 
 interface IAttribute {
   _id: string;

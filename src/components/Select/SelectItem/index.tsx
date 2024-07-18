@@ -18,7 +18,7 @@ const SelectItem: FC<Props> = (props: Props) => {
     const value = e.target.value;
     const name = e.target.name;
     onSelect(value, name);
-  }
+  };
 
   return (
     <div className={`${width ? width : "w-full"} h-full`}>
@@ -27,7 +27,7 @@ const SelectItem: FC<Props> = (props: Props) => {
           {title}
         </span>
       )}
-      
+
       <select
         value={value}
         name={name}
@@ -42,7 +42,11 @@ const SelectItem: FC<Props> = (props: Props) => {
 
         {data.length > 0 &&
           data.map((item: ISelectItem) => (
-            <option className="capitalize" key={item._id} value={item._id as string}>
+            <option
+              className="capitalize"
+              key={item._id}
+              value={item._id as string}
+            >
               {item.title}
             </option>
           ))}

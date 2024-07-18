@@ -22,9 +22,7 @@ const InputField: FC<IInputText> = (props: IInputText) => {
     getValue,
   } = props;
 
-  const handleChangeValue = (
-    e: FormEvent<HTMLInputElement>
-  ) => {
+  const handleChangeValue = (e: FormEvent<HTMLInputElement>) => {
     if (readonly) return;
 
     const name = e.currentTarget.name;

@@ -18,5 +18,4 @@ interface IDataTable {
   createdAt: string;
 }
 
-
 export type { IDataTable, IDataCelTable };

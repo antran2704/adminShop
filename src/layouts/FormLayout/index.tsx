@@ -12,7 +12,7 @@ interface props {
 
 const FormLayout: ForwardRefRenderFunction<HTMLUListElement, props> = (
   props: props,
-  ref: Ref<HTMLUListElement> | undefined
+  ref: Ref<HTMLUListElement> | undefined,
 ) => {
   const { children, title, backLink = "/", loading = false, onSubmit } = props;
 

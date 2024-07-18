@@ -22,7 +22,7 @@ function generateDownload(canvas: any, crop: any) {
       window.URL.revokeObjectURL(previewUrl);
     },
     "image/png",
-    1
+    1,
   );
 }
 
@@ -52,7 +52,7 @@ function setCanvasImage(image: any, canvas: any, crop: any) {
     0,
     0,
     crop.width * scaleX,
-    crop.height * scaleY
+    crop.height * scaleY,
   );
 }
 
@@ -92,7 +92,7 @@ const CropImage = () => {
         onChange={(c) => setCrop(c)}
         onComplete={(c) => setCompletedCrop(c)}
       >
-        <img ref={imgRef} src={upImg}/>
+        <img ref={imgRef} src={upImg} />
       </ReactCrop>
       <div>
         {/* Canvas to display cropped image */}

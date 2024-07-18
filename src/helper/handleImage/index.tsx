@@ -81,7 +81,7 @@ const resizeImage = (file: File, option: IOptionImage) => {
       },
       option.type,
       option.minWidth,
-      option.minHeight
+      option.minHeight,
     );
   });
 };

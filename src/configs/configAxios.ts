@@ -15,7 +15,7 @@ const httpConfig = axios.create({
 
 const axiosGet = async (
   path: string,
-  config?: AxiosRequestConfig | undefined
+  config?: AxiosRequestConfig | undefined,
 ) => {
   const payload = await httpConfig.get(path, { ...config });
   return payload.data;
@@ -24,7 +24,7 @@ const axiosGet = async (
 const axiosPost = async <T>(
   path: string,
   data?: T,
-  config?: AxiosRequestConfig | undefined
+  config?: AxiosRequestConfig | undefined,
 ) => {
   const payload = await httpConfig.post(path, data, { ...config });
   return payload.data;
@@ -33,7 +33,7 @@ const axiosPost = async <T>(
 const axiosPatch = async <T>(
   path: string,
   data: T,
-  config?: AxiosRequestConfig | undefined
+  config?: AxiosRequestConfig | undefined,
 ) => {
   const payload = await httpConfig.patch(path, data, { ...config });
   return payload.data;
@@ -41,7 +41,7 @@ const axiosPatch = async <T>(
 
 const axiosDelete = async (
   path: string,
-  config?: AxiosRequestConfig | undefined
+  config?: AxiosRequestConfig | undefined,
 ) => {
   const payload = await httpConfig.delete(path, { ...config });
   return payload.data;
@@ -134,7 +134,10 @@ httpConfig.interceptors.request.use(
     }
     if (SKIP_URL.includes(url)) return config;
 
-    if ((!accessToken || !refreshToken || !publicToken) && !SKIP_URL.includes(url)) {
+    if (
+      (!accessToken || !refreshToken || !publicToken) &&
+      !SKIP_URL.includes(url)
+    ) {
       handleLogout();
       controller.abort();
 
@@ -148,7 +151,7 @@ httpConfig.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Add a response interceptor
@@ -181,7 +184,7 @@ httpConfig.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default httpConfig;

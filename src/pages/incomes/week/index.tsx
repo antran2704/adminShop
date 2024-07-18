@@ -25,7 +25,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const options = {
@@ -116,7 +116,7 @@ const IncomeWeekPage: NextPageWithLayout = () => {
     const year = startDate.getFullYear().toString();
 
     const { status, payload } = await axiosGet(
-      `/gross-date/week?start_date=${startDate.toDateString()}`
+      `/gross-date/week?start_date=${startDate.toDateString()}`,
     );
 
     const startDay = startDate.getDate();
@@ -140,7 +140,7 @@ const IncomeWeekPage: NextPageWithLayout = () => {
       payload.map((item: IGrowDate) => {
         const day = Number(item.day);
         const index = newData.labels.findIndex(
-          (label: number) => label === day
+          (label: number) => label === day,
         );
         newData.datasets[0].data[index] = item.sub_gross;
         newData.datasets[1].data[index] = item.gross;
@@ -161,7 +161,7 @@ const IncomeWeekPage: NextPageWithLayout = () => {
 
           return accumulator;
         },
-        initOverview
+        initOverview,
       );
 
       dataOverview.updatedAt = payload[payload.length - 1].updatedAt;

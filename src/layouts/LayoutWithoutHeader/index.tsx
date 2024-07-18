@@ -20,8 +20,8 @@ const LayoutWithoutHeader = ({ children }: Props) => {
   }, []);
 
   useEffect(() => {
-    if(infor._id) {
-      router.push("/")
+    if (infor._id) {
+      router.push("/");
     }
   }, [infor]);
 

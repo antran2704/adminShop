@@ -20,7 +20,10 @@ interface ICoupon {
   discount_public: boolean;
 }
 
-type ICouponCreate = Omit<ICoupon, "_id" | "discount_used_count" | "discount_user_used">
+type ICouponCreate = Omit<
+  ICoupon,
+  "_id" | "discount_used_count" | "discount_user_used"
+>;
 
 type ICouponHome = Omit<
   ICoupon,

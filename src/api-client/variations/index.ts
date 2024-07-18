@@ -9,7 +9,7 @@ const getVariations = async (page: number = 1) => {
 
 const createVariations = async (
   product_id: string,
-  data: IVariantProduct[]
+  data: IVariantProduct[],
 ) => {
   return await axiosPost(BASE_URL + `/variations/${product_id}`, data);
 };

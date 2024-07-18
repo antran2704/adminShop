@@ -146,7 +146,7 @@ const ProductEditPage: NextPageWithLayout = () => {
   const [optionsProduct, setOptionsProduct] = useState<IOptionProduct[]>([]);
 
   const [mutipleCategories, setMultipleCategories] = useState<ISelectItem[]>(
-    []
+    [],
   );
   const [defaultCategory, setDefaultCategory] = useState<string | null>(null);
 
@@ -161,10 +161,9 @@ const ProductEditPage: NextPageWithLayout = () => {
   const [variants, setVariants] = useState<IVariantProduct[]>([]);
   const [removeVariants, setRemoveVariants] = useState<string[]>([]);
 
-
   const [attributes, setAtrributes] = useState<IObjAttibute>({});
   const [showAttributes, setShowAttributes] = useState<IObjectSelectAttribute>(
-    {}
+    {},
   );
   const [selectAttributes, setSelectAttributes] =
     useState<IObjectSelectAttribute>({});
@@ -282,7 +281,7 @@ const ProductEditPage: NextPageWithLayout = () => {
     if (product.variants.length > 0) {
       let items: string[] = [];
       items = product.variants.map(
-        (variant: IVariantProduct) => variant._id
+        (variant: IVariantProduct) => variant._id,
       ) as string[];
 
       setRemoveVariants(items as string[]);
@@ -307,7 +306,7 @@ const ProductEditPage: NextPageWithLayout = () => {
       keys,
       initVariant,
       [],
-      0
+      0,
     );
 
     setOptionsProduct(options);
@@ -319,7 +318,7 @@ const ProductEditPage: NextPageWithLayout = () => {
     keys: string[],
     variant: IVariantProduct,
     result: IVariantProduct[],
-    index: number
+    index: number,
   ) => {
     if (index > keys.length - 1) {
       variant.title = `${product.title} ${variant.options.join(" / ")}`;
@@ -341,7 +340,7 @@ const ProductEditPage: NextPageWithLayout = () => {
         keys,
         { ...variant, options: [...variant.options, item] },
         result,
-        index + 1
+        index + 1,
       );
 
       result = newVariants;
@@ -400,7 +399,7 @@ const ProductEditPage: NextPageWithLayout = () => {
     }
 
     const isExit = mutipleCategories.some(
-      (category) => category.title === title
+      (category) => category.title === title,
     );
 
     if (isExit) {
@@ -429,7 +428,7 @@ const ProductEditPage: NextPageWithLayout = () => {
   const changeMultipleCategories = (name: string, values: ISelectItem[]) => {
     if (values.length > 0) {
       const isExit = values.some(
-        (value: ISelectItem) => value._id === defaultCategory
+        (value: ISelectItem) => value._id === defaultCategory,
       );
 
       if (!isExit) {
@@ -445,7 +444,7 @@ const ProductEditPage: NextPageWithLayout = () => {
     (value: string) => {
       setDefaultCategory(value);
     },
-    [mutipleCategories, defaultCategory]
+    [mutipleCategories, defaultCategory],
   );
 
   const changeValue = useCallback(
@@ -456,7 +455,7 @@ const ProductEditPage: NextPageWithLayout = () => {
       }
       setProduct({ ...product, [name]: value });
     },
-    [product]
+    [product],
   );
 
   const changePrice = useCallback(
@@ -476,7 +475,7 @@ const ProductEditPage: NextPageWithLayout = () => {
       }
       setProduct({ ...product, [name]: value });
     },
-    [product]
+    [product],
   );
 
   const changePublic = (name: string, value: boolean) => {
@@ -512,7 +511,7 @@ const ProductEditPage: NextPageWithLayout = () => {
         }
       }
     },
-    [thumbnail, loadingThumbnail]
+    [thumbnail, loadingThumbnail],
   );
 
   const onUploadGallery = useCallback(
@@ -538,7 +537,7 @@ const ProductEditPage: NextPageWithLayout = () => {
         }
       }
     },
-    [gallery, loadingGallery]
+    [gallery, loadingGallery],
   );
 
   const onRemoveGallary = useCallback(
@@ -546,14 +545,14 @@ const ProductEditPage: NextPageWithLayout = () => {
       const newGallery = gallery.filter((image) => image !== url);
       setGallery(newGallery);
     },
-    [gallery, loadingGallery]
+    [gallery, loadingGallery],
   );
 
   const onUpdateSpecifications = useCallback(
     (newSpecifications: ISpecificationsProduct[]) => {
       setSpecifications(newSpecifications);
     },
-    [specifications]
+    [specifications],
   );
 
   const checkData = (data: any) => {
@@ -628,7 +627,7 @@ const ProductEditPage: NextPageWithLayout = () => {
       const categoriesProduct = mutipleCategories.map(
         (category: ISelectItem) => {
           return category._id;
-        }
+        },
       );
 
       let variations_id: string[] = [];
@@ -641,7 +640,7 @@ const ProductEditPage: NextPageWithLayout = () => {
       if (variants.length > 0) {
         const variationsRes = await createVariations(
           product._id as string,
-          variants
+          variants,
         );
 
         if (variationsRes.status !== 201) {
@@ -653,14 +652,14 @@ const ProductEditPage: NextPageWithLayout = () => {
         }
 
         variations_id = variationsRes.payload.map(
-          (item: IVariantProduct) => item._id
+          (item: IVariantProduct) => item._id,
         );
 
         inventory = variationsRes.payload.reduce(
           (total: number, item: IVariantProduct) => {
             return total + item.inventory;
           },
-          0
+          0,
         );
       } else {
         inventory = product.inventory;
@@ -755,7 +754,7 @@ const ProductEditPage: NextPageWithLayout = () => {
           (category: IParentCategory) => ({
             _id: category._id,
             title: category.title,
-          })
+          }),
         );
 
         const productData: IProductData = {
@@ -790,7 +789,7 @@ const ProductEditPage: NextPageWithLayout = () => {
         setTitle(title);
         setOptionsProduct(options);
         setDefaultCategory(
-          defaultCategoryPayload ? defaultCategoryPayload._id : null
+          defaultCategoryPayload ? defaultCategoryPayload._id : null,
         );
         setMultipleCategories(multipleCategoriesPayload);
         setThumbnail(thumbnail);
@@ -890,7 +889,7 @@ const ProductEditPage: NextPageWithLayout = () => {
   const onChangeNumberVariant = (
     name: string,
     value: number,
-    index: number
+    index: number,
   ) => {
     const currentVariants: IVariantProduct[] = variants;
     const newVariant = { ...currentVariants[index], [name]: value };
@@ -901,7 +900,7 @@ const ProductEditPage: NextPageWithLayout = () => {
 
   const onRemoveVariant = (id: string) => {
     const newVariants = variants.filter(
-      (variant: IVariantProduct) => variant._id !== id
+      (variant: IVariantProduct) => variant._id !== id,
     );
     setVariants(newVariants);
     setPopupVariant(false);

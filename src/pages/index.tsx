@@ -47,7 +47,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const options = {
@@ -119,12 +119,12 @@ const HomePage: NextPageWithLayout = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const { t, i18n } = useTranslation();
-  
+
   const handleGetOverviews = async () => {
     try {
       const date = new Date().toLocaleDateString("en-GB");
       const { status, payload } = await axiosGet(
-        `/overviews/home?date=${date}`
+        `/overviews/home?date=${date}`,
       );
 
       if (status === 200) {
@@ -138,7 +138,7 @@ const HomePage: NextPageWithLayout = () => {
   const handleGetGrossInWeek = async (startDate: Date) => {
     try {
       const { status, payload } = await axiosGet(
-        `/gross-date/week?start_date=${startDate.toDateString()}`
+        `/gross-date/week?start_date=${startDate.toDateString()}`,
       );
 
       const startDay = startDate.getDate();
@@ -163,7 +163,7 @@ const HomePage: NextPageWithLayout = () => {
         payload.map((item: IGrowDate) => {
           const day = Number(item.day);
           const index = newData.labels.findIndex(
-            (label: number) => label === day
+            (label: number) => label === day,
           );
           newData.datasets[0].data[index] = item.sub_gross;
           newData.datasets[1].data[index] = item.gross;

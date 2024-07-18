@@ -14,8 +14,15 @@ interface Props {
 }
 
 const Tree = (props: Props) => {
-  const { node_id, checkOnMove = false, categories, categoriesParent, categorySelect, defaultSelect, onSelect } =
-    props;
+  const {
+    node_id,
+    checkOnMove = false,
+    categories,
+    categoriesParent,
+    categorySelect,
+    defaultSelect,
+    onSelect,
+  } = props;
   const [item] = useState(categories[node_id]);
   return (
     <ul className="list-none text-sm px-2 mt-2">

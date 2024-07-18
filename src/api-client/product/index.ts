@@ -19,12 +19,13 @@ const getProduct = async (product_id: string) => {
 
 const getProductsWithFilter = async (
   filter: IFilter | null,
-  page: number = 1
+  page: number = 1,
 ) => {
   return await axiosGet(
-    BASE_URL + `/admin/products/search?search=${filter?.search || ""}&category=${
-      filter?.category || ""
-    }&page=${page}`
+    BASE_URL +
+      `/admin/products/search?search=${filter?.search || ""}&category=${
+        filter?.category || ""
+      }&page=${page}`,
   );
 };
 
@@ -34,7 +35,7 @@ const createProduct = async (data: ISendProduct) => {
 
 const updateProduct = async (
   product_id: string,
-  data: Partial<ISendProduct>
+  data: Partial<ISendProduct>,
 ) => {
   return await axiosPatch(BASE_URL + `/admin/products/${product_id}`, data);
 };
@@ -42,7 +43,7 @@ const updateProduct = async (
 const uploadThumbnailProduct = async (formData: FormData) => {
   return await uploadImageOnServer(
     BASE_URL + `/admin/products/uploadImage`,
-    formData
+    formData,
   );
 };
 

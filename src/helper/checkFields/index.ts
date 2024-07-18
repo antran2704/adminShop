@@ -10,11 +10,9 @@ const handleCheckFields = (data: any): string[] => {
 };
 
 const handleRemoveCheck = (fields: string[], name: string) => {
-    const newFieldsCheck = fields.filter(
-      (field: string) => field !== name
-    );
+  const newFieldsCheck = fields.filter((field: string) => field !== name);
 
-    return newFieldsCheck;
-  };
+  return newFieldsCheck;
+};
 
 export { handleCheckFields, handleRemoveCheck };

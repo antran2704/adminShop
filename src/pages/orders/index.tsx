@@ -74,11 +74,11 @@ const OrdersPage: NextPageWithLayout = () => {
   const currentPage = query.page ? Number(query.page) : 1;
 
   const { i18n } = useTranslation();
-  
+
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [message, setMessage] = useState<string | null>(null);
   const [filter, setFilter] = useState<IFilter | null>(
-    query.searchText ? ({ search: query.searchText } as IFilter) : null
+    query.searchText ? ({ search: query.searchText } as IFilter) : null,
   );
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -88,14 +88,14 @@ const OrdersPage: NextPageWithLayout = () => {
     (name: string, value: string) => {
       setFilter({ ...filter, [name]: value });
     },
-    [filter]
+    [filter],
   );
 
   const onSelect = useCallback(
     (value: string, name: string) => {
       setFilter({ ...filter, [name]: value });
     },
-    [filter]
+    [filter],
   );
 
   const onReset = useCallback(() => {

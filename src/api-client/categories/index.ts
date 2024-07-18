@@ -24,7 +24,7 @@ const getParentCategories = async () => {
 };
 
 const getAllCategories = async (
-  select?: IQueryParam<Partial<IDataCategory>>
+  select?: IQueryParam<Partial<IDataCategory>>,
 ) => {
   const parseQuery = qs.stringify(select);
   return await axiosGet(BASE_URL + `/admin/categories/all?${parseQuery}`);
@@ -32,10 +32,11 @@ const getAllCategories = async (
 
 const getCategoriesWithFilter = async (
   filter: IFilter | null,
-  page: number = 1
+  page: number = 1,
 ) => {
   return await axiosGet(
-    BASE_URL + `/admin/categories/search?search=${filter?.search || ""}&page=${page}`
+    BASE_URL +
+      `/admin/categories/search?search=${filter?.search || ""}&page=${page}`,
   );
 };
 
@@ -45,7 +46,7 @@ const createCategory = async (data: Partial<IDataCategory>) => {
 
 const updateCategory = async (
   category_id: string,
-  data: Partial<IDataCategory>
+  data: Partial<IDataCategory>,
 ) => {
   return await axiosPatch(BASE_URL + `/admin/categories/${category_id}`, data);
 };
@@ -53,7 +54,7 @@ const updateCategory = async (
 const uploadThumbnailCategory = async (formData: FormData) => {
   return await uploadImageOnServer(
     BASE_URL + `/admin/categories/uploadThumbnail`,
-    formData
+    formData,
   );
 };
 

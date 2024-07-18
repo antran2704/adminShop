@@ -1,8 +1,7 @@
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import IBtnShowMore from "./interface";
 
-
-const ButtonShowMore = ({loading, onClick}: IBtnShowMore) => {
+const ButtonShowMore = ({ loading, onClick }: IBtnShowMore) => {
   return (
     <div className="flex items-center justify-center w-full mt-5">
       <button

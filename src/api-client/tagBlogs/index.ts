@@ -21,14 +21,14 @@ const getTagBlog = async (blog_id: string) => {
 const getTagBlogsWithFilter = async (
   filter: IFilter | null,
   query?: IQueryParam<Partial<IBlog>>,
-  page: number = 1
+  page: number = 1,
 ) => {
   const parseQuery = qs.stringify(query);
   return await axiosGet(
     BASE_URL +
       `/admin/blogs-tag/search?search=${filter?.search || ""}${
         parseQuery && "&" + parseQuery
-      }&page=${page}`
+      }&page=${page}`,
   );
 };
 
@@ -38,7 +38,7 @@ const createTagBlog = async (payload: ICreateTagBlog) => {
 
 const updateTagBlog = async (
   tag_id: string,
-  options?: Partial<ICreateTagBlog>
+  options?: Partial<ICreateTagBlog>,
 ) => {
   return await axiosPatch(BASE_URL + `/admin/blogs-tag/${tag_id}`, {
     ...options,
@@ -47,9 +47,8 @@ const updateTagBlog = async (
 
 const uploadTagBlogImage = async (formData: FormData) => {
   return await uploadImageOnServer(
-    BASE_URL +
-      `/admin/blogs-tag/uploadImage`,
-    formData
+    BASE_URL + `/admin/blogs-tag/uploadImage`,
+    formData,
   );
 };
 

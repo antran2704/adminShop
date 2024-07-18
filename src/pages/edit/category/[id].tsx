@@ -125,7 +125,7 @@ const EditCategoryPage: NextPageWithLayout = () => {
         }
       }
     },
-    [thumbnail]
+    [thumbnail],
   );
 
   const checkData = (data: any) => {
@@ -181,7 +181,7 @@ const EditCategoryPage: NextPageWithLayout = () => {
 
     let breadcrumbs: string[] = generalBreadcrumbs(
       categorySelect.node_id || null,
-      categories
+      categories,
     );
     let sendData = {
       title: data.title,
@@ -314,8 +314,8 @@ const EditCategoryPage: NextPageWithLayout = () => {
     });
   }, [categoryId, router.isReady]);
 
-  if(!router.isReady) {
-    return <Loading />
+  if (!router.isReady) {
+    return <Loading />;
   }
 
   return (

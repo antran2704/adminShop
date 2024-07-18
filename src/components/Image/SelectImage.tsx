@@ -23,7 +23,7 @@ const SelectImage = (props: Props) => {
     if (onChange) {
       onChange(name as string, url);
     }
-    
+
     handleOpenModal();
   };
 
@@ -45,12 +45,18 @@ const SelectImage = (props: Props) => {
         } rounded-full overflow-hidden`}
         onClick={handleShowImage}
       >
-        <ImageCus className="w-full h-full" src={(process.env.NEXT_PUBLIC_ENDPOINT_API) as string + url}/>
+        <ImageCus
+          className="w-full h-full"
+          src={(process.env.NEXT_PUBLIC_ENDPOINT_API as string) + url}
+        />
       </div>
-      <button onClick={handleOpenModal} className="text-sm dark:text-darkText whitespace-nowrap">
+      <button
+        onClick={handleOpenModal}
+        className="text-sm dark:text-darkText whitespace-nowrap"
+      >
         {t("Action.change")}
       </button>
-      
+
       {open && (
         <Popup title="Select image" show={open} onClose={handleOpenModal}>
           <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-3">
@@ -64,7 +70,10 @@ const SelectImage = (props: Props) => {
                   src={process.env.NEXT_PUBLIC_ENDPOINT_API + image}
                   className="object-cover object-center h-full"
                 /> */}
-                <ImageCus className="object-cover object-center h-full" src={(process.env.NEXT_PUBLIC_ENDPOINT_API) as string + image}/>
+                <ImageCus
+                  className="object-cover object-center h-full"
+                  src={(process.env.NEXT_PUBLIC_ENDPOINT_API as string) + image}
+                />
               </button>
             ))}
           </div>
@@ -78,7 +87,10 @@ const SelectImage = (props: Props) => {
               src={url}
               className="h-full w-full object-contain object-center rounded-lg"
             /> */}
-             <ImageCus className="h-full w-full object-contain object-center rounded-lg" src={(process.env.NEXT_PUBLIC_ENDPOINT_API) as string + url}/>
+            <ImageCus
+              className="h-full w-full object-contain object-center rounded-lg"
+              src={(process.env.NEXT_PUBLIC_ENDPOINT_API as string) + url}
+            />
           </div>
         </Popup>
       )}
