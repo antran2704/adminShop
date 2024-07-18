@@ -1,9 +1,12 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { getInfoUser } from "~/api-client";
 import DarkMode from "~/components/DarkMode";
 import Translation from "~/components/Translation";
 import { checkDarkMode } from "~/helper/darkMode";
+import { IResponse, IUserInfor } from "~/interface";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import { loginReducer } from "~/store/slice/user";
 
 interface Props {
   children: JSX.Element;
@@ -14,6 +17,25 @@ const LayoutWithoutHeader = ({ children }: Props) => {
 
   const dispatch = useAppDispatch();
   const { infor } = useAppSelector((state) => state.user);
+
+  const checkAuth = async () => {
+    try {
+      const { status, payload }: IResponse<IUserInfor> = await getInfoUser();
+
+      if (status === 200) {
+        dispatch(loginReducer(payload));
+        router.push("/");
+      }
+    } catch (err) {
+      // await router.push("/login");
+    }
+  };
+
+  useEffect(() => {
+    if (!infor._id) {
+      checkAuth();
+    }
+  }, [infor._id]);
 
   useEffect(() => {
     checkDarkMode(dispatch);

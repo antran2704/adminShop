@@ -27,7 +27,7 @@ import { Table, CelTable } from "~/components/Table";
 import { typeCel } from "~/enums";
 import Link from "next/link";
 import SpringCount from "~/components/SpringCount";
-import { axiosGet } from "~/configs/configAxios";
+import httpConfig, { axiosGet } from "~/configs/configAxios";
 import { getFirstDayInWeek } from "~/helper/datetime";
 import { IGrowDate } from "~/interface";
 import Statistic from "~/components/Statistic";
@@ -40,6 +40,7 @@ import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { getGross, getGrossInWeek } from "~/api-client/gross/gross-date";
 
 ChartJS.register(
   CategoryScale,
@@ -66,19 +67,19 @@ const options = {
 };
 
 interface IOverview {
-  gross: number;
-  total_orders: string[];
+  total_gross: number;
+  orders: string[];
   pending_orders: number;
   processing_orders: number;
   delivered_orders: number;
-  cancle_orders: number;
+  cancel_orders: number;
 }
 
 const initOveviews: IOverview = {
-  gross: 0,
-  total_orders: [],
+  total_gross: 0,
+  orders: [],
   processing_orders: 0,
-  cancle_orders: 0,
+  cancel_orders: 0,
   delivered_orders: 0,
   pending_orders: 0,
 };
@@ -120,12 +121,14 @@ const HomePage: NextPageWithLayout = () => {
 
   const { t, i18n } = useTranslation();
 
-  const handleGetOverviews = async () => {
+  const handleGetToDay = async () => {
     try {
-      const date = new Date().toLocaleDateString("en-GB");
-      const { status, payload } = await axiosGet(
-        `/overviews/home?date=${date}`,
-      );
+      // const date = new Date().toLocaleDateString("en-GB");
+      const { status, payload } = await getGross({
+        day: "18",
+        month: "07",
+        year: "2024",
+      });
 
       if (status === 200) {
         setOverviews(payload);
@@ -137,9 +140,7 @@ const HomePage: NextPageWithLayout = () => {
 
   const handleGetGrossInWeek = async (startDate: Date) => {
     try {
-      const { status, payload } = await axiosGet(
-        `/gross-date/week?start_date=${startDate.toDateString()}`,
-      );
+      const { status, payload } = await getGrossInWeek(startDate);
 
       const startDay = startDate.getDate();
       const newData: any = data;
@@ -203,8 +204,8 @@ const HomePage: NextPageWithLayout = () => {
 
   useEffect(() => {
     const firstDay = getFirstDayInWeek(new Date().toDateString());
-    // handleGetGrossInWeek(firstDay);
-    // handleGetOverviews();
+    handleGetGrossInWeek(firstDay);
+    handleGetToDay();
     // handleGetData();
   }, []);
 
@@ -232,7 +233,7 @@ const HomePage: NextPageWithLayout = () => {
               <Statistic
                 title={t("HomePage.income.today")}
                 IconElement={<BiDollarCircle className="text-4xl" />}
-                to={overviews.gross}
+                to={overviews.total_gross}
                 backgroundColor="bg-[#5032fd]"
                 duration={0.5}
                 specialCharacter="VND"
@@ -241,7 +242,7 @@ const HomePage: NextPageWithLayout = () => {
               <Statistic
                 title={t("HomePage.order.today")}
                 IconElement={<AiOutlineShoppingCart className="text-4xl" />}
-                to={overviews.total_orders.length}
+                to={overviews.orders.length}
                 backgroundColor="bg-[#0891b2]"
                 duration={0.5}
               />
@@ -273,7 +274,7 @@ const HomePage: NextPageWithLayout = () => {
               <Statistic
                 title={t("HomePage.order.cancle")}
                 IconElement={<BiMinusCircle className="text-4xl" />}
-                to={overviews.cancle_orders}
+                to={overviews.cancel_orders}
                 backgroundColor="bg-cancle"
                 duration={0.5}
               />

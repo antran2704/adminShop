@@ -63,10 +63,10 @@ const SKIP_URL: string[] = [
   process.env.NEXT_PUBLIC_ENDPOINT_API + "/admin/login",
 ];
 
-const handleLogout = () => {
+const handleLogout = async () => {
   clearAuthLocal();
   dispatch(logoutReducer());
-  router.push("/login");
+  await router.push("/login");
 };
 
 httpConfig.interceptors.request.use(
@@ -86,9 +86,8 @@ httpConfig.interceptors.request.use(
     const controller = new AbortController();
 
     // check accesstoken already have on browser
-    if (accessToken && publicToken && !isRefresh) {
+    if (accessToken && publicToken) {
       const decoded: JwtPayload = jwt.decode(accessToken) as JwtPayload;
-
       if (!decoded) {
         await router.push("/login");
 
@@ -103,16 +102,16 @@ httpConfig.interceptors.request.use(
       const currentTime: number = Math.floor(new Date().getTime() / 1000) + 60;
 
       // check accessToken still live or was expried
-      if (currentTime >= accessTokenExp) {
+      if (currentTime >= accessTokenExp && !isRefresh) {
         isRefresh = true;
         try {
-          const response = await getRefreshToken(refreshToken);
+          const { status, payload } = await getRefreshToken(refreshToken);
 
-          if (response) {
-            setAuthLocal("accessToken", response.newAccessToken);
+          if (status === 200) {
+            setAuthLocal("accessToken", payload.newAccessToken);
 
             // Retry the original request with the new token
-            config.headers.Authorization = `Bearer ${response.newAccessToken}`;
+            config.headers.Authorization = `Bearer ${payload.newAccessToken}`;
             config.headers["Public-Key"] = publicToken;
             config.headers["X-Api-Key"] = apiKeyToken;
             isRefresh = false;
@@ -138,6 +137,7 @@ httpConfig.interceptors.request.use(
       (!accessToken || !refreshToken || !publicToken) &&
       !SKIP_URL.includes(url)
     ) {
+      console.log("lot");
       handleLogout();
       controller.abort();
 
@@ -181,6 +181,7 @@ httpConfig.interceptors.response.use(
       error.response.data.message === MESSAGE_ERROR.JWT_EXPRIED
     ) {
       toast.info("Hết phiên đăng nhập", { position: "top-center" });
+      handleLogout();
     }
 
     return Promise.reject(error);

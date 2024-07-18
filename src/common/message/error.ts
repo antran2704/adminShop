@@ -3,7 +3,7 @@ const MESSAGE_ERROR = {
   BAD_REQUEST: "Bad request",
   FORBIDDEN: "Forbidden",
   NOT_FOUND: "Not found",
-  JWT_EXPRIED: "jwt_expried",
+  JWT_EXPRIED: "jwt expired",
 };
 
 export default MESSAGE_ERROR;
