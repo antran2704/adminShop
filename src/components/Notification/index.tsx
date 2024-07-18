@@ -185,7 +185,7 @@ const Notification = () => {
               >
                 <NotificationItem data={item} onClick={onClickNoti} />
               </li>
-            )
+            ),
           )}
           {notification.total > notification.notifications.length && (
             <Link

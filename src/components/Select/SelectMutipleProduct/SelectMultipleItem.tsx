@@ -44,7 +44,7 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
       selectItem(select, name);
     } else {
       const newSelect = selects.filter(
-        (item: ISelectItem) => item._id !== select._id
+        (item: ISelectItem) => item._id !== select._id,
       );
       removeItem(newSelect, select._id as string, name);
     }
@@ -69,11 +69,13 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
     }
   }, [show]);
   return (
-    <div className={`realtive ${className ? className : ""} ${show ? "z-[21]" : "z-20"}`}>
+    <div
+      className={`realtive ${className ? className : ""} ${show ? "z-[21]" : "z-20"}`}
+    >
       <span className="block text-base text-[#1E1E1E] dark:text-darkText font-medium mb-1">
         {title}
       </span>
-     
+
       <div
         ref={divRef}
         className={`relative flex items-center w-full min-h-[36px] dark:bg-darkInput rounded-md px-2 py-1 ${
@@ -88,7 +90,7 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
             <p className="w-full line-clamp-1 dark:text-darkText select-none gap-2">
               {selects.map(
                 (item: ISelectItem, index: number) =>
-                  `${item.title} ${index + 1 <= selects.length - 1 ? "," : ""}`
+                  `${item.title} ${index + 1 <= selects.length - 1 ? "," : ""}`,
               )}
             </p>
           )}
@@ -111,8 +113,12 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
                 className="ml-auto w-5 h-7 dark:text-darkText"
               />
             )}
-            {show && <MdKeyboardArrowUp className="ml-auto w-6 h-7 dark:text-darkText" />}
-            {!show && <MdKeyboardArrowDown className="ml-auto w-6 h-7 dark:text-darkText" />}
+            {show && (
+              <MdKeyboardArrowUp className="ml-auto w-6 h-7 dark:text-darkText" />
+            )}
+            {!show && (
+              <MdKeyboardArrowDown className="ml-auto w-6 h-7 dark:text-darkText" />
+            )}
           </div>
         </div>
 
@@ -141,7 +147,7 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
               onClick={() => onSelect(item)}
               className={`w-full text-base ${
                 selects.find(
-                  (select: ISelectItem) => select._id === item._id
+                  (select: ISelectItem) => select._id === item._id,
                 ) && "bg-gray-200"
               } px-5 py-1 cursor-pointer transition-all ease-linear duration-100`}
             >

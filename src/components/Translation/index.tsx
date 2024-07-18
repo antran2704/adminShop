@@ -46,7 +46,7 @@ const Translation = () => {
                 <button
                   onClick={() => {
                     i18n.changeLanguage(keyLng);
-                    setSelect(initListLanguages[keyLng])
+                    setSelect(initListLanguages[keyLng]);
                   }}
                   className={`flex items-center w-full hover:bg-primary hover:text-white text-start px-5 py-2 ${
                     i18n.resolvedLanguage === keyLng

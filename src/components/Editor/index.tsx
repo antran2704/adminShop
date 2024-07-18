@@ -33,7 +33,7 @@ interface Props {
 }
 
 //Add class Image Quill Editor
-var Image = ReactQuill.Quill.import("formats/image");
+let Image = ReactQuill.Quill.import("formats/image");
 Image.className = "quill__image";
 
 ReactQuill.Quill.register(Image, true);
@@ -133,7 +133,7 @@ const Editor = (props: Props) => {
         editor.insertEmbed(
           position,
           "image",
-          process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + payload
+          process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + payload,
         );
         // editor.formatLine(position, position, "align", "center");
         const newPosition: number = position + 1;
@@ -172,7 +172,7 @@ const Editor = (props: Props) => {
         },
       },
     }),
-    []
+    [],
   );
 
   const onChangeContent = (newConten: string) => {

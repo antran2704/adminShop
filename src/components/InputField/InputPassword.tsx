@@ -26,7 +26,7 @@ const InputField: FC<IInputText> = (props: IInputText) => {
   const [show, setShow] = useState<boolean>(false);
 
   const handleChangeValue = (
-    e: FormEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: FormEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     if (readonly) return;
 

@@ -8,20 +8,19 @@ interface Props {
 const LayoutClose = (props: Props) => {
   const { onClose, dissableScroll = true } = props;
 
-
   useEffect(() => {
-    if(dissableScroll) {
+    if (dissableScroll) {
       const el = document.querySelector("#body");
 
-      if(!el) return;
+      if (!el) return;
 
       el.classList.add("dissableScroll");
 
       return () => {
         el.classList.remove("dissableScroll");
-      }
+      };
     }
-  }, [])
+  }, []);
 
   return (
     <div

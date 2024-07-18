@@ -14,7 +14,7 @@ import FormLayout from "~/layouts/FormLayout";
 
 import { ICouponCreate } from "~/interface";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
-import { axiosPost } from "~/ultils/configAxios";
+import { axiosPost } from "~/configs/configAxios";
 import Thumbnail from "~/components/Image/Thumbnail";
 import { uploadImageOnServer } from "~/helper/handleImage";
 import { SelectDate, SelectTag } from "~/components/Select";
@@ -51,7 +51,7 @@ const CreateCouponPage: NextPageWithLayout = () => {
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
 
   const [discountType, setDiscountType] = useState<EDicount_type>(
-    EDicount_type.PERCENTAGE
+    EDicount_type.PERCENTAGE,
   );
 
   const [thumbnail, setThumbnail] = useState<string | null>(null);
@@ -61,7 +61,7 @@ const CreateCouponPage: NextPageWithLayout = () => {
     (name: string, value: boolean) => {
       setData({ ...data, [name]: value });
     },
-    [data]
+    [data],
   );
 
   const changeNumber = useCallback(
@@ -72,7 +72,7 @@ const CreateCouponPage: NextPageWithLayout = () => {
       }
       setData({ ...data, [name]: value });
     },
-    [data]
+    [data],
   );
 
   const changeValue = useCallback(
@@ -83,7 +83,7 @@ const CreateCouponPage: NextPageWithLayout = () => {
       }
       setData({ ...data, [name]: value });
     },
-    [data, fieldsCheck]
+    [data, fieldsCheck],
   );
 
   const onSelectDate = (value: string, name: string) => {
@@ -121,7 +121,7 @@ const CreateCouponPage: NextPageWithLayout = () => {
   const onChangeDiscountValue = (
     type: EDicount_type,
     name: string,
-    value: number
+    value: number,
   ) => {
     if (fieldsCheck.includes(name)) {
       const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
@@ -170,7 +170,7 @@ const CreateCouponPage: NextPageWithLayout = () => {
       try {
         const { status, payload } = await uploadImageOnServer(
           `${process.env.NEXT_PUBLIC_ENDPOINT_API}/discounts/uploadThumbnail`,
-          formData
+          formData,
         );
 
         if (status === 201) {

@@ -5,4 +5,4 @@ const styleTypeNoti: IFilter = {
   order: "bg-success",
 };
 
-export {styleTypeNoti}
+export { styleTypeNoti };

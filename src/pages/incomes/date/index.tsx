@@ -4,7 +4,7 @@ import { BiDollarCircle, BiPackage, BiMinusCircle } from "react-icons/bi";
 
 import { SelectDate } from "~/components/Select";
 import Statistic from "~/components/Statistic";
-import { axiosGet } from "~/ultils/configAxios";
+import { axiosGet } from "~/configs/configAxios";
 import { IGrowDate } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
@@ -26,7 +26,7 @@ const IncomeDatePage: NextPageWithLayout = () => {
   const [selectDate, setSelectDate] = useState<string>(
     `${new Date().getFullYear()}-${
       new Date().getMonth() + 1
-    }-${new Date().getDate()}`
+    }-${new Date().getDate()}`,
   );
 
   const onSelectDate = (value: string) => {
@@ -41,7 +41,7 @@ const IncomeDatePage: NextPageWithLayout = () => {
 
     try {
       const { status, payload } = await axiosGet(
-        `/gross-date?gross_date=${convertDate}`
+        `/gross-date?gross_date=${convertDate}`,
       );
 
       if (status === 200) {
@@ -102,7 +102,9 @@ const IncomeDatePage: NextPageWithLayout = () => {
               </p>
             )}
             {!growDate.updatedAt && (
-              <p className="text-lg font-medium text-center dark:text-darkText">Chưa có dữ liệu</p>
+              <p className="text-lg font-medium text-center dark:text-darkText">
+                Chưa có dữ liệu
+              </p>
             )}
           </div>
           <div

@@ -1,8 +1,9 @@
 import { AxiosError } from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState, FormEvent, useEffect, ReactElement } from "react";
-import { useTranslation } from "react-i18next";
+import { useState, FormEvent, ReactElement } from "react";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
@@ -13,7 +14,8 @@ import { useAppDispatch } from "~/store/hooks";
 import { login } from "~/api-client";
 import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
 import { NextPageWithLayout } from "~/interface/page";
-import { checkCookieAuth } from "~/helper/cookie";
+import { setAuthLocal } from "~/helper/auth";
+import { ILogin, IResponse } from "~/interface";
 
 interface IDataSend {
   email: string | null;
@@ -32,12 +34,11 @@ const LoginPage: NextPageWithLayout = () => {
 
   const dispatch = useAppDispatch();
 
-  const { t } = useTranslation();
-
+  const { t } = useTranslation("common");
   const [data, setData] = useState<IDataSend>(initData);
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [checkLogin, setCheckLogin] = useState<boolean>(true);
+  const [checkLogin, setCheckLogin] = useState<boolean>(false);
 
   const [message, setMessage] = useState<string | null>(null);
 
@@ -56,7 +57,7 @@ const LoginPage: NextPageWithLayout = () => {
       setMessage("Please input field");
     }
 
-    setLoading(true);
+    // setLoading(true);
 
     const sendData: IDataSend = {
       email: data.email?.toLowerCase() as string,
@@ -64,12 +65,16 @@ const LoginPage: NextPageWithLayout = () => {
     };
 
     try {
-      const { status, payload } = await login(
+      const { status, payload }: IResponse<ILogin> = await login(
         sendData.email as string,
-        sendData.password as string
+        sendData.password as string,
       );
 
       if (status === 200) {
+        setAuthLocal("accessToken", payload.accessToken.value);
+        setAuthLocal("refreshToken", payload.refreshToken.value);
+        setAuthLocal("apiKey", payload.apiKey);
+        setAuthLocal("publicKey", payload.publicKey);
         dispatch(loginReducer(payload));
         router.push("/");
       }
@@ -92,18 +97,18 @@ const LoginPage: NextPageWithLayout = () => {
     }
   };
 
-  useEffect(() => {
-    const isCheck: boolean = checkCookieAuth();
-    
-    if (!isCheck) {
-      setCheckLogin(false);
-    }
+  // useEffect(() => {
+  //   const isCheck: boolean = checkCookieAuth();
 
-    if (isCheck) {
-      router.push("/");
-      return;
-    }
-  }, []);
+  //   if (!isCheck) {
+  //     setCheckLogin(false);
+  //   }
+
+  //   if (isCheck) {
+  //     router.push("/");
+  //     return;
+  //   }
+  // }, []);
 
   if (checkLogin) {
     return <Loading />;
@@ -173,6 +178,12 @@ const LoginPage: NextPageWithLayout = () => {
 };
 
 export default LoginPage;
+
+export const getStaticProps = async ({ locale }: { locale: string }) => ({
+  props: {
+    ...(await serverSideTranslations(locale ?? "en", ["common"])),
+  },
+});
 
 LoginPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

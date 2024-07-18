@@ -13,8 +13,9 @@ import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import ImageCus from "../Image/ImageCus";
 import SideBarItem from "./SideBarItem";
 import { logout } from "~/api-client";
-import { loginReducer } from "~/store/slice/user";
+import { logoutReducer } from "~/store/slice/user";
 import { PERMISION } from "~/data/Permission";
+import { clearAuthLocal } from "~/helper/auth";
 
 interface Props {
   showSideBar: boolean;
@@ -37,13 +38,8 @@ const SideBar = (props: Props) => {
   const handleLogOut = async () => {
     await logout();
 
-    const userInfor = {
-      _id: null,
-      name: "",
-      email: "",
-      avartar: null,
-    };
-    dispatch(loginReducer(userInfor));
+    dispatch(logoutReducer());
+    clearAuthLocal();
     router.push("/login");
   };
 

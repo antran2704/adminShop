@@ -1,4 +1,4 @@
-import { FC,memo, useState } from "react";
+import { FC, memo, useState } from "react";
 
 interface Props {
   id?: string;
@@ -12,7 +12,8 @@ interface Props {
 }
 
 const ButtonCheck: FC<Props> = (props: Props) => {
-  const { id, title, name, isChecked, width, data, onGetChecked, onChange } = props;
+  const { id, title, name, isChecked, width, data, onGetChecked, onChange } =
+    props;
   const [check, setCheck] = useState<boolean>(isChecked);
 
   const handleButtonValue = () => {

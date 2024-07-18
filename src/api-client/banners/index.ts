@@ -1,11 +1,11 @@
 import { uploadImageOnServer } from "~/helper/handleImage";
-import { Banner, CreateBanner} from "~/interface";
+import { Banner, CreateBanner } from "~/interface";
 import {
   axiosDelete,
   axiosGet,
   axiosPatch,
   axiosPost,
-} from "~/ultils/configAxios";
+} from "~/configs/configAxios";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
@@ -21,18 +21,12 @@ const createBanner = async (data: CreateBanner) => {
   return await axiosPost(BASE_URL + "/banners", data);
 };
 
-const updateBanner = async (
-  banner_id: string,
-  data: Partial<Banner>
-) => {
+const updateBanner = async (banner_id: string, data: Partial<Banner>) => {
   return await axiosPatch(BASE_URL + `/banners/${banner_id}`, data);
 };
 
 const uploadBannerImage = async (formData: FormData) => {
-  return await uploadImageOnServer(
-    BASE_URL + `/banners/uploadImage`,
-    formData
-  );
+  return await uploadImageOnServer(BASE_URL + `/banners/uploadImage`, formData);
 };
 
 const deleteBanner = async (banner_id: string) => {
@@ -45,5 +39,5 @@ export {
   createBanner,
   updateBanner,
   uploadBannerImage,
-  deleteBanner
+  deleteBanner,
 };

@@ -13,7 +13,7 @@ import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { loginReducer } from "~/store/slice/user";
-import { axiosPatch, axiosPost } from "~/ultils/configAxios";
+import { axiosPatch, axiosPost } from "~/configs/configAxios";
 
 interface IPassword {
   password: string | null;
@@ -48,14 +48,14 @@ const SettingPage: NextPageWithLayout = () => {
     (name: string, value: string) => {
       setPasswordData({ ...passwordData, [name]: value });
     },
-    [passwordData]
+    [passwordData],
   );
 
   const changeValue = useCallback(
     (name: string, value: string) => {
       setUser({ ...user, [name]: value });
     },
-    [user]
+    [user],
   );
 
   const uploadAvartar = useCallback(
@@ -68,7 +68,7 @@ const SettingPage: NextPageWithLayout = () => {
         try {
           const { status, payload } = await uploadImageOnServer(
             `${process.env.NEXT_PUBLIC_ENDPOINT_API}/admin/avartar`,
-            formData
+            formData,
           );
 
           if (status === 201) {
@@ -84,7 +84,7 @@ const SettingPage: NextPageWithLayout = () => {
         setLoadingAvartar(false);
       }
     },
-    [avartar, loadingAvartar]
+    [avartar, loadingAvartar],
   );
 
   const handleChangePassword = async () => {

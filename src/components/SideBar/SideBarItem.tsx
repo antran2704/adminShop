@@ -20,7 +20,7 @@ const NavbarItem: FC<Props> = (props: Props) => {
 
   const handleCollapse = (): void => {
     const el = elRef.current;
-    
+
     if (el) {
       const currentHeight = el.clientHeight;
       if (currentHeight === 0) {

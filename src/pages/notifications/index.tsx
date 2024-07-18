@@ -31,7 +31,7 @@ const NotificationPage: NextPageWithLayout = () => {
   const initTag = router.query.tag ? Number(router.query.tag) : 0;
 
   const [selectTag, setSelectTag] = useState<TagNotification>(
-    tagsNotification[initTag] ? tagsNotification[initTag] : tagsNotification[0]
+    tagsNotification[initTag] ? tagsNotification[initTag] : tagsNotification[0],
   );
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -72,7 +72,7 @@ const NotificationPage: NextPageWithLayout = () => {
             }
 
             return item;
-          }
+          },
         );
 
         setNotifications(newNotifications);
@@ -93,16 +93,16 @@ const NotificationPage: NextPageWithLayout = () => {
   const handleGetNotifications = async (
     currentPage: number,
     limit: number,
-    query: IQueryParam<Partial<INotificationItem>> = {}
+    query: IQueryParam<Partial<INotificationItem>> = {},
   ) => {
-    console.log("get noti")
+    console.log("get noti");
     setLoading(true);
 
     try {
       const { status, payload, pagination } = await getNotificationsWithPage(
         currentPage,
         limit,
-        query
+        query,
       );
       if (status === 200) {
         setNotifications(payload);

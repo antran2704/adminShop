@@ -46,7 +46,7 @@ const EditCategoryPage: NextPageWithLayout = () => {
 
   const { isCan, abilityLoading } = useAbility(
     [ERole.ADMIN],
-    [EPermission.ADMIN]
+    [EPermission.ADMIN],
   );
 
   const [title, setTitle] = useState<string | null>(null);

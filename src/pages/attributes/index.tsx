@@ -58,21 +58,23 @@ const AttributesPage: NextPageWithLayout = () => {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectItem, setSelectItem] = useState<ISelectAttribute>(initSelect);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [filter, setFilter] = useState<IFilter | null>(query.searchText ? ({ search: query.searchText } as IFilter) : null);
+  const [filter, setFilter] = useState<IFilter | null>(
+    query.searchText ? ({ search: query.searchText } as IFilter) : null,
+  );
 
   const onSelectCheckBox = useCallback(
     (id: string) => {
       const isExit = selectAttributes.find((select: string) => select === id);
       if (isExit) {
         const newSelects = selectAttributes.filter(
-          (select: string) => select !== id
+          (select: string) => select !== id,
         );
         setSelectAttributes(newSelects);
       } else {
         setSelectAttributes([...selectAttributes, id]);
       }
     },
-    [selectAttributes]
+    [selectAttributes],
   );
 
   const onReset = useCallback(() => {
@@ -84,7 +86,7 @@ const AttributesPage: NextPageWithLayout = () => {
     (name: string, value: string) => {
       setFilter({ ...filter, [name]: value });
     },
-    [filter]
+    [filter],
   );
 
   const onChangePublic = async (id: string, status: boolean) => {

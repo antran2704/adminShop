@@ -10,7 +10,7 @@ import { InputPassword } from "~/components/InputField";
 import Loading from "~/components/Loading";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
-import { axiosPost } from "~/ultils/configAxios";
+import { axiosPost } from "~/configs/configAxios";
 
 interface IDataSend {
   password: string | null;

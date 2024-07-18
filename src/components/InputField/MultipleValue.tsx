@@ -97,7 +97,7 @@ const MultipleValue = (props: Props) => {
           {title}
         </span>
 
-        {infor && <TippyInfor content={infor}/>}
+        {infor && <TippyInfor content={infor} />}
       </div>
 
       <div

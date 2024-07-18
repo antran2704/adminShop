@@ -14,7 +14,7 @@ import FormLayout from "~/layouts/FormLayout";
 
 import { ICoupon } from "~/interface";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
-import { axiosGet, axiosPatch } from "~/ultils/configAxios";
+import { axiosGet, axiosPatch } from "~/configs/configAxios";
 import Thumbnail from "~/components/Image/Thumbnail";
 import { uploadImageOnServer } from "~/helper/handleImage";
 import { SelectDate, SelectTag } from "~/components/Select";
@@ -57,9 +57,9 @@ const EditCouponPage: NextPageWithLayout = () => {
 
   const [data, setData] = useState<ICoupon>(initData);
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
-  
+
   const [discountType, setDiscountType] = useState<EDicount_type>(
-    EDicount_type.PERCENTAGE
+    EDicount_type.PERCENTAGE,
   );
 
   const [thumbnail, setThumbnail] = useState<string | null>(null);
@@ -76,7 +76,7 @@ const EditCouponPage: NextPageWithLayout = () => {
     (name: string, value: boolean) => {
       setData({ ...data, [name]: value });
     },
-    [data]
+    [data],
   );
 
   const changeNumber = useCallback(
@@ -87,7 +87,7 @@ const EditCouponPage: NextPageWithLayout = () => {
       }
       setData({ ...data, [name]: value });
     },
-    [data]
+    [data],
   );
 
   const changeValue = useCallback(
@@ -98,7 +98,7 @@ const EditCouponPage: NextPageWithLayout = () => {
       }
       setData({ ...data, [name]: value });
     },
-    [data, fieldsCheck]
+    [data, fieldsCheck],
   );
 
   const onSelectDate = (value: string, name: string) => {
@@ -136,7 +136,7 @@ const EditCouponPage: NextPageWithLayout = () => {
   const onChangeDiscountValue = (
     type: EDicount_type,
     name: string,
-    value: number
+    value: number,
   ) => {
     if (fieldsCheck.includes(name)) {
       const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
@@ -187,7 +187,7 @@ const EditCouponPage: NextPageWithLayout = () => {
       try {
         const { status, payload } = await uploadImageOnServer(
           "/discounts/uploadThumbnail",
-          formData
+          formData,
         );
 
         if (status === 201) {

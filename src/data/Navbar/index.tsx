@@ -139,7 +139,7 @@ const listBody: itemNav[] = [
         path: "/incomes/year",
       },
     ],
-    role: ERole.ADMIN
+    role: ERole.ADMIN,
   },
   {
     name: {

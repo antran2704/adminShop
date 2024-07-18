@@ -187,7 +187,7 @@ const CreateCategoryPage: NextPageWithLayout = () => {
             onChange={changePublic}
           />
         </div>
-       </div>
+      </div>
     </FormLayout>
   );
 };

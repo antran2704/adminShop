@@ -42,13 +42,12 @@ const Gallery: FC<Props> = (props: Props) => {
   const [selectImage, setSelect] = useState<string | null>(null);
 
   const hanldeChangeGallery = async (e: ChangeEvent<HTMLInputElement>) => {
-   
     if (e.target.files) {
       const file = e.target.files[0];
       const isValidImage: boolean = checkImage(file, 500000);
 
       if (!isValidImage) return;
-      
+
       const newImage = (await resizeImage(file, option)) as File;
       const source: File = newImage;
       onChange(source);

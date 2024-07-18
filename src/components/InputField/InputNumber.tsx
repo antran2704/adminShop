@@ -22,9 +22,7 @@ const InputNumberField: FC<IInputNumber> = (props: IInputNumber) => {
     getValue,
   } = props;
 
-  const handleChangeValue = (
-    e: ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChangeValue = (e: ChangeEvent<HTMLInputElement>) => {
     if (readonly) return;
 
     const name = e.target.name;

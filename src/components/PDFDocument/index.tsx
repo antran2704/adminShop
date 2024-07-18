@@ -297,8 +297,8 @@ const PDFDocument = (props: Props) => {
                         getValueCoupon(
                           data.sub_total,
                           data.discount.discount_value as number,
-                          data.discount.discount_type as string
-                        )
+                          data.discount.discount_type as string,
+                        ),
                       )}{" "}
                       VND
                     </Text>

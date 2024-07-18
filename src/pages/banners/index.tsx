@@ -64,14 +64,14 @@ const BannersPage: NextPageWithLayout = () => {
       const isExit = selectBanners.find((select: string) => select === id);
       if (isExit) {
         const newSelects = selectBanners.filter(
-          (select: string) => select !== id
+          (select: string) => select !== id,
         );
         setSelectBanners(newSelects);
       } else {
         setSelectBanners([...selectBanners, id]);
       }
     },
-    [selectBanners]
+    [selectBanners],
   );
 
   const onChangePublish = async (id: string, status: boolean) => {
@@ -296,7 +296,7 @@ const BannersPage: NextPageWithLayout = () => {
                           onSelectDeleteItem(
                             item._id as string,
                             item.title,
-                            item.image as string
+                            item.image as string,
                           )
                         }
                       />

@@ -2,7 +2,7 @@ import axios from "axios";
 import Resizer from "react-image-file-resizer";
 import { toast } from "react-toastify";
 import { IOptionImage, IThumbnail } from "~/interface/image";
-import { axiosPost } from "~/ultils/configAxios";
+import { axiosPost } from "~/configs/configAxios";
 
 const uploadImage = (el: Element) => {
   const target = el as HTMLInputElement;
@@ -81,7 +81,7 @@ const resizeImage = (file: File, option: IOptionImage) => {
       },
       option.type,
       option.minWidth,
-      option.minHeight
+      option.minHeight,
     );
   });
 };

@@ -7,5 +7,5 @@ export enum ETypeImage {
 export enum ECompressFormat {
   JPEG = "JPEG",
   PNG = "PNG",
-  WEBP = "WEBP"
+  WEBP = "WEBP",
 }

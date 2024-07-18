@@ -1,5 +1,5 @@
 import { IVariantProduct } from "~/interface";
-import { axiosGet, axiosPatch, axiosPost } from "~/ultils/configAxios";
+import { axiosGet, axiosPatch, axiosPost } from "~/configs/configAxios";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
@@ -9,7 +9,7 @@ const getVariations = async (page: number = 1) => {
 
 const createVariations = async (
   product_id: string,
-  data: IVariantProduct[]
+  data: IVariantProduct[],
 ) => {
   return await axiosPost(BASE_URL + `/variations/${product_id}`, data);
 };

@@ -1,0 +1,23 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+package-lock.json
+package.json
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# env file
+.env*
+
+# Prettierrc
+.prettierrc
+
+# Eslint
+.eslintrc.json

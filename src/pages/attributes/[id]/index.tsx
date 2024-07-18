@@ -85,14 +85,14 @@ const AttributeValuesPage = () => {
     (name: string, value: boolean) => {
       setSelectItem({ ...selectItem, [name]: value });
     },
-    [selectItem]
+    [selectItem],
   );
 
   const changePublicNewVariant = useCallback(
     (name: string, value: boolean) => {
       setNewVariant({ ...newVarinat, [name]: value });
     },
-    [newVarinat]
+    [newVarinat],
   );
 
   const changeValue = useCallback(
@@ -103,7 +103,7 @@ const AttributeValuesPage = () => {
       }
       setSelectItem({ ...selectItem, [name]: value });
     },
-    [selectItem]
+    [selectItem],
   );
 
   const changeValueNewVariant = useCallback(
@@ -114,13 +114,13 @@ const AttributeValuesPage = () => {
       }
       setNewVariant({ ...newVarinat, [name]: value });
     },
-    [newVarinat]
+    [newVarinat],
   );
 
   const onChangePublic = async (
     children_id: string,
     status: boolean,
-    data: any = null
+    data: any = null,
   ) => {
     if (!children_id) {
       toast.error("False change public", {
@@ -175,7 +175,7 @@ const AttributeValuesPage = () => {
         {
           name: selectItem.title,
           public: selectItem.public,
-        }
+        },
       );
 
       if (payload.status === 201) {
@@ -259,7 +259,7 @@ const AttributeValuesPage = () => {
               name: item.name,
               public: item.public,
             };
-          }
+          },
         );
         setAttribute(data);
         setLoadingTable(false);

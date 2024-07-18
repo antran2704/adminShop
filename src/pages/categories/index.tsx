@@ -54,21 +54,23 @@ const CategoriesPage: NextPageWithLayout = () => {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectItem, setSelectItem] = useState<ISelectCategory | null>(null);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [filter, setFilter] = useState<IFilter | null>(query.searchText ? ({ search: query.searchText } as IFilter) : null);
+  const [filter, setFilter] = useState<IFilter | null>(
+    query.searchText ? ({ search: query.searchText } as IFilter) : null,
+  );
 
   const onSelectCheckBox = useCallback(
     (id: string) => {
       const isExit = selectCategories.find((select: string) => select === id);
       if (isExit) {
         const newSelects = selectCategories.filter(
-          (select: string) => select !== id
+          (select: string) => select !== id,
         );
         setSelectCategories(newSelects);
       } else {
         setSelectCategories([...selectCategories, id]);
       }
     },
-    [selectCategories]
+    [selectCategories],
   );
 
   const onReset = useCallback(() => {
@@ -83,7 +85,7 @@ const CategoriesPage: NextPageWithLayout = () => {
     (name: string, value: string) => {
       setFilter({ ...filter, [name]: value });
     },
-    [filter]
+    [filter],
   );
 
   const onChangePublish = async (id: string, status: boolean) => {
@@ -112,7 +114,7 @@ const CategoriesPage: NextPageWithLayout = () => {
     id: string,
     parent_id: string | null,
     title: string,
-    thumbnail: string
+    thumbnail: string,
   ) => {
     setSelectItem({ id, parent_id, title, thumbnail });
     handlePopup();
@@ -151,7 +153,7 @@ const CategoriesPage: NextPageWithLayout = () => {
               thumbnail: item.thumbnail,
               createdAt: item.createdAt,
             };
-          }
+          },
         );
         setPagination(response.pagination);
         setCategories(data);
@@ -191,7 +193,7 @@ const CategoriesPage: NextPageWithLayout = () => {
               thumbnail: item.thumbnail,
               createdAt: item.createdAt,
             };
-          }
+          },
         );
         setPagination(response.pagination);
         setCategories(data);
@@ -250,8 +252,8 @@ const CategoriesPage: NextPageWithLayout = () => {
     }
   }, [categories, currentPage]);
 
-  if(!router.isReady) {
-    return <Loading />
+  if (!router.isReady) {
+    return <Loading />;
   }
 
   return (
@@ -333,7 +335,7 @@ const CategoriesPage: NextPageWithLayout = () => {
                           item._id as string,
                           item.parent_id as string,
                           item.title,
-                          item.thumbnail as string
+                          item.thumbnail as string,
                         )
                       }
                     />

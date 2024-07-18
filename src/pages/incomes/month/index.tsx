@@ -13,7 +13,7 @@ import {
 import { Bar } from "react-chartjs-2";
 
 import Statistic from "~/components/Statistic";
-import { axiosGet } from "~/ultils/configAxios";
+import { axiosGet } from "~/configs/configAxios";
 import { IGrow, IGrowDate } from "~/interface";
 import { SelectItem } from "~/components/Select";
 import { ISelectItem } from "~/interface";
@@ -26,7 +26,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const options = {
@@ -173,7 +173,7 @@ const IncomeMonthPage: NextPageWithLayout = () => {
   const handleGetGrossMonth = async (month: string, year: string) => {
     try {
       const { status, payload } = await axiosGet(
-        `/gross-month?gross_month=${month}&gross_year=${year}`
+        `/gross-month?gross_month=${month}&gross_year=${year}`,
       );
 
       if (status === 200) {
@@ -198,7 +198,7 @@ const IncomeMonthPage: NextPageWithLayout = () => {
 
   const handleGetGrossInMonth = async (month: string, year: string) => {
     const { status, payload } = await axiosGet(
-      `/gross-date/month?gross_month=${month}&gross_year=${year}`
+      `/gross-date/month?gross_month=${month}&gross_year=${year}`,
     );
     if (status === 200) {
       const days = new Date(2023, Number(month), 0).getDate();

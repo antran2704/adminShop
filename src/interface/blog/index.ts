@@ -48,4 +48,11 @@ type ICreateBlog = Pick<
   author: string;
 };
 
-export type { IBlog, AuthorBlog, TagBlog, TagBlogUpdate, ICreateBlog, IHomeBlog };
+export type {
+  IBlog,
+  AuthorBlog,
+  TagBlog,
+  TagBlogUpdate,
+  ICreateBlog,
+  IHomeBlog,
+};

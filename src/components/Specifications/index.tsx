@@ -50,7 +50,7 @@ const Specifications = (props: Props) => {
     useState(initNewSpecification);
 
   const onShowPopupSpecification = (
-    specification: ISelectItem | null = null
+    specification: ISelectItem | null = null,
   ) => {
     if (specification) {
       setSelectSpecification({
@@ -135,7 +135,7 @@ const Specifications = (props: Props) => {
     name: string,
     value: string,
     specificationIndex: number,
-    attributeIndex: number
+    attributeIndex: number,
   ) => {
     const newSpecifications = specifications;
     newSpecifications[specificationIndex].attributes[attributeIndex][name] =
@@ -149,7 +149,7 @@ const Specifications = (props: Props) => {
 
     newSpecifications = newSpecifications.filter(
       (specification: ISpecificationsProduct) =>
-        specification.id !== specificationId
+        specification.id !== specificationId,
     );
 
     onUpdate([...newSpecifications]);
@@ -158,14 +158,14 @@ const Specifications = (props: Props) => {
 
   const onRemoveAttribute = (
     attributeId: string,
-    specificationIndex: number
+    specificationIndex: number,
   ) => {
     let newSpecifications = specifications;
 
     newSpecifications[specificationIndex].attributes = newSpecifications[
       specificationIndex
     ].attributes.filter(
-      (attribute: ISpecificationAttributes) => attribute.id !== attributeId
+      (attribute: ISpecificationAttributes) => attribute.id !== attributeId,
     );
 
     onUpdate([...newSpecifications]);
@@ -212,7 +212,7 @@ const Specifications = (props: Props) => {
               {specification.attributes.map(
                 (
                   attribute: ISpecificationAttributes,
-                  attributeIndex: number
+                  attributeIndex: number,
                 ) => (
                   <li
                     key={attribute.id}
@@ -228,7 +228,7 @@ const Specifications = (props: Props) => {
                           name,
                           value,
                           specificationIndex,
-                          attributeIndex
+                          attributeIndex,
                         )
                       }
                     />
@@ -242,7 +242,7 @@ const Specifications = (props: Props) => {
                           name,
                           value,
                           specificationIndex,
-                          attributeIndex
+                          attributeIndex,
                         )
                       }
                     />
@@ -260,7 +260,7 @@ const Specifications = (props: Props) => {
                       <AiOutlineCloseCircle className="text-xl min-w-[20px] text-error cursor-pointe" />
                     </button>
                   </li>
-                )
+                ),
               )}
 
               <div className="flex items-center justify-end ">
@@ -274,7 +274,7 @@ const Specifications = (props: Props) => {
               </div>
             </ul>
           </div>
-        )
+        ),
       )}
 
       <PopupForm
@@ -372,7 +372,7 @@ const Specifications = (props: Props) => {
                 onClick={() =>
                   onRemoveAttribute(
                     selectAttribute._id as string,
-                    selectAttribute.index
+                    selectAttribute.index,
                   )
                 }
                 className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"

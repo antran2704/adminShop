@@ -20,5 +20,4 @@ const getEndDayInWeek = (value: string) => {
   return endDay;
 };
 
-
 export { getDateTime, getFirstDayInWeek, getEndDayInWeek };

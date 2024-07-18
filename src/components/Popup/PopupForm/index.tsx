@@ -30,7 +30,9 @@ const PopupForm = (props: Props) => {
             <h2 className="md:text-xl sm:text-lg text-base font-medium text-text dark:text-darkText">
               {title}
             </h2>
-            <p className="text-sm text-desc dark:text-darkText">{description}</p>
+            <p className="text-sm text-desc dark:text-darkText">
+              {description}
+            </p>
           </div>
 
           <AiOutlineCloseCircle

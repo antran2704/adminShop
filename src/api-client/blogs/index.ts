@@ -6,7 +6,7 @@ import {
   axiosGet,
   axiosPatch,
   axiosPost,
-} from "~/ultils/configAxios";
+} from "~/configs/configAxios";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
@@ -21,13 +21,14 @@ const getBlog = async (blog_id: string) => {
 const getBlogsWithFilter = async (
   filter: IFilter | null,
   query?: IQueryParam<Partial<IBlog>>,
-  page: number = 1
+  page: number = 1,
 ) => {
   const parseQuery = qs.stringify(query);
   return await axiosGet(
-    BASE_URL + `/admin/blogs/search?search=${filter?.search || ""}${
-      parseQuery && "&" + parseQuery
-    }&page=${page}`
+    BASE_URL +
+      `/admin/blogs/search?search=${filter?.search || ""}${
+        parseQuery && "&" + parseQuery
+      }&page=${page}`,
   );
 };
 
@@ -44,7 +45,7 @@ const updateBlog = async (blog_id: string, options?: Partial<ICreateBlog>) => {
 const uploadBlogImage = async (formData: FormData) => {
   return await uploadImageOnServer(
     BASE_URL + `/admin/blogs/uploadImage`,
-    formData
+    formData,
   );
 };
 

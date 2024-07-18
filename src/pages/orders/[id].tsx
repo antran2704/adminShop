@@ -85,7 +85,7 @@ const OrderDetail: NextPageWithLayout = () => {
 
   const onShow = (
     value: boolean,
-    setValue: Dispatch<SetStateAction<boolean>>
+    setValue: Dispatch<SetStateAction<boolean>>,
   ) => {
     setValue(!value);
   };
@@ -96,7 +96,7 @@ const OrderDetail: NextPageWithLayout = () => {
       setCancle(value);
       setDisableBtn(false);
     },
-    [cancle, disableBtnCancle]
+    [cancle, disableBtnCancle],
   );
 
   const hanldeChangePaymentStatus = async (status: PaymentStatus) => {
@@ -201,27 +201,43 @@ const OrderDetail: NextPageWithLayout = () => {
             Information
           </h2>
           <li className="flex items-center justify-start text-base mt-1 gap-1">
-            <h3 className="font-medium capitalize dark:text-darkText">Order ID:</h3>
+            <h3 className="font-medium capitalize dark:text-darkText">
+              Order ID:
+            </h3>
             <p className="text-[#707275] dark:text-darkText">{data.order_id}</p>
           </li>
           <li className="flex items-start justify-start text-base mt-1 gap-1">
             <h3 className="font-medium capitalize dark:text-darkText">Name:</h3>
-            <p className="text-[#707275] dark:text-darkText">{data.user_infor.name}</p>
+            <p className="text-[#707275] dark:text-darkText">
+              {data.user_infor.name}
+            </p>
           </li>
           <li className="flex items-start justify-start text-base mt-1 gap-1">
-            <h3 className="font-medium capitalize dark:text-darkText">Email:</h3>
-            <p className="text-[#707275] dark:text-darkText">{data.user_infor.email}</p>
+            <h3 className="font-medium capitalize dark:text-darkText">
+              Email:
+            </h3>
+            <p className="text-[#707275] dark:text-darkText">
+              {data.user_infor.email}
+            </p>
           </li>
           <li className="flex items-start justify-start text-base mt-1 gap-1">
-            <h3 className="font-medium capitalize dark:text-darkText">Address:</h3>
-            <p className="text-[#707275] dark:text-darkText">{data.user_infor.address}</p>
+            <h3 className="font-medium capitalize dark:text-darkText">
+              Address:
+            </h3>
+            <p className="text-[#707275] dark:text-darkText">
+              {data.user_infor.address}
+            </p>
           </li>
           <li className="flex items-start justify-start text-base mt-1 gap-1">
             <h3 className="font-medium capitalize dark:text-darkText">Date:</h3>
-            <p className="text-[#707275] dark:text-darkText">{getDateTime(data.createdAt)}</p>
+            <p className="text-[#707275] dark:text-darkText">
+              {getDateTime(data.createdAt)}
+            </p>
           </li>
           <li className="flex items-start justify-start text-base mt-2 gap-1">
-            <h3 className="font-medium capitalize dark:text-darkText">Status:</h3>
+            <h3 className="font-medium capitalize dark:text-darkText">
+              Status:
+            </h3>
             <p
               className={`w-fit font-medium text-white text-xs ${
                 BG_STATUS[data.status]
@@ -236,7 +252,9 @@ const OrderDetail: NextPageWithLayout = () => {
               {data.status === statusOrder.cancle && (
                 <Fragment>
                   <li className="flex items-start justify-start text-base mt-1 gap-1">
-                    <h3 className="font-medium capitalize dark:text-darkText">Why:</h3>
+                    <h3 className="font-medium capitalize dark:text-darkText">
+                      Why:
+                    </h3>
                     <p
                       className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
                     >
@@ -245,7 +263,9 @@ const OrderDetail: NextPageWithLayout = () => {
                   </li>
                   {data.note && (
                     <li className="flex items-start justify-start text-base mt-1 gap-1">
-                      <h3 className="font-medium capitalize dark:text-darkText">Note:</h3>
+                      <h3 className="font-medium capitalize dark:text-darkText">
+                        Note:
+                      </h3>
                       <p
                         className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
                       >
@@ -258,7 +278,9 @@ const OrderDetail: NextPageWithLayout = () => {
 
               {data.status === statusOrder.pending && (
                 <li className="flex items-center justify-start mt-5 text-base gap-1">
-                  <h3 className="font-medium capitalize dark:text-darkText">Change Status:</h3>
+                  <h3 className="font-medium capitalize dark:text-darkText">
+                    Change Status:
+                  </h3>
                   <div className="flex items-center gap-3">
                     <ButtonClassic
                       title="Processing"
@@ -278,7 +300,9 @@ const OrderDetail: NextPageWithLayout = () => {
 
               {data.status === statusOrder.processing && (
                 <li className="flex items-center justify-start mt-5 text-base gap-1">
-                  <h3 className="font-medium capitalize dark:text-darkText">Change Status:</h3>
+                  <h3 className="font-medium capitalize dark:text-darkText">
+                    Change Status:
+                  </h3>
                   <div className="flex items-center gap-3">
                     <ButtonClassic
                       title="Delivered"
@@ -303,7 +327,9 @@ const OrderDetail: NextPageWithLayout = () => {
               {data.status === statusOrder.cancle && (
                 <Fragment>
                   <li className="flex items-start justify-start text-base mt-1 gap-1">
-                    <h3 className="font-medium capitalize dark:text-darkText">Why:</h3>
+                    <h3 className="font-medium capitalize dark:text-darkText">
+                      Why:
+                    </h3>
                     <p
                       className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
                     >
@@ -312,7 +338,9 @@ const OrderDetail: NextPageWithLayout = () => {
                   </li>
                   {data.note && (
                     <li className="flex items-start justify-start text-base mt-1 gap-1">
-                      <h3 className="font-medium capitalize dark:text-darkText">Note:</h3>
+                      <h3 className="font-medium capitalize dark:text-darkText">
+                        Note:
+                      </h3>
                       <p
                         className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
                       >
@@ -325,7 +353,9 @@ const OrderDetail: NextPageWithLayout = () => {
 
               {data.status === statusOrder.pending && (
                 <li className="flex items-center justify-start mt-5 text-base gap-1">
-                  <h3 className="font-medium capitalize dark:text-darkText">Confirm banking:</h3>
+                  <h3 className="font-medium capitalize dark:text-darkText">
+                    Confirm banking:
+                  </h3>
                   <div className="flex items-center gap-3">
                     <ButtonClassic
                       title="Confirm"
@@ -355,7 +385,10 @@ const OrderDetail: NextPageWithLayout = () => {
           >
             <Fragment>
               {data.items.map((item: IItemOrder, index: number) => (
-                <tr key={item._id} className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none">
+                <tr
+                  key={item._id}
+                  className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
+                >
                   <CelTable
                     center={true}
                     type={typeCel.TEXT}
@@ -363,7 +396,7 @@ const OrderDetail: NextPageWithLayout = () => {
                   />
                   <CelTable
                     type={typeCel.THUMBNAIL}
-                    value={item.product?.thumbnail as string || NO_IMAGE}
+                    value={(item.product?.thumbnail as string) || NO_IMAGE}
                     href={`/edit/product/${item.product._id}`}
                     className="w-20 h-20"
                   />
@@ -419,7 +452,9 @@ const OrderDetail: NextPageWithLayout = () => {
             <h3 className="lg:text-lg  md:text-base dark:text-darkText text-sm font-medium uppercase">
               Payment method
             </h3>
-            <p className="md:text-base dark:text-darkText text-sm font-medium mt-2">Card</p>
+            <p className="md:text-base dark:text-darkText text-sm font-medium mt-2">
+              Card
+            </p>
           </div>
           <div>
             <h3 className="lg:text-lg  md:text-base dark:text-darkText text-sm font-medium uppercase">
@@ -453,8 +488,8 @@ const OrderDetail: NextPageWithLayout = () => {
                       getValueCoupon(
                         data.sub_total,
                         data.discount.discount_value as number,
-                        data.discount.discount_type as string
-                      )
+                        data.discount.discount_type as string,
+                      ),
                     )}{" "}
                     VND
                   </p>
@@ -645,7 +680,7 @@ const OrderDetail: NextPageWithLayout = () => {
                   onShowCancle();
                   hanldeChangeStatus(statusOrder.cancle);
                 }}
-                className={`${disableBtnCancle ? 'bg-[#d1d6e2]' : 'bg-success'}`}
+                className={`${disableBtnCancle ? "bg-[#d1d6e2]" : "bg-success"}`}
               />
             </div>
           </div>

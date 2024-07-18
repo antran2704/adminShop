@@ -27,7 +27,7 @@ import { Table, CelTable } from "~/components/Table";
 import { typeCel } from "~/enums";
 import Link from "next/link";
 import SpringCount from "~/components/SpringCount";
-import { axiosGet } from "~/ultils/configAxios";
+import { axiosGet } from "~/configs/configAxios";
 import { getFirstDayInWeek } from "~/helper/datetime";
 import { IGrowDate } from "~/interface";
 import Statistic from "~/components/Statistic";
@@ -38,7 +38,8 @@ import { orderStatus } from "~/components/Table/statusCel";
 import { ButtonEdit } from "~/components/Button";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 ChartJS.register(
   CategoryScale,
@@ -46,7 +47,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const options = {
@@ -123,7 +124,7 @@ const HomePage: NextPageWithLayout = () => {
     try {
       const date = new Date().toLocaleDateString("en-GB");
       const { status, payload } = await axiosGet(
-        `/overviews/home?date=${date}`
+        `/overviews/home?date=${date}`,
       );
 
       if (status === 200) {
@@ -137,7 +138,7 @@ const HomePage: NextPageWithLayout = () => {
   const handleGetGrossInWeek = async (startDate: Date) => {
     try {
       const { status, payload } = await axiosGet(
-        `/gross-date/week?start_date=${startDate.toDateString()}`
+        `/gross-date/week?start_date=${startDate.toDateString()}`,
       );
 
       const startDay = startDate.getDate();
@@ -162,7 +163,7 @@ const HomePage: NextPageWithLayout = () => {
         payload.map((item: IGrowDate) => {
           const day = Number(item.day);
           const index = newData.labels.findIndex(
-            (label: number) => label === day
+            (label: number) => label === day,
           );
           newData.datasets[0].data[index] = item.sub_gross;
           newData.datasets[1].data[index] = item.gross;
@@ -202,9 +203,9 @@ const HomePage: NextPageWithLayout = () => {
 
   useEffect(() => {
     const firstDay = getFirstDayInWeek(new Date().toDateString());
-    handleGetGrossInWeek(firstDay);
-    handleGetOverviews();
-    handleGetData();
+    // handleGetGrossInWeek(firstDay);
+    // handleGetOverviews();
+    // handleGetData();
   }, []);
 
   return (
@@ -385,6 +386,12 @@ const HomePage: NextPageWithLayout = () => {
 };
 
 export default HomePage;
+
+export const getStaticProps = async ({ locale }: { locale: string }) => ({
+  props: {
+    ...(await serverSideTranslations(locale ?? "en", ["common"])),
+  },
+});
 
 HomePage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

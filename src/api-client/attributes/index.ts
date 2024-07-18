@@ -4,7 +4,7 @@ import {
   axiosGet,
   axiosPatch,
   axiosPost,
-} from "~/ultils/configAxios";
+} from "~/configs/configAxios";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
@@ -22,16 +22,16 @@ const getAttributesAvailable = async () => {
 
 const getAttributesWithFilter = async (
   filter: IFilter | null,
-  page: number = 1
+  page: number = 1,
 ) => {
   return await axiosGet(
-    BASE_URL + `/attributes/search?search=${filter?.search || ""}&page=${page}`
+    BASE_URL + `/attributes/search?search=${filter?.search || ""}&page=${page}`,
   );
 };
 
 const updateAttribute = async (
   attribute_id: string,
-  options?: Partial<IAttribute>
+  options?: Partial<IAttribute>,
 ) => {
   return await axiosPatch(BASE_URL + `/attributes/${attribute_id}`, {
     ...options,
@@ -41,7 +41,7 @@ const updateAttribute = async (
 const updateChildAttribute = async (
   attribute_id: string,
   children_id: string,
-  data: any
+  data: any,
 ) => {
   return await axiosPatch(BASE_URL + `/attributes/child/${attribute_id}`, {
     children_id,
@@ -63,7 +63,7 @@ const deleteAttribute = async (attribute_id: string) => {
 
 const deleteChildAttribute = async (
   attribute_id: string,
-  children_id: string
+  children_id: string,
 ) => {
   return await axiosPatch(BASE_URL + `/attributes/child/delete`, {
     parent_id: attribute_id,

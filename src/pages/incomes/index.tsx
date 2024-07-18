@@ -12,7 +12,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
-import { axiosGet } from "~/ultils/configAxios";
+import { axiosGet } from "~/configs/configAxios";
 import { SelectDate, SelectItem, SelectTag } from "~/components/Select";
 import { ISelectItem } from "~/interface";
 import Statistic from "~/components/Statistic";
@@ -25,7 +25,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 enum TYPE_TAG {
@@ -228,7 +228,7 @@ const IncomePage: NextPageWithLayout = () => {
   const [selectDate, setSelectDate] = useState<string>(
     `${new Date().getFullYear()}-${
       new Date().getMonth() + 1
-    }-${new Date().getDate()}`
+    }-${new Date().getDate()}`,
   );
 
   const [selectGrowWeek, setSelectGrowWeek] =
@@ -298,7 +298,7 @@ const IncomePage: NextPageWithLayout = () => {
 
     try {
       const { status, payload } = await axiosGet(
-        `/gross-date?gross_date=${convertDate}`
+        `/gross-date?gross_date=${convertDate}`,
       );
 
       if (status === 200) {
@@ -327,7 +327,7 @@ const IncomePage: NextPageWithLayout = () => {
   const handleGetGrossMonth = async (month: string, year: string) => {
     try {
       const { status, payload } = await axiosGet(
-        `/gross-month?gross_month=${month}&gross_year=${year}`
+        `/gross-month?gross_month=${month}&gross_year=${year}`,
       );
 
       if (status === 200) {
@@ -354,7 +354,7 @@ const IncomePage: NextPageWithLayout = () => {
   const handleGetGrossInMonth = async (month: string, year: string) => {
     try {
       const { status, payload } = await axiosGet(
-        `/gross-date/month?gross_month=${month}&gross_year=${year}`
+        `/gross-date/month?gross_month=${month}&gross_year=${year}`,
       );
       if (status === 200) {
         const days = new Date(2023, Number(month), 0).getDate();
@@ -387,7 +387,7 @@ const IncomePage: NextPageWithLayout = () => {
 
     try {
       const { status, payload } = await axiosGet(
-        `/gross-date/week?start_date=${startDate.toDateString()}`
+        `/gross-date/week?start_date=${startDate.toDateString()}`,
       );
 
       const startDay = startDate.getDate();
@@ -411,7 +411,7 @@ const IncomePage: NextPageWithLayout = () => {
         payload.map((item: IGrowDate) => {
           const day = Number(item.day);
           const index = newData.labels.findIndex(
-            (label: number) => label === day
+            (label: number) => label === day,
           );
           newData.datasets[0].data[index] = item.sub_gross;
           newData.datasets[1].data[index] = item.gross;
@@ -432,7 +432,7 @@ const IncomePage: NextPageWithLayout = () => {
 
             return accumulator;
           },
-          initOverview
+          initOverview,
         );
 
         dataOverview.updatedAt = payload[payload.length - 1].updatedAt;
@@ -452,7 +452,7 @@ const IncomePage: NextPageWithLayout = () => {
   const handleGetGrossInYear = async (year: string) => {
     try {
       const { status, payload } = await axiosGet(
-        `/gross-month/year?gross_year=${year}`
+        `/gross-month/year?gross_year=${year}`,
       );
 
       if (status === 200) {
@@ -480,7 +480,7 @@ const IncomePage: NextPageWithLayout = () => {
   const handleGetGrossYear = async (year: string) => {
     try {
       const { status, payload } = await axiosGet(
-        `/gross-year/year?gross_year=${year}`
+        `/gross-year/year?gross_year=${year}`,
       );
 
       if (status === 200) {
@@ -908,7 +908,7 @@ const IncomePage: NextPageWithLayout = () => {
       </div>
     </section>
   );
-}
+};
 
 export default IncomePage;
 

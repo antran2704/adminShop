@@ -90,7 +90,7 @@ const Table: FC<Props> = (props: Props) => {
                         </td>
                       ))}
                     </tr>
-                  )
+                  ),
                 )}
 
               {!loading && message && (

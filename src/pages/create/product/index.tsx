@@ -76,7 +76,7 @@ const CreateProductPage: NextPageWithLayout = () => {
   });
 
   const [mutipleCategories, setMultipleCategories] = useState<ISelectItem[]>(
-    []
+    [],
   );
   const [defaultCategory, setDefaultCategory] = useState<string | null>(null);
 
@@ -102,7 +102,7 @@ const CreateProductPage: NextPageWithLayout = () => {
     }
 
     const isExit = mutipleCategories.some(
-      (category) => category.title === title
+      (category) => category.title === title,
     );
 
     if (isExit) {
@@ -130,7 +130,7 @@ const CreateProductPage: NextPageWithLayout = () => {
   const changeMultipleCategories = (name: string, values: ISelectItem[]) => {
     if (values.length > 0) {
       const isExit = values.some(
-        (value: ISelectItem) => value._id === defaultCategory
+        (value: ISelectItem) => value._id === defaultCategory,
       );
 
       if (!isExit) {
@@ -146,7 +146,7 @@ const CreateProductPage: NextPageWithLayout = () => {
     (value: string) => {
       setDefaultCategory(value);
     },
-    [mutipleCategories, defaultCategory]
+    [mutipleCategories, defaultCategory],
   );
 
   const changeValue = useCallback(
@@ -157,7 +157,7 @@ const CreateProductPage: NextPageWithLayout = () => {
       }
       setProduct({ ...product, [name]: value });
     },
-    [product]
+    [product],
   );
 
   const changePrice = useCallback(
@@ -177,7 +177,7 @@ const CreateProductPage: NextPageWithLayout = () => {
       }
       setProduct({ ...product, [name]: value });
     },
-    [product]
+    [product],
   );
 
   const changePublic = (name: string, value: boolean) => {
@@ -213,7 +213,7 @@ const CreateProductPage: NextPageWithLayout = () => {
         }
       }
     },
-    [thumbnail, loadingThumbnail]
+    [thumbnail, loadingThumbnail],
   );
 
   const onUploadGallery = useCallback(
@@ -239,7 +239,7 @@ const CreateProductPage: NextPageWithLayout = () => {
         }
       }
     },
-    [gallery, loadingGallery]
+    [gallery, loadingGallery],
   );
 
   const onRemoveGallary = useCallback(
@@ -255,11 +255,11 @@ const CreateProductPage: NextPageWithLayout = () => {
         console.log(error);
       }
     },
-    [gallery, loadingGallery]
+    [gallery, loadingGallery],
   );
 
   const onUpdateSpecifications = (
-    newSpecifications: ISpecificationsProduct[]
+    newSpecifications: ISpecificationsProduct[],
   ) => {
     setSpecifications(newSpecifications);
   };
@@ -319,7 +319,7 @@ const CreateProductPage: NextPageWithLayout = () => {
       const categoriesProduct = mutipleCategories.map(
         (category: ISelectItem) => {
           return category._id;
-        }
+        },
       );
 
       const sendData: ISendProduct = {

@@ -143,7 +143,7 @@ const MultipleValue = (props: Props) => {
               }}
               className={`w-full text-base ${
                 select.find(
-                  (selectItem: ISelectItem) => selectItem._id === item._id
+                  (selectItem: ISelectItem) => selectItem._id === item._id,
                 ) && "bg-gray-200"
               } px-5 py-1 cursor-pointer transition-all ease-linear duration-100`}
             >

@@ -58,21 +58,23 @@ const CouponsPage: NextPageWithLayout = () => {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectItem, setSelectItem] = useState<ISelectCoupon | null>(null);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [filter, setFilter] = useState<IFilter | null>(query.searchText ? ({ search: query.searchText } as IFilter) : null);
+  const [filter, setFilter] = useState<IFilter | null>(
+    query.searchText ? ({ search: query.searchText } as IFilter) : null,
+  );
 
   const onSelectCheckBox = useCallback(
     (id: string) => {
       const isExit = selectCoupons.find((select: string) => select === id);
       if (isExit) {
         const newSelects = selectCoupons.filter(
-          (select: string) => select !== id
+          (select: string) => select !== id,
         );
         setSelectCoupons(newSelects);
       } else {
         setSelectCoupons([...selectCoupons, id]);
       }
     },
-    [selectCoupons]
+    [selectCoupons],
   );
 
   const onReset = useCallback(() => {
@@ -87,14 +89,14 @@ const CouponsPage: NextPageWithLayout = () => {
     (value: string, name: string) => {
       setFilter({ ...filter, [name]: value });
     },
-    [filter]
+    [filter],
   );
 
   const onChangeSearch = useCallback(
     (name: string, value: string) => {
       setFilter({ ...filter, [name]: value });
     },
-    [filter]
+    [filter],
   );
 
   const onChangePublish = async (id: string, status: boolean) => {
@@ -276,8 +278,8 @@ const CouponsPage: NextPageWithLayout = () => {
     }
   }, [coupons, currentPage]);
 
-  if(!router.isReady) {
-    return <Loading />
+  if (!router.isReady) {
+    return <Loading />;
   }
 
   return (

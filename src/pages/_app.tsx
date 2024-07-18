@@ -6,14 +6,14 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { store } from "../store";
 
-import { useEffect } from "react";
-import { injectRouter } from "~/ultils/configAxios";
+import { Fragment, useEffect } from "react";
+import { injectRouter } from "~/configs/configAxios";
 import { useRouter } from "next/router";
 import { AppPropsWithLayout } from "~/interface/page";
+import { appWithTranslation } from "next-i18next";
+import MainLayout from "~/layouts/MainLayout";
 
-import "../ultils/i18";
-
-export default function App({ Component, pageProps }: AppPropsWithLayout) {
+function App({ Component, pageProps }: AppPropsWithLayout) {
   const router = useRouter();
   const getLayout = Component.getLayout ?? ((page) => page);
 
@@ -23,12 +23,18 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <Provider store={store}>
-      {getLayout(<Component {...pageProps} />)}
-      <ToastContainer
-        autoClose={5000}
-        pauseOnFocusLoss={false}
-        pauseOnHover={false}
-      />
+      <MainLayout>
+        <Fragment>
+          {getLayout(<Component {...pageProps} />)}
+          <ToastContainer
+            autoClose={5000}
+            pauseOnFocusLoss={false}
+            pauseOnHover={false}
+          />
+        </Fragment>
+      </MainLayout>
     </Provider>
   );
 }
+
+export default appWithTranslation(App);
