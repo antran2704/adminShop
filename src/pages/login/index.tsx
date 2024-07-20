@@ -8,7 +8,6 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
 import { InputText, InputPassword } from "~/components/InputField";
-import Loading from "~/components/Loading";
 import { loginReducer } from "~/store/slice/user";
 import { useAppDispatch } from "~/store/hooks";
 import { login } from "~/api-client";
@@ -34,11 +33,9 @@ const LoginPage: NextPageWithLayout = () => {
 
   const dispatch = useAppDispatch();
 
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
   const [data, setData] = useState<IDataSend>(initData);
-
   const [loading, setLoading] = useState<boolean>(false);
-  const [checkLogin, setCheckLogin] = useState<boolean>(false);
 
   const [message, setMessage] = useState<string | null>(null);
 
@@ -96,23 +93,6 @@ const LoginPage: NextPageWithLayout = () => {
       setLoading(false);
     }
   };
-
-  // useEffect(() => {
-  //   const isCheck: boolean = checkCookieAuth();
-
-  //   if (!isCheck) {
-  //     setCheckLogin(false);
-  //   }
-
-  //   if (isCheck) {
-  //     router.push("/");
-  //     return;
-  //   }
-  // }, []);
-
-  if (checkLogin) {
-    return <Loading />;
-  }
 
   return (
     <div className="lg:w-8/12 md:w-4/6 sm:w-5/6 w-full flex items-start bg-white dark:bg-[#1f2937] rounded-lg shadow-xl  transition-all ease-linear duration-100 overflow-hidden">

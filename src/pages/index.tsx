@@ -1,4 +1,12 @@
-import { useState, useEffect, useRef, Fragment, ReactElement } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  Fragment,
+  ReactElement,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import {
   MdOutlineKeyboardDoubleArrowDown,
@@ -24,15 +32,15 @@ import { Bar } from "react-chartjs-2";
 import { colHeadOrder as colHeadTable } from "~/components/Table/colHeadTable";
 import { Table, CelTable } from "~/components/Table";
 
-import { typeCel } from "~/enums";
+import { ORDER_PARAMATER_ENUM, ORDER_STATUS_ENUM, typeCel } from "~/enums";
 import Link from "next/link";
 import SpringCount from "~/components/SpringCount";
-import httpConfig, { axiosGet } from "~/configs/configAxios";
+import httpConfig from "~/configs/configAxios";
 import { getFirstDayInWeek } from "~/helper/datetime";
-import { IGrowDate } from "~/interface";
+import { IGross, IGrossDate, IResponse } from "~/interface";
 import Statistic from "~/components/Statistic";
-import { IOrder } from "~/interface/order";
-import { getOrders } from "~/api-client";
+import { IOrder, ISearchOrder } from "~/interface/order";
+import { countOrders, getOrders } from "~/api-client";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { orderStatus } from "~/components/Table/statusCel";
 import { ButtonEdit } from "~/components/Button";
@@ -66,22 +74,12 @@ const options = {
   maintainAspectRatio: false,
 };
 
-interface IOverview {
-  total_gross: number;
-  orders: string[];
-  pending_orders: number;
-  processing_orders: number;
-  delivered_orders: number;
-  cancel_orders: number;
-}
-
-const initOveviews: IOverview = {
+const initGross: IGross = {
   total_gross: 0,
-  orders: [],
-  processing_orders: 0,
+  orders: 0,
   cancel_orders: 0,
   delivered_orders: 0,
-  pending_orders: 0,
+  sub_gross: 0,
 };
 
 const Layout = LayoutWithHeader;
@@ -109,11 +107,13 @@ const HomePage: NextPageWithLayout = () => {
 
   const chartWeekRef = useRef<any>();
 
-  const [overviews, setOverviews] = useState<IOverview>(initOveviews);
+  const [grossToday, setGrossToday] = useState<IGross>(initGross);
   const [dataBarWeek, setDataBarWeek] = useState<any>(data);
   const [totalWeek, setTotalWeek] = useState<number>(0);
 
   const [orders, setOrders] = useState<IOrder[]>([]);
+  const [pendingOrders, setPendingOrders] = useState<number>(0);
+  const [processingOrders, setProcessingOrders] = useState<number>(0);
 
   const [message, setMessage] = useState<string | null>(null);
   const [show, setShow] = useState<boolean>(false);
@@ -121,21 +121,16 @@ const HomePage: NextPageWithLayout = () => {
 
   const { t, i18n } = useTranslation();
 
-  const handleGetToDay = async () => {
-    try {
-      // const date = new Date().toLocaleDateString("en-GB");
-      const { status, payload } = await getGross({
-        day: "18",
-        month: "07",
-        year: "2024",
-      });
+  const handleGetGrossToday = async () => {
+    const date = new Date().toISOString();
 
-      if (status === 200) {
-        setOverviews(payload);
-      }
-    } catch (error) {
-      return error;
-    }
+    getGross(date)
+      .then(({ status, payload }: IResponse<IGross>) => {
+        if (status === 200) {
+          setGrossToday(payload);
+        }
+      })
+      .catch((err) => err);
   };
 
   const handleGetGrossInWeek = async (startDate: Date) => {
@@ -161,13 +156,13 @@ const HomePage: NextPageWithLayout = () => {
       }
 
       if (status === 200 && payload.length > 0) {
-        payload.map((item: IGrowDate) => {
+        payload.map((item: IGrossDate) => {
           const day = Number(item.day);
           const index = newData.labels.findIndex(
             (label: number) => label === day,
           );
           newData.datasets[0].data[index] = item.sub_gross;
-          newData.datasets[1].data[index] = item.gross;
+          newData.datasets[1].data[index] = item.total_gross;
           total += item.sub_gross;
         });
 
@@ -180,10 +175,23 @@ const HomePage: NextPageWithLayout = () => {
     }
   };
 
-  const handleGetData = async () => {
+  const handleCountOrders = async (
+    statusOrder: ORDER_STATUS_ENUM,
+    callback: Dispatch<SetStateAction<number>>,
+  ) => {
+    countOrders(statusOrder)
+      .then(({ status, payload }: IResponse<number>) => {
+        if (status === 200) {
+          callback(payload);
+        }
+      })
+      .catch((err) => err);
+  };
+
+  const handleGetData = async (paramater: ISearchOrder) => {
     setLoading(true);
     try {
-      const response = await getOrders(1);
+      const response = await getOrders(paramater);
       if (response.status === 200) {
         if (response.payload.length === 0) {
           setOrders([]);
@@ -204,9 +212,20 @@ const HomePage: NextPageWithLayout = () => {
 
   useEffect(() => {
     const firstDay = getFirstDayInWeek(new Date().toDateString());
+    // get Gross in week
     handleGetGrossInWeek(firstDay);
-    handleGetToDay();
-    // handleGetData();
+
+    // get Gross in today
+    handleGetGrossToday();
+
+    // count orders with PENDING status
+    handleCountOrders(ORDER_STATUS_ENUM.PENDING, setPendingOrders);
+
+    // count orders with PROCESS status
+    handleCountOrders(ORDER_STATUS_ENUM.PROCESS, setProcessingOrders);
+
+    // get orders
+    handleGetData({ order: ORDER_PARAMATER_ENUM.DESC, page: 1, take: 16 });
   }, []);
 
   return (
@@ -233,7 +252,7 @@ const HomePage: NextPageWithLayout = () => {
               <Statistic
                 title={t("HomePage.income.today")}
                 IconElement={<BiDollarCircle className="text-4xl" />}
-                to={overviews.total_gross}
+                to={grossToday.total_gross}
                 backgroundColor="bg-[#5032fd]"
                 duration={0.5}
                 specialCharacter="VND"
@@ -242,7 +261,7 @@ const HomePage: NextPageWithLayout = () => {
               <Statistic
                 title={t("HomePage.order.today")}
                 IconElement={<AiOutlineShoppingCart className="text-4xl" />}
-                to={overviews.orders.length}
+                to={grossToday.orders}
                 backgroundColor="bg-[#0891b2]"
                 duration={0.5}
               />
@@ -250,7 +269,7 @@ const HomePage: NextPageWithLayout = () => {
               <Statistic
                 title={t("HomePage.order.success")}
                 IconElement={<BiPackage className="text-4xl" />}
-                to={overviews.delivered_orders}
+                to={grossToday.delivered_orders}
                 backgroundColor="bg-[#0891b2]"
                 duration={0.5}
               />
@@ -258,7 +277,7 @@ const HomePage: NextPageWithLayout = () => {
               <Statistic
                 title={t("HomePage.order.pending")}
                 IconElement={<BiPackage className="text-4xl" />}
-                to={overviews.pending_orders}
+                to={pendingOrders}
                 backgroundColor="bg-warn"
                 duration={0.5}
               />
@@ -266,7 +285,7 @@ const HomePage: NextPageWithLayout = () => {
               <Statistic
                 title={t("HomePage.order.process")}
                 IconElement={<BiCircleThreeQuarter className="text-4xl" />}
-                to={overviews.processing_orders}
+                to={processingOrders}
                 backgroundColor="bg-primary"
                 duration={0.5}
               />
@@ -274,7 +293,7 @@ const HomePage: NextPageWithLayout = () => {
               <Statistic
                 title={t("HomePage.order.cancle")}
                 IconElement={<BiMinusCircle className="text-4xl" />}
-                to={overviews.cancel_orders}
+                to={grossToday.cancel_orders}
                 backgroundColor="bg-cancle"
                 duration={0.5}
               />
@@ -348,7 +367,7 @@ const HomePage: NextPageWithLayout = () => {
                   <CelTable
                     type={typeCel.TEXT}
                     className="whitespace-nowrap"
-                    value={order.user_infor.name}
+                    value={order.address.shipping_name}
                   />
                   <CelTable
                     center={true}
@@ -363,8 +382,12 @@ const HomePage: NextPageWithLayout = () => {
                   />
                   <CelTable
                     type={typeCel.STATUS}
-                    value={order.status}
-                    status={orderStatus[order.status]}
+                    value={order.order_status.toLowerCase()}
+                    status={
+                      orderStatus[
+                        order.order_status.toLowerCase() as keyof typeof orderStatus
+                      ]
+                    }
                   />
                   <CelTable
                     center={true}

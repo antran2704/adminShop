@@ -8,17 +8,9 @@ const getGrossInWeek = async (startDate: Date) => {
     .then((res) => res.data);
 };
 
-const getGross = async ({
-  day,
-  month,
-  year,
-}: {
-  day: string;
-  month: string;
-  year: string;
-}) => {
+const getGross = async (date: string) => {
   return await httpConfig
-    .get(BASE_URL + `/admin/gross/day?day=${day}&month=${month}&year=${year}`)
+    .get(BASE_URL + `/admin/gross/day?date=${date}`)
     .then((res) => res.data);
 };
 

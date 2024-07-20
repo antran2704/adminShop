@@ -1,12 +1,26 @@
-import { PaymentStatus } from "~/enums";
+import qs from "qs";
+
+import { ORDER_STATUS_ENUM, PaymentStatus } from "~/enums";
 import { IFilter } from "~/interface";
-import { IOrderCancle, statusOrder } from "~/interface/order";
-import { axiosGet, axiosPatch } from "~/configs/configAxios";
+import { ISearchOrder, statusOrder } from "~/interface/order";
+import httpConfig, { axiosGet, axiosPatch } from "~/configs/configAxios";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
-const getOrders = async (page: number = 1) => {
-  return await axiosGet(BASE_URL + `/orders?page=${page}`);
+const getOrders = async (paramater: ISearchOrder) => {
+  const parseParameters = qs.stringify(paramater, {
+    filter: (_, value) => value || undefined,
+  });
+
+  return await httpConfig
+    .get(BASE_URL + `/admin/orders?${parseParameters}`)
+    .then((res) => res.data);
+};
+
+const countOrders = async (orderStatus: ORDER_STATUS_ENUM) => {
+  return await httpConfig
+    .get(BASE_URL + `/admin/orders/count?order_status=${orderStatus}`)
+    .then((res) => res.data);
 };
 
 const getOrdersWithFilter = async (
@@ -32,27 +46,28 @@ const getOrder = async (order_id: string) => {
 const updateOrder = async (
   order_id: string,
   status: statusOrder,
-  options?: Partial<IOrderCancle>,
+  // options?: Partial<IOrderCancle>,
 ) => {
   return await axiosPatch(BASE_URL + `/orders/status/${order_id}`, {
     status,
-    ...options,
+    // ...options,
   });
 };
 
 const updatePaymentStatusOrder = async (
   order_id: string,
   status: PaymentStatus,
-  options?: Partial<IOrderCancle>,
+  // options?: Partial<IOrderCancle>,
 ) => {
   return await axiosPatch(BASE_URL + `/orders/payment_status/${order_id}`, {
     payment_status: status,
-    ...options,
+    // ...options,
   });
 };
 
 export {
   getOrders,
+  countOrders,
   getOrdersWithFilter,
   getOrder,
   updateOrder,

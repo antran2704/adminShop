@@ -137,7 +137,6 @@ httpConfig.interceptors.request.use(
       (!accessToken || !refreshToken || !publicToken) &&
       !SKIP_URL.includes(url)
     ) {
-      console.log("lot");
       handleLogout();
       controller.abort();
 

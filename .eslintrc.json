@@ -1,36 +1,35 @@
 {
-    "extends": ["next/core-web-vitals", "eslint:recommended"],
-    "rules": {
-      "no-console": "warn",
-      "no-unused-vars": ["warn", { "args": "none" }],
-      "no-var": "error",
-      "no-extra-boolean-cast": "off",
-      "@next/next/no-img-element": "off",
-      "@typescript-eslint/no-unsafe-argument": "off",
-      "import/no-anonymous-default-export": "off",
-      "react-hooks/exhaustive-deps": "off",
-      "react/no-unescaped-entities": "off"
-    },
-    "overrides": [
-      {
-        "files": ["*.ts", "*.tsx"],
-        "rules": {
-          "no-undef": "off"
-        }
-      },
-      {
-        "files": ["src/enum/**/*.ts", "src/interface/**/*.ts"],
-        "rules": {
-          "no-unused-vars": "off"
-        }
+  "extends": ["next/core-web-vitals", "eslint:recommended"],
+  "rules": {
+    "no-console": "warn",
+    "no-unused-vars": ["warn", { "args": "none" }],
+    "no-var": "error",
+    "no-extra-boolean-cast": "off",
+    "@next/next/no-img-element": "off",
+    "@typescript-eslint/no-unsafe-argument": "off",
+    "import/no-anonymous-default-export": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "react/no-unescaped-entities": "off"
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "no-undef": "off"
       }
-    ],
-    "ignorePatterns": [
-      "node_modules/",
-      ".next/",
-      "out/",
-      "package-lock.json",
-      "package.json"
-    ]
-  }
-  
+    },
+    {
+      "files": ["src/enum/**/*.ts", "src/interface/**/*.ts"],
+      "rules": {
+        "no-unused-vars": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "node_modules/",
+    ".next/",
+    "out/",
+    "package-lock.json",
+    "package.json"
+  ]
+}

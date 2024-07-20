@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -11,14 +13,15 @@ interface Language {
 }
 
 const initListLanguages: Language = {
-  "en-US": { title: "English", icon: "/flags/usa.png" },
-  "vi-VN": {
+  en: { title: "English", icon: "/flags/usa.png" },
+  vi: {
     title: "Vietnam",
     icon: "/flags/vietnam.png",
   },
 };
 
 const Translation = () => {
+  const router = useRouter();
   const [select, setSelect] = useState<LanguageItem | null>(null);
 
   const { i18n } = useTranslation();
@@ -43,17 +46,18 @@ const Translation = () => {
           <ul className="absolute top-[110%] group-hover:top-full right-0 min-w-[160px] bg-white border-2 dark:border-none rounded opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all ease-linear duration-100 overflow-hidden">
             {Object.keys(initListLanguages).map((keyLng: string) => (
               <li key={keyLng} className="w-full">
-                <button
-                  onClick={() => {
-                    i18n.changeLanguage(keyLng);
-                    setSelect(initListLanguages[keyLng]);
-                  }}
+                <Link
+                  href={router.asPath}
+                  // onClick={() => {
+                  //   i18n.changeLanguage(keyLng);
+                  //   setSelect(initListLanguages[keyLng]);
+                  // }}
+                  locale={keyLng}
                   className={`flex items-center w-full hover:bg-primary hover:text-white text-start px-5 py-2 ${
                     i18n.resolvedLanguage === keyLng
                       ? "text-primary font-medium pointer-events-none"
                       : ""
                   } gap-2`}
-                  disabled={i18n.resolvedLanguage === keyLng}
                 >
                   <img
                     className="w-6 h-6 object-contain"
@@ -61,7 +65,7 @@ const Translation = () => {
                     alt="flag"
                   />
                   {initListLanguages[keyLng].title}
-                </button>
+                </Link>
               </li>
             ))}
           </ul>
