@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 
 interface LanguageItem {
   title: string;
@@ -22,39 +20,29 @@ const initListLanguages: Language = {
 
 const Translation = () => {
   const router = useRouter();
-  const [select, setSelect] = useState<LanguageItem | null>(null);
+  console.log(router);
+  const selected = initListLanguages[router.locale as string];
 
-  const { i18n } = useTranslation();
-
-  useEffect(() => {
-    if (i18n.resolvedLanguage) {
-      setSelect(initListLanguages[i18n.resolvedLanguage as string]);
-    }
-  }, []);
   return (
     <div>
-      {select && (
+      {selected && (
         <div className="group relative">
           <p className="flex items-center text-base dark:text-darkText gap-2">
             <img
               className="w-6 h-6 object-contain"
-              src={select.icon}
+              src={selected.icon}
               alt="flag"
             />
-            {select.title}
+            {selected.title}
           </p>
           <ul className="absolute top-[110%] group-hover:top-full right-0 min-w-[160px] bg-white border-2 dark:border-none rounded opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all ease-linear duration-100 overflow-hidden">
-            {Object.keys(initListLanguages).map((keyLng: string) => (
+            {router.locales?.map((keyLng: string) => (
               <li key={keyLng} className="w-full">
                 <Link
                   href={router.asPath}
-                  // onClick={() => {
-                  //   i18n.changeLanguage(keyLng);
-                  //   setSelect(initListLanguages[keyLng]);
-                  // }}
                   locale={keyLng}
                   className={`flex items-center w-full hover:bg-primary hover:text-white text-start px-5 py-2 ${
-                    i18n.resolvedLanguage === keyLng
+                    router.locale === keyLng
                       ? "text-primary font-medium pointer-events-none"
                       : ""
                   } gap-2`}

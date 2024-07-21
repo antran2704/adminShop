@@ -1,4 +1,3 @@
-import { ParsedUrlQuery } from "querystring";
 import {
   useState,
   useEffect,
@@ -26,11 +25,11 @@ import {
 } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
-import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 import Loading from "~/components/Loading";
 import useAbility from "~/hooks/useAbility";
 import Can from "~/components/Ability/Can";
+import { useTranslations } from "next-intl";
 
 interface ISelectBanner {
   _id: string;
@@ -45,7 +44,7 @@ const BannersPage: NextPageWithLayout = () => {
 
   const currentPage = query.page ? Number(query.page) : 1;
 
-  const { t, i18n } = useTranslation();
+  const t = useTranslations();
 
   const { isCan } = useAbility([ERole.ADMIN], [EPermission.ADMIN]);
 
@@ -248,7 +247,7 @@ const BannersPage: NextPageWithLayout = () => {
           setSelects={setSelectBanners}
           selectAll={true}
           isSelected={selectBanners.length === banners.length ? true : false}
-          colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
+          colHeadTabel={colHeadTable[router.locale as string]}
           message={message}
           loading={loading}
         >
@@ -313,6 +312,15 @@ const BannersPage: NextPageWithLayout = () => {
 };
 
 export default BannersPage;
+
+export async function getStaticProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../../messages/${context.locale}.json`))
+        .default,
+    },
+  };
+}
 
 BannersPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

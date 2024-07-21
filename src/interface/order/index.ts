@@ -109,10 +109,20 @@ interface IOrder {
   updatedAt: string;
 }
 
+interface IOrderTable {
+  key: string;
+  orderId: string;
+  customer: string;
+  total: number;
+  orderStatus: ORDER_STATUS_ENUM;
+  paymentMethod: PAYMENT_METHOD_ENUM;
+  createdAt: string;
+}
+
 interface ISearchOrder extends ISearch {
   paymentMethod?: PAYMENT_METHOD_ENUM;
   paymentStatus?: PAYMENT_STATUS_ENUM;
   orderStatus?: ORDER_STATUS_ENUM;
 }
 
-export type { IItemOrder, IOrder, ISearchOrder };
+export type { IItemOrder, IOrder, ISearchOrder, IOrderTable };

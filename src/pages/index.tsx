@@ -2,11 +2,12 @@ import {
   useState,
   useEffect,
   useRef,
-  Fragment,
   ReactElement,
   Dispatch,
   SetStateAction,
+  useMemo,
 } from "react";
+import Link from "next/link";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import {
   MdOutlineKeyboardDoubleArrowDown,
@@ -28,27 +29,32 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { TableColumnsType } from "antd";
 
-import { colHeadOrder as colHeadTable } from "~/components/Table/colHeadTable";
-import { Table, CelTable } from "~/components/Table";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/router";
 
-import { ORDER_PARAMATER_ENUM, ORDER_STATUS_ENUM, typeCel } from "~/enums";
-import Link from "next/link";
+import { TableCore } from "~/components/core";
 import SpringCount from "~/components/SpringCount";
-import httpConfig from "~/configs/configAxios";
-import { getFirstDayInWeek } from "~/helper/datetime";
-import { IGross, IGrossDate, IResponse } from "~/interface";
 import Statistic from "~/components/Statistic";
-import { IOrder, ISearchOrder } from "~/interface/order";
-import { countOrders, getOrders } from "~/api-client";
-import { formatBigNumber } from "~/helper/number/fomatterCurrency";
-import { orderStatus } from "~/components/Table/statusCel";
-import { ButtonEdit } from "~/components/Button";
-import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+
+import { ICurrency, IGross, IGrossDate, IResponse } from "~/interface";
+import { IOrder, IOrderTable, ISearchOrder } from "~/interface/order";
+import { NextPageWithLayout } from "~/interface/page";
+
+import {
+  ORDER_PARAMATER_ENUM,
+  ORDER_STATUS_ENUM,
+  PAYMENT_METHOD_ENUM,
+} from "~/enums";
+
+import { countOrders, getOrders } from "~/api-client";
 import { getGross, getGrossInWeek } from "~/api-client/gross/gross-date";
+
+import { formatDate, getFirstDayInWeek } from "~/helper/datetime";
+import { formatBigNumber } from "~/helper/number/fomatterCurrency";
+import CURRENCY from "~/common/currency";
 
 ChartJS.register(
   CategoryScale,
@@ -105,13 +111,15 @@ const HomePage: NextPageWithLayout = () => {
     ],
   };
 
+  const router = useRouter();
+
   const chartWeekRef = useRef<any>();
 
   const [grossToday, setGrossToday] = useState<IGross>(initGross);
   const [dataBarWeek, setDataBarWeek] = useState<any>(data);
   const [totalWeek, setTotalWeek] = useState<number>(0);
 
-  const [orders, setOrders] = useState<IOrder[]>([]);
+  const [orders, setOrders] = useState<IOrderTable[]>([]);
   const [pendingOrders, setPendingOrders] = useState<number>(0);
   const [processingOrders, setProcessingOrders] = useState<number>(0);
 
@@ -119,7 +127,141 @@ const HomePage: NextPageWithLayout = () => {
   const [show, setShow] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { t, i18n } = useTranslation();
+  const t = useTranslations("HomePage");
+  const tOrder = useTranslations("OrderPage");
+
+  const columns: TableColumnsType<IOrderTable> = useMemo(() => {
+    return [
+      {
+        title: tOrder("table.orderId"),
+        dataIndex: "orderId",
+        key: "orderId",
+        align: "center",
+      },
+      {
+        title: tOrder("table.customer"),
+        dataIndex: "customer",
+        key: "customer",
+        align: "center",
+      },
+      {
+        title: tOrder("table.paymentMethod"),
+        dataIndex: "paymentMethod",
+        key: "paymentMethod",
+        align: "center",
+        render: (method: PAYMENT_METHOD_ENUM) => {
+          switch (method) {
+            case PAYMENT_METHOD_ENUM.BANKING:
+              return (
+                <span className="capitalize block text-sm mx-auto">
+                  {tOrder("paymentMethod.banking")}
+                </span>
+              );
+
+            case PAYMENT_METHOD_ENUM.CARD:
+              return (
+                <span className="capitalize block text-sm mx-auto">
+                  {tOrder("paymentMethod.card")}
+                </span>
+              );
+
+            case PAYMENT_METHOD_ENUM.CASH:
+              return (
+                <span className="capitalize block text-sm mx-auto">
+                  {tOrder("paymentMethod.cash")}
+                </span>
+              );
+
+            case PAYMENT_METHOD_ENUM.COD:
+              return (
+                <span className="capitalize block text-sm mx-auto">
+                  {tOrder("paymentMethod.cod")}
+                </span>
+              );
+
+            default:
+              return (
+                <span className="capitalize block text-sm mx-auto">
+                  {method}
+                </span>
+              );
+          }
+        },
+      },
+      {
+        title: tOrder("table.total"),
+        dataIndex: "total",
+        key: "total",
+        align: "center",
+        render: (total: number) => {
+          const currency: ICurrency =
+            CURRENCY[router.locale as keyof typeof CURRENCY];
+          return (
+            <span className="capitalize block text-sm mx-auto">
+              {`${formatBigNumber(total * currency.rate)} ${currency.symbol}`}
+            </span>
+          );
+        },
+      },
+      {
+        title: tOrder("table.status"),
+        dataIndex: "orderStatus",
+        key: "orderStatus",
+        render: (status: ORDER_STATUS_ENUM) => {
+          switch (status) {
+            case ORDER_STATUS_ENUM.PENDING:
+              return (
+                <div className="px-3 py-1 rounded-md text-sm w-fit mx-auto bg-pending text-white">
+                  {tOrder("orderStatus.pending")}
+                </div>
+              );
+
+            case ORDER_STATUS_ENUM.PROCESS:
+              return (
+                <div className="px-3 py-1 rounded-md text-sm w-fit mx-auto bg-primary text-white">
+                  {tOrder("orderStatus.process")}
+                </div>
+              );
+
+            case ORDER_STATUS_ENUM.CANCEL:
+              return (
+                <div className="px-3 py-1 rounded-md text-sm w-fit mx-auto bg-error text-white">
+                  {tOrder("orderStatus.cancel")}
+                </div>
+              );
+
+            case ORDER_STATUS_ENUM.SUCCESS:
+              return (
+                <div className="px-3 py-1 rounded-md text-sm w-fit mx-auto bg-success text-white">
+                  {tOrder("orderStatus.success")}
+                </div>
+              );
+
+            case ORDER_STATUS_ENUM.SHIPPING:
+              return (
+                <div className="px-3 py-1 rounded-md text-sm w-fit mx-auto bg-fuchsia-400 text-white">
+                  {tOrder("orderStatus.shipping")}
+                </div>
+              );
+          }
+        },
+        align: "center",
+      },
+      {
+        title: tOrder("table.createdAt"),
+        dataIndex: "createdAt",
+        key: "createdAt",
+        align: "center",
+        render: (date: string) => {
+          return (
+            <span className="capitalize block text-sm mx-auto">
+              {formatDate(date)}
+            </span>
+          );
+        },
+      },
+    ];
+  }, [router.locale]);
 
   const handleGetGrossToday = async () => {
     const date = new Date().toISOString();
@@ -190,24 +332,26 @@ const HomePage: NextPageWithLayout = () => {
 
   const handleGetData = async (paramater: ISearchOrder) => {
     setLoading(true);
-    try {
-      const response = await getOrders(paramater);
-      if (response.status === 200) {
-        if (response.payload.length === 0) {
-          setOrders([]);
-          setMessage(`No Data`);
-        } else {
-          setMessage(null);
-          setOrders(response.payload);
-        }
-      }
 
-      setLoading(false);
-    } catch (error) {
-      setOrders([]);
-      setMessage(`No Data`);
-      setLoading(false);
-    }
+    await getOrders(paramater).then(
+      ({ status, payload }: IResponse<IOrder[]>) => {
+        if (status === 200) {
+          const ordersTable: IOrderTable[] = payload.map((order) => ({
+            key: order._id,
+            customer: order.address.shipping_email,
+            orderId: order.order_id,
+            paymentMethod: order.payment_method,
+            orderStatus: order.order_status,
+            total: order.total,
+            createdAt: order.createdAt,
+          }));
+
+          setOrders(ordersTable);
+        }
+      },
+    );
+
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -232,15 +376,15 @@ const HomePage: NextPageWithLayout = () => {
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
       <div className="w-full h-[10%] mb-5">
         <h1 className="dark:text-darkText md:text-3xl text-2xl font-bold mb-1">
-          {t("HomePage.title")}
+          {t("title")}
         </h1>
         <p className="dark:text-darkText text-lg font-medium">
-          {t("HomePage.subTitle")}
+          {t("subTitle")}
         </p>
       </div>
       <div className="w-full lg:mb-10 mb-5">
         <h2 className="text-title mb-4 dark:text-darkText">
-          {t("HomePage.dashBoard.overview")}
+          {t("dashBoard.overview")}
         </h2>
         <div className="h-full gap-10">
           <div className="relative w-full mb-10">
@@ -250,7 +394,7 @@ const HomePage: NextPageWithLayout = () => {
               } gap-2 overflow-hidden transition-all ease-in-out duration-300`}
             >
               <Statistic
-                title={t("HomePage.income.today")}
+                title={t("income.today")}
                 IconElement={<BiDollarCircle className="text-4xl" />}
                 to={grossToday.total_gross}
                 backgroundColor="bg-[#5032fd]"
@@ -259,7 +403,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title={t("HomePage.order.today")}
+                title={t("order.today")}
                 IconElement={<AiOutlineShoppingCart className="text-4xl" />}
                 to={grossToday.orders}
                 backgroundColor="bg-[#0891b2]"
@@ -267,7 +411,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title={t("HomePage.order.success")}
+                title={t("order.success")}
                 IconElement={<BiPackage className="text-4xl" />}
                 to={grossToday.delivered_orders}
                 backgroundColor="bg-[#0891b2]"
@@ -275,7 +419,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title={t("HomePage.order.pending")}
+                title={t("order.pending")}
                 IconElement={<BiPackage className="text-4xl" />}
                 to={pendingOrders}
                 backgroundColor="bg-warn"
@@ -283,7 +427,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title={t("HomePage.order.process")}
+                title={t("order.process")}
                 IconElement={<BiCircleThreeQuarter className="text-4xl" />}
                 to={processingOrders}
                 backgroundColor="bg-primary"
@@ -291,7 +435,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title={t("HomePage.order.cancle")}
+                title={t("order.cancle")}
                 IconElement={<BiMinusCircle className="text-4xl" />}
                 to={grossToday.cancel_orders}
                 backgroundColor="bg-cancle"
@@ -313,7 +457,7 @@ const HomePage: NextPageWithLayout = () => {
           </div>
           <div className="lg:w-3/4 w-full h-full bg-[#f4f7ff] rounded-xl p-5 mx-auto">
             <div>
-              <p>{t("HomePage.income.subTotal")}</p>
+              <p>{t("income.subTotal")}</p>
               <SpringCount
                 className="text-lg font-bold"
                 from={0}
@@ -333,11 +477,16 @@ const HomePage: NextPageWithLayout = () => {
           </div>
         </div>
       </div>
+      {/* Table orders */}
+      <TableCore
+        dataSource={orders}
+        loading={loading}
+        columns={columns}
+        size="large"
+      />
       <div className="w-full pb-10">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-title dark:text-darkText">
-            {t("HomePage.order.recent")}
-          </h2>
+          <h2 className="text-title dark:text-darkText">{t("order.recent")}</h2>
           <Link
             href={"/orders"}
             className="text-base font-medium text-primary hover:underline"
@@ -346,18 +495,16 @@ const HomePage: NextPageWithLayout = () => {
           </Link>
         </div>
         <div>
-          <Table
-            colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
+          {/* <Table
+            colHeadTabel={colHeadTable[router.locale as string]}
             items={orders}
             loading={loading}
-            message={message}
-          >
+            message={message}>
             <Fragment>
               {orders.map((order: IOrder) => (
                 <tr
                   key={order._id}
-                  className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
-                >
+                  className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none">
                   <CelTable
                     type={typeCel.TEXT}
                     className="whitespace-nowrap"
@@ -402,7 +549,7 @@ const HomePage: NextPageWithLayout = () => {
                 </tr>
               ))}
             </Fragment>
-          </Table>
+          </Table> */}
         </div>
       </div>
     </section>
@@ -411,11 +558,13 @@ const HomePage: NextPageWithLayout = () => {
 
 export default HomePage;
 
-export const getStaticProps = async ({ locale }: { locale: string }) => ({
-  props: {
-    ...(await serverSideTranslations(locale ?? "en", ["common"])),
-  },
-});
+export async function getStaticProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../messages/${context.locale}.json`)).default,
+    },
+  };
+}
 
 HomePage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

@@ -54,6 +54,29 @@
     "create": "Create blog",
     "search": "Search by name..."
   },
+  "OrderPage": {
+    "table": {
+      "orderId": "Order ID",
+      "customer": "Customer",
+      "paymentMethod": "Payment Method",
+      "total": "Total",
+      "status": "Status",
+      "createdAt": "Created At"
+    },
+    "orderStatus": {
+      "pending": "Pending",
+      "process": "Process",
+      "cancle": "Cancel",
+      "success": "Success",
+      "shipping": "Shipping"
+    },
+    "paymentMethod": {
+      "cod": "Cod",
+      "banking": "Banking",
+      "cash": "Cash",
+      "card": "Card"
+    }
+  },
   "LoginPage": {
     "title": "Login",
     "email": {

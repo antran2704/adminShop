@@ -1,7 +1,8 @@
 interface IPagination {
-  currentPage: number;
-  totalItems: number;
-  pageSize: number;
+  page: number;
+  total: number;
+  take: number;
+  pageCount?: number;
 }
 
 export type { IPagination };

@@ -7,6 +7,15 @@ const getDateTime = (timestamps: string) => {
   });
 };
 
+const formatDate = (timestamps: string) => {
+  const date = new Date(timestamps);
+  return date.toLocaleDateString("en-GB", {
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  });
+};
+
 const getFirstDayInWeek = (value: string) => {
   const firstDay = new Date(value);
   const day = firstDay.getDay();
@@ -20,4 +29,4 @@ const getEndDayInWeek = (value: string) => {
   return endDay;
 };
 
-export { getDateTime, getFirstDayInWeek, getEndDayInWeek };
+export { getDateTime, getFirstDayInWeek, getEndDayInWeek, formatDate };

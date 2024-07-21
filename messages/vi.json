@@ -54,6 +54,29 @@
     "create": "Tạo bài viết",
     "search": "Tìm kiếm theo tiêu đề..."
   },
+  "OrderPage": {
+    "table": {
+      "orderId": "Mã đơn",
+      "customer": "Khách hàng",
+      "paymentMethod": "Phương thức thanh toán",
+      "total": "Tổng tiền",
+      "status": "Trạng thái",
+      "createdAt": "Ngày tạo"
+    },
+    "orderStatus": {
+      "pending": "Chờ xác nhận",
+      "process": "Đang chuẩn bị hàng",
+      "cancle": "Hủy",
+      "success": "Thành công",
+      "shipping": "Đang giao hàng"
+    },
+    "paymentMethod": {
+      "cod": "Cod",
+      "banking": "Chuyển khoản",
+      "cash": "Tiền mặt",
+      "card": "Thẻ ngân hàng"
+    }
+  },
   "LoginPage": {
     "title": "Đăng nhập",
     "email": {

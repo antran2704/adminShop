@@ -1,5 +1,5 @@
 const formatBigNumber = (value: number) => {
-  return new Intl.NumberFormat("de-DE").format(value);
+  return new Intl.NumberFormat("en-IN").format(value);
 };
 
 const revertPriceToString = (value: string) => {

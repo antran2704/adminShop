@@ -2,19 +2,20 @@ import { AxiosError } from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState, FormEvent, ReactElement } from "react";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslations } from "next-intl";
 
 import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
 import { InputText, InputPassword } from "~/components/InputField";
+import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
+
 import { loginReducer } from "~/store/slice/user";
 import { useAppDispatch } from "~/store/hooks";
 import { login } from "~/api-client";
-import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
 import { NextPageWithLayout } from "~/interface/page";
-import { setAuthLocal } from "~/helper/auth";
 import { ILogin, IResponse } from "~/interface";
+
+import { setAuthLocal } from "~/helper/auth";
 
 interface IDataSend {
   email: string | null;
@@ -30,10 +31,9 @@ const Layout = LayoutWithoutHeader;
 
 const LoginPage: NextPageWithLayout = () => {
   const router = useRouter();
-
   const dispatch = useAppDispatch();
 
-  const { t, i18n } = useTranslation("common");
+  const t = useTranslations("LoginPage");
   const [data, setData] = useState<IDataSend>(initData);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -105,26 +105,26 @@ const LoginPage: NextPageWithLayout = () => {
       </div>
       <div className="lg:w-6/12 w-full md:px-10 px-5 pt-10 pb-20">
         <h1 className="lg:text-3xl text-2xl dark:text-darkText w-fit font-medium mx-auto">
-          {t("LoginPage.title")}
+          {t("title")}
         </h1>
 
         <form onSubmit={onLogin} method="POST" className="flex flex-col">
           <div className="flex flex-col items-start mt-5 gap-5">
             <InputText
-              title={t("LoginPage.email.title")}
+              title={t("email.title")}
               width="w-full"
               value={data.email || ""}
               name="email"
               required={true}
               size="M"
-              placeholder={t("LoginPage.email.placeholder")}
+              placeholder={t("email.placeholder")}
               getValue={onChangeData}
             />
             <InputPassword
-              title={t("LoginPage.password.title")}
+              title={t("password.title")}
               width="w-full"
               value={data.password || ""}
-              placeholder={t("LoginPage.password.placeholder")}
+              placeholder={t("password.placeholder")}
               name="password"
               required={true}
               size="M"
@@ -137,7 +137,7 @@ const LoginPage: NextPageWithLayout = () => {
           <div className="mt-5">
             <ButtonClassic
               loading={loading}
-              title={t("LoginPage.submit")}
+              title={t("submit")}
               size="M"
               className="w-full flex items-center justify-center h-12 bg-primary"
             />
@@ -147,7 +147,7 @@ const LoginPage: NextPageWithLayout = () => {
                 className="block hover:underline dark:text-darkText hover:text-primary dark:hover:text-primary text-sm my-5"
                 href="/password/reset"
               >
-                {t("LoginPage.forgetPassword")}
+                {t("forgetPassword")}
               </Link>
             </div>
           </div>
@@ -159,11 +159,14 @@ const LoginPage: NextPageWithLayout = () => {
 
 export default LoginPage;
 
-export const getStaticProps = async ({ locale }: { locale: string }) => ({
-  props: {
-    ...(await serverSideTranslations(locale ?? "en", ["common"])),
-  },
-});
+export async function getStaticProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../../messages/${context.locale}.json`))
+        .default,
+    },
+  };
+}
 
 LoginPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
