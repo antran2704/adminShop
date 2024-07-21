@@ -1,6 +1,7 @@
 interface ICurrency {
   symbol: string;
-  rate: number;
+  locale: string;
+  calc: (value: number) => number;
 }
 
 export type { ICurrency };

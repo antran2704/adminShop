@@ -3,7 +3,8 @@ import { useRouter } from "next/router";
 import { FC, useRef, useState, memo } from "react";
 import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 import { itemNav } from "../../data/Navbar";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
+// import { useTranslation } from "react-i18next";
 
 interface Props {
   subNav: boolean;
@@ -16,7 +17,7 @@ const NavbarItem: FC<Props> = (props: Props) => {
   const router = useRouter();
   const [show, setShow] = useState(false);
   const elRef = useRef<HTMLUListElement>(null);
-  const { i18n } = useTranslation();
+  const t = useTranslations();
 
   const handleCollapse = (): void => {
     const el = elRef.current;
@@ -46,7 +47,7 @@ const NavbarItem: FC<Props> = (props: Props) => {
           >
             <span>{data.icon}</span>
             <span className="whitespace-nowrap">
-              {data.name[i18n.resolvedLanguage as string]}
+              {data.name[router.locale as string]}
             </span>
           </Link>
         </li>
@@ -61,7 +62,7 @@ const NavbarItem: FC<Props> = (props: Props) => {
             <div className="w-full flex items-center text-lg dark:text-darkText font-medium gap-3">
               <span>{data.icon}</span>
               <span className="whitespace-nowrap">
-                {data.name[i18n.resolvedLanguage as string]}
+                {data.name[router.locale as string]}
               </span>
             </div>
             {!show && (

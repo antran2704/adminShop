@@ -223,5 +223,11 @@
     "delete": "Delete",
     "change": "Change",
     "add": "Add"
+  },
+  "Common": {
+    "gross": {
+      "subTotal": "Sub Gross",
+      "total": "Total"
+    }
   }
 }

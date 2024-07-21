@@ -2,7 +2,7 @@ import httpConfig from "~/configs/configAxios";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
-const getGrossInWeek = async (startDate: Date) => {
+const getGrossInWeek = async (startDate: string) => {
   return await httpConfig
     .get(BASE_URL + `/admin/gross/day/week?startDate=${startDate}`)
     .then((res) => res.data);

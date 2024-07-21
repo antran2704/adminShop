@@ -1,16 +1,22 @@
-import { Table, TableProps } from "antd";
-import { IPagination } from "~/interface";
+import { Pagination, Table, TableProps, PaginationProps } from "antd";
 
 interface Props extends TableProps {
-  pagination?: IPagination;
-  onPagination?: (nextPage: number, pageSize: number) => void;
+  showPagination?: boolean;
+  paginationOptions?: PaginationProps;
 }
 
 const TableCore = (props: Props) => {
-  const { pagination, onPagination, ...rest } = props;
+  const { showPagination = true, paginationOptions, ...rest } = props;
+
   return (
     <div className="w-full">
-      <Table {...rest} />
+      <div className="scroll w-full max-w-[100vw] overflow-x-auto">
+        <Table {...rest} pagination={false} />
+      </div>
+
+      {showPagination && (
+        <Pagination align="end" className="py-5" {...paginationOptions} />
+      )}
     </div>
   );
 };

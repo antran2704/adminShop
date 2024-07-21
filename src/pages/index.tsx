@@ -27,14 +27,14 @@ import {
   Title,
   Tooltip,
   Legend,
+  ChartOptions,
+  ChartData,
 } from "chart.js";
-import { Bar } from "react-chartjs-2";
 import { TableColumnsType } from "antd";
-
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/router";
 
-import { TableCore } from "~/components/core";
+import { ChartCore, TableCore } from "~/components/core";
 import SpringCount from "~/components/SpringCount";
 import Statistic from "~/components/Statistic";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
@@ -65,7 +65,7 @@ ChartJS.register(
   Legend,
 );
 
-const options = {
+const options: ChartOptions<"bar"> = {
   responsive: true,
   plugins: {
     legend: {
@@ -91,44 +91,36 @@ const initGross: IGross = {
 const Layout = LayoutWithHeader;
 
 const HomePage: NextPageWithLayout = () => {
-  const data = {
-    labels: [],
-    datasets: [
-      {
-        label: "Sub Gross",
-        data: [],
-        backgroundColor: "rgb(255, 99, 132)",
-        borderRadius: 10,
-        borderWidth: 0,
-      },
-      {
-        label: "Gross",
-        data: [],
-        backgroundColor: "rgb(75, 192, 192)",
-        borderRadius: 10,
-        borderWidth: 0,
-      },
-    ],
-  };
+  const t = useTranslations("HomePage");
+  const tOrder = useTranslations("OrderPage");
+  const tGross = useTranslations("Common.gross");
 
   const router = useRouter();
 
   const chartWeekRef = useRef<any>();
 
-  const [grossToday, setGrossToday] = useState<IGross>(initGross);
-  const [dataBarWeek, setDataBarWeek] = useState<any>(data);
-  const [totalWeek, setTotalWeek] = useState<number>(0);
-
-  const [orders, setOrders] = useState<IOrderTable[]>([]);
-  const [pendingOrders, setPendingOrders] = useState<number>(0);
-  const [processingOrders, setProcessingOrders] = useState<number>(0);
-
-  const [message, setMessage] = useState<string | null>(null);
-  const [show, setShow] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const t = useTranslations("HomePage");
-  const tOrder = useTranslations("OrderPage");
+  // data for chart
+  const data: ChartData<"bar"> = useMemo(() => {
+    return {
+      labels: [],
+      datasets: [
+        {
+          label: tGross("subTotal"),
+          data: [],
+          backgroundColor: "rgb(255, 99, 132)",
+          borderRadius: 10,
+          borderWidth: 0,
+        },
+        {
+          label: tGross("total"),
+          data: [],
+          backgroundColor: "rgb(75, 192, 192)",
+          borderRadius: 10,
+          borderWidth: 0,
+        },
+      ],
+    };
+  }, [router.locale]);
 
   const columns: TableColumnsType<IOrderTable> = useMemo(() => {
     return [
@@ -187,6 +179,7 @@ const HomePage: NextPageWithLayout = () => {
               );
           }
         },
+        className: "whitespace-nowrap",
       },
       {
         title: tOrder("table.total"),
@@ -198,7 +191,7 @@ const HomePage: NextPageWithLayout = () => {
             CURRENCY[router.locale as keyof typeof CURRENCY];
           return (
             <span className="capitalize block text-sm mx-auto">
-              {`${formatBigNumber(total * currency.rate)} ${currency.symbol}`}
+              {`${formatBigNumber(currency.calc(total), currency.locale, { style: "currency", currency: currency.symbol })}`}
             </span>
           );
         },
@@ -207,6 +200,7 @@ const HomePage: NextPageWithLayout = () => {
         title: tOrder("table.status"),
         dataIndex: "orderStatus",
         key: "orderStatus",
+        className: "whitespace-nowrap",
         render: (status: ORDER_STATUS_ENUM) => {
           switch (status) {
             case ORDER_STATUS_ENUM.PENDING:
@@ -254,7 +248,7 @@ const HomePage: NextPageWithLayout = () => {
         align: "center",
         render: (date: string) => {
           return (
-            <span className="capitalize block text-sm mx-auto">
+            <span className="whitespace-nowrap capitalize block text-sm mx-auto">
               {formatDate(date)}
             </span>
           );
@@ -262,6 +256,17 @@ const HomePage: NextPageWithLayout = () => {
       },
     ];
   }, [router.locale]);
+
+  const [grossToday, setGrossToday] = useState<IGross>(initGross);
+  const [dataBarWeek, setDataBarWeek] = useState<ChartData<"bar">>(data);
+  const [totalWeek, setTotalWeek] = useState<number>(0);
+
+  const [orders, setOrders] = useState<IOrderTable[]>([]);
+  const [pendingOrders, setPendingOrders] = useState<number>(0);
+  const [processingOrders, setProcessingOrders] = useState<number>(0);
+
+  const [show, setShow] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleGetGrossToday = async () => {
     const date = new Date().toISOString();
@@ -277,16 +282,16 @@ const HomePage: NextPageWithLayout = () => {
 
   const handleGetGrossInWeek = async (startDate: Date) => {
     try {
-      const { status, payload } = await getGrossInWeek(startDate);
+      const { status, payload } = await getGrossInWeek(startDate.toISOString());
 
       const startDay = startDate.getDate();
-      const newData: any = data;
+      const newData: ChartData<"bar"> = data;
       let total: number = 0;
 
       for (let i = 0; i <= 6; i++) {
         const nextDay = new Date();
         nextDay.setDate(startDay + i);
-        newData.labels.push(nextDay.getDate());
+        (newData.labels as number[]).push(nextDay.getDate());
         newData.datasets[0].data[i] = 0;
         newData.datasets[1].data[i] = 0;
       }
@@ -300,12 +305,15 @@ const HomePage: NextPageWithLayout = () => {
       if (status === 200 && payload.length > 0) {
         payload.map((item: IGrossDate) => {
           const day = Number(item.day);
-          const index = newData.labels.findIndex(
+          const index = (newData.labels as number[]).findIndex(
             (label: number) => label === day,
           );
-          newData.datasets[0].data[index] = item.sub_gross;
-          newData.datasets[1].data[index] = item.total_gross;
-          total += item.sub_gross;
+
+          if (index) {
+            newData.datasets[0].data[index] = item.sub_gross;
+            newData.datasets[1].data[index] = item.total_gross;
+            total += item.sub_gross;
+          }
         });
 
         setTotalWeek(total);
@@ -355,10 +363,6 @@ const HomePage: NextPageWithLayout = () => {
   };
 
   useEffect(() => {
-    const firstDay = getFirstDayInWeek(new Date().toDateString());
-    // get Gross in week
-    handleGetGrossInWeek(firstDay);
-
     // get Gross in today
     handleGetGrossToday();
 
@@ -371,6 +375,12 @@ const HomePage: NextPageWithLayout = () => {
     // get orders
     handleGetData({ order: ORDER_PARAMATER_ENUM.DESC, page: 1, take: 16 });
   }, []);
+
+  useEffect(() => {
+    const firstDay = getFirstDayInWeek(new Date().toDateString());
+    // get Gross in week
+    handleGetGrossInWeek(firstDay);
+  }, [router.locale]);
 
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
@@ -467,23 +477,18 @@ const HomePage: NextPageWithLayout = () => {
               />
             </div>
             <div className="py-5 rounded-md">
-              <Bar
+              <ChartCore
                 ref={chartWeekRef}
-                className="min-h-[500px]"
-                options={options}
+                type="bar"
                 data={dataBarWeek}
+                options={options}
+                className="min-h-[500px]"
               />
             </div>
           </div>
         </div>
       </div>
-      {/* Table orders */}
-      <TableCore
-        dataSource={orders}
-        loading={loading}
-        columns={columns}
-        size="large"
-      />
+
       <div className="w-full pb-10">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-title dark:text-darkText">{t("order.recent")}</h2>
@@ -494,63 +499,19 @@ const HomePage: NextPageWithLayout = () => {
             View All
           </Link>
         </div>
-        <div>
-          {/* <Table
-            colHeadTabel={colHeadTable[router.locale as string]}
-            items={orders}
-            loading={loading}
-            message={message}>
-            <Fragment>
-              {orders.map((order: IOrder) => (
-                <tr
-                  key={order._id}
-                  className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none">
-                  <CelTable
-                    type={typeCel.TEXT}
-                    className="whitespace-nowrap"
-                    value={order.order_id}
-                    center={true}
-                  />
-                  <CelTable
-                    type={typeCel.TEXT}
-                    className="whitespace-nowrap"
-                    value={order.address.shipping_name}
-                  />
-                  <CelTable
-                    center={true}
-                    type={typeCel.TEXT}
-                    className="capitalize"
-                    value={order.payment_method}
-                  />
-                  <CelTable
-                    center={true}
-                    type={typeCel.TEXT}
-                    value={`${formatBigNumber(order.total)} VND`}
-                  />
-                  <CelTable
-                    type={typeCel.STATUS}
-                    value={order.order_status.toLowerCase()}
-                    status={
-                      orderStatus[
-                        order.order_status.toLowerCase() as keyof typeof orderStatus
-                      ]
-                    }
-                  />
-                  <CelTable
-                    center={true}
-                    type={typeCel.DATE}
-                    value={order.createdAt}
-                  />
-                  <CelTable type={typeCel.GROUP}>
-                    <div className="flex items-center justify-center">
-                      <ButtonEdit link={`/orders/${order.order_id}`} />
-                    </div>
-                  </CelTable>
-                </tr>
-              ))}
-            </Fragment>
-          </Table> */}
-        </div>
+
+        {/* Table orders */}
+        <TableCore
+          dataSource={orders}
+          loading={loading}
+          columns={columns}
+          size="large"
+          paginationOptions={{
+            total: 100,
+            pageSize: 16,
+            current: 1,
+          }}
+        />
       </div>
     </section>
   );

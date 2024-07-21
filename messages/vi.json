@@ -222,5 +222,11 @@
     "delete": "Xóa",
     "change": "Thay đổi",
     "add": "Thêm"
+  },
+  "Common": {
+    "gross": {
+      "subTotal": "Tạm tính",
+      "total": "Tổng thu nhập"
+    }
   }
 }

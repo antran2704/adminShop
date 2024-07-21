@@ -20,7 +20,6 @@ const initListLanguages: Language = {
 
 const Translation = () => {
   const router = useRouter();
-  console.log(router);
   const selected = initListLanguages[router.locale as string];
 
   return (

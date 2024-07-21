@@ -3,11 +3,17 @@ import { ICurrency } from "~/interface";
 const CURRENCY: { [k: string]: ICurrency } = {
   vi: {
     symbol: "VND",
-    rate: 1,
+    locale: "en-GB",
+    calc: (value) => {
+      return value;
+    },
   },
   en: {
     symbol: "USD",
-    rate: 25.315,
+    locale: "en-IN",
+    calc: (value) => {
+      return value / 25 / 1000;
+    },
   },
 };
 

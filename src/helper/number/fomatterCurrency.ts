@@ -1,5 +1,9 @@
-const formatBigNumber = (value: number) => {
-  return new Intl.NumberFormat("en-IN").format(value);
+const formatBigNumber = (
+  value: number,
+  locale: string,
+  options?: Intl.NumberFormatOptions,
+) => {
+  return new Intl.NumberFormat(locale, options).format(value);
 };
 
 const revertPriceToString = (value: string) => {
