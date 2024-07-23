@@ -5,6 +5,7 @@ export type IQueryParam<T> = {
 };
 
 interface ISearch {
+  search?: string;
   page: number;
   take: number;
   order: ORDER_PARAMATER_ENUM;

@@ -138,8 +138,7 @@ const NotificationPage: NextPageWithLayout = () => {
                 tag.value === selectTag.value
                   ? "text-success border-success"
                   : ""
-              }  font-medium dark:text-darkText px-5 py-1 border-2 rounded-md`}
-            >
+              }  font-medium dark:text-darkText px-5 py-1 border-2 rounded-md`}>
               {tag.title}
             </button>
           ))}
@@ -150,15 +149,13 @@ const NotificationPage: NextPageWithLayout = () => {
         )}
 
         <ul
-          className={`bg-white dark:bg-gray-800 dark:text-white my-5 shadow-lg rounded-md border transition-all ease-linear duration-100 overflow-auto z-10`}
-        >
+          className={`bg-white dark:bg-gray-800 dark:text-white my-5 shadow-lg rounded-md border transition-all ease-linear duration-100 overflow-auto z-10`}>
           {!loading &&
             notifications.map((item: INotificationItem, index: number) => (
               <li
                 key={item._id}
                 onClick={() => onClickNoti(item)}
-                className="border-b last:border-none dark:hover:bg-gray-700 hover:bg-slate-200"
-              >
+                className="border-b last:border-none dark:hover:bg-gray-700 hover:bg-slate-200">
                 <NotificationItem data={item} onClick={onClickNoti} />
               </li>
             ))}

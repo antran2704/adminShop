@@ -69,8 +69,7 @@ const MultipleValue = (props: Props) => {
       <div className="flex items-center mb-1 gap-2">
         <span
           id={name}
-          className="block text-base text-[#1E1E1E] dark:text-darkText font-medium"
-        >
+          className="block text-base text-[#1E1E1E] dark:text-darkText font-medium">
           {title}
         </span>
 
@@ -82,8 +81,7 @@ const MultipleValue = (props: Props) => {
         onMouseLeave={() => setOpen(false)}
         className={`relative flex items-center flex-wrap w-full dark:bg-darkInput rounded-md px-2 py-2 border-2 ${
           error && "border-error"
-        } focus:border-[#4f46e5] dark:border-transparent outline-none gap-2`}
-      >
+        } focus:border-[#4f46e5] dark:border-transparent outline-none gap-2`}>
         <ul className="flex flex-wrap items-center gap-2">
           {select.map((value: ISelectItem, index: number) => (
             <li
@@ -91,8 +89,7 @@ const MultipleValue = (props: Props) => {
                 e.stopPropagation();
               }}
               key={index}
-              className="flex items-center text-sm text-desc px-3 py-1 bg-slate-200 dark:bg-white opacity-90 hover:opacity-100 rounded gap-2"
-            >
+              className="flex items-center text-sm text-desc px-3 py-1 bg-slate-200 dark:bg-white opacity-90 hover:opacity-100 rounded gap-2">
               <span>{value.title}</span>
               <AiOutlineClose
                 onClick={() => handleDeleteValue(value)}
@@ -120,8 +117,7 @@ const MultipleValue = (props: Props) => {
             open
               ? "top-[120%] opacity-100 pointer-events-auto"
               : "top-[130%] opacity-0 pointer-events-none"
-          } scroll left-0 w-full max-h-[160px] bg-white border-2 rounded-md shadow-md overflow-y-auto transition-all ease-linear duration-200 z-[1]`}
-        >
+          } scroll left-0 w-full max-h-[160px] bg-white border-2 rounded-md shadow-md overflow-y-auto transition-all ease-linear duration-200 z-[1]`}>
           <li
             onClick={(e: MouseEvent<HTMLLIElement>) => {
               e.stopPropagation();
@@ -129,8 +125,7 @@ const MultipleValue = (props: Props) => {
             }}
             className={`w-full text-base ${
               select.length === data.length ? "bg-gray-200" : ""
-            } px-5 py-1 border-b-2 border-gray-300 cursor-pointer transition-all ease-linear duration-100`}
-          >
+            } px-5 py-1 border-b-2 border-gray-300 cursor-pointer transition-all ease-linear duration-100`}>
             Select All
           </li>
 
@@ -145,8 +140,7 @@ const MultipleValue = (props: Props) => {
                 select.find(
                   (selectItem: ISelectItem) => selectItem._id === item._id,
                 ) && "bg-gray-200"
-              } px-5 py-1 cursor-pointer transition-all ease-linear duration-100`}
-            >
+              } px-5 py-1 cursor-pointer transition-all ease-linear duration-100`}>
               {item.title}
             </li>
           ))}

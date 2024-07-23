@@ -205,8 +205,7 @@ const CreateCategoryPage = () => {
       title={t("CreateCategoryPage.title")}
       backLink="/categories"
       loading={loading}
-      onSubmit={handleOnSubmit}
-    >
+      onSubmit={handleOnSubmit}>
       <div className="lg:w-2/4 w-full mx-auto">
         <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputText

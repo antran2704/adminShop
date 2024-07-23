@@ -110,32 +110,32 @@ const Notification = () => {
     }
   };
 
-  useEffect(() => {
-    const URL = process.env.NEXT_PUBLIC_SOCKET_ENDPOINT as string;
-    const socketInit = io(URL);
+  // useEffect(() => {
+  //   const URL = process.env.NEXT_PUBLIC_SOCKET_ENDPOINT as string;
+  //   const socketInit = io(URL);
 
-    socketInit.connect();
+  //   socketInit.connect();
 
-    setSocket(socketInit);
-    handleGetNotifications();
+  //   setSocket(socketInit);
+  //   handleGetNotifications();
 
-    return () => {
-      socketInit.disconnect();
-      setSocket(null);
-    };
-  }, []);
+  //   return () => {
+  //     socketInit.disconnect();
+  //     setSocket(null);
+  //   };
+  // }, []);
 
-  useEffect(() => {
-    if (socket) {
-      socket.on("notification", onNotification);
-    }
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on("notification", onNotification);
+  //   }
 
-    return () => {
-      if (socket) {
-        socket.off("notification", onNotification);
-      }
-    };
-  }, [socket, notification]);
+  //   return () => {
+  //     if (socket) {
+  //       socket.off("notification", onNotification);
+  //     }
+  //   };
+  // }, [socket, notification]);
 
   return (
     <div
@@ -144,8 +144,7 @@ const Notification = () => {
           onShowModal();
         }
       }}
-      className="flex items-center gap-2"
-    >
+      className="flex items-center gap-2">
       <div className="relative">
         <div
           onClick={onShowModal}
@@ -155,8 +154,7 @@ const Notification = () => {
               : "bg-slate-100 dark:bg-transparent hover:bg-slate-200 dark:hover:bg-slate-200 dark:text-white dark:hover:text-black"
           } ${
             ring ? "bg-blue-600 hover:bg-blue-400" : ""
-          } rounded-full cursor-pointer ease-linear duration-100`}
-        >
+          } rounded-full cursor-pointer ease-linear duration-100`}>
           <FaRegBell
             className={`${
               ring ? "animate_ring-bell text-white" : ""
@@ -174,15 +172,13 @@ const Notification = () => {
             showModal
               ? "top-full pointer-events-auto opacity-100"
               : "top-[120%] opacity-0 pointer-events-none"
-          } right-0 max-h-[600px] bg-white shadow-lg rounded-md border transition-all ease-linear duration-100 overflow-auto z-10`}
-        >
+          } right-0 max-h-[600px] bg-white shadow-lg rounded-md border transition-all ease-linear duration-100 overflow-auto z-10`}>
           {notification.notifications.map(
             (item: INotificationItem, index: number) => (
               <li
                 key={item._id}
                 onClick={() => onClickNoti(item)}
-                className={`hover:bg-slate-100 border-b last:border-none`}
-              >
+                className={`hover:bg-slate-100 border-b last:border-none`}>
                 <NotificationItem data={item} onClick={onClickNoti} />
               </li>
             ),
@@ -190,15 +186,13 @@ const Notification = () => {
           {notification.total > notification.notifications.length && (
             <Link
               href="/notifications"
-              className="block w-full text-center text-base hover:text-primary hover:bg-slate-100 px-5 py-2 border-t"
-            >
+              className="block w-full text-center text-base hover:text-primary hover:bg-slate-100 px-5 py-2 border-t">
               Xem thêm
             </Link>
           )}
           {!notification.notifications.length && (
             <li
-              className={`flex items-center px-5 py-2 whitespace-nowrap gap-5`}
-            >
+              className={`flex items-center px-5 py-2 whitespace-nowrap gap-5`}>
               No notification
             </li>
           )}

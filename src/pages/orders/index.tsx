@@ -177,8 +177,7 @@ const OrdersPage: NextPageWithLayout = () => {
           onReset={onReset}
           onSearch={onChangeSearch}
           onFilter={handleGetDataByFilter}
-          placeholder="Search by customer name/order ID..."
-        >
+          placeholder="Search by customer name/order ID...">
           <Fragment>
             <SelectItem
               width="lg:w-2/12 md:w-4/12 w-full"
@@ -221,14 +220,12 @@ const OrdersPage: NextPageWithLayout = () => {
           items={orders}
           loading={loading}
           message={message}
-          pagination={pagination}
-        >
+          pagination={pagination}>
           <Fragment>
             {orders.map((order: IOrder) => (
               <tr
                 key={order._id}
-                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
-              >
+                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none">
                 <CelTable
                   type={typeCel.LINK}
                   className="whitespace-nowrap"

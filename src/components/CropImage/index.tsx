@@ -90,8 +90,7 @@ const CropImage = () => {
       <ReactCrop
         crop={crop}
         onChange={(c) => setCrop(c)}
-        onComplete={(c) => setCompletedCrop(c)}
-      >
+        onComplete={(c) => setCompletedCrop(c)}>
         <img ref={imgRef} src={upImg} />
       </ReactCrop>
       <div>
@@ -114,8 +113,7 @@ const CropImage = () => {
         disabled={!completedCrop?.width || !completedCrop?.height}
         onClick={() =>
           generateDownload(previewCanvasRef.current, completedCrop)
-        }
-      >
+        }>
         Download cropped image
       </button>
     </div>

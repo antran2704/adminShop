@@ -39,13 +39,11 @@ const ButtonCheck: FC<Props> = (props: Props) => {
         onClick={handleButtonValue}
         className={`relative w-[50px] h-6 ${
           !check ? "bg-black" : "bg-success"
-        } rounded-3xl transition-all ease-linear duration-200`}
-      >
+        } rounded-3xl transition-all ease-linear duration-200`}>
         <span
           className={`absolute top-1/2 ${
             check ? "left-[60%]" : "left-1"
-          } -translate-y-1/2 block rounded-full w-4 h-4 bg-white transition-all ease-linear duration-100`}
-        ></span>
+          } -translate-y-1/2 block rounded-full w-4 h-4 bg-white transition-all ease-linear duration-100`}></span>
       </button>
     </div>
   );

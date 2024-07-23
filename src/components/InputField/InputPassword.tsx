@@ -57,8 +57,7 @@ const InputField: FC<IInputText> = (props: IInputText) => {
         <div className="flex items-center mb-1 gap-2">
           <span
             id={name}
-            className="block text-base text-[#1E1E1E]  dark:text-darkText font-medium"
-          >
+            className="block text-base text-[#1E1E1E]  dark:text-darkText font-medium">
             {title}
           </span>
 
@@ -71,8 +70,7 @@ const InputField: FC<IInputText> = (props: IInputText) => {
           error && "border-error"
         } ${
           readonly ? "pointer-events-none cursor-not-allowed opacity-80" : ""
-        } focus:border-[#4f46e5] dark:focus:border-[#4f46e5] dark:bg-darkInput dark:text-white outline-none`}
-      >
+        } focus:border-[#4f46e5] dark:focus:border-[#4f46e5] dark:bg-darkInput dark:text-white outline-none`}>
         <input
           required={required}
           name={name}
@@ -92,8 +90,7 @@ const InputField: FC<IInputText> = (props: IInputText) => {
         <button
           type="button"
           onClick={() => setShow(!show)}
-          className="absolute flex items-center justify-center right-0 top-1/2 -translate-y-1/2 w-10 h-full z-10 outline-none select-none"
-        >
+          className="absolute flex items-center justify-center right-0 top-1/2 -translate-y-1/2 w-10 h-full z-10 outline-none select-none">
           {!show && <IoMdEye />}
           {show && <IoMdEyeOff />}
         </button>

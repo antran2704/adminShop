@@ -199,8 +199,7 @@ const SettingPage: NextPageWithLayout = () => {
     <FormLayout
       title="Quản lý tài khoản"
       backLink="/"
-      onSubmit={handleOnSubmit}
-    >
+      onSubmit={handleOnSubmit}>
       <div>
         <div className="my-5">
           <h3 className="md:text-lg dark:text-white text-base font-medium">
@@ -233,8 +232,7 @@ const SettingPage: NextPageWithLayout = () => {
 
           <button
             onClick={onShowPopup}
-            className="bg-primary text-white text-base px-5 py-2 mt-2 rounded-lg"
-          >
+            className="bg-primary text-white text-base px-5 py-2 mt-2 rounded-lg">
             Thay đổi mật khẩu
           </button>
         </div>
@@ -254,8 +252,7 @@ const SettingPage: NextPageWithLayout = () => {
           <Popup
             title="Thay đổi mật khẩu"
             show={showPopup}
-            onClose={onShowPopup}
-          >
+            onClose={onShowPopup}>
             <div>
               <div className="mb-10">
                 <InputPassword
@@ -288,14 +285,12 @@ const SettingPage: NextPageWithLayout = () => {
               <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
                 <button
                   onClick={onShowPopup}
-                  className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 rounded-md transition-cus"
-                >
+                  className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 rounded-md transition-cus">
                   Cancle
                 </button>
                 <button
                   onClick={handleChangePassword}
-                  className="lg:w-fit w-full text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
-                >
+                  className="lg:w-fit w-full text-lg text-white font-medium bg-primary px-5 py-1 rounded-md">
                   Cập nhật
                 </button>
               </div>

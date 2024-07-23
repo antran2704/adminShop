@@ -14,13 +14,25 @@
       "success": "Đơn hàng thành công",
       "pending": "Chờ xác nhận",
       "process": "Đang chuẩn bị hàng",
-      "cancle": "Đơn hủy",
+      "cancel": "Đơn hủy",
       "recent": "Đơn hàng gần đây"
     }
   },
   "BannerPage": {
     "title": "Danh sách banner",
-    "create": "Tạo banner"
+    "create": "Tạo banner",
+    "table": {
+      "id": "ID",
+      "title": "Tiêu đề",
+      "thumbnail": "Hình ảnh",
+      "status": "Trạng thái",
+      "createdAt": "Ngày tạo",
+      "action": "Action"
+    },
+    "ModalDelete": {
+      "title": "Xác nhận xóa Banner",
+      "description": "Lưu ý: Không thể phục hồi dữ liệu sau khi xóa"
+    }
   },
   "CategoriesPage": {
     "title": "Danh sách thư mục",
@@ -66,7 +78,7 @@
     "orderStatus": {
       "pending": "Chờ xác nhận",
       "process": "Đang chuẩn bị hàng",
-      "cancle": "Hủy",
+      "cancel": "Hủy",
       "success": "Thành công",
       "shipping": "Đang giao hàng"
     },
@@ -218,10 +230,18 @@
     }
   },
   "Action": {
-    "cancle": "Hủy",
+    "cancel": "Hủy",
     "delete": "Xóa",
+    "confirm": "Xác nhận",
     "change": "Thay đổi",
     "add": "Thêm"
+  },
+  "Error": {
+    "TRY_AGAIN": "Có lỗi, vui lòng thử lại"
+  },
+  "Success": {
+    "Create": "Tạo thành công",
+    "Update": "Cập nhật thành công"
   },
   "Common": {
     "gross": {

@@ -66,8 +66,7 @@ const CelTable: FC<Props> = (props: Props) => {
             className ? className : ""
           } sm:text-sm text-xs ${
             center ? "text-center" : "text-start"
-          } leading-5`}
-        >
+          } leading-5`}>
           {value}
         </td>
       );
@@ -79,8 +78,7 @@ const CelTable: FC<Props> = (props: Props) => {
             className ? className : ""
           } ${
             center ? "text-center" : "text-start"
-          } text-[#0072f5] sm:text-sm text-xs whitespace-nowrap leading-5`}
-        >
+          } text-[#0072f5] sm:text-sm text-xs whitespace-nowrap leading-5`}>
           {getDateTime(value)}
         </td>
       );
@@ -92,8 +90,7 @@ const CelTable: FC<Props> = (props: Props) => {
             className ? className : ""
           } ${
             center ? "text-center" : "text-start"
-          } text-blue-900 sm:text-sm text-xs leading-5`}
-        >
+          } text-blue-900 sm:text-sm text-xs leading-5`}>
           <InputText
             id={id}
             name={name as string}
@@ -111,8 +108,7 @@ const CelTable: FC<Props> = (props: Props) => {
             className ? className : ""
           } ${
             center ? "text-center" : "text-start"
-          } text-blue-900 sm:text-sm text-xs leading-5`}
-        >
+          } text-blue-900 sm:text-sm text-xs leading-5`}>
           <InputNumber
             id={id}
             name={name as string}
@@ -131,8 +127,7 @@ const CelTable: FC<Props> = (props: Props) => {
             href={href ? href : "/"}
             className={`block sm:text-sm text-xs leading-5 text-gray-800 dark:text-white ${
               className ? className : ""
-            } ${center ? "text-center" : "text-start"} font-medium`}
-          >
+            } ${center ? "text-center" : "text-start"} font-medium`}>
             {value}
           </Link>
         </td>
@@ -143,8 +138,7 @@ const CelTable: FC<Props> = (props: Props) => {
         <td className="px-6 py-4 whitespace-no-wrap">
           <Link
             href={href ? href : "/"}
-            className={`block ${className ? className : "w-[160px] h-[100px]"} mx-auto rounded overflow-hidden`}
-          >
+            className={`block ${className ? className : "w-[160px] h-[100px]"} mx-auto rounded overflow-hidden`}>
             <img
               src={process.env.NEXT_PUBLIC_ENDPOINT_API + value}
               alt={value}
@@ -173,8 +167,7 @@ const CelTable: FC<Props> = (props: Props) => {
         <td
           className={`px-6 py-4 sm:text-sm text-xs leading-5 text-gray-800 ${
             className ? className : ""
-          } ${center ? "text-center" : "text-start"} font-medium`}
-        >
+          } ${center ? "text-center" : "text-start"} font-medium`}>
           <SelectImage
             className={className}
             onChange={onChangeImage}
@@ -189,8 +182,7 @@ const CelTable: FC<Props> = (props: Props) => {
       return (
         <td className="px-6 py-4 whitespace-no-wrap text-blue-900 leading-5">
           <p
-            className={`w-fit font-medium text-white text-xs ${status} capitalize mx-auto px-5 py-2 rounded-lg whitespace-nowrap`}
-          >
+            className={`w-fit font-medium text-white text-xs ${status} capitalize mx-auto px-5 py-2 rounded-lg whitespace-nowrap`}>
             {value}
           </p>
         </td>
@@ -201,8 +193,7 @@ const CelTable: FC<Props> = (props: Props) => {
         <td className="px-6 py-4 whitespace-no-wrap sm:text-sm text-xs leading-5">
           <button
             onClick={onClick}
-            className="px-3 py-2 mx-auto border-error border-2 text-error rounded transition duration-300 hover:bg-error hover:text-white focus:outline-none"
-          >
+            className="px-3 py-2 mx-auto border-error border-2 text-error rounded transition duration-300 hover:bg-error hover:text-white focus:outline-none">
             {icon}
           </button>
         </td>
@@ -216,8 +207,7 @@ const CelTable: FC<Props> = (props: Props) => {
         <td className="whitespace-no-wrap sm:text-sm text-xs leading-5">
           <Link
             href={href ? href : "/"}
-            className="block w-fit px-3 py-2 border-blue-700 border-2 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none"
-          >
+            className="block w-fit px-3 py-2 border-blue-700 border-2 text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none">
             {icon}
           </Link>
         </td>

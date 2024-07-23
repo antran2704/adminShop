@@ -14,13 +14,25 @@
       "success": "Success order",
       "pending": "Pending order",
       "process": "Process order",
-      "cancle": "Cancle order",
+      "cancel": "Cancel order",
       "recent": "Recent order"
     }
   },
   "BannerPage": {
     "title": "Banners",
-    "create": "Create banner"
+    "create": "Create banner",
+    "table": {
+      "id": "ID",
+      "title": "Title",
+      "thumbnail": "Thumbnail",
+      "status": "Status",
+      "createdAt": "Created At",
+      "action": "Action"
+    },
+    "ModalDelete": {
+      "title": "Confirm delete banner",
+      "description": "Note: Data can't restore after delete"
+    }
   },
   "CategoriesPage": {
     "title": "Categories",
@@ -66,7 +78,7 @@
     "orderStatus": {
       "pending": "Pending",
       "process": "Process",
-      "cancle": "Cancel",
+      "cancel": "Cancel",
       "success": "Success",
       "shipping": "Shipping"
     },
@@ -208,7 +220,7 @@
       "title": "Add Specification Value",
       "description": "Add your Specification values from here",
       "inpTitle": "Specification Title",
-      "cancle": "Cancle",
+      "cancel": "Cancel",
       "add": "Add"
     },
     "specificationPopup": {
@@ -219,10 +231,18 @@
     }
   },
   "Action": {
-    "cancle": "Cancle",
+    "cancel": "Cancel",
     "delete": "Delete",
+    "confirm": "Confirm",
     "change": "Change",
     "add": "Add"
+  },
+  "Error": {
+    "TRY_AGAIN": "Please try again"
+  },
+  "Success": {
+    "Create": "Create success",
+    "Update": "Update success"
   },
   "Common": {
     "gross": {

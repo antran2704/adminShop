@@ -92,8 +92,7 @@ const MultipleValue = (props: Props) => {
       <div className="flex items-center mb-1 gap-2">
         <span
           id={name}
-          className="block text-base text-[#1E1E1E] dark:text-darkText font-medium"
-        >
+          className="block text-base text-[#1E1E1E] dark:text-darkText font-medium">
           {title}
         </span>
 
@@ -103,14 +102,12 @@ const MultipleValue = (props: Props) => {
       <div
         className={`flex items-center flex-wrap w-full dark:bg-darkInput rounded-md px-2 py-2 border-2 ${
           error && "border-error"
-        } focus:border-[#4f46e5] dark:border-transparent outline-none gap-2`}
-      >
+        } focus:border-[#4f46e5] dark:border-transparent outline-none gap-2`}>
         <ul className="flex flex-wrap items-center gap-2">
           {items.map((value: ISelectItem, index: number) => (
             <li
               key={index}
-              className="flex items-center text-sm text-desc px-3 py-1 bg-slate-200 dark:bg-white opacity-90 hover:opacity-100 rounded gap-2"
-            >
+              className="flex items-center text-sm text-desc px-3 py-1 bg-slate-200 dark:bg-white opacity-90 hover:opacity-100 rounded gap-2">
               <span>{value.title}</span>
               <AiOutlineClose
                 onClick={() => handleDeleteValue(value._id as string)}

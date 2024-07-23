@@ -233,8 +233,7 @@ const TagBlogsPage: NextPageWithLayout = () => {
       pagination={pagination}
       handleDelete={handleDeleteBlog}
       showPopup={showPopup}
-      handlePopup={handlePopup}
-    >
+      handlePopup={handlePopup}>
       <Fragment>
         <Search
           search={filter?.search || ""}
@@ -254,14 +253,12 @@ const TagBlogsPage: NextPageWithLayout = () => {
           // }
           colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
           message={message}
-          loading={loading}
-        >
+          loading={loading}>
           <Fragment>
             {tagBlogs.map((item: ITagBlog) => (
               <tr
                 key={item._id}
-                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
-              >
+                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none">
                 <CelTable
                   type={typeCel.SELECT}
                   isSelected={

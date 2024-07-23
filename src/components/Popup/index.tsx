@@ -18,14 +18,12 @@ const Popup: FC<Props> = (props: Props) => {
         show
           ? "show__popup pointer-events-auto"
           : "hide__popup pointer-events-none"
-      } z-[9999]`}
-    >
+      } z-[9999]`}>
       {show && <LayoutClose onClose={onClose} />}
       <div className="scroll absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:w-1/2 w-full max-h-[600px] bg-white dark:bg-[#1f2937] p-5 rounded-lg overflow-y-auto z-20">
         <div
           onClick={onClose}
-          className="w-fit text-3xl dark:text-darkText ml-auto px-5 cursor-pointer"
-        >
+          className="w-fit text-3xl dark:text-darkText ml-auto px-5 cursor-pointer">
           <AiOutlineCloseCircle />
         </div>
         {img && (

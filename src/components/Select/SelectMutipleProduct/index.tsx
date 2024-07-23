@@ -36,8 +36,7 @@ const SelectMultipleWrap: FC<Props> = (props: Props) => {
     <div
       className={`grid ${
         className ? className : "lg:grid-cols-4 md:grid-cols-3 grid-cols-2"
-      } gap-5`}
-    >
+      } gap-5`}>
       {Object.keys(data || {}).map((key: any, index: number) => (
         <SelectMutipleItem
           key={key}
@@ -62,8 +61,7 @@ const SelectMultipleWrap: FC<Props> = (props: Props) => {
         onClick={() => setSelectIndex(null)}
         className={`fixed ${
           selectIndex !== null ? "block" : "hidden"
-        } top-0 left-0 bottom-0 right-0 bg-transparent z-10`}
-      ></div>
+        } top-0 left-0 bottom-0 right-0 bg-transparent z-10`}></div>
     </div>
   );
 };

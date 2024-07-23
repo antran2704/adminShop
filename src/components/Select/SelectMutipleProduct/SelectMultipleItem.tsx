@@ -70,8 +70,7 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
   }, [show]);
   return (
     <div
-      className={`realtive ${className ? className : ""} ${show ? "z-[21]" : "z-20"}`}
-    >
+      className={`realtive ${className ? className : ""} ${show ? "z-[21]" : "z-20"}`}>
       <span className="block text-base text-[#1E1E1E] dark:text-darkText font-medium mb-1">
         {title}
       </span>
@@ -80,12 +79,10 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
         ref={divRef}
         className={`relative flex items-center w-full min-h-[36px] dark:bg-darkInput rounded-md px-2 py-1 ${
           show && "border-[#4f46e5]"
-        } border-2 dark:border-transparent outline-none cursor-pointer z-10`}
-      >
+        } border-2 dark:border-transparent outline-none cursor-pointer z-10`}>
         <div
           onClick={() => onSetSelectIndex(selectIndex)}
-          className="flex items-center w-full justify-between gap-5"
-        >
+          className="flex items-center w-full justify-between gap-5">
           {selects.length > 0 && selects.length < data.length && (
             <p className="w-full line-clamp-1 dark:text-darkText select-none gap-2">
               {selects.map(
@@ -128,15 +125,13 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
             show
               ? "opacity-100 pointer-events-auto z-50"
               : "opacity-0 pointer-events-none"
-          } scroll left-0 w-full max-h-[160px] bg-white border-2 rounded-md overflow-y-auto shadow-md transition-all ease-linear duration-200`}
-        >
+          } scroll left-0 w-full max-h-[160px] bg-white border-2 rounded-md overflow-y-auto shadow-md transition-all ease-linear duration-200`}>
           {name !== "default" && (
             <li
               onClick={onSelectAll}
               className={`w-full text-base ${
                 selects.length === data.length ? "bg-gray-200" : ""
-              } px-5 py-1 border-b-2 border-gray-300 cursor-pointer transition-all ease-linear duration-100`}
-            >
+              } px-5 py-1 border-b-2 border-gray-300 cursor-pointer transition-all ease-linear duration-100`}>
               Select All
             </li>
           )}
@@ -149,8 +144,7 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
                 selects.find(
                   (select: ISelectItem) => select._id === item._id,
                 ) && "bg-gray-200"
-              } px-5 py-1 cursor-pointer transition-all ease-linear duration-100`}
-            >
+              } px-5 py-1 cursor-pointer transition-all ease-linear duration-100`}>
               {item.title}
             </li>
           ))}

@@ -19,8 +19,7 @@ const Navbar = (props: Props) => {
     <div className="sticky top-0 flex justify-between items-center bg-white dark:bg-[#1f2937cc] backdrop-blur-[8px] px-5 py-2 shadow rounded-l-md gap-2 z-30">
       <button
         className="flex items-center justify-center w-10 h-10 rounded-md opacity-90 hover:opacity-100 transition-all ease-linear duration-100 z-10"
-        onClick={() => setShowSideBar(!showSideBar)}
-      >
+        onClick={() => setShowSideBar(!showSideBar)}>
         <FaBars className="text-xl dark:text-darkText" />
       </button>
 

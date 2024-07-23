@@ -347,20 +347,17 @@ const AttributeValuesPage = () => {
       pagination={pagination}
       handleDelete={handleDeleteAttribute}
       showPopup={showPopup}
-      handlePopup={handlePopup}
-    >
+      handlePopup={handlePopup}>
       <Fragment>
         <Table
           colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
           message={message}
-          loading={loadingTable}
-        >
+          loading={loadingTable}>
           <Fragment>
             {attributes.map((item: IVariant) => (
               <tr
                 key={item._id}
-                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
-              >
+                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none">
                 <CelTable type={typeCel.TEXT} center={true} value={item.name} />
                 <CelTable
                   id={item._id as string}
@@ -402,8 +399,7 @@ const AttributeValuesPage = () => {
           title={t("EditAttributePage.updatePopup.title")}
           description={t("EditAttributePage.updatePopup.description")}
           show={showFormUpdate}
-          onClose={handlePopupFormUpdate}
-        >
+          onClose={handlePopupFormUpdate}>
           <Fragment>
             {selectItem && selectItem.id && (
               <div className="flex flex-col justify-between h-full">
@@ -430,14 +426,12 @@ const AttributeValuesPage = () => {
                 <div className="flex items-center justify-between p-5 mt-5 border-t gap-5">
                   <button
                     onClick={() => handlePopupFormUpdate()}
-                    className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
-                  >
+                    className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
                     {t("Action.cancle")}
                   </button>
                   <button
                     onClick={handleUpdate}
-                    className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
-                  >
+                    className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md">
                     {t("Action.add")}
                   </button>
                 </div>
@@ -451,8 +445,7 @@ const AttributeValuesPage = () => {
           title={t("EditAttributePage.addPopup.title")}
           description={t("EditAttributePage.addPopup.description")}
           show={showFormCreate}
-          onClose={handlePopupFormCreate}
-        >
+          onClose={handlePopupFormCreate}>
           <Fragment>
             <div className="flex flex-col justify-between h-full">
               <div className="w-full flex flex-col px-5 gap-5">
@@ -478,14 +471,12 @@ const AttributeValuesPage = () => {
               <div className="flex items-center justify-between p-5 mt-5 border-t gap-5">
                 <button
                   onClick={() => handlePopupFormCreate()}
-                  className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
-                >
+                  className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
                   {t("Action.cancle")}
                 </button>
                 <button
                   onClick={handleAddVarinat}
-                  className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
-                >
+                  className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md">
                   {t("Action.add")}
                 </button>
               </div>

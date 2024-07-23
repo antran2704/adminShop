@@ -52,8 +52,7 @@ const InputField: FC<IInputText> = (props: IInputText) => {
         <div className="flex items-center mb-1 gap-2">
           <span
             id={name}
-            className="block text-base text-[#1E1E1E] dark:text-darkText font-medium"
-          >
+            className="block text-base text-[#1E1E1E] dark:text-darkText font-medium">
             {title}
           </span>
 

@@ -231,8 +231,7 @@ const CheckPasswordKeyPage: NextPageWithLayout = () => {
               Vui lòng yêu cầu
               <Link
                 className="underline dark:text-darkText hover:text-primary dark:hover:text-primary px-1"
-                href="/password/reset"
-              >
+                href="/password/reset">
                 đặt lại mật khẩu mới
               </Link>
             </p>

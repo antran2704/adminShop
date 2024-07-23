@@ -249,8 +249,7 @@ const AttributesPage: NextPageWithLayout = () => {
       pagination={pagination}
       handleDelete={handleDeleteAttribute}
       showPopup={showPopup}
-      handlePopup={handlePopup}
-    >
+      handlePopup={handlePopup}>
       <Fragment>
         <Search
           search={filter?.search || ""}
@@ -270,14 +269,12 @@ const AttributesPage: NextPageWithLayout = () => {
           }
           colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
           message={message}
-          loading={loading}
-        >
+          loading={loading}>
           <Fragment>
             {attributes.map((item: IAttribute) => (
               <tr
                 key={item._id}
-                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
-              >
+                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none">
                 <CelTable
                   type={typeCel.SELECT}
                   isSelected={

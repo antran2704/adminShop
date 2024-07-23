@@ -68,15 +68,13 @@ const Gallery: FC<Props> = (props: Props) => {
               selectImage === url
                 ? "opacity-90 pointer-events-none"
                 : "pointer-events-auto"
-            } rounded-md overflow-hidden`}
-          >
+            } rounded-md overflow-hidden`}>
             <div
               onClick={() => {
                 setSelect(url);
                 onDelete(url);
               }}
-              className=" opacity-0 hover:opacity-100 cursor-pointer transition-all ease-linear duration-100"
-            >
+              className=" opacity-0 hover:opacity-100 cursor-pointer transition-all ease-linear duration-100">
               <div className="absolute w-full h-full bg-black opacity-40 z-[1]"></div>
               <div className="absolute flex items-center justify-center w-full h-full text-2xl font-bold text-white z-[2]">
                 <AiFillCloseCircle />
@@ -97,8 +95,7 @@ const Gallery: FC<Props> = (props: Props) => {
               error ? "border-error" : ""
             } ${
               className ? className : ""
-            } rounded-md border-2 border-dashed cursor-pointer overflow-hidden`}
-          >
+            } rounded-md border-2 border-dashed cursor-pointer overflow-hidden`}>
             {!loading && (
               <p className="text-sm font-medium text-center dark:text-darkText">
                 {gallery.length} / {limited}

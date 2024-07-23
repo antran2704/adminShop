@@ -6,8 +6,7 @@ const ButtonShowMore = ({ loading, onClick }: IBtnShowMore) => {
     <div className="flex items-center justify-center w-full mt-5">
       <button
         onClick={onClick}
-        className="flex items-center justify-center w-[130px] h-11 md:text-lg text-base text-white bg-primary px-10 py-2 rounded-md"
-      >
+        className="flex items-center justify-center w-[130px] h-11 md:text-lg text-base text-white bg-primary px-10 py-2 rounded-md">
         {loading ? (
           <AiOutlineLoading3Quarters className="spinner text-xl text-white" />
         ) : (

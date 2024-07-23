@@ -1,14 +1,23 @@
-interface Banner {
+interface IBanner {
   _id: string;
   title: string;
   meta_title: string;
   image: string;
   path: string | null;
-  isPublic: boolean;
-  createdAt?: string;
+  public: boolean;
+  createdAt: string;
   updateAt?: string;
 }
 
-type CreateBanner = Omit<Banner, "_id" | "createdAt" | "updateAt">;
+interface IBannerTable {
+  key: string;
+  bannerId: string;
+  title: string;
+  image: string;
+  public: boolean;
+  createdAt: string;
+}
 
-export type { Banner, CreateBanner };
+type CreateBanner = Omit<IBanner, "_id" | "createdAt" | "updateAt">;
+
+export type { IBanner, CreateBanner, IBannerTable };

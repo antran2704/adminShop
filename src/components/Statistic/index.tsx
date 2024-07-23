@@ -21,8 +21,7 @@ const Statistic = (props: Props) => {
   } = props;
   return (
     <div
-      className={`flex flex-col items-center w-full ${backgroundColor} text-white px-5 py-10 rounded-xl gap-2`}
-    >
+      className={`flex flex-col items-center w-full ${backgroundColor} text-white px-5 py-10 rounded-xl gap-2`}>
       {IconElement}
       <p className="md:text-xl text-lg text-center font-medium">{title}</p>
       <SpringCount

@@ -401,8 +401,7 @@ const HomePage: NextPageWithLayout = () => {
             <div
               className={`grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max ${
                 show ? "max-h-[2000px]" : "max-h-[600px]"
-              } gap-2 overflow-hidden transition-all ease-in-out duration-300`}
-            >
+              } gap-2 overflow-hidden transition-all ease-in-out duration-300`}>
               <Statistic
                 title={t("income.today")}
                 IconElement={<BiDollarCircle className="text-4xl" />}
@@ -455,8 +454,7 @@ const HomePage: NextPageWithLayout = () => {
 
             <button
               onClick={() => setShow(!show)}
-              className="md:hidden block absolute -bottom-10 left-1/2 -translate-x-1/2 select-none"
-            >
+              className="md:hidden block absolute -bottom-10 left-1/2 -translate-x-1/2 select-none">
               {!show && (
                 <MdOutlineKeyboardDoubleArrowDown className="text-3xl text-primary" />
               )}
@@ -494,8 +492,7 @@ const HomePage: NextPageWithLayout = () => {
           <h2 className="text-title dark:text-darkText">{t("order.recent")}</h2>
           <Link
             href={"/orders"}
-            className="text-base font-medium text-primary hover:underline"
-          >
+            className="text-base font-medium text-primary hover:underline">
             View All
           </Link>
         </div>
@@ -506,11 +503,7 @@ const HomePage: NextPageWithLayout = () => {
           loading={loading}
           columns={columns}
           size="large"
-          paginationOptions={{
-            total: 100,
-            pageSize: 16,
-            current: 1,
-          }}
+          showPagination={false}
         />
       </div>
     </section>

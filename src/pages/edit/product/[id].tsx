@@ -924,8 +924,7 @@ const ProductEditPage: NextPageWithLayout = () => {
       title={`${t("EditProductPage.title")} ${title}`}
       backLink="/products"
       onSubmit={handleOnSubmit}
-      loading={loading}
-    >
+      loading={loading}>
       <Fragment>
         <div className="flex items-center py-5 gap-2">
           <button
@@ -934,8 +933,7 @@ const ProductEditPage: NextPageWithLayout = () => {
               tag === TYPE_TAG.BASIC_INFOR
                 ? "text-success border-success"
                 : "dark:text-darkText"
-            }  font-medium px-2 pb-2 border-b-2 `}
-          >
+            }  font-medium px-2 pb-2 border-b-2 `}>
             {t("EditProductPage.tag.basic")}
           </button>
           <button
@@ -944,8 +942,7 @@ const ProductEditPage: NextPageWithLayout = () => {
               tag === TYPE_TAG.COMPINATION
                 ? "text-success border-success"
                 : "dark:text-darkText"
-            }  font-medium px-2 pb-2 border-b-2 `}
-          >
+            }  font-medium px-2 pb-2 border-b-2 `}>
             {t("EditProductPage.tag.compination")}
           </button>
         </div>
@@ -1141,8 +1138,7 @@ const ProductEditPage: NextPageWithLayout = () => {
 
               <button
                 onClick={handlePopup}
-                className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
-              >
+                className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
                 {t("Action.delete")}
               </button>
             </div>
@@ -1163,8 +1159,7 @@ const ProductEditPage: NextPageWithLayout = () => {
               {Object.keys(showAttributes).length > 1 && (
                 <button
                   onClick={onGenerateVariants}
-                  className="text-sm bg-success text-white px-5 py-2 rounded-md"
-                >
+                  className="text-sm bg-success text-white px-5 py-2 rounded-md">
                   {t("EditProductPage.compination.generate")}
                 </button>
               )}
@@ -1175,8 +1170,7 @@ const ProductEditPage: NextPageWithLayout = () => {
                     onClick={() =>
                       setShowClearVariants(!showPopupClearVariants)
                     }
-                    className="text-sm bg-error text-white px-5 py-2 rounded-md"
-                  >
+                    className="text-sm bg-error text-white px-5 py-2 rounded-md">
                     {t("EditProductPage.compination.clear")}
                   </button>
 
@@ -1186,8 +1180,7 @@ const ProductEditPage: NextPageWithLayout = () => {
                       show={showPopupClearVariants}
                       onClose={() =>
                         setShowClearVariants(!showPopupClearVariants)
-                      }
-                    >
+                      }>
                       <div>
                         <p className="text-lg">
                           Do you want clear all variants
@@ -1197,14 +1190,12 @@ const ProductEditPage: NextPageWithLayout = () => {
                             onClick={() =>
                               setShowClearVariants(!showPopupClearVariants)
                             }
-                            className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"
-                          >
+                            className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus">
                             Cancle
                           </button>
                           <button
                             onClick={onClearVariants}
-                            className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
-                          >
+                            className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
                             Delete
                           </button>
                         </div>
@@ -1220,8 +1211,7 @@ const ProductEditPage: NextPageWithLayout = () => {
                 <Table
                   colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
                   message={""}
-                  loading={loading}
-                >
+                  loading={loading}>
                   <Fragment>
                     {variants.map((variant: IVariantProduct, index: number) => (
                       <tr
@@ -1229,8 +1219,7 @@ const ProductEditPage: NextPageWithLayout = () => {
                         key={variant._id}
                         className={`border-b ${
                           variant.inventory <= 0 ? "" : ""
-                        } hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300`}
-                      >
+                        } hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300`}>
                         <CelTable
                           type={typeCel.SELECT_IMAGE}
                           images={gallery}
@@ -1313,8 +1302,7 @@ const ProductEditPage: NextPageWithLayout = () => {
                 title="Variant"
                 show={showPopupVariant}
                 img="/popup/trash.svg"
-                onClose={() => onShowPopupVariant(null)}
-              >
+                onClose={() => onShowPopupVariant(null)}>
                 <div>
                   <p className="text-lg dark:text-darkText">
                     Do you want delete variant
@@ -1323,16 +1311,14 @@ const ProductEditPage: NextPageWithLayout = () => {
                   <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
                     <button
                       onClick={() => onShowPopupVariant()}
-                      className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"
-                    >
+                      className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus">
                       {t("Action.cancle")}
                     </button>
                     <button
                       onClick={() =>
                         onRemoveVariant(selectVariant?._id as string)
                       }
-                      className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
-                    >
+                      className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
                       {t("Action.delete")}
                     </button>
                   </div>
@@ -1347,20 +1333,17 @@ const ProductEditPage: NextPageWithLayout = () => {
             title="Xác nhận xóa sản phẩm"
             img="/popup/trash.svg"
             show={showPopup}
-            onClose={handlePopup}
-          >
+            onClose={handlePopup}>
             <div>
               <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
                 <button
                   onClick={handlePopup}
-                  className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-90 hover:opacity-100 rounded-md transition-cus"
-                >
+                  className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-90 hover:opacity-100 rounded-md transition-cus">
                   {t("Action.cancle")}
                 </button>
                 <button
                   onClick={handleDeleteProduct}
-                  className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-90 hover:opacity-100 rounded-md"
-                >
+                  className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-90 hover:opacity-100 rounded-md">
                   {t("Action.delete")}
                 </button>
               </div>

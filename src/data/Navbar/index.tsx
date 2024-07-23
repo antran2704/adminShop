@@ -12,179 +12,194 @@ export interface nameNave {
 
 export interface itemNav {
   name: nameNave;
-  path: string;
+  path?: string;
   icon?: ReactNode;
   children?: itemNav[];
-  role?: ERole;
+  role: ERole[];
 }
 
 const listBody: itemNav[] = [
   {
     name: {
-      "en-US": "Dashboard",
-      "vi-VN": "Trang chủ",
+      en: "Dashboard",
+      vi: "Trang chủ",
     },
     path: "/",
     icon: <RxDashboard />,
+    role: [ERole.ADMIN, ERole.STAFF],
   },
   {
     name: {
-      "en-US": "Catalog",
-      "vi-VN": "Mục lục",
+      en: "Catalog",
+      vi: "Mục lục",
     },
-    path: "/",
     icon: <BiCategoryAlt />,
     children: [
       {
         name: {
-          "en-US": "Banners",
-          "vi-VN": "Banners",
+          en: "Banners",
+          vi: "Banners",
         },
         path: "/banners",
+        role: [ERole.ADMIN, ERole.STAFF],
       },
       {
         name: {
-          "en-US": "Categories",
-          "vi-VN": "Thư mục",
+          en: "Categories",
+          vi: "Thư mục",
         },
         path: "/categories",
+        role: [ERole.ADMIN, ERole.STAFF],
       },
       {
         name: {
-          "en-US": "Products",
-          "vi-VN": "Sản phẩm",
+          en: "Products",
+          vi: "Sản phẩm",
         },
         path: "/products",
+        role: [ERole.ADMIN, ERole.STAFF],
       },
       {
         name: {
-          "en-US": "Attributes",
-          "vi-VN": "Thuộc tính",
+          en: "Attributes",
+          vi: "Thuộc tính",
         },
         path: "/attributes",
+        role: [ERole.ADMIN, ERole.STAFF],
       },
       {
         name: {
-          "en-US": "Coupons",
-          "vi-VN": "Mã giảm giá",
+          en: "Coupons",
+          vi: "Mã giảm giá",
         },
         path: "/coupons",
+        role: [ERole.ADMIN, ERole.STAFF],
       },
       {
         name: {
-          "en-US": "Blog",
-          "vi-VN": "Blog",
+          en: "Blog",
+          vi: "Blog",
         },
         path: "/blogs",
+        role: [ERole.ADMIN, ERole.STAFF],
       },
       {
         name: {
-          "en-US": "Tag Blog",
-          "vi-VN": "Tag Blog",
+          en: "Tag Blog",
+          vi: "Tag Blog",
         },
         path: "/tag-blogs",
+        role: [ERole.ADMIN, ERole.STAFF],
       },
     ],
+    role: [ERole.ADMIN, ERole.STAFF],
   },
   {
     name: {
-      "en-US": "Order",
-      "vi-VN": "Đơn hàng",
+      en: "Order",
+      vi: "Đơn hàng",
     },
     path: "/orders",
     icon: <AiOutlineShoppingCart />,
+    role: [ERole.ADMIN, ERole.STAFF],
   },
   {
     name: {
-      "en-US": "Notifications",
-      "vi-VN": "Thông báo",
+      en: "Notifications",
+      vi: "Thông báo",
     },
     path: "/notifications",
     icon: <MdNotificationsNone />,
+    role: [ERole.ADMIN, ERole.STAFF],
   },
   {
     name: {
-      "en-US": "Income",
-      "vi-VN": "Thu nhập",
+      en: "Income",
+      vi: "Thu nhập",
     },
     path: "/",
     icon: <BiDollarCircle />,
     children: [
       {
         name: {
-          "en-US": "Date",
-          "vi-VN": "Trong ngày",
+          en: "Date",
+          vi: "Trong ngày",
         },
         path: "/incomes/date",
+        role: [ERole.ADMIN, ERole.STAFF],
       },
       {
         name: {
-          "en-US": "Week",
-          "vi-VN": "Theo tuần",
+          en: "Week",
+          vi: "Theo tuần",
         },
         path: "/incomes/week",
+        role: [ERole.ADMIN, ERole.STAFF],
       },
       {
         name: {
-          "en-US": "Month",
-          "vi-VN": "Theo tháng",
+          en: "Month",
+          vi: "Theo tháng",
         },
         path: "/incomes/month",
+        role: [ERole.ADMIN, ERole.STAFF],
       },
       {
         name: {
-          "en-US": "Year",
-          "vi-VN": "Theo năm",
+          en: "Year",
+          vi: "Theo năm",
         },
         path: "/incomes/year",
+        role: [ERole.ADMIN, ERole.STAFF],
       },
     ],
-    role: ERole.ADMIN,
+    role: [ERole.ADMIN],
   },
   {
     name: {
-      "en-US": "Customers",
-      "vi-VN": "Khách hàng",
+      en: "Customers",
+      vi: "Khách hàng",
     },
     path: "/customer",
     icon: <HiOutlineUsers />,
+    role: [ERole.ADMIN, ERole.STAFF],
   },
 ];
 
 // const listPermisson: itemNav[] = [
 //   {
 //     name: {
-//       "en-US": "Income",
-//       "vi-VN": "Thu nhập",
+//       "en": "Income",
+//       "vi": "Thu nhập",
 //     },
 //     path: "/",
 //     icon: <BiDollarCircle />,
 //     children: [
 //       {
 //         name: {
-//           "en-US": "Date",
-//           "vi-VN": "Trong ngày",
+//           "en": "Date",
+//           "vi": "Trong ngày",
 //         },
 //         path: "/incomes/date",
 //       },
 //       {
 //         name: {
-//           "en-US": "Week",
-//           "vi-VN": "Theo tuần",
+//           "en": "Week",
+//           "vi": "Theo tuần",
 //         },
 //         path: "/incomes/week",
 //       },
 //       {
 //         name: {
-//           "en-US": "Month",
-//           "vi-VN": "Theo tháng",
+//           "en": "Month",
+//           "vi": "Theo tháng",
 //         },
 //         path: "/incomes/month",
 //       },
 //       {
 //         name: {
-//           "en-US": "Year",
-//           "vi-VN": "Theo năm",
+//           "en": "Year",
+//           "vi": "Theo năm",
 //         },
 //         path: "/incomes/year",
 //       },
@@ -192,8 +207,8 @@ const listBody: itemNav[] = [
 //   },
 //   {
 //     name: {
-//       "en-US": "Customers",
-//       "vi-VN": "Khách hàng",
+//       "en": "Customers",
+//       "vi": "Khách hàng",
 //     },
 //     path: "/customer",
 //     icon: <HiOutlineUsers />,
@@ -203,11 +218,12 @@ const listBody: itemNav[] = [
 const listSetting: itemNav[] = [
   {
     name: {
-      "en-US": "Setting",
-      "vi-VN": "Chỉnh sửa",
+      en: "Setting",
+      vi: "Chỉnh sửa",
     },
     path: "/setting",
     icon: <AiOutlineSetting />,
+    role: [ERole.ADMIN, ERole.STAFF],
   },
 ];
 

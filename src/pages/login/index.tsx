@@ -145,8 +145,7 @@ const LoginPage: NextPageWithLayout = () => {
             <div className="flex items-center justify-center">
               <Link
                 className="block hover:underline dark:text-darkText hover:text-primary dark:hover:text-primary text-sm my-5"
-                href="/password/reset"
-              >
+                href="/password/reset">
                 {t("forgetPassword")}
               </Link>
             </div>

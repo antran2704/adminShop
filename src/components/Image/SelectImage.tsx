@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Popup from "../Popup";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 import ImageCus from "./ImageCus";
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 const SelectImage = (props: Props) => {
   const { url, className, images, name, onChange } = props;
 
-  const { t } = useTranslation();
+  const t = useTranslations();
 
   const [open, setOpen] = useState<boolean>(false);
   const [show, setShow] = useState<boolean>(false);
@@ -43,8 +43,7 @@ const SelectImage = (props: Props) => {
         className={`${className ? className : "w-10 h-10"} ${
           url ? "cursor-pointer" : "cursor-default"
         } rounded-full overflow-hidden`}
-        onClick={handleShowImage}
-      >
+        onClick={handleShowImage}>
         <ImageCus
           className="w-full h-full"
           src={(process.env.NEXT_PUBLIC_ENDPOINT_API as string) + url}
@@ -52,8 +51,7 @@ const SelectImage = (props: Props) => {
       </div>
       <button
         onClick={handleOpenModal}
-        className="text-sm dark:text-darkText whitespace-nowrap"
-      >
+        className="text-sm dark:text-darkText whitespace-nowrap">
         {t("Action.change")}
       </button>
 
@@ -64,8 +62,7 @@ const SelectImage = (props: Props) => {
               <button
                 key={index}
                 onClick={() => onSelectImage(image)}
-                className="rounded-md overflow-hidden min-h-[260px] max-h-[260px]"
-              >
+                className="rounded-md overflow-hidden min-h-[260px] max-h-[260px]">
                 {/* <img
                   src={process.env.NEXT_PUBLIC_ENDPOINT_API + image}
                   className="object-cover object-center h-full"

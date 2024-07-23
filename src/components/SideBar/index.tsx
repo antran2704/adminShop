@@ -14,7 +14,6 @@ import ImageCus from "../Image/ImageCus";
 import SideBarItem from "./SideBarItem";
 import { logout } from "~/api-client";
 import { logoutReducer } from "~/store/slice/user";
-import { PERMISION } from "~/data/Permission";
 import { clearAuthLocal } from "~/helper/auth";
 
 interface Props {
@@ -29,7 +28,7 @@ const SideBar = (props: Props) => {
   const width = useViewport();
 
   const dispatch = useAppDispatch();
-  const { infor, role, permission } = useAppSelector((state) => state.user);
+  const { infor, role } = useAppSelector((state) => state.user);
 
   const handeShow = () => {
     setShowSideBar(!showSideBar);
@@ -57,8 +56,7 @@ const SideBar = (props: Props) => {
           showSideBar
             ? "lg:w-[300px] lg:min-w-[300px] md:w-6/12 sm:w-8/12 w-10/12 lg:px-5 pl-5 py-5 pb-10 lg:mr-5"
             : "w-0 min-w-0 mx-0 px-0 invisible"
-        } h-screen bg-white dark:bg-[#1f2937] rounded-tr-xl rounded-br-xl shadow-xl overflow-hidden transition-all ease-linear duration-200 z-[1000]`}
-      >
+        } h-screen bg-white dark:bg-[#1f2937] rounded-tr-xl rounded-br-xl shadow-xl overflow-hidden transition-all ease-linear duration-200 z-[1000]`}>
         <button className="mb-5" onClick={handeShow}>
           <BsArrowLeft className="text-3xl dark:text-darkText" />
         </button>
@@ -84,7 +82,7 @@ const SideBar = (props: Props) => {
           </h3>
           <ul className="scroll h-full pb-7 overflow-auto">
             {listBody.map((item: itemNav, index: number) => {
-              if (item.role && item.role === role) {
+              if (role && item.role.includes(role)) {
                 return (
                   <SideBarItem
                     key={index}
@@ -131,8 +129,7 @@ const SideBar = (props: Props) => {
             <li className="w-full">
               <button
                 onClick={handleLogOut}
-                className={`w-full flex items-center text-base font-medium px-3 py-2 my-1 hover:bg-primary text-black dark:text-darkText hover:text-white lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}
-              >
+                className={`w-full flex items-center text-base font-medium px-3 py-2 my-1 hover:bg-primary text-black dark:text-darkText hover:text-white lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}>
                 <BiLogOut />
                 <span>Logout</span>
               </button>
@@ -148,8 +145,7 @@ const SideBar = (props: Props) => {
           showSideBar
             ? "opacity-60 pointer-events-auto"
             : "opacity-0 pointer-events-none"
-        } transition-all ease-linear duration-200 z-50`}
-      ></div>
+        } transition-all ease-linear duration-200 z-50`}></div>
     </>
   );
 };

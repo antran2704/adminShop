@@ -18,8 +18,7 @@ const NotFoundPage: NextPageWithLayout = () => {
         />
         <Link
           href="/"
-          className="block w-fit lg:text-2xl text-xl font-medium px-6 py-2 rounded-lg bg-primary text-white mx-auto mt-5 opacity-80 hover:opacity-100 transition-all ease-linear duration-150"
-        >
+          className="block w-fit lg:text-2xl text-xl font-medium px-6 py-2 rounded-lg bg-primary text-white mx-auto mt-5 opacity-80 hover:opacity-100 transition-all ease-linear duration-150">
           Back Home
         </Link>
       </div>

@@ -15,8 +15,7 @@ const TippyInfor = (props: Props) => {
       className={`${className} bg-primary text-white px-5 py-1 rounded-lg`}
       interactive={true}
       interactiveBorder={20}
-      placement="top"
-    >
+      placement="top">
       <button>
         <HiOutlineInformationCircle className="text-xl cursor-pointer dark:text-darkText" />
       </button>

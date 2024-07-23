@@ -4,202 +4,159 @@ import {
   Fragment,
   useCallback,
   ReactElement,
+  useMemo,
 } from "react";
 import { toast } from "react-toastify";
+import { useRouter } from "next/router";
+import { useTranslations } from "next-intl";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
-import { EPermission, ERole, typeCel } from "~/enums";
+import { EPermission, ERole, ORDER_PARAMATER_ENUM } from "~/enums";
+import {
+  IPagination,
+  IBanner,
+  IBannerTable,
+  ISearch,
+  IResponseWithPagination,
+} from "~/interface";
+import { NextPageWithLayout } from "~/interface/page";
 
-import { IFilter, IPagination, Banner } from "~/interface";
-
-import { Table, CelTable } from "~/components/Table";
-import { colHeaderBanner as colHeadTable } from "~/components/Table/colHeadTable";
 import { ButtonDelete, ButtonEdit } from "~/components/Button";
 import { initPagination } from "~/components/Pagination/initData";
-import {
-  deleteBanner,
-  getBanners,
-  getCategoriesWithFilter,
-  updateBanner,
-} from "~/api-client";
-import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
-import { useRouter } from "next/router";
 import Loading from "~/components/Loading";
-import useAbility from "~/hooks/useAbility";
 import Can from "~/components/Ability/Can";
-import { useTranslations } from "next-intl";
 
-interface ISelectBanner {
-  _id: string;
-  title: string;
-  image: string;
-}
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+
+import {
+  activeBanner,
+  deleteBanner,
+  disableBanner,
+  getBanners,
+} from "~/api-client";
+
+import useAbility from "~/hooks/useAbility";
+import { TableCore } from "~/components/core";
+import { Modal, Switch, TableColumnsType } from "antd";
+import { formatDate } from "~/helper/datetime";
+import ImageCus from "~/components/Image/ImageCus";
+import { PATH_IMAGE } from "~/common/images";
 
 const Layout = LayoutWithHeader;
 const BannersPage: NextPageWithLayout = () => {
   const router = useRouter();
   const { query } = router;
 
-  const currentPage = query.page ? Number(query.page) : 1;
+  const pageParam = query.page ? Number(query.page) : 1;
+  const takeParam = query.take ? Number(query.take) : 10;
+  const searchParam = query.search ? query.search : "";
+  const orderParam = query.order ? query.order : ORDER_PARAMATER_ENUM.DESC;
 
-  const t = useTranslations();
+  const tBanner = useTranslations("BannerPage");
+  const tError = useTranslations("Error");
+  const tAction = useTranslations("Action");
 
   const { isCan } = useAbility([ERole.ADMIN], [EPermission.ADMIN]);
 
-  const [banners, setBanners] = useState<Banner[]>([]);
-  const [selectBanners, setSelectBanners] = useState<string[]>([]);
+  const [banners, setBanners] = useState<IBannerTable[]>([]);
+  const [paramater, setParamter] = useState<ISearch>({
+    take: takeParam,
+    page: pageParam,
+    search: searchParam as string,
+    order: orderParam as ORDER_PARAMATER_ENUM,
+  });
 
   const [message, setMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [showPopup, setShowPopup] = useState<boolean>(false);
-  const [selectItem, setSelectItem] = useState<ISelectBanner | null>(null);
+
+  const [selectDelete, setSelectDelete] = useState<IBannerTable | null>(null);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [filter, setFilter] = useState<IFilter | null>(null);
 
-  const onSelectCheckBox = useCallback(
-    (id: string) => {
-      const isExit = selectBanners.find((select: string) => select === id);
-      if (isExit) {
-        const newSelects = selectBanners.filter(
-          (select: string) => select !== id,
-        );
-        setSelectBanners(newSelects);
-      } else {
-        setSelectBanners([...selectBanners, id]);
-      }
-    },
-    [selectBanners],
-  );
+  const [loading, setLoading] = useState<boolean>(true);
+  const [modalDelete, setModalDelete] = useState<boolean>(false);
 
-  const onChangePublish = async (id: string, status: boolean) => {
-    if (!id) {
-      toast.error("False change publish", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
-
+  const onActiveBanner = async (reccord: IBannerTable) => {
     try {
-      const payload = await updateBanner(id, { isPublic: status });
+      await activeBanner(reccord.bannerId);
 
-      if (payload.status === 201) {
-        toast.success("Success updated banner", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+      const indexItem: number = banners.findIndex(
+        (banner: IBannerTable) => banner.bannerId === reccord.bannerId,
+      );
+
+      if (indexItem > -1) {
+        const newBanners: IBannerTable[] = [...banners];
+        newBanners[indexItem] = { ...reccord, public: true };
+        setBanners(newBanners);
       }
     } catch (error) {
-      toast.error("Please try again", {
+      toast.error(tError("TRY_AGAIN"), {
         position: toast.POSITION.TOP_RIGHT,
       });
     }
   };
 
-  const onSelectDeleteItem = (_id: string, title: string, image: string) => {
-    setSelectItem({ _id, title, image });
-    handlePopup();
+  const onDisableBanner = async (reccord: IBannerTable) => {
+    try {
+      await disableBanner(reccord.bannerId);
+
+      const indexItem: number = banners.findIndex(
+        (banner: IBannerTable) => banner.bannerId === reccord.bannerId,
+      );
+
+      if (indexItem > -1) {
+        const newBanners: IBannerTable[] = [...banners];
+        newBanners[indexItem] = { ...reccord, public: false };
+        setBanners(newBanners);
+      }
+    } catch (error) {
+      toast.error(tError("TRY_AGAIN"), {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
   };
 
   const handlePopup = () => {
-    if (showPopup) {
-      setSelectItem(null);
+    if (modalDelete) {
+      setSelectDelete(null);
     }
 
-    setShowPopup(!showPopup);
+    setModalDelete(!modalDelete);
   };
 
-  const handleGetData = useCallback(async () => {
+  const handleGetData = async (query: ISearch) => {
     setMessage(null);
     setLoading(true);
 
     try {
-      const response = await getBanners(currentPage);
-      if (response.status === 200) {
-        if (response.payload.length === 0) {
-          setBanners([]);
-          setMessage("No banner");
-          setLoading(false);
-          return;
-        }
+      const res: IResponseWithPagination<IBanner[]> =
+        await getBanners(paramater);
+      if (res.status === 200) {
+        const data: IBannerTable[] = res.payload.map((item: IBanner) => ({
+          key: item._id,
+          bannerId: item._id,
+          title: item.title,
+          public: item.public,
+          image: item.image,
+          createdAt: item.createdAt,
+        }));
 
-        const data: Banner[] = response.payload.map((item: Banner) => {
-          return {
-            _id: item._id,
-            title: item.title,
-            meta_title: item.meta_title,
-            isPublic: item.isPublic,
-            image: item.image,
-            createdAt: item.createdAt,
-          };
-        });
-        setPagination(response.pagination);
+        setPagination(res.pagination);
         setBanners(data);
-        setLoading(false);
       }
     } catch (error) {
       setMessage("Error in server");
-      setLoading(false);
-      toast.error("Error in server, please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
     }
-  }, [filter, currentPage]);
+    setLoading(false);
+  };
 
-  const handleGetDataByFilter = useCallback(async () => {
-    setMessage(null);
-    setLoading(true);
+  const onDeleteBanner = useCallback(async () => {
+    if (!selectDelete) return;
 
     try {
-      const response = await getCategoriesWithFilter(filter, currentPage);
-      if (response.status === 200) {
-        if (response.payload.length === 0) {
-          setBanners([]);
-          setMessage("No banner");
-          setLoading(false);
-          return;
-        }
-
-        const data: Banner[] = response.payload.map((item: Banner) => {
-          return {
-            _id: item._id,
-            title: item.title,
-            meta_title: item.meta_title,
-            isPublic: item.isPublic,
-            image: item.image,
-            createdAt: item.createdAt,
-          };
-        });
-        setPagination(response.pagination);
-        setBanners(data);
-        setLoading(false);
-      }
-    } catch (error) {
-      setMessage("Error in server");
-      toast.error("Error in server, please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setLoading(false);
-    }
-  }, [filter, currentPage]);
-
-  const handleDeleteCategory = useCallback(async () => {
-    if (!selectItem || !selectItem._id) {
-      setShowPopup(false);
-      toast.error("False delete category", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      return;
-    }
-
-    try {
-      await deleteBanner(selectItem._id);
-      setShowPopup(false);
-
-      if (filter) {
-        handleGetDataByFilter();
-      } else {
-        handleGetData();
-      }
+      await deleteBanner(selectDelete.bannerId);
+      setModalDelete(false);
+      setSelectDelete(null);
+      handleGetData(paramater);
 
       toast.success("Success delete banner", {
         position: toast.POSITION.TOP_RIGHT,
@@ -208,19 +165,94 @@ const BannersPage: NextPageWithLayout = () => {
       toast.error("Error delete banner", {
         position: toast.POSITION.TOP_RIGHT,
       });
-      console.log(error);
     }
-  }, [selectItem]);
+  }, [selectDelete]);
+
+  const columns: TableColumnsType<IBannerTable> = useMemo(() => {
+    return [
+      {
+        title: tBanner("table.id"),
+        dataIndex: "bannerId",
+        className: "whitespace-nowrap",
+        align: "center",
+      },
+      {
+        title: tBanner("table.title"),
+        dataIndex: "title",
+        className: "whitespace-nowrap",
+        align: "center",
+      },
+      {
+        title: tBanner("table.thumbnail"),
+        dataIndex: "image",
+        className: "whitespace-nowrap",
+        align: "center",
+        render: (image: string) => {
+          return (
+            <ImageCus
+              src={PATH_IMAGE + image}
+              title="banner thumbnail"
+              className="w-[260px] min-w-[260px] h-[140px] object-cover object-center rounded-md mx-auto"
+            />
+          );
+        },
+      },
+      {
+        title: tBanner("table.status"),
+        dataIndex: "public",
+        className: "whitespace-nowrap",
+        render: (isPublic: boolean, reccord: IBannerTable) => (
+          <Switch
+            checked={isPublic}
+            onClick={() => {
+              if (isPublic) {
+                onDisableBanner(reccord);
+              } else {
+                onActiveBanner(reccord);
+              }
+            }}
+          />
+        ),
+        align: "center",
+      },
+      {
+        title: tBanner("table.createdAt"),
+        dataIndex: "createdAt",
+        className: "whitespace-nowrap",
+        align: "center",
+        render: (date: string) => {
+          return (
+            <span className="whitespace-nowrap capitalize block text-sm mx-auto">
+              {formatDate(date)}
+            </span>
+          );
+        },
+      },
+      {
+        title: tBanner("table.action"),
+        dataIndex: "action",
+        className: "whitespace-nowrap",
+        align: "center",
+        render: (_, record: IBannerTable) => {
+          return (
+            <div className="flex items-center justify-center gap-2">
+              <ButtonDelete
+                onClick={() => {
+                  setSelectDelete(record);
+                  handlePopup();
+                }}
+              />
+              <ButtonEdit />
+            </div>
+          );
+        },
+      },
+    ];
+  }, [router.locale, banners]);
 
   useEffect(() => {
-    handleGetData();
-  }, [currentPage]);
-
-  useEffect(() => {
-    if (selectBanners.length > 0) {
-      setSelectBanners([]);
-    }
-  }, [banners, currentPage]);
+    handleGetData(paramater);
+  }, [paramater]);
 
   if (!router.isReady) {
     return <Loading />;
@@ -228,84 +260,41 @@ const BannersPage: NextPageWithLayout = () => {
 
   return (
     <ShowItemsLayout
-      title={t("BannerPage.title")}
-      titleCreate={isCan ? t("BannerPage.create") : null}
-      link="/create/banner"
-      selectItem={{
-        title: selectItem?.title ? selectItem.title : "",
-        id: selectItem?._id || null,
-      }}
-      pagination={pagination}
-      handleDelete={handleDeleteCategory}
-      showPopup={showPopup}
-      handlePopup={handlePopup}
-    >
+      title={tBanner("title")}
+      titleCreate={isCan ? tBanner("create") : null}
+      link="/create/banner">
       <Fragment>
-        <Table
-          items={banners}
-          selects={selectBanners}
-          setSelects={setSelectBanners}
-          selectAll={true}
-          isSelected={selectBanners.length === banners.length ? true : false}
-          colHeadTabel={colHeadTable[router.locale as string]}
-          message={message}
+        <TableCore
+          dataSource={banners}
           loading={loading}
-        >
-          <Fragment>
-            {banners.map((item: Banner, index: number) => (
-              <tr
-                key={item._id}
-                className={`hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-gray-300 last:border-none`}
-              >
-                <CelTable
-                  type={typeCel.SELECT}
-                  isSelected={
-                    selectBanners.includes(item._id as string) ? true : false
-                  }
-                  onSelectCheckBox={() => onSelectCheckBox(item._id as string)}
-                />
-                <CelTable
-                  type={typeCel.LINK}
-                  value={item.title}
-                  href={`/edit/banner/${item._id}`}
-                />
-                <CelTable
-                  type={typeCel.THUMBNAIL}
-                  value={item.image as string}
-                  href={`/edit/banner/${item._id}`}
-                />
-                <CelTable
-                  id={item._id as string}
-                  type={typeCel.PUBLIC}
-                  checked={item.isPublic}
-                  onGetChecked={onChangePublish}
-                />
-                <CelTable
-                  type={typeCel.DATE}
-                  center={true}
-                  value={item.createdAt}
-                />
-                <CelTable type={typeCel.GROUP}>
-                  <Can I={ERole.ADMIN} A={EPermission.ADMIN}>
-                    <div className="flex items-center justify-center gap-2">
-                      <ButtonEdit link={`/edit/banner/${item._id}`} />
+          columns={columns}
+          size="large"
+          showPagination={false}
+        />
 
-                      <ButtonDelete
-                        onClick={() =>
-                          onSelectDeleteItem(
-                            item._id as string,
-                            item.title,
-                            item.image as string,
-                          )
-                        }
-                      />
-                    </div>
-                  </Can>
-                </CelTable>
-              </tr>
-            ))}
-          </Fragment>
-        </Table>
+        <Modal
+          open={modalDelete}
+          onCancel={handlePopup}
+          centered
+          destroyOnClose
+          okText={tAction("confirm")}
+          onOk={onDeleteBanner}
+          cancelText={tAction("cancel")}
+          okButtonProps={{ size: "large", className: "min-w-[100px]" }}
+          cancelButtonProps={{ size: "large", className: "min-w-[100px]" }}>
+          <h4 className="lg:text-2xl text-xl font-bold text-center capitalize">
+            {tBanner("ModalDelete.title")}
+          </h4>
+          <img
+            src="/popup/trash.svg"
+            className="size-[200px] mx-auto"
+            title="delete image"
+            alt="delete image"
+          />
+          <p className="md:text-lg text-base text-center mb-10">
+            {tBanner("ModalDelete.description")}
+          </p>
+        </Modal>
       </Fragment>
     </ShowItemsLayout>
   );

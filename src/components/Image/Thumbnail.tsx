@@ -4,7 +4,7 @@ import { checkImage, resizeImage, uploadImage } from "~/helper/handleImage";
 import ImageCus from "./ImageCus";
 import { IOptionImage } from "~/interface";
 import { ECompressFormat, ETypeImage } from "~/enums";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 
 interface Props {
   url: string | null;
@@ -37,7 +37,7 @@ const Thumbnail: FC<Props> = (props: Props) => {
     onChange,
   } = props;
 
-  const { t } = useTranslation();
+  const t = useTranslations();
 
   const hanldeChangeThumbnail = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -57,8 +57,7 @@ const Thumbnail: FC<Props> = (props: Props) => {
     <div className="w-full">
       <span
         id="thumbnail"
-        className="block text-base text-[#1E1E1E] dark:text-darkText font-medium mb-1"
-      >
+        className="block text-base text-[#1E1E1E] dark:text-darkText font-medium mb-1">
         {title}
       </span>
 
@@ -72,8 +71,7 @@ const Thumbnail: FC<Props> = (props: Props) => {
             : "lg:min-h-[400px] md:min-h-[300px] min-h-[200px] max-h-[600px]"
         } rounded-md ${
           !url ? "border-2 border-dashed" : ""
-        } cursor-pointer overflow-hidden`}
-      >
+        } cursor-pointer overflow-hidden`}>
         {loading && (
           <p className="text-base font-medium text-center dark:text-darkText">
             {t("Thumbnail.loading")}...

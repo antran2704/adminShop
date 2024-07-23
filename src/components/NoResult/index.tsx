@@ -8,8 +8,7 @@ const NoResult = (props: Props) => {
 
   return (
     <div
-      className={`flex flex-col items-center md:w-4/12 w-6/12 mx-auto ${className} gap-5`}
-    >
+      className={`flex flex-col items-center md:w-4/12 w-6/12 mx-auto ${className} gap-5`}>
       <img
         src="/no_result.svg"
         alt="no result"

@@ -221,8 +221,7 @@ const PDFDocument = (props: Props) => {
                   styles.row,
                   styles.paddingRow,
                   { fontFamily: "Roboto", fontWeight: "medium" },
-                ]}
-              >
+                ]}>
                 <Text style={[styles.col, styles.textCenter]}>NO</Text>
                 <Text style={[styles.col, styles.textCenter]}>Product</Text>
                 <Text style={[styles.col, styles.textCenter]}>Type</Text>
@@ -237,8 +236,7 @@ const PDFDocument = (props: Props) => {
               {data.items.map((item: IItemOrder, index: number) => (
                 <View
                   key={index}
-                  style={[styles.row, styles.borderTop, styles.paddingRow]}
-                >
+                  style={[styles.row, styles.borderTop, styles.paddingRow]}>
                   <Text style={[styles.col, styles.textCenter]}>
                     {index + 1}
                   </Text>
@@ -275,8 +273,7 @@ const PDFDocument = (props: Props) => {
               <View />
               <View>
                 <View
-                  style={[styles.wrapContent, styles.justifyContent_between]}
-                >
+                  style={[styles.wrapContent, styles.justifyContent_between]}>
                   <Text style={[styles.title, styles.footerTitle]}>
                     Total Amount:
                   </Text>
@@ -286,8 +283,7 @@ const PDFDocument = (props: Props) => {
                 </View>
                 {data.discount && (
                   <View
-                    style={[styles.wrapContent, styles.justifyContent_between]}
-                  >
+                    style={[styles.wrapContent, styles.justifyContent_between]}>
                     <Text style={[styles.title, styles.footerTitle]}>
                       Discount:
                     </Text>
@@ -305,8 +301,7 @@ const PDFDocument = (props: Props) => {
                   </View>
                 )}
                 <View
-                  style={[styles.wrapContent, styles.justifyContent_between]}
-                >
+                  style={[styles.wrapContent, styles.justifyContent_between]}>
                   <Text style={[styles.title, styles.footerTitle]}>
                     Shipping cost:
                   </Text>
@@ -320,8 +315,7 @@ const PDFDocument = (props: Props) => {
                     styles.justifyContent_between,
                     styles.borderTop,
                     styles.paddingRow,
-                  ]}
-                >
+                  ]}>
                   <Text style={[styles.title, styles.footerTitle]}>Total:</Text>
                   <Text style={styles.content}>
                     {formatBigNumber(data.total)} VND

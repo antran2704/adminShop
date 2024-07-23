@@ -54,8 +54,7 @@ const InputTextareaField: FC<ITextarea> = (props: ITextarea) => {
         <div className="flex items-center mb-1 gap-2">
           <span
             id={name}
-            className="block text-base text-[#1E1E1E] dark:text-darkText font-medium"
-          >
+            className="block text-base text-[#1E1E1E] dark:text-darkText font-medium">
             {title}
           </span>
 
@@ -79,8 +78,7 @@ const InputTextareaField: FC<ITextarea> = (props: ITextarea) => {
         }}
         placeholder={placeholder}
         cols={cols}
-        rows={rows}
-      ></textarea>
+        rows={rows}></textarea>
     </div>
   );
 };

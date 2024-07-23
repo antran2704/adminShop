@@ -568,8 +568,7 @@ const IncomePage: NextPageWithLayout = () => {
         <div
           className={`${
             tag === TYPE_TAG.DATE ? "block" : "hidden"
-          } w-full rounded-xl py-5`}
-        >
+          } w-full rounded-xl py-5`}>
           <SelectDate
             type="date"
             title="Select Date"
@@ -595,8 +594,7 @@ const IncomePage: NextPageWithLayout = () => {
             )}
           </div>
           <div
-            className={`grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300 mt-5`}
-          >
+            className={`grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300 mt-5`}>
             <Statistic
               title="Thu nhập tạm tính"
               IconElement={<BiDollarCircle className="text-4xl" />}
@@ -672,8 +670,7 @@ const IncomePage: NextPageWithLayout = () => {
 
             <div className="flex lg:flex-row flex-col items-start my-5 gap-10">
               <div
-                className={`grid md:grid-cols-2 grid-cols-1 lg:w-6/12 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300`}
-              >
+                className={`grid md:grid-cols-2 grid-cols-1 lg:w-6/12 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300`}>
                 <Statistic
                   title="Thu nhập tạm tính"
                   IconElement={<BiDollarCircle className="text-4xl" />}
@@ -770,8 +767,7 @@ const IncomePage: NextPageWithLayout = () => {
             </div>
 
             <div
-              className={`grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300 my-5`}
-            >
+              className={`grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300 my-5`}>
               <Statistic
                 title="Thu nhập tạm tính"
                 IconElement={<BiDollarCircle className="text-4xl" />}
@@ -850,8 +846,7 @@ const IncomePage: NextPageWithLayout = () => {
             </div>
             <div className="flex lg:flex-row flex-col items-start my-5 gap-10">
               <div
-                className={`grid md:grid-cols-2 grid-cols-1 lg:w-6/12 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300`}
-              >
+                className={`grid md:grid-cols-2 grid-cols-1 lg:w-6/12 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300`}>
                 <Statistic
                   title="Thu nhập tạm tính"
                   IconElement={<BiDollarCircle className="text-4xl" />}

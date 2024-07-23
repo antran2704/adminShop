@@ -62,14 +62,12 @@ const Search: FC<Props> = (props: Props) => {
       <div className="md:w-fit w-full flex md:flex-row flex-col items-center md:gap-5 gap-2">
         <button
           onClick={handleFilter}
-          className={`flex md:w-fit w-full items-center justify-center h-10 text-lg text-white bg-primary font-medium px-8 py-1 rounded-md`}
-        >
+          className={`flex md:w-fit w-full items-center justify-center h-10 text-lg text-white bg-primary font-medium px-8 py-1 rounded-md`}>
           {t("Search.filter")}
         </button>
         <button
           onClick={handleReset}
-          className={`flex md:w-fit w-full items-center justify-center h-10 text-lg text-text bg-[#e5e7eb] font-medium px-8 py-1 rounded-md`}
-        >
+          className={`flex md:w-fit w-full items-center justify-center h-10 text-lg text-text bg-[#e5e7eb] font-medium px-8 py-1 rounded-md`}>
           {t("Search.reset")}
         </button>
       </div>

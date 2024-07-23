@@ -294,16 +294,14 @@ const CouponsPage: NextPageWithLayout = () => {
       pagination={pagination}
       handleDelete={handleDeleteCoupon}
       showPopup={showPopup}
-      handlePopup={handlePopup}
-    >
+      handlePopup={handlePopup}>
       <Fragment>
         <Search
           search={filter?.search || ""}
           onReset={onReset}
           onSearch={onChangeSearch}
           onFilter={handleGetDataByFilter}
-          placeholder={t("CouponsPage.search")}
-        >
+          placeholder={t("CouponsPage.search")}>
           <Fragment>
             <SelectDate
               className="lg:w-3/12 md:w-4/12 w-full"
@@ -332,14 +330,12 @@ const CouponsPage: NextPageWithLayout = () => {
           isSelected={selectCoupons.length === coupons.length ? true : false}
           colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
           message={message}
-          loading={loading}
-        >
+          loading={loading}>
           <Fragment>
             {coupons.map((item: ICouponHome) => (
               <tr
                 key={item._id}
-                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
-              >
+                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none">
                 <CelTable
                   type={typeCel.SELECT}
                   isSelected={
@@ -359,8 +355,7 @@ const CouponsPage: NextPageWithLayout = () => {
                     />
                     <Link
                       href={`/edit/coupon/${item._id}`}
-                      className="text-sm font-medium whitespace-nowrap"
-                    >
+                      className="text-sm font-medium whitespace-nowrap">
                       {item.discount_name}
                     </Link>
                   </div>

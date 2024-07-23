@@ -1,10 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { ERole } from "~/enums";
 import { IUserInfor } from "~/interface";
 
 interface IInitData {
   infor: IUserInfor;
   permission: string;
-  role: string;
+  role: ERole | null;
 }
 
 const initialState: IInitData = {
@@ -15,7 +16,7 @@ const initialState: IInitData = {
     avartar: null,
   },
   permission: "",
-  role: "",
+  role: null,
 };
 
 const userSlice = createSlice({

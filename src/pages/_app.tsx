@@ -27,8 +27,7 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
     <NextIntlClientProvider
       locale={router.locale}
       timeZone="Europe/Vienna"
-      messages={pageProps.messages}
-    >
+      messages={pageProps.messages}>
       <Provider store={store}>
         <ConfigProvider theme={themeConfig}>
           <MainLayout>

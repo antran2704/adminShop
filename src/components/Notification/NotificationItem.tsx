@@ -23,24 +23,21 @@ const NotificationItem = (props: Props) => {
   return (
     <div
       onClick={() => onClick(data)}
-      className="w-full flex items-center px-5 py-2 cursor-pointer gap-5"
-    >
+      className="w-full flex items-center px-5 py-2 cursor-pointer gap-5">
       {Icon}
       <div className="w-full flex items-center justify-between gap-5">
         <div className="w-full">
           <p
             className={`lg:max-w-[600px] md:max-w-[500px] sm:max-w-[400px] max-w-[200px] w-[500px] text-start text-sm ${
               !data.isReaded ? "font-medium" : "font-normal"
-            } line-clamp-2`}
-          >
+            } line-clamp-2`}>
             {data.content}
           </p>
           <div className="flex items-center pt-2 gap-2">
             <p
               className={`text-white text-start whitespace-nowrap text-xs capitalize px-2 py-1 rounded-full ${
                 styleTypeNoti[data.type]
-              }`}
-            >
+              }`}>
               {data.type}
             </p>
             <p className="text-start whitespace-nowrap text-xs">

@@ -276,8 +276,7 @@ const IncomeYearPage: NextPageWithLayout = () => {
             />
           </div>
           <div
-            className={`grid md:grid-cols-2 grid-cols-1 lg:w-6/12 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300`}
-          >
+            className={`grid md:grid-cols-2 grid-cols-1 lg:w-6/12 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300`}>
             <Statistic
               title="Thu nhập tạm tính"
               IconElement={<BiDollarCircle className="text-4xl" />}

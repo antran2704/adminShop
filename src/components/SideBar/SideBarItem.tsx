@@ -37,19 +37,34 @@ const NavbarItem: FC<Props> = (props: Props) => {
     <>
       {!subNav && (
         <li className="w-full mb-1">
-          <Link
-            className={`w-full flex items-center text-lg font-medium px-3 py-2 ${
-              router.pathname === data.path
-                ? "bg-primary text-white"
-                : "hover:bg-primary text-black dark:text-darkText hover:text-white"
-            } lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}
-            href={data.path}
-          >
-            <span>{data.icon}</span>
-            <span className="whitespace-nowrap">
-              {data.name[router.locale as string]}
-            </span>
-          </Link>
+          {data.path && (
+            <Link
+              className={`w-full flex items-center text-lg font-medium px-3 py-2 ${
+                router.pathname === data.path
+                  ? "bg-primary text-white"
+                  : "hover:bg-primary text-black dark:text-darkText hover:text-white"
+              } lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}
+              href={data.path}>
+              <span>{data.icon}</span>
+              <span className="whitespace-nowrap">
+                {data.name[router.locale as string]}
+              </span>
+            </Link>
+          )}
+
+          {!data.path && (
+            <div
+              className={`w-full flex items-center text-lg font-medium px-3 py-2 ${
+                router.pathname === data.path
+                  ? "bg-primary text-white"
+                  : "hover:bg-primary text-black dark:text-darkText hover:text-white"
+              } lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}>
+              <span>{data.icon}</span>
+              <span className="whitespace-nowrap">
+                {data.name[router.locale as string]}
+              </span>
+            </div>
+          )}
         </li>
       )}
 
@@ -57,8 +72,7 @@ const NavbarItem: FC<Props> = (props: Props) => {
         <li className={`w-full mb-1`}>
           <div
             onClick={handleCollapse}
-            className="w-full flex items-center justify-between px-3 py-2 hover:bg-primary hover:text-white lg:rounded-lg rounded-tl-lg rounded-bl-lg transition-all ease-linear duration-200 cursor-pointer"
-          >
+            className="w-full flex items-center justify-between px-3 py-2 hover:bg-primary hover:text-white lg:rounded-lg rounded-tl-lg rounded-bl-lg transition-all ease-linear duration-200 cursor-pointer">
             <div className="w-full flex items-center text-lg dark:text-darkText font-medium gap-3">
               <span>{data.icon}</span>
               <span className="whitespace-nowrap">
@@ -79,8 +93,7 @@ const NavbarItem: FC<Props> = (props: Props) => {
 
           <ul
             ref={elRef}
-            className={`lg:w-full h-0 pl-5 transition-all ease-linear duration-300 overflow-hidden`}
-          >
+            className={`lg:w-full h-0 pl-5 transition-all ease-linear duration-300 overflow-hidden`}>
             {data.children?.map((item: itemNav, index: number) => (
               <NavbarItem
                 key={index}

@@ -205,8 +205,7 @@ const EditBlogPage: NextPageWithLayout = () => {
       title={t("CreateBannerPage.title")}
       backLink="/blogs"
       loading={loading}
-      onSubmit={handleOnSubmit}
-    >
+      onSubmit={handleOnSubmit}>
       <div className="lg:w-2/4 w-full mx-auto">
         <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
           <InputText
@@ -250,8 +249,7 @@ const EditBlogPage: NextPageWithLayout = () => {
 
           <button
             onClick={handlePopup}
-            className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
-          >
+            className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
             {t("Action.delete")}
           </button>
         </div>
@@ -261,20 +259,17 @@ const EditBlogPage: NextPageWithLayout = () => {
             title="Xác nhận xóa Blog"
             show={showPopup}
             img="/popup/trash.svg"
-            onClose={handlePopup}
-          >
+            onClose={handlePopup}>
             <div>
               <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
                 <button
                   onClick={handlePopup}
-                  className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-90 hover:opacity-100 rounded-md transition-cus"
-                >
+                  className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-90 hover:opacity-100 rounded-md transition-cus">
                   Cancle
                 </button>
                 <button
                   onClick={handleDeleteBlog}
-                  className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-90 hover:opacity-100 rounded-md"
-                >
+                  className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-90 hover:opacity-100 rounded-md">
                   Delete
                 </button>
               </div>

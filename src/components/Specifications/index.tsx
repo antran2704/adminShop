@@ -180,8 +180,7 @@ const Specifications = (props: Props) => {
         </span>
         <button
           onClick={handleShowPopup}
-          className="flex items-center justify-center rounded-full overflow-hidden"
-        >
+          className="flex items-center justify-center rounded-full overflow-hidden">
           <AiOutlinePlus className="w-10 h-10 bg-success p-2 text-white " />
         </button>
       </div>
@@ -190,8 +189,7 @@ const Specifications = (props: Props) => {
         (specification: ISpecificationsProduct, specificationIndex: number) => (
           <div
             key={specification.id}
-            className="py-4 mt-5 bg-[#f5f5fa] dark:bg-[#191919] rounded-lg"
-          >
+            className="py-4 mt-5 bg-[#f5f5fa] dark:bg-[#191919] rounded-lg">
             <div className="flex items-center justify-between px-4 pb-2 mb-5 border-b-2 gap-5">
               <p className="text-base font-medium dark:text-darkText">
                 {specification.name}
@@ -203,8 +201,7 @@ const Specifications = (props: Props) => {
                     title: specification.name,
                   })
                 }
-                className="flex items-center justify-end text-base text-right font-medium text-error gap-2"
-              >
+                className="flex items-center justify-end text-base text-right font-medium text-error gap-2">
                 {t("Specifications.remove")}
               </button>
             </div>
@@ -216,8 +213,7 @@ const Specifications = (props: Props) => {
                 ) => (
                   <li
                     key={attribute.id}
-                    className="flex items-start justify-between gap-5"
-                  >
+                    className="flex items-start justify-between gap-5">
                     <InputText
                       title={t("Specifications.name")}
                       width="w-1/2"
@@ -255,8 +251,7 @@ const Specifications = (props: Props) => {
                           index: specificationIndex,
                         })
                       }
-                      className="flex items-center justify-center text-sm rounded-full"
-                    >
+                      className="flex items-center justify-center text-sm rounded-full">
                       <AiOutlineCloseCircle className="text-xl min-w-[20px] text-error cursor-pointe" />
                     </button>
                   </li>
@@ -266,8 +261,7 @@ const Specifications = (props: Props) => {
               <div className="flex items-center justify-end ">
                 <button
                   onClick={() => onAddAtribute(specificationIndex)}
-                  className="flex items-center text-base text-right font-medium text-primary gap-2"
-                >
+                  className="flex items-center text-base text-right font-medium text-primary gap-2">
                   <AiOutlinePlus />
                   {t("Specifications.attribute")}
                 </button>
@@ -281,8 +275,7 @@ const Specifications = (props: Props) => {
         title={t("Specifications.addPopup.title")}
         description={t("Specifications.addPopup.description")}
         show={showPopup}
-        onClose={handleShowPopup}
-      >
+        onClose={handleShowPopup}>
         <Fragment>
           <div className="flex flex-col justify-between h-full">
             <div className="w-full flex flex-col px-5 gap-5">
@@ -302,14 +295,12 @@ const Specifications = (props: Props) => {
             <div className="flex items-center justify-between p-5 mt-5 border-t gap-5">
               <button
                 onClick={handleShowPopup}
-                className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
-              >
+                className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
                 {t("Action.cancle")}
               </button>
               <button
                 onClick={onAddSpecification}
-                className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
-              >
+                className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md">
                 {t("Specifications.addPopup.add")}
               </button>
             </div>
@@ -322,8 +313,7 @@ const Specifications = (props: Props) => {
           title={t("Specifications.title")}
           show={showPopupSpecification}
           img="/popup/trash.svg"
-          onClose={() => onShowPopupSpecification(null)}
-        >
+          onClose={() => onShowPopupSpecification(null)}>
           <div>
             <p className="text-lg dark:text-darkText text-center">
               {t("Specifications.specificationPopup.description")}
@@ -332,16 +322,14 @@ const Specifications = (props: Props) => {
             <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
               <button
                 onClick={() => onShowPopupSpecification(null)}
-                className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"
-              >
+                className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus">
                 {t("Action.cancle")}
               </button>
               <button
                 onClick={() =>
                   onRemoveSpecification(selectSpecification._id as string)
                 }
-                className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
-              >
+                className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
                 {t("Action.delete")}
               </button>
             </div>
@@ -354,8 +342,7 @@ const Specifications = (props: Props) => {
           title={t("Specifications.attribute")}
           show={showPopupAttribute}
           img="/popup/trash.svg"
-          onClose={() => onShowPopupAttribute(null)}
-        >
+          onClose={() => onShowPopupAttribute(null)}>
           <div>
             <p className="text-lg dark:text-darkText text-center">
               {t("Specifications.attributePopup.description")}
@@ -364,8 +351,7 @@ const Specifications = (props: Props) => {
             <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
               <button
                 onClick={() => onShowPopupAttribute(null)}
-                className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus"
-              >
+                className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus">
                 {t("Action.cancle")}
               </button>
               <button
@@ -375,8 +361,7 @@ const Specifications = (props: Props) => {
                     selectAttribute.index,
                   )
                 }
-                className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
-              >
+                className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
                 {t("Action.delete")}
               </button>
             </div>

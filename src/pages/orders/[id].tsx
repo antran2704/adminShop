@@ -241,8 +241,7 @@ const OrderDetail: NextPageWithLayout = () => {
             <p
               className={`w-fit font-medium text-white text-xs ${
                 BG_STATUS[data.status]
-              } capitalize px-5 py-2 rounded-md`}
-            >
+              } capitalize px-5 py-2 rounded-md`}>
               {data.status}
             </p>
           </li>
@@ -256,8 +255,7 @@ const OrderDetail: NextPageWithLayout = () => {
                       Why:
                     </h3>
                     <p
-                      className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
-                    >
+                      className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}>
                       {data.cancleContent || "updating"}
                     </p>
                   </li>
@@ -267,8 +265,7 @@ const OrderDetail: NextPageWithLayout = () => {
                         Note:
                       </h3>
                       <p
-                        className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
-                      >
+                        className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}>
                         {data.note}
                       </p>
                     </li>
@@ -331,8 +328,7 @@ const OrderDetail: NextPageWithLayout = () => {
                       Why:
                     </h3>
                     <p
-                      className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
-                    >
+                      className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}>
                       {data.cancleContent || "updating"}
                     </p>
                   </li>
@@ -342,8 +338,7 @@ const OrderDetail: NextPageWithLayout = () => {
                         Note:
                       </h3>
                       <p
-                        className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}
-                      >
+                        className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}>
                         {data.note}
                       </p>
                     </li>
@@ -381,14 +376,12 @@ const OrderDetail: NextPageWithLayout = () => {
           <Table
             colHeadTabel={colHeadTable}
             message={message}
-            loading={loading}
-          >
+            loading={loading}>
             <Fragment>
               {data.items.map((item: IItemOrder, index: number) => (
                 <tr
                   key={item._id}
-                  className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
-                >
+                  className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none">
                   <CelTable
                     center={true}
                     type={typeCel.TEXT}
@@ -510,15 +503,13 @@ const OrderDetail: NextPageWithLayout = () => {
       <div className="flex items-center justify-between mt-5">
         <button
           onClick={() => router.push("/orders")}
-          className="min-w-[100px] text-base text-white bg-[#111926] px-5 py-2 opacity-90 hover:opacity-100 border-2 rounded-md"
-        >
+          className="min-w-[100px] text-base text-white bg-[#111926] px-5 py-2 opacity-90 hover:opacity-100 border-2 rounded-md">
           Back
         </button>
 
         <button
           onClick={() => onShow(showPrint, setShowPrint)}
-          className="flex items-center text-base text-white bg-[#0E9F6E] px-5 py-2 rounded-md gap-2"
-        >
+          className="flex items-center text-base text-white bg-[#0E9F6E] px-5 py-2 rounded-md gap-2">
           Print Invoice
           <AiOutlinePrinter />
         </button>
@@ -528,8 +519,7 @@ const OrderDetail: NextPageWithLayout = () => {
             <div className="absolute w-full h-full bg-[#ffffffbf] backdrop-blur z-10"></div>
             <div
               onClick={() => onShow(showPrint, setShowPrint)}
-              className="absolute w-full h-full bg-black opacity-60 z-20"
-            ></div>
+              className="absolute w-full h-full bg-black opacity-60 z-20"></div>
             <div className="absolute w-10/12 h-screen top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 z-30">
               <PDFDocument data={data} />
             </div>
@@ -540,8 +530,7 @@ const OrderDetail: NextPageWithLayout = () => {
         <Popup
           show={showConfirmBanking}
           title="Xác nhận đã chuyển khoản"
-          onClose={onShowConfirmBanking}
-        >
+          onClose={onShowConfirmBanking}>
           <div className="flex items-center justify-between">
             <ButtonClassic
               title="Cancle"
@@ -581,8 +570,7 @@ const OrderDetail: NextPageWithLayout = () => {
                   />
                   <label
                     htmlFor={option.id}
-                    className="text-sm font-medium text-gray-900 dark:text-darkText  ml-2 block"
-                  >
+                    className="text-sm font-medium text-gray-900 dark:text-darkText  ml-2 block">
                     {option.lable}
                   </label>
                 </div>
@@ -598,8 +586,7 @@ const OrderDetail: NextPageWithLayout = () => {
                 id="note_option"
                 cols={30}
                 rows={4}
-                placeholder="Enter note..."
-              ></textarea>
+                placeholder="Enter note..."></textarea>
             </div>
 
             <div className="flex items-center justify-between">
@@ -643,8 +630,7 @@ const OrderDetail: NextPageWithLayout = () => {
                   />
                   <label
                     htmlFor={option.id}
-                    className="text-sm font-medium text-gray-900 dark:text-darkText ml-2 block"
-                  >
+                    className="text-sm font-medium text-gray-900 dark:text-darkText ml-2 block">
                     {option.lable}
                   </label>
                 </div>
@@ -660,8 +646,7 @@ const OrderDetail: NextPageWithLayout = () => {
                 id="note_option"
                 cols={30}
                 rows={4}
-                placeholder="Enter note..."
-              ></textarea>
+                placeholder="Enter note..."></textarea>
             </div>
 
             <div className="flex items-center justify-between">
@@ -690,8 +675,7 @@ const OrderDetail: NextPageWithLayout = () => {
         <Popup
           title="Bạn có muốn hoàn thành đơn hàng này"
           show={showDelivered}
-          onClose={onShowDelivered}
-        >
+          onClose={onShowDelivered}>
           <div className="flex items-center justify-between">
             <ButtonClassic
               title="Cancle"
@@ -716,8 +700,7 @@ const OrderDetail: NextPageWithLayout = () => {
         <Popup
           title="Đang chuẩn bị đơn hàng"
           show={showProcessing}
-          onClose={onShowProcessing}
-        >
+          onClose={onShowProcessing}>
           <div className="flex items-center justify-between">
             <ButtonClassic
               title="Cancle"

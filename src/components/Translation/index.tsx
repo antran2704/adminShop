@@ -44,8 +44,7 @@ const Translation = () => {
                     router.locale === keyLng
                       ? "text-primary font-medium pointer-events-none"
                       : ""
-                  } gap-2`}
-                >
+                  } gap-2`}>
                   <img
                     className="w-6 h-6 object-contain"
                     src={initListLanguages[keyLng].icon}

@@ -14,8 +14,7 @@ const DarkMode = () => {
   return (
     <button
       onClick={onChangeMode}
-      className="p-2 hover:bg-slate-200 dark:text-darkText dark:hover:text-black rounded-full"
-    >
+      className="p-2 hover:bg-slate-200 dark:text-darkText dark:hover:text-black rounded-full">
       {!darkMode && <FaRegMoon className="text-xl" />}
       {darkMode && <MdOutlineWbSunny className="text-xl" />}
     </button>

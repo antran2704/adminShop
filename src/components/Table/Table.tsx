@@ -65,8 +65,7 @@ const Table: FC<Props> = (props: Props) => {
                 {colHeadTabel.map((item: string, index: number) => (
                   <th
                     key={index}
-                    className="border-b border-gray-300  leading-4 tracking-wider"
-                  >
+                    className="border-b border-gray-300  leading-4 tracking-wider">
                     <p className="text-sm text-[#707275] dark:text-gray-400 min-w-fit whitespace-nowrap font-medium px-6 py-3">
                       {item}
                     </p>
@@ -84,8 +83,7 @@ const Table: FC<Props> = (props: Props) => {
                       {colHeadTabel.map((item: string, index: number) => (
                         <td
                           key={index}
-                          className="px-6 py-4 whitespace-no-wrap border-b"
-                        >
+                          className="px-6 py-4 whitespace-no-wrap border-b">
                           <div className="animate-pulse bg-gray-300 dark:bg-gray-600 w-[100px] h-5 mx-auto rounded"></div>
                         </td>
                       ))}
@@ -97,8 +95,7 @@ const Table: FC<Props> = (props: Props) => {
                 <tr>
                   <td
                     colSpan={colHeadTabel.length}
-                    className="px-6 py-4 dark:bg-gray-800 whitespace-no-wrap"
-                  >
+                    className="px-6 py-4 dark:bg-gray-800 whitespace-no-wrap">
                     <NoResult title={message as string} />
                   </td>
                 </tr>

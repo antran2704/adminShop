@@ -108,8 +108,7 @@ const IncomeDatePage: NextPageWithLayout = () => {
             )}
           </div>
           <div
-            className={`grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300 mt-5`}
-          >
+            className={`grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300 mt-5`}>
             <Statistic
               title="Thu nhập tạm tính"
               IconElement={<BiDollarCircle className="text-4xl" />}

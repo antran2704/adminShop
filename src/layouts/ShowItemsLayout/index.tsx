@@ -30,9 +30,9 @@ const ShowItemsLayout = (props: Props) => {
     link,
     children,
     pagination = {
-      currentPage: 1,
-      totalItems: 0,
-      pageSize: 0,
+      page: 1,
+      total: 0,
+      take: 0,
     },
     showPopup = false,
     selectItem,
@@ -52,8 +52,7 @@ const ShowItemsLayout = (props: Props) => {
             {link && (
               <Link
                 href={link}
-                className="flex items-center font-medium md:text-base text-sm text-white bg-success px-3 py-2 rounded-md gap-1"
-              >
+                className="flex items-center font-medium md:text-base text-sm text-white bg-success px-3 py-2 rounded-md gap-1">
                 <IoIosAdd className="md:text-2xl text-xl" />
                 {titleCreate}
               </Link>
@@ -62,8 +61,7 @@ const ShowItemsLayout = (props: Props) => {
             {!link && (
               <button
                 onClick={onCreate}
-                className="flex items-center font-medium md:text-base text-sm text-white bg-success px-3 py-2 rounded-md gap-1"
-              >
+                className="flex items-center font-medium md:text-base text-sm text-white bg-success px-3 py-2 rounded-md gap-1">
                 <IoIosAdd className="md:text-2xl text-xl" />
                 {titleCreate}
               </button>
@@ -75,7 +73,7 @@ const ShowItemsLayout = (props: Props) => {
       <Fragment>
         {children}
 
-        {pagination.totalItems > pagination.pageSize && (
+        {pagination.total > pagination.take && (
           <PaginationCus pagination={pagination} />
         )}
       </Fragment>
@@ -85,8 +83,7 @@ const ShowItemsLayout = (props: Props) => {
           title="Confirm Delete"
           img="/popup/trash.svg"
           show={showPopup}
-          onClose={handlePopup}
-        >
+          onClose={handlePopup}>
           <div>
             <p className="text-lg text-center dark:text-darkText">
               Do you want delete {title.toLowerCase()}{" "}
@@ -95,14 +92,12 @@ const ShowItemsLayout = (props: Props) => {
             <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
               <button
                 onClick={handlePopup}
-                className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-70 hover:opacity-100 rounded-md transition-cus"
-              >
+                className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-70 hover:opacity-100 rounded-md transition-cus">
                 Cancle
               </button>
               <button
                 onClick={handleDelete}
-                className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-70 hover:opacity-100 rounded-md"
-              >
+                className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-70 hover:opacity-100 rounded-md">
                 Delete
               </button>
             </div>

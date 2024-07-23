@@ -35,36 +35,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           const response = JSON.parse(body);
           const status = response.status;
 
-          if (status === 200) {
-            const data: IKeyToken = {
-              accessToken: response.payload.accessToken.value,
-              refreshToken: response.payload.refreshToken.value,
-              apiKey: response.payload.apiKey,
-              publicKey: response.payload.publicKey,
-            };
-
-            setCookie("accessToken", data.accessToken, {
-              req,
-              res,
-              maxAge: response.payload.accessToken.exp,
-            });
-            setCookie("publicKey", data.publicKey, {
-              req,
-              res,
-              maxAge: response.payload.refreshToken.exp,
-            });
-            setCookie("refreshToken", data.refreshToken, {
-              req,
-              res,
-              maxAge: response.payload.refreshToken.exp,
-            });
-            setCookie("apiKey", data.apiKey, {
-              req,
-              res,
-              maxAge: response.payload.refreshToken.exp,
-            });
-          }
-
           res.status(status).json(response);
           resolve();
         } catch (error) {

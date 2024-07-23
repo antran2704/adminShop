@@ -32,8 +32,7 @@ const SelectTag = (props: Props) => {
         value === currentSelect
           ? "text-success dark:text-success border-success"
           : ""
-      } dark:text-darkText font-medium px-4 py-1 border-2 rounded-lg`}
-    >
+      } dark:text-darkText font-medium px-4 py-1 border-2 rounded-lg`}>
       {title}
     </button>
   );

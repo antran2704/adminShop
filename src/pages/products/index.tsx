@@ -314,16 +314,14 @@ const ProductPage: NextPageWithLayout = () => {
       pagination={pagination}
       handleDelete={handleDeleteProduct}
       showPopup={showPopup}
-      handlePopup={handlePopup}
-    >
+      handlePopup={handlePopup}>
       <Fragment>
         <Search
           search={filter?.search ? filter.search : ""}
           onReset={onReset}
           onSearch={onChangeSearch}
           onFilter={handleGetDataByFilter}
-          placeholder={t("ProductsPage.search")}
-        >
+          placeholder={t("ProductsPage.search")}>
           <SelectItem
             name="category"
             placeholder={t("ProductsPage.filter.category")}
@@ -342,14 +340,12 @@ const ProductPage: NextPageWithLayout = () => {
           isSelected={selectProducts.length === products.length ? true : false}
           colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
           message={message}
-          loading={loading}
-        >
+          loading={loading}>
           <Fragment>
             {products.map((product: IProductHome) => (
               <tr
                 key={product._id}
-                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none"
-              >
+                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none">
                 <CelTable
                   type={typeCel.SELECT}
                   isSelected={
@@ -364,8 +360,7 @@ const ProductPage: NextPageWithLayout = () => {
                 <CelTable type={typeCel.GROUP}>
                   <Link
                     href={`/edit/product/${product._id}`}
-                    className="flex items-center gap-2"
-                  >
+                    className="flex items-center gap-2">
                     <ImageCus
                       title="product image"
                       src={
