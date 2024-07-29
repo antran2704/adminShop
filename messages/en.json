@@ -8,19 +8,10 @@
     "income": {
       "today": "Income Today",
       "subTotal": "Sub Total"
-    },
-    "order": {
-      "today": "Today order",
-      "success": "Success order",
-      "pending": "Pending order",
-      "process": "Process order",
-      "cancel": "Cancel order",
-      "recent": "Recent order"
     }
   },
   "BannerPage": {
     "title": "Banners",
-    "create": "Create banner",
     "table": {
       "id": "ID",
       "title": "Title",
@@ -67,6 +58,7 @@
     "search": "Search by name..."
   },
   "OrderPage": {
+    "recentOrder": "Recent order",
     "table": {
       "orderId": "Order ID",
       "customer": "Customer",
@@ -104,10 +96,10 @@
   },
   "CreateBannerPage": {
     "title": "Create banner",
-    "field": {
+    "form": {
       "title": "Title",
       "thumbnail": "Thumbnail",
-      "public": "Public"
+      "status": "Status"
     }
   },
   "CreateCategoryPage": {
@@ -238,7 +230,10 @@
     "add": "Add"
   },
   "Error": {
-    "TRY_AGAIN": "Please try again"
+    "TRY_AGAIN": "Please try again",
+    "PLEASE_SELECT": "Please select",
+    "PLEASE_INPUT": "Please input",
+    "PLEASE_UPLOAD": "Please upload"
   },
   "Success": {
     "Create": "Create success",
@@ -247,7 +242,26 @@
   "Common": {
     "gross": {
       "subTotal": "Sub Gross",
-      "total": "Total"
+      "total": "Total",
+      "totalToday": "Total today",
+      "orderToday": "Today order",
+      "successOrder": "Success order",
+      "pendingOrder": "Pending order",
+      "processOrder": "Process order",
+      "cancelOrder": "Cancel order"
+    },
+    "btn": {
+      "exportExcel": "Export excel",
+      "back": "Back",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
+    "filter": {
+      "title": "Filter",
+      "from": "From",
+      "to": "To",
+      "cancel": "Cancel filter",
+      "apply": "Apply filter"
     }
   }
 }

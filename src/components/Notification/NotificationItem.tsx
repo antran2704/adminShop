@@ -4,7 +4,7 @@ import { FaRegClipboard } from "react-icons/fa";
 
 import { INotificationItem, IconNoti } from "~/interface";
 import { styleTypeNoti } from "./data";
-import { getDateTime } from "~/helper/datetime";
+import { getDateTime } from "~/helper/format/datetime";
 
 interface Props {
   data: INotificationItem;

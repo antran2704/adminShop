@@ -8,19 +8,10 @@
     "income": {
       "today": "Thu nhập hôm nay",
       "subTotal": "Thu nhập tạm tính"
-    },
-    "order": {
-      "today": "Đơn hàng hôm nay",
-      "success": "Đơn hàng thành công",
-      "pending": "Chờ xác nhận",
-      "process": "Đang chuẩn bị hàng",
-      "cancel": "Đơn hủy",
-      "recent": "Đơn hàng gần đây"
     }
   },
   "BannerPage": {
     "title": "Danh sách banner",
-    "create": "Tạo banner",
     "table": {
       "id": "ID",
       "title": "Tiêu đề",
@@ -67,6 +58,7 @@
     "search": "Tìm kiếm theo tiêu đề..."
   },
   "OrderPage": {
+    "recentOrder": "Đơn hàng gần đây",
     "table": {
       "orderId": "Mã đơn",
       "customer": "Khách hàng",
@@ -104,10 +96,10 @@
   },
   "CreateBannerPage": {
     "title": "Tạo banner",
-    "field": {
+    "form": {
       "title": "Tiêu đề",
       "thumbnail": "Hình ảnh",
-      "public": "Hiện"
+      "status": "Trạng thái"
     }
   },
   "CreateCategoryPage": {
@@ -237,7 +229,10 @@
     "add": "Thêm"
   },
   "Error": {
-    "TRY_AGAIN": "Có lỗi, vui lòng thử lại"
+    "TRY_AGAIN": "Có lỗi, vui lòng thử lại",
+    "PLEASE_SELECT": "Vui lòng lựa chọn",
+    "PLEASE_INPUT": "Vui lòng nhập",
+    "PLEASE_UPLOAD": "Vui lòng upload"
   },
   "Success": {
     "Create": "Tạo thành công",
@@ -246,7 +241,26 @@
   "Common": {
     "gross": {
       "subTotal": "Tạm tính",
-      "total": "Tổng thu nhập"
+      "total": "Tổng thu nhập",
+      "totalToday": "Tổng thu nhập hôm nay",
+      "orderToday": "Đơn hàng hôm nay",
+      "successOrder": "Đơn hàng thành công",
+      "pendingOrder": "Chờ xác nhận",
+      "processOrder": "Đang chuẩn bị hàng",
+      "cancelOrder": "Đơn hủy"
+    },
+    "btn": {
+      "exportExcel": "Xuất excel",
+      "back": "Trờ lại",
+      "confirm": "Xác nhận",
+      "cancel": "Hủy"
+    },
+    "filter": {
+      "title": "Bộ lọc",
+      "from": "Từ",
+      "to": "Đến",
+      "cancel": "Huỷ bộ lọc",
+      "apply": "Xác nhận lọc"
     }
   }
 }

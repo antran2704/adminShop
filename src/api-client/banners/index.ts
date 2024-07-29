@@ -1,7 +1,7 @@
 import qs from "qs";
 
 import { uploadImageOnServer } from "~/helper/handleImage";
-import { IBanner, CreateBanner, ISearch } from "~/interface";
+import { IBanner, ICreateBanner, ISearch } from "~/interface";
 import httpConfig, {
   axiosDelete,
   axiosGet,
@@ -23,7 +23,7 @@ const getBanner = async (banner_id: string) => {
   return await axiosGet(BASE_URL + `/banners/${banner_id}`);
 };
 
-const createBanner = async (data: CreateBanner) => {
+const createBanner = async (data: ICreateBanner) => {
   return await axiosPost(BASE_URL + "/banners", data);
 };
 
@@ -44,7 +44,10 @@ const disableBanner = async (banner_id: string) => {
 };
 
 const uploadBannerImage = async (formData: FormData) => {
-  return await uploadImageOnServer(BASE_URL + `/banners/uploadImage`, formData);
+  return await uploadImageOnServer(
+    BASE_URL + `/admin/banners/uploadThumbnail`,
+    formData,
+  );
 };
 
 const deleteBanner = async (banner_id: string) => {

@@ -39,6 +39,7 @@ const Translation = () => {
               <li key={keyLng} className="w-full">
                 <Link
                   href={router.asPath}
+                  scroll={false}
                   locale={keyLng}
                   className={`flex items-center w-full hover:bg-primary hover:text-white text-start px-5 py-2 ${
                     router.locale === keyLng

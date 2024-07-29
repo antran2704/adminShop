@@ -1,0 +1,14 @@
+.uploaded .ant-upload {
+    border: none !important;
+  }
+  
+  .ant-upload {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  .avatar-uploader.error {
+    .ant-upload {
+      border-color: red !important;
+    }
+  }

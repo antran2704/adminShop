@@ -18,6 +18,6 @@ interface IBannerTable {
   createdAt: string;
 }
 
-type CreateBanner = Omit<IBanner, "_id" | "createdAt" | "updateAt">;
+type ICreateBanner = Omit<IBanner, "_id" | "createdAt" | "updateAt">;
 
-export type { IBanner, CreateBanner, IBannerTable };
+export type { IBanner, ICreateBanner, IBannerTable };

@@ -1,24 +1,24 @@
 import { useRouter } from "next/router";
-import { ReactElement, useState } from "react";
+import { ReactElement, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useTranslations } from "next-intl";
 
-import { CreateBanner } from "~/interface";
-import FormLayout from "~/layouts/FormLayout";
-import { InputText } from "~/components/InputField";
-import Thumbnail from "~/components/Image/Thumbnail";
-import ButtonCheck from "~/components/Button/ButtonCheck";
-import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
-import Loading from "~/components/Loading";
 import { createBanner, uploadBannerImage } from "~/api-client";
-import { ECompressFormat, ETypeImage } from "~/enums";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
-import { NextPageWithLayout } from "~/interface/page";
-import { useTranslation } from "react-i18next";
 
-const initData: CreateBanner = {
+import { NextPageWithLayout } from "~/interface/page";
+import { ICreateBanner } from "~/interface";
+
+import FormLayout from "~/layouts/FormLayout";
+import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { object, string } from "yup";
+import { useForm } from "react-hook-form";
+import FormBanner from "~/components/BannerPage/form";
+
+const initData: ICreateBanner = {
   title: "",
   meta_title: "",
-  isPublic: true,
+  public: true,
   image: "",
   path: null,
 };
@@ -28,99 +28,54 @@ const Layout = LayoutWithHeader;
 const CreateCategoryPage: NextPageWithLayout = () => {
   const router = useRouter();
 
-  const { t } = useTranslation();
+  const t = useTranslations("CreateBannerPage");
+  const tError = useTranslations("Error");
 
-  const [data, setData] = useState<CreateBanner>(initData);
-  const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
+  // validation project form
+  const schema = useMemo(() => {
+    return object().shape({
+      title: string().trim().required(tError("PLEASE_INPUT")),
+      meta_title: string().trim().required(tError("PLEASE_INPUT")),
+      projectImage: string().required(tError("PLEASE_UPLOAD")),
+    });
+  }, [router.locale]);
 
-  const [image, setImage] = useState<string | null>(null);
+  // form control
+  const bannerForm = useForm<ICreateBanner>({
+    defaultValues: initData,
+    // resolver: yupResolver(schema) as any,
+  });
 
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
 
-  const changeValue = (name: string, value: string) => {
-    if (fieldsCheck.includes(name)) {
-      const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
-      setFieldsCheck(newFieldsCheck);
-    }
-    setData({ ...data, [name]: value });
-  };
+  const uploadThumbnail = async (source: File | null) => {
+    if (!source) return;
 
-  const changePublic = (name: string, value: boolean) => {
-    setData({ ...data, [name]: value });
-  };
-
-  const uploadThumbnail = async (source: File) => {
-    if (source) {
-      if (fieldsCheck.includes("image")) {
-        const newFieldsCheck = handleRemoveCheck(fieldsCheck, "image");
-        setFieldsCheck(newFieldsCheck);
-        ("image");
-      }
-
-      const formData: FormData = new FormData();
-      formData.append("image", source);
-      setLoadingThumbnail(true);
-
-      try {
-        const { status, payload } = await uploadBannerImage(formData);
-
-        if (status === 201) {
-          setImage(payload);
-          setLoadingThumbnail(false);
-        }
-      } catch (error) {
-        toast.error("Upload image failed", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        setLoadingThumbnail(false);
-        console.log(error);
-      }
-    }
-  };
-
-  const checkData = (data: any) => {
-    let fields = handleCheckFields(data);
-    setFieldsCheck(fields);
-    if (fields.length > 0) {
-      router.push(`#${fields[0]}`);
-    }
-    return fields;
-  };
-
-  const handleOnSubmit = async () => {
-    const fields = checkData([
-      {
-        name: "title",
-        value: data.title,
-      },
-      {
-        name: "meta_title",
-        value: data.meta_title,
-      },
-      {
-        name: "image",
-        value: image,
-      },
-    ]);
-
-    if (fields.length > 0) {
-      toast.error("Please input fields", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-
-      return;
-    }
-
-    setLoading(true);
-
-    const sendData: CreateBanner = {
-      ...data,
-      image: image as string,
-    };
+    const formData: FormData = new FormData();
+    formData.append("thumbnail", source);
+    setLoadingThumbnail(true);
 
     try {
-      const payload = await createBanner(sendData);
+      const { status, payload } = await uploadBannerImage(formData);
+
+      if (status === 201) {
+        bannerForm.setValue("image", payload);
+      }
+    } catch (error) {
+      toast.error("Upload image failed", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+
+    setLoadingThumbnail(false);
+  };
+
+  const handleOnSubmit = async (values: ICreateBanner) => {
+    setLoading(true);
+
+    try {
+      const payload = await createBanner(values);
 
       if (payload.status === 201) {
         toast.success("Success create banner", {
@@ -140,64 +95,25 @@ const CreateCategoryPage: NextPageWithLayout = () => {
 
   return (
     <FormLayout
-      title={t("CreateBannerPage.title")}
+      title={t("title")}
       backLink="/banners"
       loading={loading}
-      onSubmit={handleOnSubmit}>
-      <div className="lg:w-2/4 w-full mx-auto">
-        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-          <InputText
-            title={t("CreateBannerPage.field.title")}
-            width="w-full"
-            value={data.title}
-            error={fieldsCheck.includes("title")}
-            name="title"
-            placeholder="Title for banner..."
-            getValue={changeValue}
-          />
-
-          <InputText
-            title="Meta Title"
-            width="w-full"
-            value={data.meta_title}
-            error={fieldsCheck.includes("meta_title")}
-            name="meta_title"
-            placeholder="Metat title for SEO..."
-            getValue={changeValue}
-          />
-        </div>
-
-        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-          <Thumbnail
-            error={fieldsCheck.includes("image")}
-            url={image}
-            loading={loadingThumbnail}
-            onChange={uploadThumbnail}
-            option={{
-              quality: 80,
-              maxHeight: 600,
-              maxWidth: 1000,
-              minHeight: 600,
-              minWidth: 1000,
-              compressFormat: ECompressFormat.JPEG,
-              type: ETypeImage.file,
-            }}
-          />
-
-          <ButtonCheck
-            title={t("CreateBannerPage.field.public")}
-            name="isPublic"
-            width="w-fit"
-            isChecked={data.isPublic}
-            onChange={changePublic}
-          />
-        </div>
-      </div>
+      onSubmit={bannerForm.handleSubmit(handleOnSubmit)}>
+      <FormBanner form={bannerForm} handleChangeThumbnail={uploadThumbnail} />
     </FormLayout>
   );
 };
 
 export default CreateCategoryPage;
+
+export async function getStaticProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../../../messages/${context.locale}.json`))
+        .default,
+    },
+  };
+}
 
 CreateCategoryPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

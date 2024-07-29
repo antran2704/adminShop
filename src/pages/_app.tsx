@@ -13,6 +13,8 @@ import MainLayout from "~/layouts/MainLayout";
 
 import "react-toastify/dist/ReactToastify.css";
 import "~/styles/globals.scss";
+import "~/styles/UploadFile.component.scss";
+import "~/styles/UploadImage.component.scss";
 import themeConfig from "~/configs/antd/themeConfig";
 
 function App({ Component, pageProps }: AppPropsWithLayout) {

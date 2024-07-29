@@ -15,7 +15,7 @@ import { Bar } from "react-chartjs-2";
 import Statistic from "~/components/Statistic";
 import { axiosGet } from "~/configs/configAxios";
 import { IGrow, IGrowDate } from "~/interface";
-import { getEndDayInWeek, getFirstDayInWeek } from "~/helper/datetime";
+import { getEndDayInWeek, getFirstDayInWeek } from "~/helper/format/datetime";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 

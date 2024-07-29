@@ -23,3 +23,5 @@ export * from "./blog";
 export * from "./auth";
 export * from "./response";
 export * from "./currency";
+export * from "./hint";
+export * from "./file";

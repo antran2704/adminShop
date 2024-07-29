@@ -34,7 +34,7 @@ import { TableColumnsType } from "antd";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/router";
 
-import { ChartCore, TableCore } from "~/components/core";
+import { ChartCore, TableCore } from "~/components/Core";
 import SpringCount from "~/components/SpringCount";
 import Statistic from "~/components/Statistic";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
@@ -52,7 +52,7 @@ import {
 import { countOrders, getOrders } from "~/api-client";
 import { getGross, getGrossInWeek } from "~/api-client/gross/gross-date";
 
-import { formatDate, getFirstDayInWeek } from "~/helper/datetime";
+import { formatDate, getFirstDayInWeek } from "~/helper/format/datetime";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import CURRENCY from "~/common/currency";
 
@@ -403,7 +403,7 @@ const HomePage: NextPageWithLayout = () => {
                 show ? "max-h-[2000px]" : "max-h-[600px]"
               } gap-2 overflow-hidden transition-all ease-in-out duration-300`}>
               <Statistic
-                title={t("income.today")}
+                title={tGross("totalToday")}
                 IconElement={<BiDollarCircle className="text-4xl" />}
                 to={grossToday.total_gross}
                 backgroundColor="bg-[#5032fd]"
@@ -412,7 +412,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title={t("order.today")}
+                title={tGross("orderToday")}
                 IconElement={<AiOutlineShoppingCart className="text-4xl" />}
                 to={grossToday.orders}
                 backgroundColor="bg-[#0891b2]"
@@ -420,7 +420,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title={t("order.success")}
+                title={tGross("successOrder")}
                 IconElement={<BiPackage className="text-4xl" />}
                 to={grossToday.delivered_orders}
                 backgroundColor="bg-[#0891b2]"
@@ -428,7 +428,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title={t("order.pending")}
+                title={tGross("pendingOrder")}
                 IconElement={<BiPackage className="text-4xl" />}
                 to={pendingOrders}
                 backgroundColor="bg-warn"
@@ -436,7 +436,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title={t("order.process")}
+                title={tGross("processOrder")}
                 IconElement={<BiCircleThreeQuarter className="text-4xl" />}
                 to={processingOrders}
                 backgroundColor="bg-primary"
@@ -444,7 +444,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title={t("order.cancle")}
+                title={tGross("cancelOrder")}
                 IconElement={<BiMinusCircle className="text-4xl" />}
                 to={grossToday.cancel_orders}
                 backgroundColor="bg-cancle"
@@ -489,7 +489,9 @@ const HomePage: NextPageWithLayout = () => {
 
       <div className="w-full pb-10">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-title dark:text-darkText">{t("order.recent")}</h2>
+          <h2 className="text-title dark:text-darkText">
+            {tOrder("recentOrder")}
+          </h2>
           <Link
             href={"/orders"}
             className="text-base font-medium text-primary hover:underline">

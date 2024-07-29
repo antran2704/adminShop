@@ -1,5 +1,4 @@
 import { useRouter } from "next/router";
-import { forwardRef, ForwardRefRenderFunction, Ref } from "react";
 import SpinLoading from "~/components/Loading/SpinLoading";
 
 interface props {
@@ -10,48 +9,36 @@ interface props {
   onSubmit: () => void;
 }
 
-const FormLayout: ForwardRefRenderFunction<HTMLUListElement, props> = (
-  props: props,
-  ref: Ref<HTMLUListElement> | undefined,
-) => {
+const FormLayout = (props: props) => {
   const { children, title, backLink = "/", loading = false, onSubmit } = props;
 
   const router = useRouter();
 
   return (
-    // <LayoutWithHeader>
-    <section className="scrollHidden relative w-full overflow-auto">
-      <ul
-        ref={ref}
-        className="scrollHidden min-h-screen pb-24 px-5 gap-3 overflow-auto">
-        <div className="flex items-center justify-between py-5 z-20">
-          <h1 className="lg:text-xl text-lg font-semibold dark:text-darkText max-w-[60%] line-clamp-1">
-            {title}
-          </h1>
-        </div>
-        {children}
-      </ul>
+    <section className="relative lg:w-2/4 w-full mx-auto p-5">
+      <h1 className="lg:text-2xl md:text-xl text-lg font-semibold text-primary line-clamp-1">
+        {title}
+      </h1>
 
-      <div className="fixed bottom-0 w-full flex lg:flex-nowrap flex-wrap items-center justify-between bg-[#ffffffbf] dark:bg-[#1f293733] backdrop-blur-[6px] py-4 px-5 border-t-2 dark:border-transparent lg:gap-5 gap-2 z-10">
+      {children}
+
+      <div className="sticky bottom-0 flex items-center justify-end bg-white/60 dark:bg-[#1f293733] backdrop-blur-[6px] py-4 px-5 gap-5">
         <button
           onClick={() => router.push(backLink)}
-          className="w-fit text-lg text-white font-medium bg-[#111926] px-5 py-1 opacity-90 hover:opacity-100 border-2 rounded-md">
+          className="min-w-[100px] w-fit text-lg text-white font-medium bg-[#111926] px-5 py-1 opacity-90 hover:opacity-100 border-2 rounded-md">
           Back
         </button>
+        <button
+          onClick={onSubmit}
+          className="min-w-[100px] w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md z-10">
+          Save
+        </button>
       </div>
-
-      <button
-        onClick={onSubmit}
-        className="fixed bottom-[18px] right-5 w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md z-10">
-        Save
-      </button>
 
       {/* loading */}
       {loading && <SpinLoading className="text-3xl" />}
     </section>
-
-    // </LayoutWithHeader>
   );
 };
 
-export default forwardRef(FormLayout);
+export default FormLayout;
