@@ -31,6 +31,7 @@ const FormBanner = (props: Props) => {
     if (!file) {
       setValue("image", "");
     } else {
+      setValue("image", file.lastModified.toString());
       clearErrors("image");
     }
 
@@ -50,13 +51,13 @@ const FormBanner = (props: Props) => {
                 title={t("form.title")}
                 width="w-full"
                 error={!!errors.title}
-                placeholder="Title for banner..."
+                placeholder={t("placeholder.title")}
                 {...field}
               />
             )}
           />
           {errors.title?.message && (
-            <p className="absolute text-sm text-red-200">
+            <p className="absolute text-sm text-error">
               {errors.title.message}
             </p>
           )}
@@ -69,16 +70,16 @@ const FormBanner = (props: Props) => {
             control={control}
             render={({ field }) => (
               <InputText
-                title={t("form.title")}
+                title={t("form.metaTitle")}
                 width="w-full"
                 error={!!errors.meta_title}
-                placeholder="Title for banner..."
+                placeholder={t("placeholder.metaTitle")}
                 {...field}
               />
             )}
           />
           {errors.meta_title?.message && (
-            <p className="absolute text-sm text-red-200">
+            <p className="absolute text-sm text-error">
               {errors.meta_title.message}
             </p>
           )}
@@ -87,24 +88,35 @@ const FormBanner = (props: Props) => {
 
       {/* thumbnail */}
       <div className="w-full flex flex-col p-5 mt-5 bg-white rounded-md border-2 gap-5">
-        <UploadImage
-          title={t("form.thumbnail")}
-          height={400}
-          src={
-            getValues("image")
-              ? process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + getValues("image")
-              : ""
-          }
-          onChangeImage={onChangeImage}
-          option={{
-            quality: 80,
-            maxHeight: 600,
-            maxWidth: 1000,
-            minHeight: 600,
-            minWidth: 1000,
-            compressFormat: ECompressFormat.JPEG,
-            type: ETypeImage.file,
-          }}
+        <Controller
+          name="image"
+          control={control}
+          render={({ field: { ref } }) => (
+            <Fragment>
+              <UploadImage
+                title={t("form.thumbnail")}
+                height={400}
+                src={
+                  getValues("image")
+                    ? process.env.NEXT_PUBLIC_IMAGE_ENDPOINT +
+                      getValues("image")
+                    : ""
+                }
+                error={!!errors.image?.message}
+                onChangeImage={onChangeImage}
+                option={{
+                  quality: 80,
+                  maxHeight: 600,
+                  maxWidth: 1000,
+                  minHeight: 600,
+                  minWidth: 1000,
+                  compressFormat: ECompressFormat.JPEG,
+                  type: ETypeImage.file,
+                }}
+              />
+              <input className="opacity-0 absolute" type="text" ref={ref} />
+            </Fragment>
+          )}
         />
 
         {/* status */}

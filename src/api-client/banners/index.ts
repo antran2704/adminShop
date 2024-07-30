@@ -1,13 +1,7 @@
 import qs from "qs";
 
-import { uploadImageOnServer } from "~/helper/handleImage";
 import { IBanner, ICreateBanner, ISearch } from "~/interface";
-import httpConfig, {
-  axiosDelete,
-  axiosGet,
-  axiosPatch,
-  axiosPost,
-} from "~/configs/configAxios";
+import httpConfig from "~/configs/configAxios";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
@@ -16,19 +10,27 @@ const getBanners = async (paramater: ISearch) => {
     filter: (_, value) => value || undefined,
   });
 
-  return await axiosGet(BASE_URL + `/admin/banners?${parseParameters}`);
+  return await httpConfig
+    .get(BASE_URL + `/admin/banners?${parseParameters}`)
+    .then((res) => res.data);
 };
 
 const getBanner = async (banner_id: string) => {
-  return await axiosGet(BASE_URL + `/banners/${banner_id}`);
+  return await httpConfig
+    .get(BASE_URL + `/admin/banners/${banner_id}`)
+    .then((res) => res.data);
 };
 
 const createBanner = async (data: ICreateBanner) => {
-  return await axiosPost(BASE_URL + "/banners", data);
+  return await httpConfig
+    .post(BASE_URL + "/admin/banners", data)
+    .then((res) => res.data);
 };
 
 const updateBanner = async (banner_id: string, data: Partial<IBanner>) => {
-  return await axiosPatch(BASE_URL + `/banners/${banner_id}`, data);
+  return await httpConfig
+    .patch(BASE_URL + `/admin/banners/${banner_id}`, data)
+    .then((res) => res.data);
 };
 
 const activeBanner = async (banner_id: string) => {
@@ -44,10 +46,9 @@ const disableBanner = async (banner_id: string) => {
 };
 
 const uploadBannerImage = async (formData: FormData) => {
-  return await uploadImageOnServer(
-    BASE_URL + `/admin/banners/uploadThumbnail`,
-    formData,
-  );
+  return await httpConfig
+    .post(BASE_URL + `/admin/banners/uploadThumbnail`, formData)
+    .then((res) => res.data);
 };
 
 const deleteBanner = async (banner_id: string) => {

@@ -12,6 +12,7 @@
   },
   "BannerPage": {
     "title": "Banners",
+    "create": "Create banner",
     "table": {
       "id": "ID",
       "title": "Title",
@@ -96,10 +97,16 @@
   },
   "CreateBannerPage": {
     "title": "Create banner",
+    "editTitle": "Edit banner",
     "form": {
       "title": "Title",
+      "metaTitle": "Meta title",
       "thumbnail": "Thumbnail",
       "status": "Status"
+    },
+    "placeholder": {
+      "title": "Input title...",
+      "metaTitle": "Input meta title..."
     }
   },
   "CreateCategoryPage": {
@@ -160,9 +167,6 @@
       "percentage": "Percentage",
       "fixedAmount": "Fixed Amount"
     }
-  },
-  "EditBannerPage": {
-    "title": "Edit banner"
   },
   "EditCategoryPage": {
     "title": "Edit category"
@@ -231,13 +235,16 @@
   },
   "Error": {
     "TRY_AGAIN": "Please try again",
+    "UPLOAD_IMAGE": "Upload image faile",
+    "UPLOAD_FILE": "Upload file faile",
     "PLEASE_SELECT": "Please select",
     "PLEASE_INPUT": "Please input",
     "PLEASE_UPLOAD": "Please upload"
   },
   "Success": {
-    "Create": "Create success",
-    "Update": "Update success"
+    "create": "Created success",
+    "update": "Updated success",
+    "delete": "Deleted success"
   },
   "Common": {
     "gross": {
@@ -253,6 +260,7 @@
     "btn": {
       "exportExcel": "Export excel",
       "back": "Back",
+      "create": "Create",
       "confirm": "Confirm",
       "cancel": "Cancel"
     },

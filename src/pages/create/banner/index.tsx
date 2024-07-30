@@ -1,18 +1,18 @@
 import { useRouter } from "next/router";
-import { ReactElement, useMemo, useState } from "react";
-import { toast } from "react-toastify";
+import { Fragment, ReactElement, useMemo, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useTranslations } from "next-intl";
+import { message } from "antd";
+import { object, string } from "yup";
+import { useForm } from "react-hook-form";
 
 import { createBanner, uploadBannerImage } from "~/api-client";
 
 import { NextPageWithLayout } from "~/interface/page";
-import { ICreateBanner } from "~/interface";
+import { ICreateBanner, IResponse } from "~/interface";
 
 import FormLayout from "~/layouts/FormLayout";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
-import { object, string } from "yup";
-import { useForm } from "react-hook-form";
 import FormBanner from "~/components/BannerPage/form";
 
 const initData: ICreateBanner = {
@@ -30,65 +30,62 @@ const CreateCategoryPage: NextPageWithLayout = () => {
 
   const t = useTranslations("CreateBannerPage");
   const tError = useTranslations("Error");
+  const tSuccess = useTranslations("Success");
 
   // validation project form
   const schema = useMemo(() => {
     return object().shape({
       title: string().trim().required(tError("PLEASE_INPUT")),
       meta_title: string().trim().required(tError("PLEASE_INPUT")),
-      projectImage: string().required(tError("PLEASE_UPLOAD")),
+      image: string().required(tError("PLEASE_UPLOAD")),
     });
   }, [router.locale]);
 
   // form control
   const bannerForm = useForm<ICreateBanner>({
     defaultValues: initData,
-    // resolver: yupResolver(schema) as any,
+    resolver: yupResolver(schema) as any,
   });
 
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
+
   const [loading, setLoading] = useState<boolean>(false);
-  const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
+
+  const onChangeThumbnail = (source: File | null) => {
+    setThumbnail(source);
+  };
 
   const uploadThumbnail = async (source: File | null) => {
     if (!source) return;
 
     const formData: FormData = new FormData();
     formData.append("thumbnail", source);
-    setLoadingThumbnail(true);
 
-    try {
-      const { status, payload } = await uploadBannerImage(formData);
-
-      if (status === 201) {
-        bannerForm.setValue("image", payload);
-      }
-    } catch (error) {
-      toast.error("Upload image failed", {
-        position: toast.POSITION.TOP_RIGHT,
+    return await uploadBannerImage(formData)
+      .then((res: IResponse<string>) => res.payload)
+      .catch(() => {
+        messageApi.error(tError("UPLOAD_IMAGE"));
       });
-    }
-
-    setLoadingThumbnail(false);
   };
 
   const handleOnSubmit = async (values: ICreateBanner) => {
     setLoading(true);
 
     try {
-      const payload = await createBanner(values);
+      const image = await uploadThumbnail(thumbnail);
+
+      if (!image) return;
+
+      const payload = await createBanner({ ...values, image });
 
       if (payload.status === 201) {
-        toast.success("Success create banner", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        messageApi.success(tSuccess("create"));
         router.push("/banners");
       }
-
-      setLoading(false);
     } catch (error) {
-      toast.error("Error in create category", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+      messageApi.error(tError("TRY_AGAIN"));
       setLoading(false);
     }
   };
@@ -99,7 +96,15 @@ const CreateCategoryPage: NextPageWithLayout = () => {
       backLink="/banners"
       loading={loading}
       onSubmit={bannerForm.handleSubmit(handleOnSubmit)}>
-      <FormBanner form={bannerForm} handleChangeThumbnail={uploadThumbnail} />
+      <Fragment>
+        <FormBanner
+          form={bannerForm}
+          handleChangeThumbnail={onChangeThumbnail}
+        />
+
+        {/* Message of antd */}
+        {contextHolder}
+      </Fragment>
     </FormLayout>
   );
 };

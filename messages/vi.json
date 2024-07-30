@@ -12,6 +12,7 @@
   },
   "BannerPage": {
     "title": "Danh sách banner",
+    "create": "Tạo banner",
     "table": {
       "id": "ID",
       "title": "Tiêu đề",
@@ -96,10 +97,16 @@
   },
   "CreateBannerPage": {
     "title": "Tạo banner",
+    "editTitle": "Chỉnh sửa banner",
     "form": {
       "title": "Tiêu đề",
+      "metaTitle": "Meta title",
       "thumbnail": "Hình ảnh",
       "status": "Trạng thái"
+    },
+    "placeholder": {
+      "title": "Nhập tiêu đề...",
+      "metaTitle": "Nhập meta title..."
     }
   },
   "CreateCategoryPage": {
@@ -160,9 +167,6 @@
       "percentage": "Phần trăm",
       "fixedAmount": "Số tiền"
     }
-  },
-  "EditBannerPage": {
-    "title": "Chỉnh sửa banner"
   },
   "EditCategoryPage": {
     "title": "Chỉnh sửa thư mục"
@@ -230,13 +234,16 @@
   },
   "Error": {
     "TRY_AGAIN": "Có lỗi, vui lòng thử lại",
+    "UPLOAD_IMAGE": "Upload ảnh lỗi",
+    "UPLOAD_FILE": "Upload file lỗi",
     "PLEASE_SELECT": "Vui lòng lựa chọn",
     "PLEASE_INPUT": "Vui lòng nhập",
     "PLEASE_UPLOAD": "Vui lòng upload"
   },
   "Success": {
-    "Create": "Tạo thành công",
-    "Update": "Cập nhật thành công"
+    "create": "Tạo thành công",
+    "update": "Cập nhật thành công",
+    "delete": "Xóa thành công"
   },
   "Common": {
     "gross": {
@@ -253,6 +260,7 @@
       "exportExcel": "Xuất excel",
       "back": "Trờ lại",
       "confirm": "Xác nhận",
+      "create": "Tạo",
       "cancel": "Hủy"
     },
     "filter": {
