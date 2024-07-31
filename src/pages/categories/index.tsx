@@ -9,14 +9,17 @@ import { toast } from "react-toastify";
 
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
-import { typeCel } from "~/enums";
-
-import { IFilter, IDataCategory, IPagination } from "~/interface";
+import {
+  IFilter,
+  IPagination,
+  ICategoryTable,
+  IResponse,
+  ICategory,
+  IResponseWithPagination,
+  ISearch,
+} from "~/interface";
 
 import Search from "~/components/Search";
-import { Table, CelTable } from "~/components/Table";
-import { colHeadCategory as colHeadTable } from "~/components/Table/colHeadTable";
-import { ButtonDelete, ButtonEdit } from "~/components/Button";
 import { initPagination } from "~/components/Pagination/initData";
 import {
   deleteCategory,
@@ -26,9 +29,11 @@ import {
 } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/LayoutWithHeader";
-import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 import Loading from "~/components/Loading";
+import { useTranslations } from "next-intl";
+import { CategoryTable } from "~/components/CategoryPage";
+import { ORDER_PARAMATER_ENUM } from "~/enums";
 
 interface ISelectCategory {
   id: string;
@@ -42,215 +47,77 @@ const CategoriesPage: NextPageWithLayout = () => {
   const router = useRouter();
   const { query } = router;
 
-  const currentPage = query.page ? Number(query.page) : 1;
+  const pageParam = query.page ? Number(query.page) : 1;
+  const takeParam = query.take ? Number(query.take) : 10;
+  const searchParam = query.search ? query.search : "";
+  const orderParam = query.order ? query.order : ORDER_PARAMATER_ENUM.DESC;
 
-  const { t, i18n } = useTranslation();
+  const t = useTranslations("CategoriesPage");
+  const tError = useTranslations("Error");
 
-  const [categories, setCategories] = useState<IDataCategory[]>([]);
+  const [categories, setCategories] = useState<ICategoryTable[]>([]);
   const [selectCategories, setSelectCategories] = useState<string[]>([]);
 
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [showPopup, setShowPopup] = useState<boolean>(false);
-  const [selectItem, setSelectItem] = useState<ISelectCategory | null>(null);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [filter, setFilter] = useState<IFilter | null>(
-    query.searchText ? ({ search: query.searchText } as IFilter) : null,
-  );
 
-  const onSelectCheckBox = useCallback(
-    (id: string) => {
-      const isExit = selectCategories.find((select: string) => select === id);
-      if (isExit) {
-        const newSelects = selectCategories.filter(
-          (select: string) => select !== id,
-        );
-        setSelectCategories(newSelects);
-      } else {
-        setSelectCategories([...selectCategories, id]);
-      }
-    },
-    [selectCategories],
-  );
+  const [paramater, setParamter] = useState<ISearch>({
+    take: takeParam,
+    page: pageParam,
+    search: searchParam as string,
+    order: orderParam as ORDER_PARAMATER_ENUM,
+  });
 
-  const onReset = useCallback(() => {
-    setFilter(null);
+  const onChangePage = (page: number, pageSize: number) => {
+    setParamter({ ...paramater, page });
+    router.replace({
+      query: { ...router.query, page },
+    });
+  };
 
-    if (!currentPage || currentPage === 1) {
-      handleGetData();
-    }
-  }, [filter, currentPage]);
+  const handleGetData = useCallback(
+    async (paramater: ISearch) => {
+      setMessage(null);
+      setLoading(true);
 
-  const onChangeSearch = useCallback(
-    (name: string, value: string) => {
-      setFilter({ ...filter, [name]: value });
-    },
-    [filter],
-  );
+      try {
+        const {
+          status,
+          payload,
+          pagination,
+        }: IResponseWithPagination<ICategory[]> =
+          await getCategories(paramater);
+        if (status === 200) {
+          const data: ICategoryTable[] = payload.map((item: ICategory) => {
+            return {
+              id: item._id,
+              key: item._id,
+              title: item.title,
+              public: item.public,
+              image: item.thumbnail,
+              createdAt: item.createdAt,
+            };
+          });
 
-  const onChangePublish = async (id: string, status: boolean) => {
-    if (!id) {
-      toast.error("False change publish", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
-
-    try {
-      const payload = await updateCategory(id, { public: status });
-
-      if (payload.status === 201) {
-        toast.success("Success updated category", {
+          setPagination(pagination);
+          setCategories(data);
+        }
+      } catch (error) {
+        setMessage(tError("TRY_AGAIN"));
+        toast.error("Error in server, please try again", {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
-    } catch (error) {
-      toast.error("Please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
-  };
 
-  const onSelectDeleteItem = (
-    id: string,
-    parent_id: string | null,
-    title: string,
-    thumbnail: string,
-  ) => {
-    setSelectItem({ id, parent_id, title, thumbnail });
-    handlePopup();
-  };
-
-  const handlePopup = () => {
-    if (showPopup) {
-      setSelectItem(null);
-    }
-
-    setShowPopup(!showPopup);
-  };
-
-  const handleGetData = useCallback(async () => {
-    setMessage(null);
-    setLoading(true);
-
-    try {
-      const response = await getCategories(currentPage);
-      if (response.status === 200) {
-        if (response.payload.length === 0) {
-          setCategories([]);
-          setMessage("No category");
-          setLoading(false);
-          return;
-        }
-
-        const data: IDataCategory[] = response.payload.map(
-          (item: IDataCategory) => {
-            return {
-              _id: item._id,
-              title: item.title,
-              slug: item.slug,
-              public: item.public,
-              parent_id: item.parent_id,
-              thumbnail: item.thumbnail,
-              createdAt: item.createdAt,
-            };
-          },
-        );
-        setPagination(response.pagination);
-        setCategories(data);
-        setLoading(false);
-      }
-    } catch (error) {
-      setMessage("Error in server");
       setLoading(false);
-      toast.error("Error in server, please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
-  }, [filter, currentPage]);
-
-  const handleGetDataByFilter = useCallback(async () => {
-    setMessage(null);
-    setLoading(true);
-
-    try {
-      const response = await getCategoriesWithFilter(filter, currentPage);
-      if (response.status === 200) {
-        if (response.payload.length === 0) {
-          setCategories([]);
-          setMessage("No category");
-          setLoading(false);
-          return;
-        }
-
-        const data: IDataCategory[] = response.payload.map(
-          (item: IDataCategory) => {
-            return {
-              _id: item._id,
-              title: item.title,
-              slug: item.slug,
-              public: item.public,
-              parent_id: item.parent_id,
-              thumbnail: item.thumbnail,
-              createdAt: item.createdAt,
-            };
-          },
-        );
-        setPagination(response.pagination);
-        setCategories(data);
-        setLoading(false);
-      }
-    } catch (error) {
-      setMessage("Error in server");
-      toast.error("Error in server, please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setLoading(false);
-    }
-  }, [filter, currentPage]);
-
-  const handleDeleteCategory = useCallback(async () => {
-    if (!selectItem || !selectItem.id) {
-      setShowPopup(false);
-      toast.error("False delete category", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      return;
-    }
-
-    try {
-      await deleteCategory(selectItem.id);
-      setShowPopup(false);
-
-      if (filter) {
-        handleGetDataByFilter();
-      } else {
-        handleGetData();
-      }
-
-      toast.success("Success delete category", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } catch (error) {
-      toast.error("Error delete category", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      console.log(error);
-    }
-  }, [selectItem]);
+    },
+    [paramater, categories],
+  );
 
   useEffect(() => {
-    if (filter) {
-      handleGetDataByFilter();
-    } else {
-      handleGetData();
-    }
-  }, [currentPage]);
-
-  useEffect(() => {
-    if (selectCategories.length > 0) {
-      setSelectCategories([]);
-    }
-  }, [categories, currentPage]);
+    handleGetData(paramater);
+  }, [paramater]);
 
   if (!router.isReady) {
     return <Loading />;
@@ -258,27 +125,26 @@ const CategoriesPage: NextPageWithLayout = () => {
 
   return (
     <ShowItemsLayout
-      title={t("CategoriesPage.title")}
-      titleCreate={t("CategoriesPage.create")}
-      link="/create/category"
-      selectItem={{
-        title: selectItem?.title ? selectItem.title : "",
-        id: selectItem?.id || null,
-      }}
-      pagination={pagination}
-      handleDelete={handleDeleteCategory}
-      showPopup={showPopup}
-      handlePopup={handlePopup}>
+      title={t("title")}
+      titleCreate={t("create")}
+      link="/create/category">
       <Fragment>
-        <Search
+        {/* <Search
           search={filter?.search || ""}
           onReset={onReset}
           onSearch={onChangeSearch}
           onFilter={handleGetDataByFilter}
-          placeholder={t("CategoriesPage.search")}
+          placeholder={t("search")}
+        /> */}
+
+        <CategoryTable
+          data={categories}
+          getData={() => handleGetData(paramater)}
+          pagination={pagination}
+          onChangePage={onChangePage}
         />
 
-        <Table
+        {/* <Table
           items={categories}
           selects={selectCategories}
           setSelects={setSelectCategories}
@@ -286,7 +152,7 @@ const CategoriesPage: NextPageWithLayout = () => {
           isSelected={
             selectCategories.length === categories.length ? true : false
           }
-          colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
+          colHeadTabel={colHeadTable[router.locale as string]}
           message={message}
           loading={loading}>
           <Fragment>
@@ -341,13 +207,22 @@ const CategoriesPage: NextPageWithLayout = () => {
               </tr>
             ))}
           </Fragment>
-        </Table>
+        </Table> */}
       </Fragment>
     </ShowItemsLayout>
   );
 };
 
 export default CategoriesPage;
+
+export async function getStaticProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../../messages/${context.locale}.json`))
+        .default,
+    },
+  };
+}
 
 CategoriesPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

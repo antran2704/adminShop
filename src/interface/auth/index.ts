@@ -5,7 +5,12 @@ interface IAuthLocal {
   publicKey: string;
 }
 
-type ILogin = Pick<IAuthLocal, "apiKey" | "publicKey"> & {
+interface ILogin {
+  email: string;
+  password: string;
+}
+
+type IResponseLogin = Pick<IAuthLocal, "apiKey" | "publicKey"> & {
   accessToken: {
     value: string;
     exp: number;
@@ -16,4 +21,4 @@ type ILogin = Pick<IAuthLocal, "apiKey" | "publicKey"> & {
   };
 };
 
-export type { IAuthLocal, ILogin };
+export type { IAuthLocal, IResponseLogin, ILogin };

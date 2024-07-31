@@ -12,34 +12,10 @@ interface Props {
   title: string;
   titleCreate?: string | null;
   link?: string;
-  pagination?: IPagination;
-  showPopup?: boolean;
-  selectItem?: {
-    title: string;
-    id: string | null;
-  };
-  onCreate?: () => void;
-  handlePopup?: () => void;
-  handleDelete?: () => void;
 }
 
 const ShowItemsLayout = (props: Props) => {
-  const {
-    title,
-    titleCreate,
-    link,
-    children,
-    pagination = {
-      page: 1,
-      total: 0,
-      take: 0,
-    },
-    showPopup = false,
-    selectItem,
-    onCreate,
-    handlePopup,
-    handleDelete,
-  } = props;
+  const { title, titleCreate, link, children } = props;
   return (
     <section className="py-5 px-5">
       <div className="flex items-center justify-between pt-5 pb-10 gap-5">
@@ -57,53 +33,11 @@ const ShowItemsLayout = (props: Props) => {
                 {titleCreate}
               </Link>
             )}
-
-            {!link && (
-              <button
-                onClick={onCreate}
-                className="flex items-center font-medium md:text-base text-sm text-white bg-success px-3 py-2 rounded-md gap-1">
-                <IoIosAdd className="md:text-2xl text-xl" />
-                {titleCreate}
-              </button>
-            )}
           </div>
         )}
       </div>
 
-      <Fragment>
-        {children}
-
-        {pagination.total > pagination.take && (
-          <PaginationCus pagination={pagination} />
-        )}
-      </Fragment>
-
-      {showPopup && selectItem?.id && handlePopup && (
-        <Popup
-          title="Confirm Delete"
-          img="/popup/trash.svg"
-          show={showPopup}
-          onClose={handlePopup}>
-          <div>
-            <p className="text-lg text-center dark:text-darkText">
-              Do you want delete {title.toLowerCase()}{" "}
-              <strong>{selectItem?.title}</strong>
-            </p>
-            <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
-              <button
-                onClick={handlePopup}
-                className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-70 hover:opacity-100 rounded-md transition-cus">
-                Cancle
-              </button>
-              <button
-                onClick={handleDelete}
-                className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-70 hover:opacity-100 rounded-md">
-                Delete
-              </button>
-            </div>
-          </div>
-        </Popup>
-      )}
+      {children}
     </section>
   );
 };

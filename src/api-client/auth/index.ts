@@ -10,9 +10,9 @@ const logout = async () => {
   return await axiosPost(BASE_URL + "/admin/logout");
 };
 
-const login = async (email: string, password: string) => {
+const login = async (body: { email: string; password: string }) => {
   return await httpConfig
-    .post(BASE_URL + "/admin/login", { email, password })
+    .post(BASE_URL + "/admin/login", body)
     .then((res) => res.data);
 };
 

@@ -29,7 +29,15 @@
   "CategoriesPage": {
     "title": "Categories",
     "create": "Create category",
-    "search": "Search by category name..."
+    "search": "Search by category name...",
+    "table": {
+      "id": "ID",
+      "title": "Title",
+      "thumbnail": "Thumbnail",
+      "status": "Status",
+      "createdAt": "Created At",
+      "action": "Action"
+    }
   },
   "ProductsPage": {
     "title": "Products",
@@ -235,6 +243,7 @@
   },
   "Error": {
     "TRY_AGAIN": "Please try again",
+    "EMAIL_PASSWORD_INCORECT": "Email or password incorect",
     "UPLOAD_IMAGE": "Upload image faile",
     "UPLOAD_FILE": "Upload file faile",
     "PLEASE_SELECT": "Please select",

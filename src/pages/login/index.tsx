@@ -1,30 +1,27 @@
 import { AxiosError } from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState, FormEvent, ReactElement } from "react";
+import { useState, ReactElement, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { Button, Input } from "antd";
+import { object, string } from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, useForm } from "react-hook-form";
 
-import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
-import { InputText, InputPassword } from "~/components/InputField";
 import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
 
 import { loginReducer } from "~/store/slice/user";
 import { useAppDispatch } from "~/store/hooks";
 import { login } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
-import { ILogin, IResponse } from "~/interface";
+import { ILogin, IResponseLogin, IResponse } from "~/interface";
 
 import { setAuthLocal } from "~/helper/auth";
 
-interface IDataSend {
-  email: string | null;
-  password: string | null;
-}
-
-const initData: IDataSend = {
-  email: null,
-  password: null,
+const initData: ILogin = {
+  email: "",
+  password: "",
 };
 
 const Layout = LayoutWithoutHeader;
@@ -34,38 +31,40 @@ const LoginPage: NextPageWithLayout = () => {
   const dispatch = useAppDispatch();
 
   const t = useTranslations("LoginPage");
-  const [data, setData] = useState<IDataSend>(initData);
+  const tError = useTranslations("Error");
+
+  // validation project form
+  const schema = useMemo(() => {
+    return object().shape({
+      email: string().trim().required(tError("PLEASE_INPUT")),
+      password: string().trim().required(tError("PLEASE_INPUT")),
+    });
+  }, [router.locale]);
+
+  // form control
+  const {
+    handleSubmit,
+    setValue,
+    setError,
+    control,
+    formState: { errors },
+  } = useForm<ILogin>({
+    defaultValues: initData,
+    resolver: yupResolver(schema) as any,
+  });
+
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [message, setMessage] = useState<string | null>(null);
-
-  const onChangeData = (name: string, value: string) => {
-    if (message) {
-      setMessage(null);
-    }
-
-    setData({ ...data, [name]: value });
-  };
-
-  const onLogin = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!data.email || !data.password) {
-      setMessage("Please input field");
-    }
-
-    // setLoading(true);
-
-    const sendData: IDataSend = {
-      email: data.email?.toLowerCase() as string,
-      password: data.password,
+  const onLogin = async (values: ILogin) => {
+    setLoading(true);
+    const sendData: ILogin = {
+      email: values.email.toLowerCase().trim() as string,
+      password: values.password.trim(),
     };
 
     try {
-      const { status, payload }: IResponse<ILogin> = await login(
-        sendData.email as string,
-        sendData.password as string,
-      );
+      const { status, payload }: IResponse<IResponseLogin> =
+        await login(sendData);
 
       if (status === 200) {
         setAuthLocal("accessToken", payload.accessToken.value);
@@ -81,12 +80,12 @@ const LoginPage: NextPageWithLayout = () => {
         const { status, data: responseErr }: any = error.response;
 
         if (status === 400) {
-          setMessage(responseErr.message);
+          setError("password", { message: responseErr.message });
         }
 
         if (status === 401 || status === 404) {
-          setMessage("Email or Password incorrect");
-          setData({ ...data, password: null });
+          setError("password", { message: tError("EMAIL_PASSWORD_INCORECT") });
+          setValue("password", "");
         }
       }
 
@@ -108,49 +107,65 @@ const LoginPage: NextPageWithLayout = () => {
           {t("title")}
         </h1>
 
-        <form onSubmit={onLogin} method="POST" className="flex flex-col">
-          <div className="flex flex-col items-start mt-5 gap-5">
-            <InputText
-              title={t("email.title")}
-              width="w-full"
-              value={data.email || ""}
+        <div className="flex flex-col items-start mt-5 gap-5">
+          <div className="w-full">
+            <h3 className="md:text-base text-base pb-2">{t("email.title")}</h3>
+
+            <Controller
               name="email"
-              required={true}
-              size="M"
-              placeholder={t("email.placeholder")}
-              getValue={onChangeData}
+              control={control}
+              render={({ field }) => (
+                <Input
+                  size="large"
+                  placeholder={t("email.placeholder")}
+                  status={errors.email ? "error" : ""}
+                  {...field}
+                />
+              )}
             />
-            <InputPassword
-              title={t("password.title")}
-              width="w-full"
-              value={data.password || ""}
-              placeholder={t("password.placeholder")}
+          </div>
+          <div className="w-full">
+            <h3 className="md:text-base text-base pb-2">
+              {t("password.title")}
+            </h3>
+            <Controller
               name="password"
-              required={true}
-              size="M"
-              getValue={onChangeData}
+              control={control}
+              render={({ field }) => (
+                <Input.Password
+                  size="large"
+                  placeholder={t("password.placeholder")}
+                  status={errors.password ? "error" : ""}
+                  onPressEnter={handleSubmit(onLogin)}
+                  {...field}
+                />
+              )}
             />
-
-            {message && <p className="text-base text-error">{message}</p>}
           </div>
 
-          <div className="mt-5">
-            <ButtonClassic
-              loading={loading}
-              title={t("submit")}
-              size="M"
-              className="w-full flex items-center justify-center h-12 bg-primary"
-            />
+          {errors.password && (
+            <p className="text-base text-error">{errors.password.message}</p>
+          )}
+        </div>
 
-            <div className="flex items-center justify-center">
-              <Link
-                className="block hover:underline dark:text-darkText hover:text-primary dark:hover:text-primary text-sm my-5"
-                href="/password/reset">
-                {t("forgetPassword")}
-              </Link>
-            </div>
+        <div className="mt-5">
+          <Button
+            loading={loading}
+            size="large"
+            type="primary"
+            onClick={handleSubmit(onLogin)}
+            className="w-full flex items-center justify-center py-5">
+            {t("submit")}
+          </Button>
+
+          <div className="flex items-center justify-center">
+            <Link
+              className="block hover:underline dark:text-darkText hover:text-primary dark:hover:text-primary text-sm my-5"
+              href="/password/reset">
+              {t("forgetPassword")}
+            </Link>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

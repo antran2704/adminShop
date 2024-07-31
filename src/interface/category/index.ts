@@ -17,19 +17,19 @@ interface IParentCategory {
   title: string;
 }
 
-interface IDataCategory {
-  _id?: string | null;
+interface ICategory {
+  _id: string;
   parent_id: IParentCategory | string | null;
   childrens?: string[];
   title: string;
   description: string;
-  slug?: string | null;
+  slug?: string;
   meta_title?: string;
   meta_description?: string;
   public: boolean;
-  thumbnail: string | null;
+  thumbnail: string;
   breadcrumbs?: IBreadcrumbCategory[] | string[];
-  createdAt?: string;
+  createdAt: string;
 }
 
 interface IObjectCategory {
@@ -47,12 +47,22 @@ interface ICategorySelect {
   node_id: string | null;
 }
 
+interface ICategoryTable {
+  key: string;
+  id: string;
+  title: string;
+  image: string;
+  public: boolean;
+  createdAt: string;
+}
+
 export type {
   IThumbnailUrl,
   IOption,
-  IDataCategory,
+  ICategory,
   IParentCategory,
   ICategorySelect,
   IObjectCategory,
   IBreadcrumbCategory,
+  ICategoryTable,
 };

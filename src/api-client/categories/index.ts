@@ -1,8 +1,8 @@
 import qs from "qs";
 
 import { uploadImageOnServer } from "~/helper/handleImage";
-import { IDataCategory, IFilter, IQueryParam } from "~/interface";
-import {
+import { ICategory, IFilter, IQueryParam, ISearch } from "~/interface";
+import httpConfig, {
   axiosDelete,
   axiosGet,
   axiosPatch,
@@ -11,8 +11,15 @@ import {
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
-const getCategories = async (page: number = 1) => {
-  return await axiosGet(BASE_URL + `/admin/categories?page=${page}`);
+const getCategories = async (paramater: ISearch) => {
+  const parseParameters = qs.stringify(paramater, {
+    indices: false,
+    filter: (_, value) => value || undefined,
+  });
+
+  return await httpConfig
+    .get(BASE_URL + `/admin/categories?${parseParameters}`)
+    .then((res) => res.data);
 };
 
 const getCategory = async (category_id: string) => {
@@ -23,9 +30,7 @@ const getParentCategories = async () => {
   return await axiosGet(BASE_URL + "/admin/categories/parent");
 };
 
-const getAllCategories = async (
-  select?: IQueryParam<Partial<IDataCategory>>,
-) => {
+const getAllCategories = async (select?: IQueryParam<Partial<ICategory>>) => {
   const parseQuery = qs.stringify(select);
   return await axiosGet(BASE_URL + `/admin/categories/all?${parseQuery}`);
 };
@@ -40,15 +45,27 @@ const getCategoriesWithFilter = async (
   );
 };
 
-const createCategory = async (data: Partial<IDataCategory>) => {
+const createCategory = async (data: Partial<ICategory>) => {
   return await axiosPost(BASE_URL + "/admin/categories", data);
 };
 
 const updateCategory = async (
   category_id: string,
-  data: Partial<IDataCategory>,
+  data: Partial<ICategory>,
 ) => {
   return await axiosPatch(BASE_URL + `/admin/categories/${category_id}`, data);
+};
+
+const activeCategory = async (id: string) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/categories/${id}/active`)
+    .then((res) => res.data);
+};
+
+const disableCategory = async (id: string) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/categories/${id}/disable`)
+    .then((res) => res.data);
 };
 
 const uploadThumbnailCategory = async (formData: FormData) => {
@@ -72,4 +89,6 @@ export {
   deleteCategory,
   updateCategory,
   uploadThumbnailCategory,
+  disableCategory,
+  activeCategory,
 };

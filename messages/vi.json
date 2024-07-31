@@ -29,7 +29,15 @@
   "CategoriesPage": {
     "title": "Danh sách thư mục",
     "create": "Tạo thư mục",
-    "search": "Tìm theo tên thư mục..."
+    "search": "Tìm theo tên thư mục...",
+    "table": {
+      "id": "ID",
+      "title": "Tiêu đề",
+      "thumbnail": "Hình ảnh",
+      "status": "Trạng thái",
+      "createdAt": "Ngày tạo",
+      "action": "Action"
+    }
   },
   "ProductsPage": {
     "title": "Danh sách sản phẩm",
@@ -234,6 +242,7 @@
   },
   "Error": {
     "TRY_AGAIN": "Có lỗi, vui lòng thử lại",
+    "EMAIL_PASSWORD_INCORECT": "Email hoặc mật khẩu không đúng",
     "UPLOAD_IMAGE": "Upload ảnh lỗi",
     "UPLOAD_FILE": "Upload file lỗi",
     "PLEASE_SELECT": "Vui lòng lựa chọn",
