@@ -29,7 +29,7 @@ const ModalConfirm = (props: Props) => {
     <Modal
       centered
       title={
-        <div className="flex items-start gap-4">
+        <div className="flex items-start justify-center gap-4">
           <div className="flex items-center justify-center rounded-full">
             {type === "danger" && (
               <BiSolidError className="text-3xl text-[#F0A328]" />
@@ -42,7 +42,7 @@ const ModalConfirm = (props: Props) => {
             )}
           </div>
           <div>
-            <p className="text-lg">{title}</p>
+            <p className="text-lg ">{title}</p>
             {subtitle && <p className="text-base font-normal">{subtitle}</p>}
             {description && (
               <p className="text-base font-normal italic py-2">{description}</p>

@@ -23,16 +23,27 @@ const getCategories = async (paramater: ISearch) => {
 };
 
 const getCategory = async (category_id: string) => {
-  return await axiosGet(BASE_URL + `/admin/categories/id/${category_id}`);
+  return await httpConfig
+    .get(BASE_URL + `/admin/categories/id/${category_id}`)
+    .then((res) => res.data);
 };
 
 const getParentCategories = async () => {
-  return await axiosGet(BASE_URL + "/admin/categories/parent");
+  return await httpConfig
+    .get(BASE_URL + "/admin/categories/parent")
+    .then((res) => res.data);
 };
 
-const getAllCategories = async (select?: IQueryParam<Partial<ICategory>>) => {
-  const parseQuery = qs.stringify(select);
-  return await axiosGet(BASE_URL + `/admin/categories/all?${parseQuery}`);
+const getParentCategory = async (categoryId: string) => {
+  return await httpConfig
+    .get(BASE_URL + `/admin/categories/parent/${categoryId}`)
+    .then((res) => res.data);
+};
+
+const getChildInCategory = async (categoryId: string) => {
+  return await httpConfig
+    .get(BASE_URL + `/admin/categories/child/${categoryId}`)
+    .then((res) => res.data);
 };
 
 const getCategoriesWithFilter = async (
@@ -81,8 +92,9 @@ const deleteCategory = async (category_id: string) => {
 
 export {
   getCategories,
-  getAllCategories,
   getParentCategories,
+  getParentCategory,
+  getChildInCategory,
   getCategoriesWithFilter,
   getCategory,
   createCategory,

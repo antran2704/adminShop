@@ -6,7 +6,7 @@ import { Controller, UseFormReturn } from "react-hook-form";
 import { ICreateBanner } from "~/interface";
 import clsx from "clsx";
 import { ECompressFormat, ETypeImage } from "~/enums";
-import { InputText } from "../Core/Input";
+import { InputText } from "~/components/Core/Input";
 
 interface Props {
   data?: ICreateBanner | null;

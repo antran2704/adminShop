@@ -13,14 +13,16 @@ interface IBreadcrumbCategory {
 }
 
 interface IParentCategory {
-  _id: string | null;
+  _id: string;
+  parent_id: string | null;
   title: string;
+  children: string[];
 }
 
 interface ICategory {
   _id: string;
   parent_id: IParentCategory | string | null;
-  childrens?: string[];
+  children: string[];
   title: string;
   description: string;
   slug?: string;
@@ -32,14 +34,15 @@ interface ICategory {
   createdAt: string;
 }
 
-interface IObjectCategory {
-  [key: string]: {
-    _id: string;
-    parent_id: string | null;
-    childrens: string[];
-    slug: string;
-    title: string;
-  };
+interface ICreateCategory {
+  title: string;
+  description: string;
+  parent_id: string | null;
+  childrens?: string[];
+  meta_title?: string;
+  meta_description?: string;
+  public: boolean;
+  thumbnail: string;
 }
 
 interface ICategorySelect {
@@ -62,7 +65,7 @@ export type {
   ICategory,
   IParentCategory,
   ICategorySelect,
-  IObjectCategory,
   IBreadcrumbCategory,
   ICategoryTable,
+  ICreateCategory,
 };

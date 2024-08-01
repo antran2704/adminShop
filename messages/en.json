@@ -26,7 +26,7 @@
       "description": "Note: Data can't restore after delete"
     }
   },
-  "CategoriesPage": {
+  "CategoryPage": {
     "title": "Categories",
     "create": "Create category",
     "search": "Search by category name...",
@@ -37,6 +37,21 @@
       "status": "Status",
       "createdAt": "Created At",
       "action": "Action"
+    },
+    "form": {
+      "title": "Title",
+      "metaTitle": "Meta title",
+      "thumbnail": "Thumbnail",
+      "parentCategory": "Parent category",
+      "status": "Status"
+    },
+    "placeholder": {
+      "title": "Input title...",
+      "metaTitle": "Input meta title..."
+    },
+    "ModalDelete": {
+      "title": "Confirm delete category",
+      "description": "Note: Data can't restore after delete"
     }
   },
   "ProductsPage": {

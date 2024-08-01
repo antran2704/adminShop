@@ -26,7 +26,7 @@
       "description": "Lưu ý: Không thể phục hồi dữ liệu sau khi xóa"
     }
   },
-  "CategoriesPage": {
+  "CategoryPage": {
     "title": "Danh sách thư mục",
     "create": "Tạo thư mục",
     "search": "Tìm theo tên thư mục...",
@@ -37,6 +37,21 @@
       "status": "Trạng thái",
       "createdAt": "Ngày tạo",
       "action": "Action"
+    },
+    "form": {
+      "title": "Tiêu đề",
+      "metaTitle": "Meta title",
+      "thumbnail": "Hình ảnh",
+      "parentCategory": "Thư mục cha",
+      "status": "Trạng thái"
+    },
+    "placeholder": {
+      "title": "Nhập tiêu đề...",
+      "metaTitle": "Nhập meta title..."
+    },
+    "ModalDelete": {
+      "title": "Xác nhận xóa Category",
+      "description": "Lưu ý: Không thể phục hồi dữ liệu sau khi xóa"
     }
   },
   "ProductsPage": {
