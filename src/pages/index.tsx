@@ -37,7 +37,7 @@ import { useRouter } from "next/router";
 import { ChartCore, TableCore } from "~/components/Core";
 import SpringCount from "~/components/SpringCount";
 import Statistic from "~/components/Statistic";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import { PrivateLayout } from "~/layouts";
 
 import { ICurrency, IGross, IGrossDate, IResponse } from "~/interface";
 import { IOrder, IOrderTable, ISearchOrder } from "~/interface/order";
@@ -88,7 +88,7 @@ const initGross: IGross = {
   sub_gross: 0,
 };
 
-const Layout = LayoutWithHeader;
+const Layout = PrivateLayout;
 
 const HomePage: NextPageWithLayout = () => {
   const t = useTranslations("HomePage");

@@ -7,7 +7,7 @@ import Statistic from "~/components/Statistic";
 import { axiosGet } from "~/configs/configAxios";
 import { IGrowDate } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 
 const initOverviewDate: IGrowDate = {
   gross: 0,

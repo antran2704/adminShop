@@ -29,6 +29,7 @@
   "CategoryPage": {
     "title": "Danh sách thư mục",
     "create": "Tạo thư mục",
+    "edit": "Chỉnh sửa thư mục",
     "search": "Tìm theo tên thư mục...",
     "table": {
       "id": "ID",
@@ -40,14 +41,15 @@
     },
     "form": {
       "title": "Tiêu đề",
-      "metaTitle": "Meta title",
+      "description": "Mô tả",
       "thumbnail": "Hình ảnh",
       "parentCategory": "Thư mục cha",
       "status": "Trạng thái"
     },
     "placeholder": {
       "title": "Nhập tiêu đề...",
-      "metaTitle": "Nhập meta title..."
+      "description": "Nhập mô tả...",
+      "parent": "Lựa chọn thư mục cha"
     },
     "ModalDelete": {
       "title": "Xác nhận xóa Category",
@@ -285,7 +287,8 @@
       "back": "Trờ lại",
       "confirm": "Xác nhận",
       "create": "Tạo",
-      "cancel": "Hủy"
+      "cancel": "Hủy",
+      "delete": "Xóa"
     },
     "filter": {
       "title": "Bộ lọc",

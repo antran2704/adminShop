@@ -21,13 +21,11 @@ interface IParentCategory {
 
 interface ICategory {
   _id: string;
-  parent_id: IParentCategory | string | null;
-  children: string[];
+  parent_id: string | null;
+  childrens: string[];
   title: string;
   description: string;
   slug?: string;
-  meta_title?: string;
-  meta_description?: string;
   public: boolean;
   thumbnail: string;
   breadcrumbs?: IBreadcrumbCategory[] | string[];
@@ -38,9 +36,7 @@ interface ICreateCategory {
   title: string;
   description: string;
   parent_id: string | null;
-  childrens?: string[];
-  meta_title?: string;
-  meta_description?: string;
+  childrens: string[];
   public: boolean;
   thumbnail: string;
 }

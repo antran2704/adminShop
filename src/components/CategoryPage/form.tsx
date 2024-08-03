@@ -7,25 +7,28 @@ import {
   IResponse,
   IResponseWithPagination,
 } from "~/interface";
-import { InputText } from "~/components/Core/Input";
+import { InputText, InputTextArea } from "~/components/Core/Input";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   getChildInCategory,
   getParentCategories,
   getParentCategory,
 } from "~/api-client";
-import { TreeSelect, TreeSelectProps } from "antd";
+import { message, Switch, TreeSelect, TreeSelectProps } from "antd";
 import { DefaultOptionType } from "antd/es/select";
+import { UploadImage } from "../Core/Upload";
+import { ECompressFormat, ETypeImage } from "~/enums";
+import { BtnDelete } from "../Button";
 
 interface Props {
-  data?: ICategory | null;
+  category?: ICategory | null;
   form: UseFormReturn<ICreateCategory, any, undefined>;
-  handleChangeThumbnail: (file: File | null) => void;
+  onChangeThumbnail: (file: File | null) => void;
 }
 
 const CategoryForm = (props: Props) => {
-  const { form } = props;
+  const { form, category, onChangeThumbnail } = props;
 
   const {
     control,
@@ -35,18 +38,40 @@ const CategoryForm = (props: Props) => {
   } = form;
 
   const t = useTranslations("CategoryPage");
-  const [selectCategory, setSelectCategory] = useState<string>();
+  const tError = useTranslations("Error");
 
-  const [treeData, setTreeData] = useState<Omit<DefaultOptionType, "label">[]>(
-    [],
-  );
+  const [treeData, setTreeData] = useState<Omit<DefaultOptionType, "label">[]>([
+    {
+      id: 0,
+      pId: null,
+      value: "home",
+      title: "Home",
+    },
+  ]);
+
+  const [messageApi, contextHolder] = message.useMessage();
 
   const onSelectTree = (categoryId: string) => {
+    if (categoryId === category?.parent_id) {
+      // messageApi.error(tError)
+    }
+
     if (errors.parent_id?.message) {
       clearErrors("parent_id");
     }
 
     setValue("parent_id", categoryId);
+  };
+
+  const onChangeImage = (file: File | null) => {
+    if (!file) {
+      setValue("thumbnail", "");
+    } else {
+      setValue("thumbnail", file.lastModified.toString());
+      clearErrors("thumbnail");
+    }
+
+    onChangeThumbnail(file);
   };
 
   const handleGetChildCategory = async (parentId: string) => {
@@ -59,6 +84,7 @@ const CategoryForm = (props: Props) => {
             value: item._id,
             title: item.title,
             isLeaf: !item.children.length,
+            disabled: item._id === category?._id,
           }),
         );
 
@@ -71,7 +97,6 @@ const CategoryForm = (props: Props) => {
     categoryId: string | null,
     data: Omit<DefaultOptionType, "label">[],
   ) => {
-    console.log("data", data);
     if (!categoryId) {
       setTreeData(data);
       return;
@@ -90,12 +115,11 @@ const CategoryForm = (props: Props) => {
           value: res.payload._id,
           title: res.payload.title,
           isLeaf: !res.payload.children.length,
-          checkable: true,
+          disabled: true,
         };
 
         data.push(itemTree);
         handleGetFirstTime(res.payload.parent_id, data);
-        // setTreeData([...treeData, ...listTree]);
       },
     );
   };
@@ -118,11 +142,15 @@ const CategoryForm = (props: Props) => {
             value: item._id,
             title: item.title,
             isLeaf: !item.children.length,
+            disabled:
+              item._id === category?._id || item._id === category?.parent_id,
           }),
         );
-
-        handleGetFirstTime("65faa734d86acf925df23842", listTree);
-        // setTreeData(listTree);
+        if (category?._id && category.parent_id) {
+          handleGetFirstTime(category.parent_id as string, listTree);
+        } else {
+          setTreeData([...treeData, ...listTree]);
+        }
       })
       .catch((err) => err);
   };
@@ -132,115 +160,131 @@ const CategoryForm = (props: Props) => {
   }, []);
 
   return (
-    <div className="lg:w-2/4 w-full mx-auto">
-      <div className="w-full flex flex-col p-5 mt-5 bg-white rounded-md border-2 gap-5">
-        {/* title */}
-        <div className={clsx("relative w-full", [errors.title && "pb-2"])}>
-          <Controller
-            name="title"
-            control={control}
-            render={({ field }) => (
-              <InputText
-                title={t("form.title")}
-                width="w-full"
-                error={!!errors.title}
-                placeholder={t("placeholder.title")}
-                {...field}
-              />
-            )}
-          />
-          {errors.title?.message && (
-            <p className="absolute text-sm text-error">
-              {errors.title.message}
-            </p>
+    <div className="w-full flex flex-col  mx-auto p-5 mt-5 bg-white rounded-md border-2 gap-5">
+      {/* title */}
+      <div className={clsx("relative w-full", [errors.title && "pb-2"])}>
+        <Controller
+          name="title"
+          control={control}
+          render={({ field }) => (
+            <InputText
+              title={t("form.title")}
+              error={!!errors.title}
+              placeholder={t("placeholder.title")}
+              {...field}
+            />
           )}
-        </div>
-
-        {/* meta title */}
-        <div className={clsx("relative w-full", [errors.title && "pb-2"])}>
-          <Controller
-            name="meta_title"
-            control={control}
-            render={({ field }) => (
-              <InputText
-                title={t("form.metaTitle")}
-                width="w-full"
-                error={!!errors.meta_title}
-                placeholder={t("placeholder.metaTitle")}
-                {...field}
-              />
-            )}
-          />
-          {errors.meta_title?.message && (
-            <p className="absolute text-sm text-error">
-              {errors.meta_title.message}
-            </p>
-          )}
-        </div>
+        />
+        {errors.title?.message && (
+          <p className="absolute text-sm text-error">{errors.title.message}</p>
+        )}
       </div>
 
-      <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-        <div className={clsx("relative w-full", [errors.parent_id && "pb-2"])}>
-          <p
-            className={clsx("text-base pb-2", [
-              errors.parent_id && "text-error",
-            ])}>
-            {t("form.parentCategory")}
+      {/* description */}
+      <div className={clsx("relative w-full", [errors.title && "pb-2"])}>
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <InputTextArea
+              title={t("form.description")}
+              className="w-full"
+              error={!!errors.description}
+              placeholder={t("placeholder.description")}
+              rows={4}
+              {...field}
+            />
+          )}
+        />
+        {errors.description?.message && (
+          <p className="absolute text-sm text-error">
+            {errors.description.message}
           </p>
-          <Controller
-            name="parent_id"
-            control={control}
-            render={({ field: { value } }) => (
-              <TreeSelect
-                treeLine
-                treeDataSimpleMode
-                style={{ width: "100%" }}
-                value={value || "65faa734d86acf925df23842"}
-                size="large"
-                treeDefaultExpandedKeys={["65faa734d86acf925df23842"]}
-                dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
-                placeholder="Please select"
-                onChange={onSelectTree}
-                loadData={onLoadChildCategory}
-                treeData={treeData}
-              />
-            )}
-          />
-          {errors.parent_id?.message && (
-            <p className="absolute text-sm text-error">
-              {errors.parent_id.message}
-            </p>
-          )}
-        </div>
+        )}
       </div>
 
-      {/* <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-        <Thumbnail
-          error={fieldsCheck.includes("thumbnail")}
-          url={thumbnail}
-          loading={loadingThumbnail}
-          onChange={uploadThumbnail}
-          option={{
-            quality: 90,
-            maxHeight: 200,
-            maxWidth: 200,
-            minHeight: 200,
-            minWidth: 200,
-            compressFormat: ECompressFormat.WEBP,
-            type: ETypeImage.file,
-          }}
-        />
+      <Controller
+        name="thumbnail"
+        control={control}
+        render={({ field: { ref, value } }) => (
+          <Fragment>
+            <UploadImage
+              title={t("form.thumbnail")}
+              height={200}
+              width={200}
+              className=""
+              src={value ? process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + value : ""}
+              error={!!errors.thumbnail?.message}
+              onChangeImage={onChangeImage}
+              option={{
+                quality: 90,
+                maxHeight: 200,
+                maxWidth: 200,
+                minHeight: 200,
+                minWidth: 200,
+                compressFormat: ECompressFormat.WEBP,
+                type: ETypeImage.file,
+              }}
+            />
+            <input className="opacity-0 absolute" type="text" ref={ref} />
+          </Fragment>
+        )}
+      />
 
-        <ButtonCheck
-          title={t("CreateCategoryPage.field.public")}
+      <div className={clsx("relative w-full", [errors.parent_id && "pb-2"])}>
+        <p
+          className={clsx("text-base pb-2", [
+            errors.parent_id && "text-error",
+          ])}>
+          {t("form.parentCategory")}
+        </p>
+        <Controller
+          name="parent_id"
+          control={control}
+          render={({ field: { value } }) => (
+            <TreeSelect
+              treeLine
+              treeDataSimpleMode
+              style={{ width: "100%" }}
+              value={value || undefined}
+              size="large"
+              status={!!errors.parent_id?.message ? "error" : ""}
+              treeDefaultExpandedKeys={[
+                "home",
+                category?.parent_id ? category.parent_id : "",
+              ]}
+              dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+              placeholder={t("placeholder.parent")}
+              onChange={onSelectTree}
+              loadData={onLoadChildCategory}
+              treeData={treeData}
+            />
+          )}
+        />
+        {errors.parent_id?.message && (
+          <p className="absolute text-sm text-error">
+            {errors.parent_id.message}
+          </p>
+        )}
+      </div>
+
+      {/* status */}
+      <div>
+        <p className={clsx("text-base pb-2")}>{t("form.status")}</p>
+        <Controller
           name="public"
-          width="w-fit"
-          isChecked={data.public}
-          onChange={changePublic}
+          control={control}
+          render={({ field: { value, onChange } }) => (
+            <Switch value={value} onChange={onChange} />
+          )}
         />
-      </div> */}
+      </div>
 
-      <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3"></div>
+      {/* delete */}
+      {category?._id && <BtnDelete />}
+
+      {/* Message of Antd */}
+      {contextHolder}
     </div>
   );
 };

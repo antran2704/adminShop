@@ -20,7 +20,8 @@ interface Props {
   title?: string;
   src?: string;
   error?: boolean;
-  height?: number;
+  height?: number | string;
+  width?: number | string;
   className?: string;
   rules?: ETypeFile[];
   option?: IOptionImage;
@@ -42,6 +43,7 @@ const UploadImage = (props: Props) => {
     title,
     src = "",
     height = 200,
+    width = 200,
     option = initOption,
     rules = [],
     error = false,
@@ -54,28 +56,14 @@ const UploadImage = (props: Props) => {
   const [previewImage, setPreviewImage] = useState<string>("");
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [loadingDelete, setLoadingDelete] = useState<boolean>(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [canDelete, setCanDelete] = useState(false);
 
   const onShowModal = () => {
     setShowModal(!showModal);
   };
 
   const onRemoveImage = async () => {
-    if (canDelete) {
-      setLoadingDelete(true);
-
-      try {
-        // await removeImage(src as string);
-        setLoadingDelete(false);
-      } catch (error) {
-        setLoadingDelete(false);
-        return;
-      }
-    }
-
     setPreviewImage("");
     onChangeImage(null);
     onShowModal();
@@ -108,8 +96,7 @@ const UploadImage = (props: Props) => {
 
   useEffect(() => {
     setPreviewImage(src);
-    setCanDelete(true);
-  }, [src]);
+  }, []);
 
   return (
     <div className={clsx("w-full h-full", className)}>
@@ -118,7 +105,7 @@ const UploadImage = (props: Props) => {
           {title}
         </p>
       )}
-      <div style={{ height }}>
+      <div style={{ height, width }}>
         <Upload
           name="avatar"
           listType="picture-card"
@@ -183,7 +170,6 @@ const UploadImage = (props: Props) => {
         subtitle="Bạn muốn xóa ảnh này không?"
         open={showModal}
         type="danger"
-        confirmLoading={loadingDelete}
         onCancel={onShowModal}
         onOk={onRemoveImage}
         okText={tCommon("btn.confirm")}

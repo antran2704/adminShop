@@ -11,7 +11,7 @@ import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import MultipleValue from "~/components/InputField/MultipleValue";
 import Loading from "~/components/Loading";
 import { createdAttribute } from "~/api-client";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 import { NextPageWithLayout } from "~/interface/page";
 import { useTranslation } from "react-i18next";
 

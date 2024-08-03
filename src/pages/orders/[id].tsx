@@ -32,7 +32,7 @@ import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { getOrder, updateOrder, updatePaymentStatusOrder } from "~/api-client";
 import { getValueCoupon } from "~/helper/number/coupon";
 import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 import { NO_IMAGE } from "~/common/images";
 
 const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {

@@ -1,318 +1,147 @@
 import { useRouter } from "next/router";
-import {
-  useState,
-  useEffect,
-  Fragment,
-  useCallback,
-  ReactElement,
-} from "react";
-import { toast } from "react-toastify";
+import { useState, ReactElement, useMemo, Fragment, useEffect } from "react";
 
-import generalBreadcrumbs from "~/helper/generateBreadcrumb";
-
-import {
-  IDataCategory,
-  ICategorySelect,
-  IObjectCategory,
-} from "~/interface/category";
+import { ICategory, ICreateCategory, IResponse } from "~/interface";
 import FormLayout from "~/layouts/FormLayout";
-import { InputText } from "~/components/InputField";
-import Tree from "~/components/Tree";
-import Thumbnail from "~/components/Image/Thumbnail";
-import ButtonCheck from "~/components/Button/ButtonCheck";
-import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
-import Loading from "~/components/Loading";
+import generalBreadcrumbs from "~/helper/generateBreadcrumb";
 import {
-  deleteCategory,
-  getCategories,
+  createCategory,
   getCategory,
-  getParentCategories,
   updateCategory,
   uploadThumbnailCategory,
 } from "~/api-client";
-import Popup from "~/components/Popup";
-import { generateSlug } from "~/helper/generateSlug";
-import { ECompressFormat, ETypeImage } from "~/enums";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
+import { useTranslations } from "next-intl";
+import { object, string } from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+import { message } from "antd";
+import { CategoryForm } from "~/components/CategoryPage";
 import { NextPageWithLayout } from "~/interface/page";
-import { useTranslation } from "react-i18next";
+import Loading from "~/components/Loading";
 
-const initData: IDataCategory = {
-  _id: null,
+const initData: ICreateCategory = {
   parent_id: null,
   title: "",
   description: "",
   public: true,
-  thumbnail: null,
+  thumbnail: "",
+  childrens: [],
 };
-
 const Layout = LayoutWithHeader;
 
 const EditCategoryPage: NextPageWithLayout = () => {
   const router = useRouter();
   const categoryId = router.query.id as string;
 
-  const { t } = useTranslation();
+  const t = useTranslations("CategoryPage");
+  const tError = useTranslations("Error");
+  const tSuccess = useTranslations("Success");
 
-  const [title, setTitle] = useState<string | null>(null);
-  const [data, setData] = useState<IDataCategory>(initData);
-  const [categories, setCategories] = useState<IObjectCategory>({});
-  const [categoriesParent, setCategoriesParent] = useState([]);
-  const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
-  const [categorySelect, setCategorySelect] = useState<ICategorySelect>({
-    title: null,
-    node_id: null,
+  // validation project form
+  const schema = useMemo(() => {
+    return object().shape({
+      title: string().trim().required(tError("PLEASE_INPUT")),
+      description: string().trim().required(tError("PLEASE_INPUT")),
+      thumbnail: string().required(tError("PLEASE_UPLOAD")),
+      parent_id: string().required(tError("PLEASE_SELECT")),
+    });
+  }, [router.locale]);
+
+  // form control
+  const categoryForm = useForm<ICreateCategory>({
+    defaultValues: initData,
+    resolver: yupResolver(schema) as any,
   });
 
-  const [defaultSelect, setDefaultSelect] = useState<ICategorySelect>({
-    title: null,
-    node_id: null,
-  });
+  const [category, setCategory] = useState<ICategory | null>(null);
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
 
-  const [thumbnail, setThumbnail] = useState<string | null>(null);
-  const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const [loading, setLoading] = useState(true);
-  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
-  const handlePopup = () => {
-    setShowPopup(!showPopup);
+  const onChangeThumbnail = (source: File | null) => {
+    setThumbnail(source);
   };
 
-  const onSelectCategory = (title: string | null, node_id: string | null) => {
-    setCategorySelect({ title, node_id });
-  };
+  const uploadThumbnail = async (source: File | null) => {
+    if (!source) return;
 
-  const changeValue = (name: string, value: string) => {
-    if (fieldsCheck.includes(name)) {
-      const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
-      setFieldsCheck(newFieldsCheck);
-    }
+    const formData: FormData = new FormData();
+    formData.append("thumbnail", source);
 
-    setData({ ...data, [name]: value });
-  };
-
-  const changePublic = (name: string, value: boolean) => {
-    setData({ ...data, [name]: value });
-  };
-
-  const uploadThumbnail = useCallback(
-    async (source: File) => {
-      if (source) {
-        if (fieldsCheck.includes("thumbnail")) {
-          const newFieldsCheck = handleRemoveCheck(fieldsCheck, "thumbnail");
-          setFieldsCheck(newFieldsCheck);
-          ("thumbnail");
-        }
-
-        const formData: FormData = new FormData();
-        formData.append("thumbnail", source);
-        setLoadingThumbnail(true);
-
-        try {
-          const { status, payload } = await uploadThumbnailCategory(formData);
-
-          if (status === 201) {
-            setThumbnail(payload);
-            setLoadingThumbnail(false);
-          }
-        } catch (error) {
-          toast.error("Upload thumbnail failed", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-          setLoadingThumbnail(false);
-          console.log(error);
-        }
-      }
-    },
-    [thumbnail],
-  );
-
-  const checkData = (data: any) => {
-    let fields = handleCheckFields(data);
-    setFieldsCheck(fields);
-    router.push(`#${fields[0]}`);
-    return fields;
-  };
-
-  const handleDeleteCategory = useCallback(async () => {
-    if (!data._id) return;
-
-    try {
-      await deleteCategory(data._id as string);
-      setShowPopup(false);
-
-      toast.success("Success delete category", {
-        position: toast.POSITION.TOP_RIGHT,
+    return await uploadThumbnailCategory(formData)
+      .then((res: IResponse<string>) => res.payload)
+      .catch(() => {
+        messageApi.error(tError("UPLOAD_IMAGE"));
       });
+  };
 
-      router.push("/categories");
-    } catch (error) {
-      toast.error("Error delete category", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      console.log(error);
-    }
-  }, [data]);
+  const handleGetCategory = async (categoryId: string) => {
+    getCategory(categoryId)
+      .then(({ payload }: IResponse<ICategory>) => {
+        categoryForm.reset({
+          childrens: payload.childrens,
+          description: payload.description,
+          title: payload.title,
+          thumbnail: payload.thumbnail,
+          parent_id: payload.parent_id ? payload.parent_id : "home",
+          public: payload.public,
+        });
 
-  const handleOnSubmit = async () => {
-    const fields = checkData([
-      {
-        name: "title",
-        value: data.title,
-      },
-      {
-        name: "description",
-        value: data.description,
-      },
-      {
-        name: "thumbnail",
-        value: thumbnail,
-      },
-    ]);
+        setCategory(payload);
+      })
+      .catch((err) => err);
+  };
 
-    if (fields.length > 0) {
-      toast.error("Please input fields", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-
-      return;
-    }
-
-    let breadcrumbs: string[] = generalBreadcrumbs(
-      categorySelect.node_id || null,
-      categories,
-    );
-    let sendData = {
-      title: data.title,
-      description: data.description,
-      meta_title: data.title,
-      meta_description: data.description,
-      thumbnail,
-      public: data.public,
-      parent_id: categorySelect.node_id,
-      breadcrumbs,
-      slug: generateSlug(`${data.title} ${data._id}`),
-    };
+  const handleOnSubmit = async (
+    categoryId: string,
+    values: ICreateCategory,
+  ) => {
+    if (!categoryId) return;
 
     setLoading(true);
 
     try {
-      // if (data.thumbnail !== thumbnail) {
-      //   const deleteImagePayload = await deleteImageInSever(
-      //     data.thumbnail as string
-      //   );
+      let image: string = values.thumbnail;
 
-      //   if (deleteImagePayload.status !== 201) {
-      //     toast.error("Error in updated thumbnail", {
-      //       position: toast.POSITION.TOP_RIGHT,
-      //     });
-      //   }
-      // }
+      if (thumbnail) {
+        image = (await uploadThumbnail(thumbnail)) as string;
+      }
 
-      const payload = await updateCategory(data._id as string, sendData);
+      if (!image) {
+        setLoading(false);
+        return;
+      }
+
+      // let breadcrumbs: string[] = generalBreadcrumbs(
+      //   categorySelect.node_id || null,
+      //   categories,
+      // );
+
+      const payload = await updateCategory(categoryId, {
+        ...values,
+        thumbnail: image,
+        parent_id: values.parent_id === "home" ? null : values.parent_id,
+      });
 
       if (payload.status === 201) {
-        toast.success("Success updated category", {
-          position: toast.POSITION.BOTTOM_RIGHT,
-        });
-        setLoading(false);
+        messageApi.success(tSuccess("update"));
         router.push("/categories");
       }
     } catch (error) {
-      toast.error("Error in add category", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setLoading(false);
+      messageApi.error(tError("TRY_AGAIN"));
     }
-  };
 
-  const handleGetData = async (id: string) => {
-    setLoading(true);
-
-    try {
-      const data = await getCategory(id);
-      if (data.status === 200) {
-        const title = data.payload.parent_id
-          ? data.payload.parent_id.title
-          : "Home";
-        const node_id = data.payload.parent_id
-          ? data.payload.parent_id._id
-          : null;
-
-        setData({
-          _id: data.payload._id,
-          parent_id: data.payload.parent_id,
-          title: data.payload.title,
-          description: data.payload.description,
-          thumbnail: data.payload.thumbnail,
-          public: data.payload.public,
-        });
-        setTitle(data.payload.title);
-        setThumbnail(data.payload.thumbnail);
-        setCategorySelect({
-          node_id,
-          title,
-        });
-        setDefaultSelect({
-          node_id: data.payload._id,
-          title: data.payload.title,
-        });
-
-        setLoading(false);
-      }
-    } catch (error) {
-      toast.error("Error server, please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setLoading(false);
-    }
-  };
-
-  const handleGetCategories = async () => {
-    let data: any = {};
-    try {
-      const response = await getCategories();
-
-      for (const item of response.payload) {
-        const { _id, parent_id, title, childrens } = item;
-        data[_id] = { _id, parent_id, title, childrens };
-      }
-
-      setCategories(data);
-    } catch (error) {
-      toast.error("Error server, please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setLoading(false);
-    }
-  };
-
-  const handleGetCategoriesParent = async () => {
-    try {
-      const response = await getParentCategories();
-      const data = response.payload.map((item: any) => item._id);
-
-      setCategoriesParent(data);
-    } catch (error) {
-      toast.error("Error server, please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setLoading(false);
-    }
+    setLoading(false);
   };
 
   useEffect(() => {
-    if (!categoryId) return;
-
-    Promise.all([
-      handleGetData(categoryId),
-      handleGetCategories(),
-      handleGetCategoriesParent(),
-    ]).then(() => {
-      setLoading(false);
-    });
-  }, [categoryId, router.isReady]);
+    if (categoryId) {
+      handleGetCategory(categoryId);
+    }
+  }, [categoryId]);
 
   if (!router.isReady) {
     return <Loading />;
@@ -320,122 +149,38 @@ const EditCategoryPage: NextPageWithLayout = () => {
 
   return (
     <FormLayout
-      title={`${t("EditCategoryPage.title")} ${title ? title : ""}`}
+      title={t("edit")}
       backLink="/categories"
       loading={loading}
-      onSubmit={handleOnSubmit}>
+      onSubmit={categoryForm.handleSubmit((values) =>
+        handleOnSubmit(categoryId, values),
+      )}>
       <Fragment>
-        <div className="lg:w-2/4 w-full mx-auto">
-          <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-            <InputText
-              title={t("CreateCategoryPage.field.title")}
-              error={fieldsCheck.includes("title")}
-              width="w-full"
-              value={data.title}
-              name="title"
-              getValue={changeValue}
-            />
-
-            <InputText
-              title={t("CreateCategoryPage.field.description")}
-              width="w-full"
-              value={data.description}
-              name="description"
-              error={fieldsCheck.includes("description")}
-              getValue={changeValue}
-            />
-          </div>
-
-          <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-            <InputText
-              title={t("CreateCategoryPage.field.parent")}
-              width="w-full"
-              value={categorySelect.title ? categorySelect.title : ""}
-              name="parent_id"
-              readonly={true}
-            />
-
-            <div>
-              {categoriesParent.length > 0 &&
-                Object.keys(categories).length > 0 && (
-                  <Tree
-                    categories={categories}
-                    categoriesParent={categoriesParent}
-                    node_id="Home"
-                    parent_id={null}
-                    categorySelect={categorySelect}
-                    defaultSelect={defaultSelect}
-                    onSelect={onSelectCategory}
-                  />
-                )}
-            </div>
-          </div>
-
-          <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-            <Thumbnail
-              error={fieldsCheck.includes("thumbnail")}
-              url={thumbnail}
-              loading={loadingThumbnail}
-              onChange={uploadThumbnail}
-              option={{
-                quality: 90,
-                maxHeight: 200,
-                maxWidth: 200,
-                minHeight: 200,
-                minWidth: 200,
-                compressFormat: ECompressFormat.WEBP,
-                type: ETypeImage.file,
-              }}
-            />
-          </div>
-
-          <div className="w-full flex lg:flex-nowrap flex-wrap items-end justify-between mt-5 gap-5">
-            {data?._id && (
-              <ButtonCheck
-                title={t("CreateCategoryPage.field.public")}
-                name="public"
-                width="w-fit"
-                isChecked={data.public}
-                onChange={changePublic}
-              />
-            )}
-
-            <button
-              onClick={handlePopup}
-              className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
-              Delete
-            </button>
-          </div>
-        </div>
-
-        {showPopup && (
-          <Popup
-            title="Xác nhận xóa thư mục"
-            show={showPopup}
-            img="/popup/trash.svg"
-            onClose={handlePopup}>
-            <div>
-              <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
-                <button
-                  onClick={handlePopup}
-                  className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-90 hover:opacity-100 rounded-md transition-cus">
-                  Cancle
-                </button>
-                <button
-                  onClick={handleDeleteCategory}
-                  className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-90 hover:opacity-100 rounded-md">
-                  Delete
-                </button>
-              </div>
-            </div>
-          </Popup>
+        {category && (
+          <CategoryForm
+            category={category}
+            form={categoryForm}
+            onChangeThumbnail={onChangeThumbnail}
+          />
         )}
+
+        {/* Message of Antd */}
+        {contextHolder}
       </Fragment>
     </FormLayout>
   );
 };
 
 export default EditCategoryPage;
+
+export async function getServerSideProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../../../messages/${context.locale}.json`))
+        .default,
+    },
+  };
+}
 
 EditCategoryPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

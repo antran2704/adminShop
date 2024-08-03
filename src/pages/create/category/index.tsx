@@ -1,12 +1,11 @@
 import { useRouter } from "next/router";
-import { useState, ReactElement, useMemo } from "react";
-import { toast } from "react-toastify";
+import { useState, ReactElement, useMemo, Fragment } from "react";
 
-import { ICreateCategory } from "~/interface";
+import { ICreateCategory, IResponse } from "~/interface";
 import FormLayout from "~/layouts/FormLayout";
 import generalBreadcrumbs from "~/helper/generateBreadcrumb";
 import { createCategory, uploadThumbnailCategory } from "~/api-client";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 import { useTranslations } from "next-intl";
 import { object, string } from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -18,8 +17,6 @@ const initData: ICreateCategory = {
   parent_id: null,
   title: "",
   description: "",
-  meta_title: "",
-  meta_description: "",
   public: true,
   thumbnail: "",
   childrens: [],
@@ -38,8 +35,9 @@ const CreateCategoryPage = () => {
   const schema = useMemo(() => {
     return object().shape({
       title: string().trim().required(tError("PLEASE_INPUT")),
-      meta_title: string().trim().required(tError("PLEASE_INPUT")),
-      image: string().required(tError("PLEASE_UPLOAD")),
+      description: string().trim().required(tError("PLEASE_INPUT")),
+      thumbnail: string().required(tError("PLEASE_UPLOAD")),
+      parent_id: string().required(tError("PLEASE_SELECT")),
     });
   }, [router.locale]);
 
@@ -51,68 +49,58 @@ const CreateCategoryPage = () => {
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const [thumbnail, setThumbnail] = useState<string | null>(null);
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
 
-  const uploadThumbnail = async (source: File) => {
-    if (source) {
-      const formData: FormData = new FormData();
-      formData.append("thumbnail", source);
-      setLoadingThumbnail(true);
-
-      try {
-        const { status, payload } = await uploadThumbnailCategory(formData);
-
-        if (status === 201) {
-          setThumbnail(payload);
-          setLoadingThumbnail(false);
-        }
-      } catch (error) {
-        toast.error("Upload thumbnail failed", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        setLoadingThumbnail(false);
-        console.log(error);
-      }
-    }
+  const onChangeThumbnail = (source: File | null) => {
+    setThumbnail(source);
   };
 
-  const handleOnSubmit = async () => {
+  const uploadThumbnail = async (source: File | null) => {
+    if (!source) return;
+
+    const formData: FormData = new FormData();
+    formData.append("thumbnail", source);
+
+    return await uploadThumbnailCategory(formData)
+      .then((res: IResponse<string>) => res.payload)
+      .catch(() => {
+        messageApi.error(tError("UPLOAD_IMAGE"));
+      });
+  };
+
+  const handleOnSubmit = async (values: ICreateCategory) => {
     setLoading(true);
 
     try {
-      let breadcrumbs: string[] = generalBreadcrumbs(
-        categorySelect.node_id || null,
-        categories,
-      );
+      const image = await uploadThumbnail(thumbnail);
+
+      if (!image) {
+        setLoading(false);
+        return;
+      }
+
+      // let breadcrumbs: string[] = generalBreadcrumbs(
+      //   categorySelect.node_id || null,
+      //   categories,
+      // );
 
       const payload = await createCategory({
-        title: data.title,
-        description: data.description,
-        meta_title: data.title,
-        meta_description: data.description,
-        parent_id: categorySelect.node_id,
-        thumbnail,
-        public: data.public,
-        breadcrumbs,
+        ...values,
+        thumbnail: image,
+        parent_id: values.parent_id === "home" ? null : values.parent_id,
       });
 
       if (payload.status === 201) {
-        toast.success("Success create category", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        messageApi.success(tSuccess("create"));
         router.push("/categories");
       }
-
-      setLoading(false);
     } catch (error) {
-      toast.error("Error in create category", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setLoading(false);
+      messageApi.error(tError("TRY_AGAIN"));
     }
+
+    setLoading(false);
   };
 
   return (
@@ -120,8 +108,16 @@ const CreateCategoryPage = () => {
       title={t("create")}
       backLink="/categories"
       loading={loading}
-      onSubmit={handleOnSubmit}>
-      <CategoryForm form={categoryForm} handleChangeThumbnail={() => {}} />
+      onSubmit={categoryForm.handleSubmit(handleOnSubmit)}>
+      <Fragment>
+        <CategoryForm
+          form={categoryForm}
+          onChangeThumbnail={onChangeThumbnail}
+        />
+
+        {/* Message of Antd */}
+        {contextHolder}
+      </Fragment>
     </FormLayout>
   );
 };

@@ -12,7 +12,7 @@ import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Loading from "~/components/Loading";
 import { createBlog, getTagBlogs, uploadBlogImage } from "~/api-client";
 import { ECompressFormat, ETypeImage } from "~/enums";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 import { NextPageWithLayout } from "~/interface/page";
 import { useTranslation } from "react-i18next";
 import SelectMultipleItem from "~/components/Select/SelectMultipleItem";

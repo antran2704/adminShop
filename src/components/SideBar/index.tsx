@@ -1,5 +1,4 @@
 import { useRouter } from "next/router";
-import { useEffect, Dispatch, SetStateAction } from "react";
 import { BsArrowLeft } from "react-icons/bs";
 import { BiLogOut } from "react-icons/bi";
 import {
@@ -8,7 +7,6 @@ import {
   itemNav,
   // listPermisson,
 } from "../../data/Navbar";
-import useViewport from "~/hooks/useViewport";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import ImageCus from "../Image/ImageCus";
 import SideBarItem from "./SideBarItem";
@@ -18,21 +16,16 @@ import { clearAuthLocal } from "~/helper/auth";
 
 interface Props {
   showSideBar: boolean;
-  setShowSideBar: Dispatch<SetStateAction<boolean>>;
+  onShowModal: () => void;
 }
 
 const SideBar = (props: Props) => {
-  const { showSideBar, setShowSideBar } = props;
+  const { showSideBar, onShowModal } = props;
 
   const router = useRouter();
-  const width = useViewport();
 
   const dispatch = useAppDispatch();
   const { infor, role } = useAppSelector((state) => state.user);
-
-  const handeShow = () => {
-    setShowSideBar(!showSideBar);
-  };
 
   const handleLogOut = async () => {
     await logout();
@@ -42,22 +35,16 @@ const SideBar = (props: Props) => {
     router.push("/login");
   };
 
-  useEffect(() => {
-    if (width < 1280) {
-      setShowSideBar(false);
-    }
-  }, [router.asPath]);
-
   return (
     <>
       {/* Navbar on PC */}
       <nav
         className={`xl:sticky fixed top-0 xl:left-0 ${
           showSideBar
-            ? "lg:w-[300px] lg:min-w-[300px] md:w-6/12 sm:w-8/12 w-10/12 lg:px-5 pl-5 py-5 pb-10 lg:mr-5"
+            ? "lg:w-[20%] lg:min-w-[300px] md:w-6/12 sm:w-8/12 w-10/12 lg:px-5 pl-5 py-5 pb-10 lg:mr-5"
             : "w-0 min-w-0 mx-0 px-0 invisible"
         } h-screen bg-white dark:bg-[#1f2937] rounded-tr-xl rounded-br-xl shadow-xl overflow-hidden transition-all ease-linear duration-200 z-[1000]`}>
-        <button className="mb-5" onClick={handeShow}>
+        <button className="mb-5" onClick={onShowModal}>
           <BsArrowLeft className="text-3xl dark:text-darkText" />
         </button>
 
@@ -140,7 +127,7 @@ const SideBar = (props: Props) => {
 
       {/* Navbar on Tablet && Mobile */}
       <div
-        onClick={handeShow}
+        onClick={onShowModal}
         className={`xl:hidden fixed top-0 left-0 right-0 bottom-0 bg-black ${
           showSideBar
             ? "opacity-60 pointer-events-auto"

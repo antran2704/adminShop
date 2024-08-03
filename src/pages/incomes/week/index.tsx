@@ -17,7 +17,7 @@ import { axiosGet } from "~/configs/configAxios";
 import { IGrow, IGrowDate } from "~/interface";
 import { getEndDayInWeek, getFirstDayInWeek } from "~/helper/format/datetime";
 import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 
 ChartJS.register(
   CategoryScale,

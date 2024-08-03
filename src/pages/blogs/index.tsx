@@ -20,7 +20,7 @@ import {
   updateBlog,
 } from "~/api-client";
 
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
 import { Table, CelTable } from "~/components/Table";

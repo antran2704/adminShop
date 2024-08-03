@@ -1,18 +1,27 @@
 import { Button } from "antd";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/router";
-import SpinLoading from "~/components/Loading/SpinLoading";
 
 interface props {
   children: JSX.Element;
   title: string;
   loading?: boolean;
   backLink?: string;
+  okText?: string;
+  cancelText?: string;
   onSubmit: () => void;
 }
 
 const FormLayout = (props: props) => {
-  const { children, title, backLink = "/", loading = false, onSubmit } = props;
+  const {
+    children,
+    title,
+    backLink = "/",
+    loading = false,
+    okText,
+    cancelText,
+    onSubmit,
+  } = props;
   const tCommon = useTranslations("Common");
 
   const router = useRouter();
@@ -25,13 +34,13 @@ const FormLayout = (props: props) => {
 
       {children}
 
-      <div className="sticky bottom-0 flex items-center justify-end bg-white/60 dark:bg-[#1f293733] backdrop-blur-[6px] py-4 px-5 gap-5">
+      <div className="sticky bottom-0 flex items-center justify-end bg-white py-4 px-5 mt-2 border rounded-md gap-5">
         <Button
           size="large"
           type="default"
           onClick={() => router.push(backLink)}
           className="min-w-[100px] w-fit text-lg text-white font-medium bg-[#111926] px-5 py-1 opacity-90 hover:opacity-100 rounded-md">
-          {tCommon("btn.back")}
+          {cancelText ? cancelText : tCommon("btn.back")}
         </Button>
         <Button
           size="large"
@@ -39,13 +48,10 @@ const FormLayout = (props: props) => {
           onClick={onSubmit}
           loading={loading}
           disabled={loading}
-          className="min-w-[100px] w-fit text-lg !text-white font-medium bg-primary px-5 py-1 rounded-md z-10">
-          {tCommon("btn.create")}
+          className="min-w-[100px] w-fit text-lg font-medium bg-primary px-5 py-1 rounded-md z-10">
+          {okText ? okText : tCommon("btn.create")}
         </Button>
       </div>
-
-      {/* loading */}
-      {/* {loading && <SpinLoading className="text-3xl" />} */}
     </section>
   );
 };

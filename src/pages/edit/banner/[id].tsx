@@ -16,7 +16,7 @@ import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Loading from "~/components/Loading";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 import Popup from "~/components/Popup";
 
 import {
@@ -98,7 +98,6 @@ const EditCategoryPage: NextPageWithLayout = () => {
       router.push("/banners");
     } catch (error) {
       messageApi.error(tError("TRY_AGAIN"));
-      console.log(error);
     }
   }, []);
 

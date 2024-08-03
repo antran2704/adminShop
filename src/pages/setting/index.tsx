@@ -9,7 +9,7 @@ import { uploadImageOnServer } from "~/helper/handleImage";
 import { IUserInfor } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 import FormLayout from "~/layouts/FormLayout";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { loginReducer } from "~/store/slice/user";

@@ -18,7 +18,7 @@ import { IGrow } from "~/interface";
 import { SelectItem } from "~/components/Select";
 import { ISelectItem } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 
 ChartJS.register(
   CategoryScale,

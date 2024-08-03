@@ -22,7 +22,7 @@ import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { initPagination } from "~/components/Pagination/initData";
 import { getOrders, getOrdersWithFilter } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 import Loading from "~/components/Loading";

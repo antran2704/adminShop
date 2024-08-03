@@ -19,7 +19,7 @@ import Thumbnail from "~/components/Image/Thumbnail";
 import { uploadImageOnServer } from "~/helper/handleImage";
 import { SelectDate, SelectTag } from "~/components/Select";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 import { NextPageWithLayout } from "~/interface/page";
 import { useTranslation } from "react-i18next";
 

@@ -18,7 +18,7 @@ import { initPagination } from "~/components/Pagination/initData";
 import Loading from "~/components/Loading";
 import Can from "~/components/Ability/Can";
 
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 
 import { getBanners } from "~/api-client";
 

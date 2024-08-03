@@ -29,6 +29,7 @@
   "CategoryPage": {
     "title": "Categories",
     "create": "Create category",
+    "edit": "Edit category",
     "search": "Search by category name...",
     "table": {
       "id": "ID",
@@ -40,14 +41,15 @@
     },
     "form": {
       "title": "Title",
-      "metaTitle": "Meta title",
+      "description": "Description",
       "thumbnail": "Thumbnail",
       "parentCategory": "Parent category",
       "status": "Status"
     },
     "placeholder": {
       "title": "Input title...",
-      "metaTitle": "Input meta title..."
+      "description": "Input description...",
+      "parent": "Select parent category"
     },
     "ModalDelete": {
       "title": "Confirm delete category",
@@ -286,7 +288,8 @@
       "back": "Back",
       "create": "Create",
       "confirm": "Confirm",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "delete": "Delete"
     },
     "filter": {
       "title": "Filter",

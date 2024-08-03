@@ -12,7 +12,7 @@ import { NextPageWithLayout } from "~/interface/page";
 import { ICreateBanner, IResponse } from "~/interface";
 
 import FormLayout from "~/layouts/FormLayout";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 import FormBanner from "~/components/BannerPage/form";
 
 const initData: ICreateBanner = {

@@ -29,7 +29,7 @@ const CategoryTable = (props: Props) => {
     onChangePage,
   } = props;
 
-  const t = useTranslations("CategoriesPage");
+  const t = useTranslations("CategoryPage");
   const tError = useTranslations("Error");
   const tSuccess = useTranslations("Success");
 

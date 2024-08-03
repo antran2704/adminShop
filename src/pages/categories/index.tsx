@@ -10,10 +10,8 @@ import { toast } from "react-toastify";
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 
 import {
-  IFilter,
   IPagination,
   ICategoryTable,
-  IResponse,
   ICategory,
   IResponseWithPagination,
   ISearch,
@@ -21,28 +19,17 @@ import {
 
 import Search from "~/components/Search";
 import { initPagination } from "~/components/Pagination/initData";
-import {
-  deleteCategory,
-  getCategories,
-  getCategoriesWithFilter,
-  updateCategory,
-} from "~/api-client";
+import { getCategories } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
 import { useRouter } from "next/router";
-import Loading from "~/components/Loading";
 import { useTranslations } from "next-intl";
+
+import { PrivateLayout } from "~/layouts";
+import Loading from "~/components/Loading";
 import { CategoryTable } from "~/components/CategoryPage";
 import { ORDER_PARAMATER_ENUM } from "~/enums";
 
-interface ISelectCategory {
-  id: string;
-  parent_id: string | null;
-  title: string;
-  thumbnail: string;
-}
-
-const Layout = LayoutWithHeader;
+const Layout = PrivateLayout;
 const CategoriesPage: NextPageWithLayout = () => {
   const router = useRouter();
   const { query } = router;
@@ -52,11 +39,10 @@ const CategoriesPage: NextPageWithLayout = () => {
   const searchParam = query.search ? query.search : "";
   const orderParam = query.order ? query.order : ORDER_PARAMATER_ENUM.DESC;
 
-  const t = useTranslations("CategoriesPage");
+  const t = useTranslations("CategoryPage");
   const tError = useTranslations("Error");
 
   const [categories, setCategories] = useState<ICategoryTable[]>([]);
-  const [selectCategories, setSelectCategories] = useState<string[]>([]);
 
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);

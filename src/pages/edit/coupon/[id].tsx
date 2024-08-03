@@ -22,7 +22,7 @@ import Loading from "~/components/Loading";
 import { deleteCoupon } from "~/api-client";
 import Popup from "~/components/Popup";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 import { NextPageWithLayout } from "~/interface/page";
 import { useTranslation } from "react-i18next";
 

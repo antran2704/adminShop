@@ -31,7 +31,7 @@ import {
   updateChildAttribute,
 } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 import { useTranslation } from "react-i18next";
 
 interface ISelectAttribute {

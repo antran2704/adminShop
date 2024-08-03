@@ -55,7 +55,7 @@ import {
   uploadThumbnailProduct,
 } from "~/api-client";
 import { generateSlug } from "~/helper/generateSlug";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 import { NextPageWithLayout } from "~/interface/page";
 import { useTranslation } from "react-i18next";
 

@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 import { NotitficationType } from "~/enums";
 import PaginationTop from "~/components/Pagination/PaginationTop";
 import NotificationItem from "~/components/Notification/NotificationItem";
-import LayoutWithHeader from "~/layouts/LayoutWithHeader";
+import LayoutWithHeader from "~/layouts/Private";
 import NotificationLoading from "~/components/Notification/NotificationLoading";
 
 const Layout = LayoutWithHeader;

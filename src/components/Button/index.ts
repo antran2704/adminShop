@@ -4,6 +4,7 @@ import ButtonCheck from "./ButtonCheck";
 import ButtonClassic from "./ButtonClassic";
 import BtnExcel from "./BtnExcel";
 import BtnFilter from "./BtnFilter";
+import BtnDelete from "./BtnDelete";
 
 export {
   ButtonCheck,
@@ -12,4 +13,5 @@ export {
   BtnExcel,
   BtnFilter,
   ButtonClassic,
+  BtnDelete,
 };
