@@ -9,48 +9,50 @@ interface Props {
   separator?: string;
 }
 
-const BreadcrumbCus = (props: Props) => {
+const BreadcrumbCompoent = (props: Props) => {
   const { data, separator = ">" } = props;
 
   const t = useTranslations("Common");
 
   return (
-    <Breadcrumb
-      items={[
-        {
-          title: (
-            <Link
-              href={"/"}
-              className="dark:!text-white dark:hover:!text-primary-200">
-              {t("breadcrumb.home")}
-            </Link>
-          ),
-        },
-        ...data.map((item: ItemType, index: number) => ({
-          ...item,
-          title: item.href ? (
-            <Link
-              href={item.href}
-              className={clsx(
-                "block dark:!text-white dark:hover:!text-primary-200",
-                [index === data.length - 1 && "font-semibold"],
-              )}>
-              {item.title}
-            </Link>
-          ) : (
-            <span
-              className={clsx("dark:!text-white", [
-                index === data.length - 1 && "font-semibold",
-              ])}>
-              {item.title}
-            </span>
-          ),
-          href: undefined,
-        })),
-      ]}
-      separator={<span className="dark:!text-white">{separator}</span>}
-    />
+    <div className="py-5">
+      <Breadcrumb
+        items={[
+          {
+            title: (
+              <Link
+                href={"/"}
+                className="dark:!text-white dark:hover:!text-primary-200">
+                {t("breadcrumb.home")}
+              </Link>
+            ),
+          },
+          ...data.map((item: ItemType, index: number) => ({
+            ...item,
+            title: item.href ? (
+              <Link
+                href={item.href}
+                className={clsx(
+                  "block dark:!text-white dark:hover:!text-primary-200",
+                  [index === data.length - 1 && "font-semibold"],
+                )}>
+                {item.title}
+              </Link>
+            ) : (
+              <span
+                className={clsx("dark:!text-white", [
+                  index === data.length - 1 && "font-semibold",
+                ])}>
+                {item.title}
+              </span>
+            ),
+            href: undefined,
+          })),
+        ]}
+        separator={<span className="dark:!text-white">{separator}</span>}
+      />
+    </div>
   );
 };
 
-export default BreadcrumbCus;
+export default BreadcrumbCompoent;

@@ -1,6 +1,8 @@
+import qs from "qs";
+
 import { uploadImageOnServer } from "~/helper/handleImage";
-import { IFilter, ISendProduct } from "~/interface";
-import {
+import { IFilter, ISearch } from "~/interface";
+import httpConfig, {
   axiosDelete,
   axiosGet,
   axiosPatch,
@@ -9,34 +11,25 @@ import {
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
-const getProducts = async (page: number = 1) => {
-  return await axiosGet(BASE_URL + `/admin/products?page=${page}`);
+const getProducts = async (paramater: ISearch) => {
+  const parseParameters = qs.stringify(paramater, {
+    filter: (_, value) => value || undefined,
+  });
+
+  return await httpConfig
+    .get(BASE_URL + `/admin/products?${parseParameters}`)
+    .then((res) => res.data);
 };
 
 const getProduct = async (product_id: string) => {
   return await axiosGet(BASE_URL + `/admin/products/id/${product_id}`);
 };
 
-const getProductsWithFilter = async (
-  filter: IFilter | null,
-  page: number = 1,
-) => {
-  return await axiosGet(
-    BASE_URL +
-      `/admin/products/search?search=${filter?.search || ""}&category=${
-        filter?.category || ""
-      }&page=${page}`,
-  );
-};
-
-const createProduct = async (data: ISendProduct) => {
+const createProduct = async (data: any) => {
   return await axiosPost(BASE_URL + "/admin/products", data);
 };
 
-const updateProduct = async (
-  product_id: string,
-  data: Partial<ISendProduct>,
-) => {
+const updateProduct = async (product_id: string, data: any) => {
   return await axiosPatch(BASE_URL + `/admin/products/${product_id}`, data);
 };
 
@@ -54,7 +47,6 @@ const deleteProduct = async (product_id: string) => {
 export {
   getProducts,
   getProduct,
-  getProductsWithFilter,
   createProduct,
   updateProduct,
   uploadThumbnailProduct,

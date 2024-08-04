@@ -21,9 +21,14 @@
       "createdAt": "Created At",
       "action": "Action"
     },
-    "ModalDelete": {
+    "modalDelete": {
       "title": "Confirm delete banner",
       "description": "Note: Data can't restore after delete"
+    },
+    "breadcrumb": {
+      "list": "List banner",
+      "create": "Creat banner",
+      "update": "Update banner"
     }
   },
   "CategoryPage": {
@@ -51,17 +56,69 @@
       "description": "Input description...",
       "parent": "Select parent category"
     },
-    "ModalDelete": {
+    "modalDelete": {
       "title": "Confirm delete category",
       "description": "Note: Data can't restore after delete"
+    },
+    "breadcrumb": {
+      "list": "List category",
+      "create": "Creat category",
+      "update": "Update category"
     }
   },
-  "ProductsPage": {
+  "ProductPage": {
     "title": "Products",
     "create": "Create product",
+    "edit": "Edit product",
     "search": "Search by product name...",
-    "filter": {
-      "category": "Category"
+    "sold": "Sold",
+    "tag": {
+      "basic": "Basic infor",
+      "compination": "Compination"
+    },
+    "compination": {
+      "attribute": "Select attribute",
+      "select": "Select",
+      "generate": "Generate Variants",
+      "clear": "Clear Variants"
+    },
+    "table": {
+      "id": "ID",
+      "title": "Title",
+      "thumbnail": "Thumbnail",
+      "category": "Category",
+      "status": "Status",
+      "createdAt": "Created At",
+      "action": "Action"
+    },
+    "form": {
+      "title": "Title",
+      "shortDescription": "Overview",
+      "description": "Description",
+      "categories": "Select categories",
+      "defaultCategory": "Default category",
+      "thumbnail": "Thumbnail",
+      "gallery": "Gallery",
+      "price": "Price",
+      "promotionPrice": "Promotion Price",
+      "inventory": "Inventory",
+      "SKU": "SKU",
+      "barcode": "Barcode",
+      "public": "Public"
+    },
+    "placeholder": {
+      "title": "Input title...",
+      "description": "Input description...",
+      "parent": "Select parent product"
+    },
+    "modalDelete": {
+      "title": "Confirm delete product",
+      "description": "Note: Data can't restore after delete"
+    },
+    "breadcrumb": {
+      "list": "List product",
+      "create": "Creat product",
+      "update": "Update product"
     }
   },
   "AttributesPage": {
@@ -144,24 +201,6 @@
       "public": "Public"
     }
   },
-  "CreateProductPage": {
-    "title": "Create product",
-    "field": {
-      "title": "Title",
-      "shortDescription": "Overview",
-      "description": "Description",
-      "categories": "Select categories",
-      "defaultCategory": "Default category",
-      "thumbnail": "Thumbnail",
-      "gallery": "Gallery",
-      "price": "Price",
-      "promotionPrice": "Promotion Price",
-      "inventory": "Inventory",
-      "SKU": "SKU",
-      "barcode": "Barcode",
-      "public": "Public"
-    }
-  },
   "CreateAttributePage": {
     "title": "Create attribute",
     "field": {
@@ -195,20 +234,6 @@
   },
   "EditCategoryPage": {
     "title": "Edit category"
-  },
-  "EditProductPage": {
-    "title": "Update",
-    "sold": "Sold",
-    "tag": {
-      "basic": "Basic infor",
-      "compination": "Compination"
-    },
-    "compination": {
-      "attribute": "Select attribute",
-      "select": "Select",
-      "generate": "Generate Variants",
-      "clear": "Clear Variants"
-    }
   },
   "EditAttributePage": {
     "title": "Attributes value",
@@ -297,6 +322,9 @@
       "to": "To",
       "cancel": "Cancel filter",
       "apply": "Apply filter"
+    },
+    "breadcrumb": {
+      "home": "Home"
     }
   }
 }

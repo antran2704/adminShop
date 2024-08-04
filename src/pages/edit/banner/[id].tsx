@@ -1,40 +1,25 @@
 import { useRouter } from "next/router";
-import {
-  useState,
-  useEffect,
-  Fragment,
-  ReactElement,
-  useCallback,
-  useMemo,
-} from "react";
+import { useState, useEffect, Fragment, ReactElement, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { message } from "antd";
-
-import FormLayout from "~/layouts/FormLayout";
-import { InputText } from "~/components/InputField";
-import Thumbnail from "~/components/Image/Thumbnail";
-import ButtonCheck from "~/components/Button/ButtonCheck";
-import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
-import Loading from "~/components/Loading";
-import LayoutWithHeader from "~/layouts/Private";
-import Popup from "~/components/Popup";
-
-import {
-  deleteBanner,
-  getBanner,
-  updateBanner,
-  uploadBannerImage,
-} from "~/api-client";
-
-import { IBanner, ICreateBanner, IResponse } from "~/interface";
-import { NextPageWithLayout } from "~/interface/page";
-import { ECompressFormat, EPermission, ERole, ETypeImage } from "~/enums";
-
-import useAbility from "~/hooks/useAbility";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { object, string } from "yup";
+
+import FormLayout from "~/layouts/FormLayout";
+import Loading from "~/components/Loading";
+import LayoutWithHeader from "~/layouts/Private";
 import FormBanner from "~/components/BannerPage/form";
+import { BreadcrumbCore } from "~/components/Core";
+
+import { getBanner, updateBanner, uploadBannerImage } from "~/api-client";
+
+import { IBanner, ICreateBanner, IResponse } from "~/interface";
+import { NextPageWithLayout } from "~/interface/page";
+import { EPermission, ERole } from "~/enums";
+
+import useAbility from "~/hooks/useAbility";
+import SpinLoading from "~/components/Loading/SpinLoading";
 
 const initData: ICreateBanner = {
   title: "",
@@ -80,26 +65,6 @@ const EditCategoryPage: NextPageWithLayout = () => {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
-  const [showPopup, setShowPopup] = useState<boolean>(false);
-
-  const handlePopup = () => {
-    setShowPopup(!showPopup);
-  };
-
-  const handleDeleteBanner = useCallback(async () => {
-    if (!bannerId) return;
-
-    try {
-      await deleteBanner(bannerId);
-      setShowPopup(false);
-
-      messageApi.success(tSuccess("delete"));
-
-      router.push("/banners");
-    } catch (error) {
-      messageApi.error(tError("TRY_AGAIN"));
-    }
-  }, []);
 
   const onChangeThumbnail = (source: File | null) => {
     setThumbnail(source);
@@ -133,10 +98,11 @@ const EditCategoryPage: NextPageWithLayout = () => {
           public: payload.public,
         });
       }
+
+      setLoading(false);
     } catch (error) {
-      messageApi.error(tError("TRY_AGAIN"));
+      router.push("/banners");
     }
-    setLoading(false);
   };
 
   const handleOnSubmit = async (values: ICreateBanner) => {
@@ -187,10 +153,29 @@ const EditCategoryPage: NextPageWithLayout = () => {
       loading={loadingSubmit}
       onSubmit={bannerForm.handleSubmit(handleOnSubmit)}>
       <Fragment>
+        <BreadcrumbCore
+          data={[
+            {
+              title: t("breadcrumb.list"),
+              href: "/banners",
+            },
+            {
+              title: t("breadcrumb.update"),
+            },
+          ]}
+        />
+
         <FormBanner
           form={bannerForm}
           handleChangeThumbnail={onChangeThumbnail}
         />
+
+        {/* loading */}
+        {!loading && (
+          <div className="sticky bottom-0 w-full h-screen z-30">
+            <SpinLoading className="text-3xl" />
+          </div>
+        )}
 
         {/* Message of antd */}
         {contextHolder}

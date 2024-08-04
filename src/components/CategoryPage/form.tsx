@@ -38,7 +38,6 @@ const CategoryForm = (props: Props) => {
   } = form;
 
   const t = useTranslations("CategoryPage");
-  const tError = useTranslations("Error");
 
   const [treeData, setTreeData] = useState<Omit<DefaultOptionType, "label">[]>([
     {
@@ -279,9 +278,6 @@ const CategoryForm = (props: Props) => {
           )}
         />
       </div>
-
-      {/* delete */}
-      {category?._id && <BtnDelete />}
 
       {/* Message of Antd */}
       {contextHolder}

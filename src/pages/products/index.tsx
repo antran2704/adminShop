@@ -1,442 +1,140 @@
-import { GetServerSideProps } from "next";
-import { ParsedUrlQuery } from "querystring";
+import { useState, useEffect, Fragment, ReactElement } from "react";
+
 import {
-  useState,
-  useEffect,
-  Fragment,
-  useCallback,
-  ReactElement,
-} from "react";
-import { toast } from "react-toastify";
-
-import { typeCel } from "~/enums";
-
-import { IFilter, IPagination, IProductHome, IDataCategory } from "~/interface";
-import { ISelectItem } from "~/interface";
+  IPagination,
+  IProduct,
+  IProductTable,
+  IResponseWithPagination,
+  ISearch,
+} from "~/interface";
 
 import Search from "~/components/Search";
-import { Table, CelTable } from "~/components/Table";
 import { colHeaderProduct as colHeadTable } from "~/components/Table/colHeadTable";
 import ShowItemsLayout from "~/layouts/ShowItemsLayout";
-import SelectItem from "~/components/Select/SelectItem";
-import ImageCus from "~/components/Image/ImageCus";
-import { ButtonDelete, ButtonEdit } from "~/components/Button";
-import Link from "next/link";
-import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { initPagination } from "~/components/Pagination/initData";
-import {
-  deleteProduct,
-  getAllCategories,
-  getProducts,
-  getProductsWithFilter,
-  updateProduct,
-} from "~/api-client";
+import { getProducts } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/Private";
-import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
-
-interface ISelectProduct {
-  id: string | null;
-  title: string;
-}
-
-const initSelectProduct: ISelectProduct = {
-  id: null,
-  title: "",
-};
+import { BreadcrumbCore } from "~/components/Core";
+import { useTranslations } from "next-intl";
+import { EPermission, ERole, ORDER_PARAMATER_ENUM } from "~/enums";
+import useAbility from "~/hooks/useAbility";
+import { message } from "antd";
+import Loading from "~/components/Loading";
+import { ProductTable } from "~/components/ProductPage";
 
 const Layout = LayoutWithHeader;
 
 const ProductPage: NextPageWithLayout = () => {
   const router = useRouter();
-
   const { query } = router;
-  const currentPage = query.page ? Number(query.page) : 1;
 
-  const { t, i18n } = useTranslation();
+  const pageParam = query.page ? Number(query.page) : 1;
+  const takeParam = query.take ? Number(query.take) : 10;
+  const searchParam = query.search ? query.search : "";
+  const orderParam = query.order ? query.order : ORDER_PARAMATER_ENUM.DESC;
 
-  const [categories, setCategories] = useState<ISelectItem[]>([]);
-  const [products, setProducts] = useState<IProductHome[]>([]);
-  const [selectProduct, setSelectProduct] =
-    useState<ISelectProduct>(initSelectProduct);
+  const t = useTranslations("ProductPage");
+  const tError = useTranslations("Error");
 
-  const [selectProducts, setSelectProducts] = useState<string[]>([]);
-  const [message, setMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const { isCan } = useAbility([ERole.ADMIN], [EPermission.ADMIN]);
+
+  const [products, setProducts] = useState<IProductTable[]>([]);
+  const [paramater, setParamter] = useState<ISearch>({
+    take: takeParam,
+    page: pageParam,
+    search: searchParam as string,
+    order: orderParam as ORDER_PARAMATER_ENUM,
+  });
+
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [filter, setFilter] = useState<IFilter | null>(
-    query.searchText ? ({ search: query.searchText } as IFilter) : null,
-  );
 
-  const onSelectCheckBox = useCallback(
-    (id: string) => {
-      const isExit = selectProducts.find((select: string) => select === id);
-      if (isExit) {
-        const newSelects = selectProducts.filter(
-          (select: string) => select !== id,
-        );
-        setSelectProducts(newSelects);
-      } else {
-        setSelectProducts([...selectProducts, id]);
-      }
-    },
-    [selectProducts],
-  );
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const onChangeSearch = useCallback(
-    (name: string, value: string) => {
-      setFilter({ ...filter, [name]: value });
-    },
-    [filter],
-  );
+  const [messageApi, contextHolder] = message.useMessage();
 
-  const onSelect = useCallback(
-    (value: string, name: string) => {
-      setFilter({ ...filter, [name]: value });
-    },
-    [filter],
-  );
+  const onChangePage = (page: number, pageSize: number) => {
+    setParamter({ ...paramater, page });
+    router.replace({
+      query: { ...router.query, page },
+    });
+  };
 
-  const handleGetDataByFilter = useCallback(async () => {
-    setMessage(null);
+  const handleGetData = async (query: ISearch) => {
     setLoading(true);
 
     try {
-      const response = await getProductsWithFilter(filter, currentPage);
+      const res: IResponseWithPagination<IProduct[]> = await getProducts(query);
+      const data: IProductTable[] = res.payload.map((item: IProduct) => ({
+        key: item._id,
+        productId: item._id,
+        title: item.title,
+        thumbnail: item.thumbnail,
+        category: item.category.title,
+        price: item.price,
+        promotionPrice: item.promotion_price,
+        public: item.public,
+        createdAt: item.createdAt,
+      }));
 
-      if (response.status === 200) {
-        if (response.payload.length === 0) {
-          setProducts([]);
-          setMessage("Sorry, we can not find this Product😞");
-          setLoading(false);
-          return;
-        }
-
-        const data: IProductHome[] = response.payload.map(
-          (item: IProductHome) => {
-            return {
-              _id: item._id,
-              title: item.title,
-              price: item.price,
-              promotion_price: item.promotion_price,
-              inventory: item.inventory,
-              category: item.category,
-              thumbnail: item.thumbnail,
-              public: item.public,
-            };
-          },
-        );
-        setPagination(response.pagination);
-        setProducts(data);
-        setLoading(false);
-      }
+      setPagination(res.pagination);
+      setProducts(data);
     } catch (error) {
       console.log(error);
-      setMessage("Error in server");
-      setLoading(false);
-      toast.error("Error in server, please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+      messageApi.error(tError("TRY_AGAIN"));
     }
-  }, [filter, currentPage]);
-
-  const onChangePublic = async (id: string, status: boolean) => {
-    if (!id) {
-      toast.error("False change public", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
-
-    try {
-      const payload = await updateProduct(id, { public: status });
-
-      if (payload.status === 201) {
-        toast.success("Success updated product", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
-    } catch (error) {
-      toast.error("Please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
-  };
-
-  const onReset = useCallback(() => {
-    setFilter(null);
-
-    if (!currentPage || currentPage === 1) {
-      handleGetData();
-    }
-  }, [filter, currentPage]);
-
-  const handleGetData = useCallback(async () => {
-    setMessage(null);
-    setLoading(true);
-
-    try {
-      const response = await getProducts(currentPage);
-      if (response.status === 200) {
-        if (response.payload.length === 0) {
-          setProducts([]);
-          setMessage("Sorry, we can not find this Product😞");
-          setLoading(false);
-          return;
-        }
-
-        const data: IProductHome[] = response.payload.map(
-          (item: IProductHome) => {
-            return {
-              _id: item._id,
-              title: item.title,
-              price: item.price,
-              promotion_price: item.promotion_price,
-              inventory: item.inventory,
-              category: item.category,
-              thumbnail: item.thumbnail,
-              public: item.public,
-            };
-          },
-        );
-        setPagination(response.pagination);
-        setProducts(data);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.log(error);
-      setMessage("Error in server");
-      setLoading(false);
-      toast.error("Error in server, please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
-  }, [filter, currentPage]);
-
-  const handleGetCategories = async () => {
-    try {
-      const response = await getAllCategories({
-        title: "1",
-      });
-      if (response.status === 200) {
-        if (response.payload.length === 0) {
-          setCategories([]);
-          return;
-        }
-
-        const data: ISelectItem[] = response.payload.map(
-          (item: IDataCategory) => {
-            return {
-              _id: item._id,
-              title: item.title,
-            };
-          },
-        );
-
-        setCategories(data);
-      }
-    } catch (error) {
-      toast.error("Error get categories", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      console.log(error);
-    }
-  };
-
-  const onSelectProduct = (id: string, title: string) => {
-    setSelectProduct({ id, title });
-  };
-
-  const handlePopup = () => {
-    if (showPopup) {
-      setSelectProduct(initSelectProduct);
-    }
-
-    setShowPopup(!showPopup);
-  };
-
-  const handleDeleteProduct = async () => {
-    if (!selectProduct || !selectProduct.id) {
-      setShowPopup(false);
-      toast.error("False delete product", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      return;
-    }
-
-    try {
-      const response = await deleteProduct(selectProduct.id);
-      setShowPopup(false);
-
-      if (response.status === 201) {
-        if (filter) {
-          handleGetDataByFilter();
-        } else {
-          handleGetData();
-        }
-        toast.success("Success delete product", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
-    } catch (error) {
-      toast.error("Error delete product", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      console.log(error);
-    }
+    setLoading(false);
   };
 
   useEffect(() => {
-    handleGetCategories();
-  }, []);
+    handleGetData(paramater);
+  }, [paramater]);
 
-  useEffect(() => {
-    if (filter) {
-      handleGetDataByFilter();
-    } else {
-      handleGetData();
-    }
-  }, [currentPage]);
-
-  useEffect(() => {
-    if (selectProducts.length > 0) {
-      setSelectProducts([]);
-    }
-  }, [products, currentPage]);
+  if (!router.isReady) {
+    return <Loading />;
+  }
 
   return (
     <ShowItemsLayout
-      title={t("ProductsPage.title")}
-      titleCreate={t("ProductsPage.create")}
-      link="/create/product"
-      selectItem={selectProduct}
-      pagination={pagination}
-      handleDelete={handleDeleteProduct}
-      showPopup={showPopup}
-      handlePopup={handlePopup}>
+      title={t("title")}
+      titleCreate={isCan ? t("create") : null}
+      link="/create/banner"
+      breadcrumb={
+        <BreadcrumbCore
+          data={[
+            {
+              title: t("breadcrumb.list"),
+            },
+          ]}
+        />
+      }>
       <Fragment>
-        <Search
-          search={filter?.search ? filter.search : ""}
-          onReset={onReset}
-          onSearch={onChangeSearch}
-          onFilter={handleGetDataByFilter}
-          placeholder={t("ProductsPage.search")}>
-          <SelectItem
-            name="category"
-            placeholder={t("ProductsPage.filter.category")}
-            value={filter?.category ? filter.category : "all"}
-            data={categories}
-            onSelect={onSelect}
-            width="md:w-2/12 w-full"
-          />
-        </Search>
+        <ProductTable
+          data={products}
+          pagination={pagination}
+          loading={loading}
+          getData={() => handleGetData(paramater)}
+          onChangePage={onChangePage}
+        />
 
-        <Table
-          items={products}
-          selects={selectProducts}
-          setSelects={setSelectProducts}
-          selectAll={true}
-          isSelected={selectProducts.length === products.length ? true : false}
-          colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
-          message={message}
-          loading={loading}>
-          <Fragment>
-            {products.map((product: IProductHome) => (
-              <tr
-                key={product._id}
-                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none">
-                <CelTable
-                  type={typeCel.SELECT}
-                  isSelected={
-                    selectProducts.includes(product._id as string)
-                      ? true
-                      : false
-                  }
-                  onSelectCheckBox={() =>
-                    onSelectCheckBox(product._id as string)
-                  }
-                />
-                <CelTable type={typeCel.GROUP}>
-                  <Link
-                    href={`/edit/product/${product._id}`}
-                    className="flex items-center gap-2">
-                    <ImageCus
-                      title="product image"
-                      src={
-                        ((process.env.NEXT_PUBLIC_ENDPOINT_API as string) +
-                          product.thumbnail?.replace(
-                            "http://localhost:3001",
-                            "",
-                          )) as string
-                      }
-                      className="min-w-[32px] w-8 h-8 rounded-full"
-                    />
-                    <p className="text-sm font-medium lg:max-w-[80%] line-clamp-3 lg:whitespace-normal whitespace-nowrap">
-                      {product.title}
-                    </p>
-                  </Link>
-                </CelTable>
-                <CelTable
-                  type={typeCel.TEXT}
-                  center={true}
-                  value={product.category ? product.category.title : "Home"}
-                />
-                <CelTable
-                  type={typeCel.TEXT}
-                  center={true}
-                  value={formatBigNumber(product.price)}
-                />
-                <CelTable
-                  type={typeCel.TEXT}
-                  center={true}
-                  value={
-                    product.promotion_price
-                      ? formatBigNumber(product.promotion_price)
-                      : "0"
-                  }
-                />
-                <CelTable
-                  type={typeCel.TEXT}
-                  center={true}
-                  value={product.inventory.toString()}
-                />
-                <CelTable
-                  type={typeCel.STATUS}
-                  status={product.inventory > 0 ? "bg-success" : "bg-error"}
-                  value={product.inventory > 0 ? "Selling" : "Sold out"}
-                />
-                <CelTable
-                  id={product._id as string}
-                  type={typeCel.PUBLIC}
-                  checked={product.public}
-                  onGetChecked={onChangePublic}
-                />
-                <CelTable type={typeCel.GROUP}>
-                  <div className="flex items-center justify-center gap-2">
-                    <ButtonEdit link={`/edit/product/${product._id}`} />
-
-                    <ButtonDelete
-                      onClick={() => {
-                        if (!showPopup) {
-                          onSelectProduct(product._id as string, product.title);
-                        }
-
-                        handlePopup();
-                      }}
-                    />
-                  </div>
-                </CelTable>
-              </tr>
-            ))}
-          </Fragment>
-        </Table>
+        {/* Message of antd */}
+        {contextHolder}
       </Fragment>
     </ShowItemsLayout>
   );
 };
 
 export default ProductPage;
+
+export async function getStaticProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../../messages/${context.locale}.json`))
+        .default,
+    },
+  };
+}
 
 ProductPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

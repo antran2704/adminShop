@@ -21,9 +21,14 @@
       "createdAt": "Ngày tạo",
       "action": "Action"
     },
-    "ModalDelete": {
+    "modalDelete": {
       "title": "Xác nhận xóa Banner",
       "description": "Lưu ý: Không thể phục hồi dữ liệu sau khi xóa"
+    },
+    "breadcrumb": {
+      "list": "Danh sách banner",
+      "create": "Tạo banner",
+      "update": "Chỉnh sửa banner"
     }
   },
   "CategoryPage": {
@@ -51,17 +56,69 @@
       "description": "Nhập mô tả...",
       "parent": "Lựa chọn thư mục cha"
     },
-    "ModalDelete": {
+    "modalDelete": {
       "title": "Xác nhận xóa Category",
       "description": "Lưu ý: Không thể phục hồi dữ liệu sau khi xóa"
+    },
+    "breadcrumb": {
+      "list": "Danh sách thư mục",
+      "create": "Tạo thư mục",
+      "update": "Chỉnh sửa thư mục"
     }
   },
-  "ProductsPage": {
+  "ProductPage": {
     "title": "Danh sách sản phẩm",
     "create": "Tạo sản phẩm",
+    "edit": "Chỉnh sửa sản phẩm",
     "search": "Tìm theo tên sản phẩm...",
-    "filter": {
-      "category": "Thư mục"
+    "sold": "Đã bán",
+    "tag": {
+      "basic": "Thông tin cơ bản",
+      "compination": "Sản phẩm con"
+    },
+    "compination": {
+      "attribute": "Thuộc tính",
+      "select": "Lựa chọn",
+      "generate": "Tạo",
+      "clear": "Xóa"
+    },
+    "table": {
+      "id": "ID",
+      "title": "Tên sản phẩm",
+      "thumbnail": "Hình ảnh",
+      "category": "Thư mục",
+      "status": "Trạng thái",
+      "createdAt": "Ngày tạo",
+      "action": "Action"
+    },
+    "form": {
+      "title": "Tiêu đề",
+      "shortDescription": "Tổng quan sản phẩm",
+      "description": "Mô tả",
+      "categories": "Lựa chọn thư mục",
+      "defaultCategory": "Thư mục mặc định",
+      "thumbnail": "Hình ảnh",
+      "gallery": "Hình ảnh sản phẩm",
+      "price": "Gía sản phẩm",
+      "promotionPrice": "Gía giảm của sản phẩm",
+      "inventory": "Tồn kho",
+      "SKU": "Mã SKU",
+      "barcode": "Mã Barcode",
+      "public": "Hiện"
+    },
+    "placeholder": {
+      "title": "Nhập tiêu đề...",
+      "description": "Nhập mô tả...",
+      "parent": "Lựa chọn thư mục cha"
+    },
+    "modalDelete": {
+      "title": "Xác nhận xóa sản phẩm",
+      "description": "Lưu ý: Không thể phục hồi dữ liệu sau khi xóa"
+    },
+    "breadcrumb": {
+      "list": "Danh sách sản phẩm",
+      "create": "Tạo sản phẩm",
+      "update": "Chỉnh sửa sản phẩm"
     }
   },
   "AttributesPage": {
@@ -144,24 +201,6 @@
       "public": "Hiện"
     }
   },
-  "CreateProductPage": {
-    "title": "Tạo sản phẩm",
-    "field": {
-      "title": "Tiêu đề",
-      "shortDescription": "Tổng quan sản phẩm",
-      "description": "Mô tả",
-      "categories": "Lựa chọn thư mục",
-      "defaultCategory": "Thư mục mặc định",
-      "thumbnail": "Hình ảnh",
-      "gallery": "Hình ảnh sản phẩm",
-      "price": "Gía sản phẩm",
-      "promotionPrice": "Gía giảm của sản phẩm",
-      "inventory": "Tồn kho",
-      "SKU": "Mã SKU",
-      "barcode": "Mã Barcode",
-      "public": "Hiện"
-    }
-  },
   "CreateAttributePage": {
     "title": "Tạo thuộc tính",
     "field": {
@@ -195,20 +234,6 @@
   },
   "EditCategoryPage": {
     "title": "Chỉnh sửa thư mục"
-  },
-  "EditProductPage": {
-    "title": "Chỉnh sửa sản phẩm",
-    "sold": "Đã bán",
-    "tag": {
-      "basic": "Thông tin cơ bản",
-      "compination": "Sản phẩm con"
-    },
-    "compination": {
-      "attribute": "Thuộc tính",
-      "select": "Lựa chọn",
-      "generate": "Tạo",
-      "clear": "Xóa"
-    }
   },
   "EditAttributePage": {
     "title": "Danh sách giá trị của thuộc tính",
@@ -296,6 +321,9 @@
       "to": "Đến",
       "cancel": "Huỷ bộ lọc",
       "apply": "Xác nhận lọc"
+    },
+    "breadcrumb": {
+      "home": "Trang chủ"
     }
   }
 }

@@ -5,3 +5,4 @@ export { default as SelectFilterCore } from "./Filter/Select";
 export { default as DateFilterCore } from "./Filter/Date";
 export { default as DateRangeFilterCore } from "./Filter/Date/Range";
 export { default as FromToFilterCore } from "./Filter/FromTo";
+export { default as BreadcrumbCore } from "./Breadcrumb";

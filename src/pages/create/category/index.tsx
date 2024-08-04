@@ -1,17 +1,19 @@
 import { useRouter } from "next/router";
 import { useState, ReactElement, useMemo, Fragment } from "react";
-
-import { ICreateCategory, IResponse } from "~/interface";
-import FormLayout from "~/layouts/FormLayout";
-import generalBreadcrumbs from "~/helper/generateBreadcrumb";
-import { createCategory, uploadThumbnailCategory } from "~/api-client";
-import LayoutWithHeader from "~/layouts/Private";
 import { useTranslations } from "next-intl";
 import { object, string } from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { message } from "antd";
+
+import { ICreateCategory, IResponse } from "~/interface";
+import { createCategory, uploadThumbnailCategory } from "~/api-client";
+
+import LayoutWithHeader from "~/layouts/Private";
+import FormLayout from "~/layouts/FormLayout";
+
 import { CategoryForm } from "~/components/CategoryPage";
+import { BreadcrumbCore } from "~/components/Core";
 
 const initData: ICreateCategory = {
   parent_id: null,
@@ -81,11 +83,6 @@ const CreateCategoryPage = () => {
         return;
       }
 
-      // let breadcrumbs: string[] = generalBreadcrumbs(
-      //   categorySelect.node_id || null,
-      //   categories,
-      // );
-
       const payload = await createCategory({
         ...values,
         thumbnail: image,
@@ -110,6 +107,18 @@ const CreateCategoryPage = () => {
       loading={loading}
       onSubmit={categoryForm.handleSubmit(handleOnSubmit)}>
       <Fragment>
+        <BreadcrumbCore
+          data={[
+            {
+              title: t("breadcrumb.list"),
+              href: "/categories",
+            },
+            {
+              title: t("breadcrumb.create"),
+            },
+          ]}
+        />
+
         <CategoryForm
           form={categoryForm}
           onChangeThumbnail={onChangeThumbnail}

@@ -1,24 +1,21 @@
 import Link from "next/link";
-import { Fragment } from "react";
 import { IoIosAdd } from "react-icons/io";
-
-import Popup from "~/components/Popup";
-import PaginationCus from "~/components/Pagination";
-
-import { IPagination } from "~/interface/pagination";
 
 interface Props {
   children: JSX.Element;
   title: string;
   titleCreate?: string | null;
+  breadcrumb?: JSX.Element;
   link?: string;
 }
 
 const ShowItemsLayout = (props: Props) => {
-  const { title, titleCreate, link, children } = props;
+  const { title, titleCreate, link, breadcrumb, children } = props;
   return (
-    <section className="py-5 px-5">
-      <div className="flex items-center justify-between pt-5 pb-10 gap-5">
+    <section className="px-5">
+      {breadcrumb}
+
+      <div className="flex items-center justify-between pb-10 gap-5">
         <h1 className="lg:text-2xl text-xl font-bold dark:text-darkText">
           {title}
         </h1>

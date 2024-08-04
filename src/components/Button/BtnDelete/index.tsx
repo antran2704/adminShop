@@ -15,7 +15,7 @@ const ButtonDelete = (props: Props) => {
     <Button
       size="large"
       type="primary"
-      className={clsx("bg-red-500 hover:!bg-red-600 ml-auto", className)}
+      className={clsx("bg-red-500 hover:!bg-red-600", className)}
       {...rest}>
       {content ? content : tCommon("btn.delete")}
     </Button>

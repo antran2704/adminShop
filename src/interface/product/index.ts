@@ -22,19 +22,38 @@ interface ISpecificationsProduct {
   attributes: ISpecificationAttributes[];
 }
 
-interface IProduct {
-  _id: string | null;
+interface IProductCategory {
+  _id: string;
   title: string;
-  meta_title?: string;
-  meta_description?: string;
+}
+
+interface IProduct {
+  _id: string;
+  title: string;
+  meta_title: string;
+  meta_description: string;
   thumbnail: string | null;
+  gallery: string[];
+  shortDescription: string;
+  description: string;
+  category: IProductCategory;
+  categories: IProductCategory[];
   barcode: string | null;
   sku: string | null;
-  public: boolean;
   price: number;
   promotion_price: number;
   inventory: number;
   sold: number;
+  hotProduct: boolean;
+  public: boolean;
+  options: IOptionProduct[];
+  specifications: ISpecificationsProduct[];
+  variants: IVariantProduct[];
+  breadcrumbs: string[];
+  viewer: number;
+  slug: string;
+  rate: number;
+  createdAt: string;
 }
 
 interface IVariantProduct extends IProduct {
@@ -47,67 +66,29 @@ interface IVariantProduct extends IProduct {
   url: string | null;
 }
 
-interface IProductData extends IProduct {
-  category: IParentCategory;
-  categories: IParentCategory[];
-  type: [];
-  shortDescription: string;
-  description: string;
-  options: IOptionProduct[];
-  gallery: string[];
-  brand?: string | null;
-  hotProduct?: boolean;
-  specifications: ISpecificationsProduct[];
-  viewer: number;
-  rate: number;
-  slug?: string;
-  variants: IVariantProduct[];
-  breadcrumbs: string[];
-  createdAt?: string;
+// type ICreateProduct = Omit<
+//   IProductData,
+//   "_id" | "viewer" | "rate" | "slug" | "type" | "createdAt"
+// >;
+
+interface IProductTable {
+  key: string;
+  productId: string;
+  title: string;
+  thumbnail: string | null;
+  category: string;
+  price: number;
+  promotionPrice: number;
+  public: boolean;
+  createdAt: string;
 }
 
-type ICreateProduct = Omit<
-  IProductData,
-  "_id" | "viewer" | "rate" | "slug" | "type" | "createdAt"
->;
-
-type ISendProduct = Omit<
-  IProductData,
-  | "_id"
-  | "viewer"
-  | "rate"
-  | "type"
-  | "createdAt"
-  | "category"
-  | "categories"
-  | "variants"
-  | "sold"
-> & {
-  category: string;
-  categories: string[];
-  variations?: string[];
-};
-
-type IProductHome = Pick<
-  IProductData,
-  | "_id"
-  | "title"
-  | "public"
-  | "price"
-  | "promotion_price"
-  | "inventory"
-  | "category"
-  | "thumbnail"
->;
-
 export type {
-  IProductData,
-  IProductHome,
+  IProduct,
+  IProductTable,
   IVariantProduct,
   IOptionProduct,
   ISpecificationsProduct,
-  ICreateProduct,
-  ISendProduct,
   ISpecificationAttributes,
   IValueOption,
 };

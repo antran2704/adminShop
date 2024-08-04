@@ -1,8 +1,8 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
-import { ICategoryTable, IPagination } from "~/interface";
+import { IProductTable, IPagination } from "~/interface";
 import { TableCore } from "../Core";
 import { message, Switch, TableColumnsType } from "antd";
-import { activeCategory, deleteCategory, disableCategory } from "~/api-client";
+import { activeBanner, deleteBanner, disableBanner } from "~/api-client";
 import { useTranslations } from "next-intl";
 import ImageCus from "../Image/ImageCus";
 import { PATH_IMAGE } from "~/common/images";
@@ -13,14 +13,14 @@ import { ModalConfirm } from "../Modal";
 import { initPagination } from "../Pagination/initData";
 
 interface Props {
-  data: ICategoryTable[];
+  data: IProductTable[];
   pagination: IPagination;
   loading?: boolean;
   getData: () => void;
   onChangePage: (page: number, pageSize: number) => void;
 }
 
-const CategoryTable = (props: Props) => {
+const ProductTable = (props: Props) => {
   const {
     data,
     loading = false,
@@ -29,24 +29,24 @@ const CategoryTable = (props: Props) => {
     onChangePage,
   } = props;
 
-  const t = useTranslations("CategoryPage");
+  const t = useTranslations("ProductPage");
   const tError = useTranslations("Error");
   const tSuccess = useTranslations("Success");
 
   const router = useRouter();
 
-  const [listItem, setListItem] = useState<ICategoryTable[]>([]);
-  const [selectDelete, setSelectDelete] = useState<ICategoryTable | null>(null);
+  const [listItem, setListItem] = useState<IProductTable[]>([]);
+  const [selectDelete, setSelectDelete] = useState<IProductTable | null>(null);
 
   const [modalDelete, setModalDelete] = useState<boolean>(false);
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const columns: TableColumnsType<ICategoryTable> = useMemo(() => {
+  const columns: TableColumnsType<IProductTable> = useMemo(() => {
     return [
       {
         title: t("table.id"),
-        dataIndex: "id",
+        dataIndex: "productId",
         className: "whitespace-nowrap",
         align: "center",
       },
@@ -58,7 +58,7 @@ const CategoryTable = (props: Props) => {
       },
       {
         title: t("table.thumbnail"),
-        dataIndex: "image",
+        dataIndex: "thumbnail",
         className: "whitespace-nowrap",
         align: "center",
         render: (image: string) => {
@@ -72,17 +72,23 @@ const CategoryTable = (props: Props) => {
         },
       },
       {
+        title: t("table.category"),
+        dataIndex: "category",
+        className: "whitespace-nowrap",
+        align: "center",
+      },
+      {
         title: t("table.status"),
         dataIndex: "public",
         className: "whitespace-nowrap",
-        render: (isPublic: boolean, reccord: ICategoryTable) => (
+        render: (isPublic: boolean, reccord: IProductTable) => (
           <Switch
             checked={isPublic}
             onClick={() => {
               if (isPublic) {
-                onDisableItem(reccord);
+                onDisableBanner(reccord);
               } else {
-                onActiveItem(reccord);
+                onActiveBanner(reccord);
               }
             }}
           />
@@ -107,7 +113,7 @@ const CategoryTable = (props: Props) => {
         dataIndex: "action",
         className: "whitespace-nowrap",
         align: "center",
-        render: (_, record: ICategoryTable) => {
+        render: (_, record: IProductTable) => {
           return (
             <div className="flex items-center justify-center gap-2">
               <ButtonDelete
@@ -117,7 +123,7 @@ const CategoryTable = (props: Props) => {
                 }}
               />
               <ButtonEdit
-                onClick={() => router.push(`/edit/category/${record.id}`)}
+                onClick={() => router.push(`/edit/product/${record.productId}`)}
               />
             </div>
           );
@@ -134,18 +140,18 @@ const CategoryTable = (props: Props) => {
     setModalDelete(!modalDelete);
   };
 
-  const onActiveItem = async (reccord: ICategoryTable) => {
+  const onActiveBanner = async (reccord: IProductTable) => {
     try {
-      await activeCategory(reccord.id);
+      await activeBanner(reccord.productId);
 
       const indexItem: number = listItem.findIndex(
-        (item: ICategoryTable) => item.id === reccord.id,
+        (banner: IProductTable) => banner.productId === reccord.productId,
       );
 
       if (indexItem > -1) {
-        const newItems: ICategoryTable[] = [...listItem];
-        newItems[indexItem] = { ...reccord, public: true };
-        setListItem(newItems);
+        const newBanners: IProductTable[] = [...listItem];
+        newBanners[indexItem] = { ...reccord, public: true };
+        setListItem(newBanners);
       }
 
       messageApi.success(tSuccess("update"));
@@ -154,18 +160,18 @@ const CategoryTable = (props: Props) => {
     }
   };
 
-  const onDisableItem = async (reccord: ICategoryTable) => {
+  const onDisableBanner = async (reccord: IProductTable) => {
     try {
-      await disableCategory(reccord.id);
+      await disableBanner(reccord.productId);
 
       const indexItem: number = listItem.findIndex(
-        (item: ICategoryTable) => item.id === reccord.id,
+        (banner: IProductTable) => banner.productId === reccord.productId,
       );
 
       if (indexItem > -1) {
-        const newItems: ICategoryTable[] = [...listItem];
-        newItems[indexItem] = { ...reccord, public: false };
-        setListItem(newItems);
+        const newBanners: IProductTable[] = [...listItem];
+        newBanners[indexItem] = { ...reccord, public: false };
+        setListItem(newBanners);
       }
 
       messageApi.success(tSuccess("update"));
@@ -174,11 +180,11 @@ const CategoryTable = (props: Props) => {
     }
   };
 
-  const onDeleteItem = async () => {
+  const onDeleteBanner = async () => {
     if (!selectDelete) return;
 
     try {
-      await deleteCategory(selectDelete.id);
+      await deleteBanner(selectDelete.productId);
       setModalDelete(false);
       setSelectDelete(null);
       getData();
@@ -215,7 +221,7 @@ const CategoryTable = (props: Props) => {
         centered
         type="error"
         destroyOnClose
-        onOk={onDeleteItem}>
+        onOk={onDeleteBanner}>
         <img
           src="/popup/trash.svg"
           className="size-[200px] mx-auto"
@@ -233,4 +239,4 @@ const CategoryTable = (props: Props) => {
   );
 };
 
-export default CategoryTable;
+export default ProductTable;

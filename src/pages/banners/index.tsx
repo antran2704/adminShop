@@ -17,15 +17,15 @@ import { NextPageWithLayout } from "~/interface/page";
 import { initPagination } from "~/components/Pagination/initData";
 import Loading from "~/components/Loading";
 import Can from "~/components/Ability/Can";
+import { BannerTable } from "~/components/BannerPage";
+import { BreadcrumbCore } from "~/components/Core";
 
 import LayoutWithHeader from "~/layouts/Private";
 
 import { getBanners } from "~/api-client";
 
 import useAbility from "~/hooks/useAbility";
-import { TableCore } from "~/components/Core";
-import { message, Modal } from "antd";
-import { BannerTable } from "~/components/BannerPage";
+import { message } from "antd";
 
 const Layout = LayoutWithHeader;
 const BannersPage: NextPageWithLayout = () => {
@@ -99,7 +99,16 @@ const BannersPage: NextPageWithLayout = () => {
     <ShowItemsLayout
       title={tBanner("title")}
       titleCreate={isCan ? tBanner("create") : null}
-      link="/create/banner">
+      link="/create/banner"
+      breadcrumb={
+        <BreadcrumbCore
+          data={[
+            {
+              title: tBanner("breadcrumb.list"),
+            },
+          ]}
+        />
+      }>
       <Fragment>
         <BannerTable
           data={banners}

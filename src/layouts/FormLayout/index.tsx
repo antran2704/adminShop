@@ -9,6 +9,7 @@ interface props {
   backLink?: string;
   okText?: string;
   cancelText?: string;
+  breadcrumb?: JSX.Element;
   onSubmit: () => void;
 }
 
@@ -18,6 +19,7 @@ const FormLayout = (props: props) => {
     title,
     backLink = "/",
     loading = false,
+    breadcrumb,
     okText,
     cancelText,
     onSubmit,
@@ -28,13 +30,15 @@ const FormLayout = (props: props) => {
 
   return (
     <section className="relative lg:w-2/4 w-full mx-auto p-5">
+      {breadcrumb}
+
       <h1 className="lg:text-2xl md:text-xl text-lg font-semibold text-primary line-clamp-1">
         {title}
       </h1>
 
       {children}
 
-      <div className="sticky bottom-0 flex items-center justify-end bg-white py-4 px-5 mt-2 border rounded-md gap-5">
+      <div className="sticky bottom-0 flex items-center justify-end bg-white py-4 px-5 mt-2 border rounded-md gap-5 z-20">
         <Button
           size="large"
           type="default"

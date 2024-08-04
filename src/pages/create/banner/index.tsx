@@ -14,6 +14,7 @@ import { ICreateBanner, IResponse } from "~/interface";
 import FormLayout from "~/layouts/FormLayout";
 import LayoutWithHeader from "~/layouts/Private";
 import FormBanner from "~/components/BannerPage/form";
+import { BreadcrumbCore } from "~/components/Core";
 
 const initData: ICreateBanner = {
   title: "",
@@ -28,7 +29,7 @@ const Layout = LayoutWithHeader;
 const CreateCategoryPage: NextPageWithLayout = () => {
   const router = useRouter();
 
-  const t = useTranslations("CreateBannerPage");
+  const t = useTranslations("BannerPage");
   const tError = useTranslations("Error");
   const tSuccess = useTranslations("Success");
 
@@ -95,6 +96,19 @@ const CreateCategoryPage: NextPageWithLayout = () => {
       title={t("title")}
       backLink="/banners"
       loading={loading}
+      breadcrumb={
+        <BreadcrumbCore
+          data={[
+            {
+              title: t("breadcrumb.list"),
+              href: "/banners",
+            },
+            {
+              title: t("breadcrumb.create"),
+            },
+          ]}
+        />
+      }
       onSubmit={bannerForm.handleSubmit(handleOnSubmit)}>
       <Fragment>
         <FormBanner

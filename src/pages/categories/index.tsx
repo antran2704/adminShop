@@ -28,6 +28,8 @@ import { PrivateLayout } from "~/layouts";
 import Loading from "~/components/Loading";
 import { CategoryTable } from "~/components/CategoryPage";
 import { ORDER_PARAMATER_ENUM } from "~/enums";
+import { BreadcrumbCore } from "~/components/Core";
+import { message } from "antd";
 
 const Layout = PrivateLayout;
 const CategoriesPage: NextPageWithLayout = () => {
@@ -44,7 +46,6 @@ const CategoriesPage: NextPageWithLayout = () => {
 
   const [categories, setCategories] = useState<ICategoryTable[]>([]);
 
-  const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
 
@@ -55,8 +56,10 @@ const CategoriesPage: NextPageWithLayout = () => {
     order: orderParam as ORDER_PARAMATER_ENUM,
   });
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   const onChangePage = (page: number, pageSize: number) => {
-    setParamter({ ...paramater, page });
+    setParamter({ ...paramater, page, take: pageSize });
     router.replace({
       query: { ...router.query, page },
     });
@@ -64,7 +67,6 @@ const CategoriesPage: NextPageWithLayout = () => {
 
   const handleGetData = useCallback(
     async (paramater: ISearch) => {
-      setMessage(null);
       setLoading(true);
 
       try {
@@ -90,7 +92,7 @@ const CategoriesPage: NextPageWithLayout = () => {
           setCategories(data);
         }
       } catch (error) {
-        setMessage(tError("TRY_AGAIN"));
+        messageApi.error(tError("TRY_AGAIN"));
         toast.error("Error in server, please try again", {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -113,22 +115,35 @@ const CategoriesPage: NextPageWithLayout = () => {
     <ShowItemsLayout
       title={t("title")}
       titleCreate={t("create")}
-      link="/create/category">
+      link="/create/category"
+      breadcrumb={
+        <BreadcrumbCore
+          data={[
+            {
+              title: t("breadcrumb.list"),
+            },
+          ]}
+        />
+      }>
       <Fragment>
         {/* <Search
-          search={filter?.search || ""}
-          onReset={onReset}
-          onSearch={onChangeSearch}
-          onFilter={handleGetDataByFilter}
-          placeholder={t("search")}
-        /> */}
+            search={filter?.search || ""}
+            onReset={onReset}
+            onSearch={onChangeSearch}
+            onFilter={handleGetDataByFilter}
+            placeholder={t("search")}
+          /> */}
 
         <CategoryTable
           data={categories}
+          loading={loading}
           getData={() => handleGetData(paramater)}
           pagination={pagination}
           onChangePage={onChangePage}
         />
+
+        {/* message of antd */}
+        {contextHolder}
       </Fragment>
     </ShowItemsLayout>
   );

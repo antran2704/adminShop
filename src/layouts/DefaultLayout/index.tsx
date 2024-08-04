@@ -61,7 +61,11 @@ const DefaultLayout = ({ children }: Props) => {
   }, [infor]);
 
   if (loading) {
-    return <SpinLoading className="text-3xl" />;
+    return (
+      <div className="fixed top-0 left-0 right-0 bottom-0">
+        <SpinLoading className="text-3xl" />
+      </div>
+    );
   }
 
   return (

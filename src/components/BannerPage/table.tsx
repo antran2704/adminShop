@@ -209,7 +209,7 @@ const BannerTable = (props: Props) => {
       />
 
       <ModalConfirm
-        title={tBanner("ModalDelete.title")}
+        title={tBanner("modalDelete.title")}
         open={modalDelete}
         onCancel={handlePopup}
         centered
@@ -223,7 +223,7 @@ const BannerTable = (props: Props) => {
           alt="delete image"
         />
         <p className="md:text-lg text-base text-center mb-10">
-          {tBanner("ModalDelete.description")}
+          {tBanner("modalDelete.description")}
         </p>
       </ModalConfirm>
 
