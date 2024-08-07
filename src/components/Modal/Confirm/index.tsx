@@ -1,4 +1,4 @@
-import { Modal, ModalProps } from "antd";
+import { ButtonProps, Modal, ModalProps } from "antd";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import { BiSolidError } from "react-icons/bi";
@@ -20,16 +20,23 @@ const ModalConfirm = (props: Props) => {
     type = "danger",
     description,
     children,
+    okButtonProps,
+    cancelButtonProps,
     ...prop
   } = props;
 
   const tCommon = useTranslations("Common");
 
+  const { className: classNameOkBtn, ...restOkButtonProps } =
+    okButtonProps as ButtonProps;
+  const { className: classNameCancelBtn, ...restCancelButtonProps } =
+    cancelButtonProps as ButtonProps;
+
   return (
     <Modal
       centered
       title={
-        <div className="flex items-start justify-center gap-4">
+        <div className="flex items-start justify-start gap-4">
           <div className="flex items-center justify-center rounded-full">
             {type === "danger" && (
               <BiSolidError className="text-3xl text-[#F0A328]" />
@@ -41,7 +48,7 @@ const ModalConfirm = (props: Props) => {
               <MdOutlineError className="text-3xl text-red-500" />
             )}
           </div>
-          <div>
+          <div className="w-full">
             <p className="text-lg ">{title}</p>
             {subtitle && <p className="text-base font-normal">{subtitle}</p>}
             {description && (
@@ -51,16 +58,19 @@ const ModalConfirm = (props: Props) => {
         </div>
       }
       cancelButtonProps={{
-        className: "md:w-[100px] w-1/2",
         size: "large",
+        ...restCancelButtonProps,
+        className: clsx("md:w-[100px] w-1/2", [classNameCancelBtn]),
       }}
       okButtonProps={{
         size: "large",
+        ...restOkButtonProps,
         className: clsx(
           "md:w-[100px] w-1/2",
-          [type === "danger" && "bg-[#F0A328] hover:!bg-[#F0A328]"],
-          [type === "info" && "bg-primary-200 hover:!bg-primary-200"],
-          [type === "error" && "bg-red-500 hover:!bg-red-500"],
+          classNameOkBtn,
+          [type === "danger" && "!bg-[#F0A328] hover:bg-[#F0A328]"],
+          [type === "info" && "bg-primary-200 hover:bg-primary-200"],
+          [type === "error" && "bg-red-500 hover:bg-red-500"],
         ),
       }}
       okText={tCommon("btn.confirm")}

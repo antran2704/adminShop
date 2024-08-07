@@ -1,7 +1,7 @@
 import { ChangeEvent, FC, KeyboardEvent, memo } from "react";
 import { TippyInfor } from "../Tippy";
 import { IInputNumber } from "./interface";
-import { revertPriceToString } from "~/helper/number/fomatterCurrency";
+import { revertPriceToString } from "~/helper/number/";
 import handleCheckValidNumber from "~/helper/number";
 import { SIZE } from ".";
 

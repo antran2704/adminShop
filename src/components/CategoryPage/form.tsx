@@ -48,13 +48,10 @@ const CategoryForm = (props: Props) => {
     },
   ]);
 
+  const [listParent, setListParent] = useState<string[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
 
   const onSelectTree = (categoryId: string) => {
-    if (categoryId === category?.parent_id) {
-      // messageApi.error(tError)
-    }
-
     if (errors.parent_id?.message) {
       clearErrors("parent_id");
     }
@@ -95,16 +92,19 @@ const CategoryForm = (props: Props) => {
   const handleGetFirstTime = async (
     categoryId: string | null,
     data: Omit<DefaultOptionType, "label">[],
+    listId: string[],
   ) => {
     if (!categoryId) {
-      setTreeData(data);
+      setListParent(listId);
+      setTreeData([...treeData, ...data]);
       return;
     }
 
     await getParentCategory(categoryId).then(
       (res: IResponse<IParentCategory>) => {
         if (!res.payload.parent_id) {
-          setTreeData(data);
+          setTreeData([...treeData, ...data]);
+          setListParent([...listId, res.payload._id]);
           return;
         }
 
@@ -118,7 +118,10 @@ const CategoryForm = (props: Props) => {
         };
 
         data.push(itemTree);
-        handleGetFirstTime(res.payload.parent_id, data);
+        handleGetFirstTime(res.payload.parent_id, data, [
+          ...listId,
+          res.payload._id,
+        ]);
       },
     );
   };
@@ -146,7 +149,7 @@ const CategoryForm = (props: Props) => {
           }),
         );
         if (category?._id && category.parent_id) {
-          handleGetFirstTime(category.parent_id as string, listTree);
+          handleGetFirstTime(category.parent_id as string, listTree, []);
         } else {
           setTreeData([...treeData, ...listTree]);
         }
@@ -248,10 +251,7 @@ const CategoryForm = (props: Props) => {
               value={value || undefined}
               size="large"
               status={!!errors.parent_id?.message ? "error" : ""}
-              treeDefaultExpandedKeys={[
-                "home",
-                category?.parent_id ? category.parent_id : "",
-              ]}
+              treeDefaultExpandedKeys={["home", ...listParent]}
               dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
               placeholder={t("placeholder.parent")}
               onChange={onSelectTree}

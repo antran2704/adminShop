@@ -1,14 +1,26 @@
 .uploaded .ant-upload {
-    border: none !important;
-  }
-  
+  border: none !important;
+}
+
+.thumbnail .ant-upload {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.ant-upload-list {
+  height: 100% !important;
+}
+
+.avatar-uploader.error {
   .ant-upload {
-    width: 100% !important;
-    height: 100% !important;
+    border-color: red !important;
   }
-  
-  .avatar-uploader.error {
-    .ant-upload {
-      border-color: red !important;
-    }
+}
+
+
+// custom gallery
+.gallery {
+  &.disabled .ant-upload {
+    display: none !important;
   }
+}

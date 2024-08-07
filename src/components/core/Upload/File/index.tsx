@@ -1,8 +1,7 @@
-"use client";
-
 import { Fragment, forwardRef, useEffect, useState } from "react";
 import { Upload, UploadProps, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import clsx from "clsx";
 
 import {
   UploadChangeParam,
@@ -10,15 +9,13 @@ import {
 } from "antd/es/upload";
 
 import { FileType } from "~/interface";
-
-import clsx from "clsx";
 import { ETypeFile } from "~/enums/file";
 import { checkFile } from "~/helper/file";
-import { messageFile } from "~/common/file";
 
 interface Props {
   data: UploadFileType[];
   maxFile?: number;
+  fileSize?: number;
   multiple?: boolean;
   disable?: boolean;
   rules?: ETypeFile[];
@@ -26,11 +23,12 @@ interface Props {
   onRemoveFile?: (file: UploadFileType | null) => void;
   ref: any;
 }
-const UploadFile = (
+const UploadFileComponent = (
   {
     onChangeFile,
     data,
     maxFile,
+    fileSize = 2, //MB
     multiple = false,
     disable = false,
     rules = [],
@@ -63,19 +61,6 @@ const UploadFile = (
 
     if (maxFile && fileList.length >= maxFile) return;
 
-    const isValid = !!rules.length
-      ? checkFile(info.file as FileType, rules)
-      : true;
-
-    if (!isValid) {
-      messageApi.error(
-        `You can upload only document like ${rules
-          .map((rule: ETypeFile) => messageFile[rule])
-          .join("/")}`,
-      );
-      return;
-    }
-
     // update link for new file
     const newFileList = [...fileList];
 
@@ -102,7 +87,7 @@ const UploadFile = (
 
   useEffect(() => {
     setFileList(data);
-  }, []);
+  }, [data]);
 
   return (
     <Fragment>
@@ -111,7 +96,11 @@ const UploadFile = (
         multiple={multiple}
         beforeUpload={() => false}
         onRemove={(file: UploadFileType) => handleRemove(file)}
-        onChange={handleChange}
+        onChange={(info: UploadChangeParam<UploadFileType>) => {
+          info.file.status !== "removed" &&
+            checkFile(info.file as FileType, rules, fileSize) &&
+            handleChange(info);
+        }}
         listType="picture"
         maxCount={maxFile}
         className="w-full h-full"
@@ -143,4 +132,4 @@ const UploadFile = (
   );
 };
 
-export default forwardRef(UploadFile);
+export default forwardRef(UploadFileComponent);

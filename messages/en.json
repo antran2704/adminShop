@@ -89,14 +89,17 @@
       "category": "Category",
       "status": "Status",
       "createdAt": "Created At",
-      "action": "Action"
+      "action": "Action",
+      "price": "Price",
+      "promotionPrice": "Promotion Price",
+      "inventory": "Inventory"
     },
     "form": {
       "title": "Title",
       "shortDescription": "Overview",
       "description": "Description",
       "categories": "Select categories",
-      "defaultCategory": "Default category",
+      "category": "Default category",
       "thumbnail": "Thumbnail",
       "gallery": "Gallery",
       "price": "Price",
@@ -109,7 +112,8 @@
     "placeholder": {
       "title": "Input title...",
       "description": "Input description...",
-      "parent": "Select parent product"
+      "categories": "Select categories product",
+      "category": "Select default category product"
     },
     "modalDelete": {
       "title": "Confirm delete product",

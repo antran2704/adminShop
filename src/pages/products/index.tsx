@@ -14,7 +14,7 @@ import ShowItemsLayout from "~/layouts/ShowItemsLayout";
 import { initPagination } from "~/components/Pagination/initData";
 import { getProducts } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithHeader from "~/layouts/Private";
+import PrivateLayout from "~/layouts/Private";
 import { useRouter } from "next/router";
 import { BreadcrumbCore } from "~/components/Core";
 import { useTranslations } from "next-intl";
@@ -24,7 +24,7 @@ import { message } from "antd";
 import Loading from "~/components/Loading";
 import { ProductTable } from "~/components/ProductPage";
 
-const Layout = LayoutWithHeader;
+const Layout = PrivateLayout;
 
 const ProductPage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -75,13 +75,13 @@ const ProductPage: NextPageWithLayout = () => {
         price: item.price,
         promotionPrice: item.promotion_price,
         public: item.public,
+        inventory: item.inventory,
         createdAt: item.createdAt,
       }));
 
       setPagination(res.pagination);
       setProducts(data);
     } catch (error) {
-      console.log(error);
       messageApi.error(tError("TRY_AGAIN"));
     }
     setLoading(false);
@@ -99,7 +99,7 @@ const ProductPage: NextPageWithLayout = () => {
     <ShowItemsLayout
       title={t("title")}
       titleCreate={isCan ? t("create") : null}
-      link="/create/banner"
+      link="/create/product"
       breadcrumb={
         <BreadcrumbCore
           data={[

@@ -9,33 +9,29 @@ const getBase64 = (img: FileType, callback: (url: string) => void) => {
   reader.readAsDataURL(img);
 };
 
-const checkImage = (
+const checkFile = (
   file: FileType,
   rules: ETypeFile[],
   fileSize: number = 2,
 ) => {
-  const isJpgOrPng: boolean = !!rules.length
+  const isValidFile: boolean = !!rules.length
     ? rules.includes(file.type as ETypeFile)
     : true;
 
-  if (!isJpgOrPng) {
+  if (!isValidFile) {
     message.error(
       `You can only upload ${rules
         .map((rule: ETypeFile) => messageFile[rule])
         .join("/")} file!`,
     );
+    return false;
   }
 
-  const isFileSizeValid = file.size / 1024 / 1024 < fileSize;
-  if (!isFileSizeValid) {
-    message.error(`Image must smaller than ${fileSize}MB!`);
+  const isValidFileSize = file.size / 1024 / 1024 < fileSize;
+  if (!isValidFileSize) {
+    message.error(`File must smaller than ${fileSize}MB!`);
   }
-  return isJpgOrPng && isFileSizeValid;
+  return isValidFile && isValidFileSize;
 };
 
-const checkFile = (file: FileType, rules: ETypeFile[]) => {
-  const isValid = rules.includes(file.type as ETypeFile);
-  return isValid;
-};
-
-export { checkFile, checkImage, getBase64 };
+export { checkFile, getBase64 };

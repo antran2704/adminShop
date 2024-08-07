@@ -39,8 +39,8 @@ const PrivateLayout = ({ children }: Props) => {
         <SideBar showSideBar={showSidebar} onShowModal={onShowModal} />
         <div
           className={clsx(
-            "min-h-screen transition-all ease-linear duration-100",
-            [isShowSidebar ? "lg:w-[80%] w-full" : "w-full "],
+            "min-h-screen transition-all ease-linear duration-150",
+            [isShowSidebar ? "xl:w-[80%] w-full" : "w-full "],
           )}>
           <Navbar onShowModal={onShowModal} />
           {children}

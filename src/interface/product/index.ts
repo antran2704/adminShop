@@ -66,10 +66,21 @@ interface IVariantProduct extends IProduct {
   url: string | null;
 }
 
-// type ICreateProduct = Omit<
-//   IProductData,
-//   "_id" | "viewer" | "rate" | "slug" | "type" | "createdAt"
-// >;
+type ICreateProduct = Omit<
+  IProduct,
+  | "_id"
+  | "viewer"
+  | "rate"
+  | "slug"
+  | "type"
+  | "createdAt"
+  | "category"
+  | "categories"
+  | "breadcrumbs"
+> & {
+  category: string;
+  categories: string[];
+};
 
 interface IProductTable {
   key: string;
@@ -79,6 +90,7 @@ interface IProductTable {
   category: string;
   price: number;
   promotionPrice: number;
+  inventory: number;
   public: boolean;
   createdAt: string;
 }
@@ -86,6 +98,7 @@ interface IProductTable {
 export type {
   IProduct,
   IProductTable,
+  ICreateProduct,
   IVariantProduct,
   IOptionProduct,
   ISpecificationsProduct,

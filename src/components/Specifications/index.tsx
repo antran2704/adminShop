@@ -13,7 +13,7 @@ import PopupForm from "../Popup/PopupForm";
 import Popup from "../Popup";
 
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 
 interface Props {
   className?: string;
@@ -32,7 +32,8 @@ const initNewSpecification = {
 const Specifications = (props: Props) => {
   const { className, specifications, onUpdate } = props;
 
-  const { t } = useTranslation();
+  const t = useTranslations("Specifications");
+  const tCommon = useTranslations("Common");
 
   const [selectSpecification, setSelectSpecification] =
     useState<ISelectItem | null>(null);
@@ -176,7 +177,7 @@ const Specifications = (props: Props) => {
     <div className={`${className ? className : "w-full"}`}>
       <div className="flex items-center justify-between mb-5 gap-5">
         <span className="block text-base text-[#1E1E1E] dark:text-darkText font-medium">
-          {t("Specifications.title")}
+          {t("title")}
         </span>
         <button
           onClick={handleShowPopup}
@@ -202,7 +203,7 @@ const Specifications = (props: Props) => {
                   })
                 }
                 className="flex items-center justify-end text-base text-right font-medium text-error gap-2">
-                {t("Specifications.remove")}
+                {t("remove")}
               </button>
             </div>
             <ul className="flex flex-col px-5 gap-5">
@@ -215,7 +216,7 @@ const Specifications = (props: Props) => {
                     key={attribute.id}
                     className="flex items-start justify-between gap-5">
                     <InputText
-                      title={t("Specifications.name")}
+                      title={t("name")}
                       width="w-1/2"
                       value={attribute.name}
                       name="name"
@@ -229,7 +230,7 @@ const Specifications = (props: Props) => {
                       }
                     />
                     <InputText
-                      title={t("Specifications.value")}
+                      title={t("value")}
                       width="w-1/2"
                       value={attribute.value}
                       name="value"
@@ -263,7 +264,7 @@ const Specifications = (props: Props) => {
                   onClick={() => onAddAtribute(specificationIndex)}
                   className="flex items-center text-base text-right font-medium text-primary gap-2">
                   <AiOutlinePlus />
-                  {t("Specifications.attribute")}
+                  {t("attribute")}
                 </button>
               </div>
             </ul>
@@ -272,15 +273,15 @@ const Specifications = (props: Props) => {
       )}
 
       <PopupForm
-        title={t("Specifications.addPopup.title")}
-        description={t("Specifications.addPopup.description")}
+        title={t("addPopup.title")}
+        description={t("addPopup.description")}
         show={showPopup}
         onClose={handleShowPopup}>
         <Fragment>
           <div className="flex flex-col justify-between h-full">
             <div className="w-full flex flex-col px-5 gap-5">
               <InputText
-                title={t("Specifications.addPopup.inpTitle")}
+                title={t("addPopup.inpTitle")}
                 width="w-full"
                 enableEnter={true}
                 onEnter={onAddSpecification}
@@ -296,12 +297,12 @@ const Specifications = (props: Props) => {
               <button
                 onClick={handleShowPopup}
                 className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
-                {t("Action.cancle")}
+                {tCommon("btn.cancel")}
               </button>
               <button
                 onClick={onAddSpecification}
                 className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md">
-                {t("Specifications.addPopup.add")}
+                {tCommon("btn.create")}
               </button>
             </div>
           </div>
@@ -310,27 +311,27 @@ const Specifications = (props: Props) => {
 
       {showPopupSpecification && selectSpecification && (
         <Popup
-          title={t("Specifications.title")}
+          title={t("title")}
           show={showPopupSpecification}
           img="/popup/trash.svg"
           onClose={() => onShowPopupSpecification(null)}>
           <div>
             <p className="text-lg dark:text-darkText text-center">
-              {t("Specifications.specificationPopup.description")}
+              {t("specificationPopup.description")}
               <strong>{" " + selectSpecification.title}</strong>
             </p>
             <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
               <button
                 onClick={() => onShowPopupSpecification(null)}
                 className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus">
-                {t("Action.cancle")}
+                {tCommon("btn.cancel")}
               </button>
               <button
                 onClick={() =>
                   onRemoveSpecification(selectSpecification._id as string)
                 }
                 className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
-                {t("Action.delete")}
+                {tCommon("btn.delete")}
               </button>
             </div>
           </div>
@@ -339,20 +340,20 @@ const Specifications = (props: Props) => {
 
       {showPopupAttribute && selectAttribute && (
         <Popup
-          title={t("Specifications.attribute")}
+          title={t("attribute")}
           show={showPopupAttribute}
           img="/popup/trash.svg"
           onClose={() => onShowPopupAttribute(null)}>
           <div>
             <p className="text-lg dark:text-darkText text-center">
-              {t("Specifications.attributePopup.description")}
+              {t("attributePopup.description")}
               <strong>{" " + selectAttribute.title}</strong>
             </p>
             <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
               <button
                 onClick={() => onShowPopupAttribute(null)}
                 className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus">
-                {t("Action.cancle")}
+                {tCommon("btn.cancel")}
               </button>
               <button
                 onClick={() =>
@@ -362,7 +363,7 @@ const Specifications = (props: Props) => {
                   )
                 }
                 className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
-                {t("Action.delete")}
+                {tCommon("btn.delete")}
               </button>
             </div>
           </div>

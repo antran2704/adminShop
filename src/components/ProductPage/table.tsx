@@ -11,6 +11,7 @@ import { ButtonDelete, ButtonEdit } from "../Button";
 import { useRouter } from "next/router";
 import { ModalConfirm } from "../Modal";
 import { initPagination } from "../Pagination/initData";
+import { formatBigNumber } from "~/helper/format/number";
 
 interface Props {
   data: IProductTable[];
@@ -42,95 +43,131 @@ const ProductTable = (props: Props) => {
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const columns: TableColumnsType<IProductTable> = useMemo(() => {
-    return [
-      {
-        title: t("table.id"),
-        dataIndex: "productId",
-        className: "whitespace-nowrap",
-        align: "center",
-      },
-      {
-        title: t("table.title"),
-        dataIndex: "title",
-        className: "whitespace-nowrap",
-        align: "center",
-      },
-      {
-        title: t("table.thumbnail"),
-        dataIndex: "thumbnail",
-        className: "whitespace-nowrap",
-        align: "center",
-        render: (image: string) => {
-          return (
-            <ImageCus
-              src={PATH_IMAGE + image}
-              title="banner thumbnail"
-              className="w-[260px] min-w-[260px] h-[140px] object-cover object-center rounded-md mx-auto"
+  const columns: TableColumnsType<IProductTable> =
+    useMemo((): TableColumnsType<IProductTable> => {
+      return [
+        {
+          title: t("table.id"),
+          dataIndex: "productId",
+          className: "whitespace-nowrap",
+          align: "center",
+        },
+        {
+          title: t("table.title"),
+          dataIndex: "title",
+          className: "whitespace-nowrap",
+          align: "center",
+        },
+        {
+          title: t("table.thumbnail"),
+          dataIndex: "thumbnail",
+          className: "whitespace-nowrap",
+          align: "center",
+          render: (image: string) => {
+            return (
+              <ImageCus
+                src={PATH_IMAGE + image}
+                title="banner thumbnail"
+                className="w-[260px] min-w-[260px] h-[140px] object-cover object-center rounded-md mx-auto"
+              />
+            );
+          },
+        },
+        {
+          title: t("table.category"),
+          dataIndex: "category",
+          className: "whitespace-nowrap",
+          align: "center",
+        },
+        {
+          title: t("table.price"),
+          dataIndex: "price",
+          className: "whitespace-nowrap",
+          align: "center",
+          width: 200,
+          render: (value: number) => (
+            <span>{value ? formatBigNumber(value) : 0}</span>
+          ),
+        },
+        {
+          title: t("table.promotionPrice"),
+          dataIndex: "promotionPrice",
+          className: "whitespace-nowrap",
+          align: "center",
+          width: 200,
+          render: (value: number) => (
+            <span>{value ? formatBigNumber(value) : 0}</span>
+          ),
+        },
+        {
+          title: t("table.inventory"),
+          dataIndex: "inventory",
+          className: "whitespace-nowrap",
+          align: "center",
+          width: 140,
+          render: (value: number) => (
+            <span>{value ? formatBigNumber(value) : 0}</span>
+          ),
+        },
+        {
+          title: t("table.status"),
+          dataIndex: "public",
+          className: "whitespace-nowrap",
+          width: 200,
+          render: (isPublic: boolean, reccord: IProductTable) => (
+            <Switch
+              checked={isPublic}
+              onClick={() => {
+                if (isPublic) {
+                  onDisableBanner(reccord);
+                } else {
+                  onActiveBanner(reccord);
+                }
+              }}
             />
-          );
+          ),
+          align: "center",
         },
-      },
-      {
-        title: t("table.category"),
-        dataIndex: "category",
-        className: "whitespace-nowrap",
-        align: "center",
-      },
-      {
-        title: t("table.status"),
-        dataIndex: "public",
-        className: "whitespace-nowrap",
-        render: (isPublic: boolean, reccord: IProductTable) => (
-          <Switch
-            checked={isPublic}
-            onClick={() => {
-              if (isPublic) {
-                onDisableBanner(reccord);
-              } else {
-                onActiveBanner(reccord);
-              }
-            }}
-          />
-        ),
-        align: "center",
-      },
-      {
-        title: t("table.createdAt"),
-        dataIndex: "createdAt",
-        className: "whitespace-nowrap",
-        align: "center",
-        render: (date: string) => {
-          return (
-            <span className="whitespace-nowrap capitalize block text-sm mx-auto">
-              {formatDate(date)}
-            </span>
-          );
+        {
+          title: t("table.createdAt"),
+          dataIndex: "createdAt",
+          className: "whitespace-nowrap",
+          align: "center",
+          render: (date: string) => {
+            return (
+              <span className="whitespace-nowrap capitalize block text-sm mx-auto">
+                {formatDate(date)}
+              </span>
+            );
+          },
         },
-      },
-      {
-        title: t("table.action"),
-        dataIndex: "action",
-        className: "whitespace-nowrap",
-        align: "center",
-        render: (_, record: IProductTable) => {
-          return (
-            <div className="flex items-center justify-center gap-2">
-              <ButtonDelete
-                onClick={() => {
-                  setSelectDelete(record);
-                  handlePopup();
-                }}
-              />
-              <ButtonEdit
-                onClick={() => router.push(`/edit/product/${record.productId}`)}
-              />
-            </div>
-          );
+        {
+          title: t("table.action"),
+          dataIndex: "action",
+          className: "whitespace-nowrap",
+          align: "center",
+          width: 200,
+          fixed: "right",
+          render: (_, record: IProductTable) => {
+            return (
+              <div className="flex items-center justify-center gap-2">
+                <ButtonDelete
+                  onClick={() => {
+                    setSelectDelete(record);
+                    handlePopup();
+                  }}
+                />
+                <ButtonEdit
+                  onClick={() =>
+                    router.push(`/edit/product/${record.productId}`)
+                  }
+                />
+              </div>
+            );
+          },
         },
-      },
-    ];
-  }, [router.locale, listItem]);
+      ];
+    }, [router.locale, listItem]);
 
   const handlePopup = () => {
     if (modalDelete) {
@@ -205,6 +242,7 @@ const ProductTable = (props: Props) => {
         dataSource={listItem}
         loading={loading}
         columns={columns}
+        scroll={{ x: 2400 }}
         size="large"
         paginationOptions={{
           total: pagination.total,

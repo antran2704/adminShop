@@ -374,3 +374,9 @@ body::-webkit-scrollbar {
     background-color: white;
   }
 }
+
+
+// Overide css Button component antd
+.ant-btn-primary:disabled {
+  background: rgba(0, 0, 0, 0.04) !important;
+}

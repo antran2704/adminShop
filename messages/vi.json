@@ -89,18 +89,21 @@
       "category": "Thư mục",
       "status": "Trạng thái",
       "createdAt": "Ngày tạo",
-      "action": "Action"
+      "action": "Action",
+      "price": "Giá bán",
+      "promotionPrice": "Giá giảm",
+      "inventory": "Tồn kho"
     },
     "form": {
       "title": "Tiêu đề",
       "shortDescription": "Tổng quan sản phẩm",
       "description": "Mô tả",
       "categories": "Lựa chọn thư mục",
-      "defaultCategory": "Thư mục mặc định",
-      "thumbnail": "Hình ảnh",
-      "gallery": "Hình ảnh sản phẩm",
+      "category": "Thư mục mặc định",
+      "thumbnail": "Hình ảnh sản phẩm",
+      "gallery": "Danh sách hình ảnh",
       "price": "Gía sản phẩm",
-      "promotionPrice": "Gía giảm của sản phẩm",
+      "promotionPrice": "Giá giảm của sản phẩm",
       "inventory": "Tồn kho",
       "SKU": "Mã SKU",
       "barcode": "Mã Barcode",
@@ -109,7 +112,9 @@
     "placeholder": {
       "title": "Nhập tiêu đề...",
       "description": "Nhập mô tả...",
-      "parent": "Lựa chọn thư mục cha"
+      "overview": "Tổng quan...",
+      "categories": "Lựa chọn thư mục",
+      "category": "Lựa chọn thư mục mặc định"
     },
     "modalDelete": {
       "title": "Xác nhận xóa sản phẩm",

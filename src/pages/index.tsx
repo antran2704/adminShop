@@ -53,7 +53,7 @@ import { countOrders, getOrders } from "~/api-client";
 import { getGross, getGrossInWeek } from "~/api-client/gross/gross-date";
 
 import { formatDate, getFirstDayInWeek } from "~/helper/format/datetime";
-import { formatBigNumber } from "~/helper/number/fomatterCurrency";
+import { formatBigNumber } from "~/helper/format/number";
 import CURRENCY from "~/common/currency";
 
 ChartJS.register(

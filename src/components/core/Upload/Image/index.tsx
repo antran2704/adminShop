@@ -12,7 +12,7 @@ import { ETypeFile } from "~/enums/file";
 import { ModalConfirm } from "~/components/Modal";
 
 import { NO_IMAGE } from "~/common/images";
-import { getBase64, checkImage } from "~/helper/file";
+import { getBase64, checkFile } from "~/helper/file";
 import { resizeImage } from "~/helper/handleImage";
 import { ECompressFormat, ETypeImage } from "~/enums";
 
@@ -25,6 +25,7 @@ interface Props {
   className?: string;
   rules?: ETypeFile[];
   option?: IOptionImage;
+  fileSize?: number;
   onChangeImage: (file: File | null) => void;
 }
 
@@ -44,6 +45,7 @@ const UploadImage = (props: Props) => {
     src = "",
     height = 200,
     width = 200,
+    fileSize = 2, //MB
     option = initOption,
     rules = [],
     error = false,
@@ -113,11 +115,12 @@ const UploadImage = (props: Props) => {
             uploaded: !!previewImage,
             error,
           })}
-          className="avatar-uploader"
+          className="avatar-uploader thumbnail"
           showUploadList={false}
           beforeUpload={() => false}
           onChange={(info: UploadChangeParam<UploadFile>) => {
-            checkImage(info.file as FileType, rules) && handleChangeImage(info);
+            checkFile(info.file as FileType, rules, fileSize) &&
+              handleChangeImage(info);
           }}>
           {previewImage && (
             <div className="w-full h-full rounded-lg overflow-hidden">
@@ -176,7 +179,6 @@ const UploadImage = (props: Props) => {
         cancelText={tCommon("btn.back")}
         okButtonProps={{
           size: "large",
-          className: clsx("md:w-[100px] w-1/2 !bg-[#F0A328]"),
         }}
         cancelButtonProps={{
           className: "md:w-[100px] w-1/2",

@@ -14,10 +14,13 @@ const checkValidNumber = (value: number): boolean => {
   return Boolean(regexNumber.test(value.toString()));
 };
 
-const formatBigNumber = (value: number) => {
-  return new Intl.NumberFormat("de-DE").format(value);
+const formatBigNumber = (
+  value: number,
+  locale: string = "en-GB",
+  options?: Intl.NumberFormatOptions,
+) => {
+  return new Intl.NumberFormat(locale, options).format(value);
 };
-
 const revertBigNumberToString = (value: string) => {
   if (typeof value !== "string") return;
 
