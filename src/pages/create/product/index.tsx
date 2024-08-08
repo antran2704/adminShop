@@ -1,17 +1,20 @@
 import { useRouter } from "next/router";
-import { ReactElement, useMemo, Fragment } from "react";
-
-import { ICreateProduct } from "~/interface";
-import FormLayout from "~/layouts/FormLayout";
-
-import PrivateLayout from "~/layouts/Private";
-import { NextPageWithLayout } from "~/interface/page";
-import { useTranslations } from "next-intl";
-import { object, string } from "yup";
+import { ReactElement, useMemo, Fragment, useState } from "react";
+import { array, object, string } from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
+import { message, UploadFile } from "antd";
+import { useTranslations } from "next-intl";
+
+import { FileType, ICreateProduct, IResponse } from "~/interface";
+import { NextPageWithLayout } from "~/interface/page";
+
+import FormLayout from "~/layouts/FormLayout";
+import PrivateLayout from "~/layouts/Private";
+
 import { BreadcrumbCore } from "~/components/Core";
 import { ProductForm } from "~/components/ProductPage";
+import { createProduct, uploadThumbnailProduct } from "~/api-client";
 
 const initData: ICreateProduct = {
   title: "",
@@ -49,8 +52,11 @@ const CreateProductPage: NextPageWithLayout = () => {
   const schema = useMemo(() => {
     return object().shape({
       title: string().trim().required(tError("PLEASE_INPUT")),
-      meta_title: string().trim().required(tError("PLEASE_INPUT")),
-      image: string().required(tError("PLEASE_UPLOAD")),
+      shortDescription: string().trim().required(tError("PLEASE_INPUT")),
+      description: string().trim().required(tError("PLEASE_INPUT")),
+      categories: array().min(1, tError("PLEASE_SELECT")),
+      category: string().trim().required(tError("PLEASE_SELECT")),
+      thumbnail: string().required(tError("PLEASE_UPLOAD")),
     });
   }, [router.locale]);
 
@@ -60,67 +66,80 @@ const CreateProductPage: NextPageWithLayout = () => {
     resolver: yupResolver(schema) as any,
   });
 
-  const handleOnSubmit = async () => {
-    setLoading(true);
+  const [galleryFile, setGalleryFile] = useState<UploadFile[]>([]);
+
+  const [isSubmit, setIsSubmit] = useState<boolean>(false);
+
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const onUploadGallery = async (file: UploadFile | null) => {
+    if (!file) return;
+
+    setGalleryFile([...galleryFile, file]);
+    // const formData: FormData = new FormData();
+    // formData.append("image", source);
+    // uploadThumbnailProduct(formData)
+    //   .then(({ status, payload }: IResponse<string>) => {
+    //     if (status === 201) {
+    //       setValue("gallery", [...getValues("gallery"), payload]);
+    //       setGallery([...gallery, payload]);
+    //     }
+    //   })
+    //   .catch(() => {
+    //     messageApi.error(tError("UPLOAD_IMAGE"));
+    //   });
+  };
+
+  const onRemoveGallary = async (file: UploadFile | null) => {
+    if (!file) return;
+
+    const newListFile: UploadFile[] = galleryFile.filter(
+      (item: UploadFile) => item.uid !== file.uid,
+    );
+
+    setGalleryFile(newListFile);
+  };
+
+  const handleOnSubmit = async (values: ICreateProduct) => {
+    setIsSubmit(true);
 
     try {
-      let breadcrumbs: string[] = [];
-      if (defaultCategory) {
-        breadcrumbs = generalBreadcrumbs(defaultCategory, categories);
-      } else {
-        breadcrumbs = generalBreadcrumbs(mutipleCategories[0]._id, categories);
+      const dataSend: ICreateProduct = values;
+
+      if (!!galleryFile.length) {
+        for (const item of galleryFile) {
+          const formData: FormData = new FormData();
+          formData.append("image", item as FileType);
+
+          const res: IResponse<string> = await uploadThumbnailProduct(formData);
+
+          if (res.status === 201) {
+            dataSend.gallery.push(res.payload);
+          }
+        }
+
+        galleryFile;
       }
 
-      const categoriesProduct = mutipleCategories.map(
-        (category: ISelectItem) => {
-          return category._id;
-        },
-      );
-
-      const sendData: ISendProduct = {
-        title: product.title,
-        description: product.description,
-        shortDescription: product.shortDescription,
-        meta_title: product.title,
-        meta_description: product.description,
-        thumbnail,
-        gallery,
-        category: defaultCategory as string,
-        categories: categoriesProduct as string[],
-        breadcrumbs,
-        specifications,
-        price: product.price,
-        promotion_price: product.promotion_price,
-        inventory: product.inventory,
-        public: product.public,
-        sku: product.sku,
-        barcode: product.barcode,
-        options: [],
-      };
-
-      const payload = await createProduct(sendData);
+      const payload = await createProduct(values);
 
       if (payload.status === 201) {
-        // toast.success("Success create product", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
+        messageApi.success(tSuccess("create"));
         router.push("/products");
       }
-
-      setLoading(false);
     } catch (error) {
-      toast.error("Error in create product", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setLoading(false);
+      messageApi.error("TRY_AGAIN");
     }
+
+    setIsSubmit(false);
   };
 
   return (
     <FormLayout
       title={t("create")}
       backLink="/products"
-      onSubmit={handleOnSubmit}
+      loading={isSubmit}
+      onSubmit={productForm.handleSubmit(handleOnSubmit)}
       breadcrumb={
         <BreadcrumbCore
           data={[
@@ -135,7 +154,15 @@ const CreateProductPage: NextPageWithLayout = () => {
         />
       }>
       <Fragment>
-        <ProductForm form={productForm} />
+        <ProductForm
+          form={productForm}
+          galleryFile={galleryFile}
+          onUploadGallery={onUploadGallery}
+          onRemoveGallery={onRemoveGallary}
+        />
+
+        {/* Message of Antd */}
+        {contextHolder}
       </Fragment>
     </FormLayout>
   );

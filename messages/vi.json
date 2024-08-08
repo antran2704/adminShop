@@ -105,16 +105,18 @@
       "price": "Gía sản phẩm",
       "promotionPrice": "Giá giảm của sản phẩm",
       "inventory": "Tồn kho",
-      "SKU": "Mã SKU",
+      "sku": "Mã SKU",
       "barcode": "Mã Barcode",
-      "public": "Hiện"
+      "status": "Trạng thái"
     },
     "placeholder": {
       "title": "Nhập tiêu đề...",
       "description": "Nhập mô tả...",
       "overview": "Tổng quan...",
       "categories": "Lựa chọn thư mục",
-      "category": "Lựa chọn thư mục mặc định"
+      "category": "Lựa chọn thư mục mặc định",
+      "sku": "Nhập mã SKU...",
+      "barcode": "Nhập mã barcode..."
     },
     "modalDelete": {
       "title": "Xác nhận xóa sản phẩm",
@@ -329,6 +331,12 @@
     },
     "breadcrumb": {
       "home": "Trang chủ"
+    },
+    "modal": {
+      "removeThumbnail": {
+        "title": "Xóa ảnh",
+        "subtitle": "Bạn muốn xóa ảnh này không?"
+      }
     }
   }
 }

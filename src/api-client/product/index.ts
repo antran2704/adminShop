@@ -1,7 +1,7 @@
 import qs from "qs";
 
 import { uploadImageOnServer } from "~/helper/handleImage";
-import { IFilter, ISearch } from "~/interface";
+import { ICreateProduct, IFilter, ISearch } from "~/interface";
 import httpConfig, {
   axiosDelete,
   axiosGet,
@@ -25,7 +25,7 @@ const getProduct = async (product_id: string) => {
   return await axiosGet(BASE_URL + `/admin/products/id/${product_id}`);
 };
 
-const createProduct = async (data: any) => {
+const createProduct = async (data: ICreateProduct) => {
   return await axiosPost(BASE_URL + "/admin/products", data);
 };
 

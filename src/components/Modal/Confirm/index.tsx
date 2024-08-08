@@ -27,11 +27,6 @@ const ModalConfirm = (props: Props) => {
 
   const tCommon = useTranslations("Common");
 
-  const { className: classNameOkBtn, ...restOkButtonProps } =
-    okButtonProps as ButtonProps;
-  const { className: classNameCancelBtn, ...restCancelButtonProps } =
-    cancelButtonProps as ButtonProps;
-
   return (
     <Modal
       centered
@@ -59,18 +54,18 @@ const ModalConfirm = (props: Props) => {
       }
       cancelButtonProps={{
         size: "large",
-        ...restCancelButtonProps,
-        className: clsx("md:w-[100px] w-1/2", [classNameCancelBtn]),
+        ...cancelButtonProps,
+        className: clsx("md:w-[100px] w-1/2"),
       }}
       okButtonProps={{
         size: "large",
-        ...restOkButtonProps,
+        ...okButtonProps,
         className: clsx(
           "md:w-[100px] w-1/2",
-          classNameOkBtn,
           [type === "danger" && "!bg-[#F0A328] hover:bg-[#F0A328]"],
           [type === "info" && "bg-primary-200 hover:bg-primary-200"],
           [type === "error" && "bg-red-500 hover:bg-red-500"],
+          okButtonProps?.className,
         ),
       }}
       okText={tCommon("btn.confirm")}

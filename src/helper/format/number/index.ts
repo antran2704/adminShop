@@ -16,7 +16,7 @@ const checkValidNumber = (value: number): boolean => {
 
 const formatBigNumber = (
   value: number,
-  locale: string = "en-GB",
+  locale: string = "de-DE",
   options?: Intl.NumberFormatOptions,
 ) => {
   return new Intl.NumberFormat(locale, options).format(value);
@@ -24,7 +24,7 @@ const formatBigNumber = (
 const revertBigNumberToString = (value: string) => {
   if (typeof value !== "string") return;
 
-  return value.split(".").join("");
+  return value.split(".").join("").split(",").join("");
 };
 
 export {

@@ -1,4 +1,9 @@
 import { useState, useEffect, useCallback, ReactNode } from "react";
+import { message, Switch, TreeSelect, TreeSelectProps, UploadFile } from "antd";
+import { DefaultOptionType, SelectProps } from "antd/es/select";
+import { Controller, UseFormReturn } from "react-hook-form";
+import { useTranslations } from "next-intl";
+import clsx from "clsx";
 
 import {
   ICreateProduct,
@@ -7,6 +12,9 @@ import {
   IResponseWithPagination,
   ISpecificationsProduct,
 } from "~/interface";
+import { ECompressFormat, ETypeImage } from "~/enums";
+import { ETypeFile } from "~/enums/file";
+
 import Specifications from "~/components/Specifications";
 import {
   getChildInCategory,
@@ -14,32 +22,33 @@ import {
   getParentCategory,
   uploadThumbnailProduct,
 } from "~/api-client";
-import { ECompressFormat, ETypeImage } from "~/enums";
-import { message, TreeSelect, TreeSelectProps } from "antd";
-import { Controller, UseFormReturn } from "react-hook-form";
-import { InputText, InputTextArea } from "../Core/Input";
-import { useTranslations } from "next-intl";
-import clsx from "clsx";
-import { DefaultOptionType, SelectProps } from "antd/es/select";
+
+import { InputNumber, InputText, InputTextArea } from "../Core/Input";
 import { SelectFilterCore } from "../Core";
-import { UploadImage } from "../Core/Upload";
+import { UploadGallery, UploadImage } from "../Core/Upload";
+import { formatBigNumber } from "~/helper/format/number";
 
 interface Props {
   data?: ICreateProduct | null;
+  galleryFile?: UploadFile[];
   form: UseFormReturn<ICreateProduct, any, undefined>;
+  onUploadGallery: (source: UploadFile | null) => void;
+  onRemoveGallery: (source: UploadFile | null) => void;
 }
 
 const FormProduct = (props: Props) => {
-  const { form } = props;
+  const { form, galleryFile = [], onUploadGallery, onRemoveGallery } = props;
 
   const {
     control,
     formState: { errors },
     getValues,
     setValue,
+    clearErrors,
   } = form;
 
   const t = useTranslations("ProductPage");
+  const tError = useTranslations("Error");
 
   // Category
   const [treeData, setTreeData] = useState<Omit<DefaultOptionType, "label">[]>([
@@ -55,10 +64,6 @@ const FormProduct = (props: Props) => {
     [],
   );
   const [defaultCategory, setDefaultCategory] = useState<string | null>(null);
-
-  const [thumbnail, setThumbnail] = useState<string | null>(null);
-
-  const [gallery, setGallery] = useState<string[]>([]);
 
   const [specifications, setSpecifications] = useState<
     ISpecificationsProduct[]
@@ -98,62 +103,33 @@ const FormProduct = (props: Props) => {
   );
 
   const uploadThumbnail = useCallback(
-    async (source: File) => {
-      if (source) {
-        const formData: FormData = new FormData();
-        formData.append("image", source);
+    async (source: File | null) => {
+      if (!source) {
+        setValue("thumbnail", "");
+        return;
+      }
 
-        setLoading({ ...loading, thumbnail: true });
+      if (errors.thumbnail?.message) {
+        clearErrors("thumbnail");
+      }
 
-        try {
-          const { status, payload } = await uploadThumbnailProduct(formData);
+      const formData: FormData = new FormData();
+      formData.append("image", source);
 
+      setLoading({ ...loading, thumbnail: true });
+      uploadThumbnailProduct(formData)
+        .then(({ status, payload }: IResponse<string>) => {
           if (status === 201) {
-            setThumbnail(payload);
+            setValue("thumbnail", payload);
           }
-        } catch (error) {
-          console.log(error);
-        }
+        })
+        .catch(() => {
+          messageApi.error(tError("UPLOAD_IMAGE"));
+        });
 
-        setLoading({ ...loading, thumbnail: false });
-      }
+      // setLoading({ ...loading, thumbnail: false });
     },
-    [thumbnail, loading],
-  );
-
-  const onUploadGallery = useCallback(
-    async (source: File) => {
-      if (source) {
-        const formData: FormData = new FormData();
-        formData.append("image", source);
-        setLoading({ ...loading, gallery: true });
-
-        try {
-          const { status, payload } = await uploadThumbnailProduct(formData);
-
-          if (status === 201) {
-            setGallery([...gallery, payload]);
-          }
-        } catch (error) {
-          console.log(error);
-        }
-
-        setLoading({ ...loading, gallery: false });
-      }
-    },
-    [gallery, loading],
-  );
-
-  const onRemoveGallary = useCallback(
-    async (url: string) => {
-      try {
-        const newGallery = gallery.filter((image) => image !== url);
-        setGallery(newGallery);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    [gallery, loading],
+    [getValues("thumbnail"), errors.thumbnail],
   );
 
   const onUpdateSpecifications = (
@@ -243,7 +219,7 @@ const FormProduct = (props: Props) => {
 
   return (
     <div className="w-full">
-      <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
+      <div className="w-full flex flex-col p-5 mt-5 bg-white rounded-md border-2 gap-5">
         {/* title */}
         <div className={clsx("relative w-full", [errors.title && "pb-2"])}>
           <Controller
@@ -315,7 +291,7 @@ const FormProduct = (props: Props) => {
         </div>
       </div>
 
-      <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
+      <div className="w-full flex flex-col p-5 mt-5 bg-white rounded-md border-2 gap-5">
         {/* categories */}
         <div className={clsx("relative w-full", [errors.categories && "pb-2"])}>
           <p
@@ -404,130 +380,214 @@ const FormProduct = (props: Props) => {
         /> */}
       </div>
 
-      <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-        <UploadImage
-          title={t("form.thumbnail")}
-          height={200}
-          width={200}
-          className=""
-          // src={value ? process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + value : ""}
-          error={!!errors.thumbnail?.message}
-          onChangeImage={() => {}}
-          option={{
-            quality: 100,
-            maxHeight: 200,
-            maxWidth: 200,
-            minHeight: 200,
-            minWidth: 200,
-            compressFormat: ECompressFormat.WEBP,
-            type: ETypeImage.file,
-          }}
-        />
+      <div className="w-full flex flex-col p-5 mt-5 bg-white rounded-md border-2 gap-5">
+        {/* Thumbnail */}
+        <div className={clsx("relative", [errors.thumbnail && "pb-2"])}>
+          <Controller
+            name="category"
+            control={control}
+            render={({ field: { value } }) => (
+              <UploadImage
+                title={t("form.thumbnail")}
+                height={200}
+                width={200}
+                className=""
+                rules={[ETypeFile.JPEG, ETypeFile.PNG, ETypeFile.WEBP]}
+                src={
+                  value ? process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + value : ""
+                }
+                error={!!errors.thumbnail?.message}
+                onChangeImage={uploadThumbnail}
+                option={{
+                  quality: 100,
+                  maxHeight: 200,
+                  maxWidth: 200,
+                  minHeight: 200,
+                  minWidth: 200,
+                  compressFormat: ECompressFormat.WEBP,
+                  type: ETypeImage.file,
+                }}
+              />
+            )}
+          />
+          {errors.thumbnail?.message && (
+            <p className="absolute text-sm text-error">
+              {errors.thumbnail.message}
+            </p>
+          )}
+        </div>
 
-        {/* <Thumbnail
-          url={thumbnail}
-          loading={loadingThumbnail}
-          onChange={uploadThumbnail}
-          option={{
-            quality: 100,
-            maxHeight: 200,
-            maxWidth: 200,
-            minHeight: 200,
-            minWidth: 200,
-            compressFormat: ECompressFormat.WEBP,
-            type: ETypeImage.file,
-          }}
-          className="lg:min-h-[400px] md:min-h-[300px] min-h-[200px]"
-        />
+        {/* Gallery */}
+        <div className="relative">
+          <Controller
+            name="category"
+            control={control}
+            render={() => (
+              <UploadGallery
+                title={t("form.gallery")}
+                data={galleryFile}
+                maxFile={6}
+                rules={[ETypeFile.JPEG, ETypeFile.PNG, ETypeFile.WEBP]}
+                onChangeFile={onUploadGallery}
+                onRemoveFile={onRemoveGallery}
+              />
+            )}
+          />
 
-        <Gallery
-          gallery={gallery}
-          loading={loadingGallery}
-          limited={6}
-          onChange={onUploadGallery}
-          onDelete={onRemoveGallary}
-          option={{
-            quality: 90,
-            maxHeight: 680,
-            maxWidth: 680,
-            minHeight: 680,
-            minWidth: 680,
-            compressFormat: ECompressFormat.JPEG,
-            type: ETypeImage.file,
-          }}
-        /> */}
+          {errors.gallery?.message && (
+            <p className="absolute text-sm text-error">
+              {errors.gallery.message}
+            </p>
+          )}
+        </div>
       </div>
 
-      {/* <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-        <InputNumber
-          title={t("CreateProductPage.field.price")}
-          width="w-full"
-          error={fieldsCheck.includes("price")}
-          value={formatBigNumber(product.price)}
-          name="price"
-          getValue={changePrice}
-        />
+      <div className="w-full flex flex-col p-5 mt-5 bg-white rounded-md border-2 gap-5">
+        {/* Price */}
+        <div className="relative">
+          <Controller
+            name="price"
+            control={control}
+            render={({ field: { value, onChange, ...rest } }) => (
+              <InputNumber
+                title={t("form.price")}
+                width="w-full"
+                error={!!errors.price?.message}
+                value={formatBigNumber(value)}
+                onChangeValue={onChange}
+                {...rest}
+              />
+            )}
+          />
 
-        <InputNumber
-          title={t("CreateProductPage.field.promotionPrice")}
-          width="w-full"
-          value={formatBigNumber(product.promotion_price)}
-          error={fieldsCheck.includes("promotion_price")}
-          name="promotion_price"
-          getValue={changePrice}
-        />
+          {errors.price?.message && (
+            <p className="absolute text-sm text-error">
+              {errors.price.message}
+            </p>
+          )}
+        </div>
 
-        <InputNumber
-          title={t("CreateProductPage.field.inventory")}
-          width="w-full"
-          value={formatBigNumber(product.inventory)}
-          error={fieldsCheck.includes("inventory")}
-          name="inventory"
-          getValue={changePrice}
-        />
-      </div> */}
+        {/* Promotion price */}
+        <div className="relative">
+          <Controller
+            name="promotion_price"
+            control={control}
+            render={({ field: { value, onChange, ...rest } }) => (
+              <InputNumber
+                title={t("form.promotionPrice")}
+                width="w-full"
+                error={!!errors.promotion_price?.message}
+                value={formatBigNumber(value)}
+                onChangeValue={onChange}
+                {...rest}
+              />
+            )}
+          />
 
-      {/* <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-        <InputText
-          title={t("CreateProductPage.field.SKU")}
-          width="w-full"
-          value={product.sku || ""}
-          error={fieldsCheck.includes("sku")}
-          placeholder="SKU..."
-          name="sku"
-          getValue={changeValue}
-          infor="Mã SKU giúp quản lí sản phẩm tốt hơn"
-        />
+          {errors.promotion_price?.message && (
+            <p className="absolute text-sm text-error">
+              {errors.promotion_price.message}
+            </p>
+          )}
+        </div>
 
-        <InputText
-          title={t("CreateProductPage.field.barcode")}
-          width="w-full"
-          value={product.barcode || ""}
-          error={fieldsCheck.includes("barcode")}
-          name="barcode"
-          placeholder="Bar code..."
-          getValue={changeValue}
-        />
-      </div> */}
+        {/* Inventory */}
+        <div className="relative">
+          <Controller
+            name="inventory"
+            control={control}
+            render={({ field: { value, onChange, ...rest } }) => (
+              <InputNumber
+                title={t("form.inventory")}
+                width="w-full"
+                error={!!errors.inventory?.message}
+                value={formatBigNumber(value)}
+                onChangeValue={onChange}
+                {...rest}
+              />
+            )}
+          />
 
-      <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-        <Specifications
-          specifications={specifications}
-          onUpdate={onUpdateSpecifications}
+          {errors.inventory?.message && (
+            <p className="absolute text-sm text-error">
+              {errors.inventory.message}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="w-full flex flex-col p-5 mt-5 bg-white rounded-md border-2 gap-5">
+        {/* SKU */}
+        <div className={clsx("relative w-full", [errors.title && "pb-2"])}>
+          <Controller
+            name="sku"
+            control={control}
+            render={({ field: { value, ...rest } }) => (
+              <InputText
+                title={t("form.sku")}
+                width="w-full"
+                error={!!errors.sku}
+                placeholder={t("placeholder.sku")}
+                value={value ? value : ""}
+                {...rest}
+              />
+            )}
+          />
+          {errors.sku?.message && (
+            <p className="absolute text-sm text-error">{errors.sku.message}</p>
+          )}
+        </div>
+
+        {/* Barcode*/}
+        <div className={clsx("relative w-full", [errors.title && "pb-2"])}>
+          <Controller
+            name="barcode"
+            control={control}
+            render={({ field: { value, ...rest } }) => (
+              <InputText
+                title={t("form.barcode")}
+                width="w-full"
+                error={!!errors.barcode}
+                placeholder={t("placeholder.barcode")}
+                value={value ? value : ""}
+                {...rest}
+              />
+            )}
+          />
+          {errors.barcode?.message && (
+            <p className="absolute text-sm text-error">
+              {errors.barcode.message}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="w-full flex flex-col p-5 mt-5 bg-white rounded-md border-2 gap-5">
+        <Controller
+          name="specifications"
+          control={control}
+          render={({ field: { value, onChange } }) => (
+            <Specifications specifications={value} onUpdate={onChange} />
+          )}
         />
       </div>
 
-      {/* <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
-        <ButtonCheck
-          title={t("CreateProductPage.field.public")}
+      <div className="w-full p-5 mt-5 bg-white rounded-md border-2 lg:gap-5 gap-3">
+        <p className={clsx("text-base pb-2")}>{t("form.status")}</p>
+
+        <Controller
           name="public"
-          width="w-fit"
-          isChecked={product.public}
-          onChange={changePublic}
+          control={control}
+          render={({ field: { value, onChange } }) => (
+            <Switch value={value} onChange={onChange} />
+          )}
         />
-      </div> */}
+      </div>
 
       {/* {loading && <SpinLoading className="text-3xl" />} */}
+
+      {/* Message of Antd */}
+      {contextHolder}
     </div>
   );
 };

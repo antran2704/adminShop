@@ -1,6 +1,6 @@
 import { Input, InputProps, InputRef } from "antd";
 import clsx from "clsx";
-import { forwardRef, Ref } from "react";
+import { forwardRef, Fragment, Ref } from "react";
 
 interface Props extends InputProps {
   title?: string;
@@ -11,14 +11,14 @@ const InputText = (props: Props, ref: Ref<InputRef>) => {
   const { title, error, ...rest } = props;
 
   return (
-    <div>
+    <Fragment>
       {title && (
         <p className={clsx("text-base pb-2", [error && "text-error"])}>
           {title}
         </p>
       )}
       <Input ref={ref} size="large" {...rest} status={error ? "error" : ""} />
-    </div>
+    </Fragment>
   );
 };
 

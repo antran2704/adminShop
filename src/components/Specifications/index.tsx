@@ -176,7 +176,7 @@ const Specifications = (props: Props) => {
   return (
     <div className={`${className ? className : "w-full"}`}>
       <div className="flex items-center justify-between mb-5 gap-5">
-        <span className="block text-base text-[#1E1E1E] dark:text-darkText font-medium">
+        <span className="block text-base text-[#1E1E1E] font-medium">
           {t("title")}
         </span>
         <button

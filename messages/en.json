@@ -105,15 +105,18 @@
       "price": "Price",
       "promotionPrice": "Promotion Price",
       "inventory": "Inventory",
-      "SKU": "SKU",
+      "sku": "SKU",
       "barcode": "Barcode",
-      "public": "Public"
+      "status": "Status"
     },
     "placeholder": {
       "title": "Input title...",
       "description": "Input description...",
+      "overview": "Inpur overview...",
       "categories": "Select categories product",
-      "category": "Select default category product"
+      "category": "Select default category product",
+      "sku": "Input SKU...",
+      "barcode": "Input barcode..."
     },
     "modalDelete": {
       "title": "Confirm delete product",

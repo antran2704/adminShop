@@ -1,13 +1,16 @@
 import { Input, InputProps } from "antd";
-import { forwardRef } from "react";
+import clsx from "clsx";
+import { forwardRef, Fragment } from "react";
 import { revertBigNumberToString } from "~/helper/format/number";
 
 interface Props extends InputProps {
+  title?: string;
+  error?: boolean;
   onChangeValue?: (value: number) => void;
 }
 
 const InputNumber = (props: Props, ref: any) => {
-  const { onChangeValue, ...rest } = props;
+  const { title, error = false, onChangeValue, ...rest } = props;
 
   const onChange = (value: string) => {
     const validValue = Number(revertBigNumberToString(value));
@@ -18,7 +21,19 @@ const InputNumber = (props: Props, ref: any) => {
   };
 
   return (
-    <Input ref={ref} {...rest} onChange={(e) => onChange(e.target.value)} />
+    <Fragment>
+      {title && (
+        <p className={clsx("text-base pb-2", [error && "text-error"])}>
+          {title}
+        </p>
+      )}
+      <Input
+        ref={ref}
+        {...rest}
+        status={error ? "error" : ""}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </Fragment>
   );
 };
 
