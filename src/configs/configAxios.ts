@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { toast } from "react-toastify";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 import { getRefreshToken } from "~/api-client";
@@ -8,6 +7,7 @@ import { AppDispatch } from "~/store";
 import { NextRouter } from "next/router";
 import { clearAuthLocal, getAuthLocal, setAuthLocal } from "~/helper/auth";
 import MESSAGE_ERROR from "~/common/message/error";
+import { message } from "antd";
 
 const httpConfig = axios.create({
   timeout: 30000,
@@ -48,8 +48,13 @@ const axiosDelete = async (
 };
 
 let isRefresh = false;
+let translate: any;
 let router: NextRouter;
 let dispatch: AppDispatch;
+
+export const injectTranlate = (_translate: any) => {
+  translate = _translate;
+};
 
 export const injectStore = (_dispatch: AppDispatch) => {
   dispatch = _dispatch;
@@ -118,6 +123,7 @@ httpConfig.interceptors.request.use(
             return config;
           }
         } catch (error) {
+          isRefresh = false;
           controller.abort();
 
           return {
@@ -166,20 +172,21 @@ httpConfig.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    if (
-      error.response.status === 401 &&
-      error.response.data.message === MESSAGE_ERROR.UNAUTHORIZED &&
-      isRefresh
-    ) {
-      isRefresh = false;
-      handleLogout();
-    }
+    // if (
+    //   error.response.status === 401 &&
+    //   error.response.data.message === MESSAGE_ERROR.UNAUTHORIZED &&
+    //   isRefresh
+    // ) {
+    //   isRefresh = false;
+    //   handleLogout();
+    // }
 
     if (
       error.response.status === 401 &&
       error.response.data.message === MESSAGE_ERROR.JWT_EXPRIED
     ) {
-      toast.info("Hết phiên đăng nhập", { position: "top-center" });
+      isRefresh = false;
+      message.info(translate("Error.SESSION_EXPRIED"));
       handleLogout();
     }
 

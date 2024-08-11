@@ -22,11 +22,6 @@ interface ISpecificationsProduct {
   attributes: ISpecificationAttributes[];
 }
 
-interface IProductCategory {
-  _id: string;
-  title: string;
-}
-
 interface IProduct {
   _id: string;
   title: string;
@@ -36,8 +31,8 @@ interface IProduct {
   gallery: string[];
   shortDescription: string;
   description: string;
-  category: IProductCategory;
-  categories: IProductCategory[];
+  category: IParentCategory;
+  categories: IParentCategory[];
   barcode: string | null;
   sku: string | null;
   price: number;
@@ -48,7 +43,7 @@ interface IProduct {
   public: boolean;
   options: IOptionProduct[];
   specifications: ISpecificationsProduct[];
-  variants: IVariantProduct[];
+  variations: IVariantProduct[];
   breadcrumbs: string[];
   viewer: number;
   slug: string;
@@ -77,7 +72,9 @@ type ICreateProduct = Omit<
   | "category"
   | "categories"
   | "breadcrumbs"
+  | "variations"
 > & {
+  variations: string[];
   category: string;
   categories: string[];
 };

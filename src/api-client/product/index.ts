@@ -22,7 +22,9 @@ const getProducts = async (paramater: ISearch) => {
 };
 
 const getProduct = async (product_id: string) => {
-  return await axiosGet(BASE_URL + `/admin/products/id/${product_id}`);
+  return await httpConfig
+    .get(BASE_URL + `/admin/products/id/${product_id}`)
+    .then((res) => res.data);
 };
 
 const createProduct = async (data: ICreateProduct) => {

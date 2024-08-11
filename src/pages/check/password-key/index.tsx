@@ -9,7 +9,7 @@ import ImageCus from "~/components/Image/ImageCus";
 import { InputPassword } from "~/components/InputField";
 import Loading from "~/components/Loading";
 import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
+import LayoutWithoutHeader from "~/layouts/Public";
 import { axiosPost } from "~/configs/configAxios";
 
 interface IDataSend {

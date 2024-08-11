@@ -14,7 +14,7 @@ import { typeCel } from "~/enums";
 import { INewVariant, IVariant } from "~/interface";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 
-import ShowItemsLayout from "~/layouts/ShowItemsLayout";
+import ShowItemsLayout from "~/layouts/ManagerLayout";
 
 import { Table, CelTable } from "~/components/Table";
 import { colHeaderAttributeValue as colHeadTable } from "~/components/Table/colHeadTable";

@@ -5,23 +5,25 @@ import {
   useCallback,
   Fragment,
   ReactElement,
+  useMemo,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 
 import {
   ICategorySelect,
-  IObjectCategory,
   ISelectItem,
   ISpecificationsProduct,
-  IProductData,
+  IProduct,
   IParentCategory,
   IAttribute,
   IVariant,
   IVariantProduct,
   IOptionProduct,
   IValueOption,
-  ISendProduct,
+  ICreateProduct,
+  IResponse,
+  FileType,
 } from "~/interface";
 
 import { ECompressFormat, ETypeImage, typeCel } from "~/enums";
@@ -42,11 +44,10 @@ import Loading from "~/components/Loading";
 import { CelTable, Table } from "~/components/Table";
 import Popup from "~/components/Popup";
 import { ButtonDelete } from "~/components/Button";
-import { formatBigNumber } from "~/helper/number/fomatterCurrency";
+import { formatBigNumber } from "~/helper/format/number";
 import {
   createVariations,
   deleteProduct,
-  getAllCategories,
   getAttributesAvailable,
   getParentCategories,
   getProduct,
@@ -57,38 +58,39 @@ import {
 import { generateSlug } from "~/helper/generateSlug";
 import LayoutWithHeader from "~/layouts/Private";
 import { NextPageWithLayout } from "~/interface/page";
-import { useTranslation } from "react-i18next";
+import { ProductForm } from "~/components/ProductPage";
+import { array, object, string } from "yup";
+import { useTranslations } from "next-intl";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { message, UploadFile } from "antd";
 
 enum TYPE_TAG {
   BASIC_INFOR = "basic_infor",
   COMPINATION = "compination",
 }
 
-const initData: IProductData = {
-  _id: null,
+const initData: ICreateProduct = {
   title: "",
   description: "",
+  meta_description: "",
+  meta_title: "",
   shortDescription: "",
-  category: { _id: null, title: "" },
+  category: "",
   categories: [],
-  type: [],
   price: 0,
   promotion_price: 0,
   inventory: 0,
   public: true,
   thumbnail: null,
   gallery: [],
-  brand: null,
   hotProduct: false,
   options: [],
-  breadcrumbs: [],
   specifications: [],
-  variants: [],
+  variations: [],
   sku: null,
   barcode: null,
   sold: 0,
-  viewer: 0,
-  rate: 0,
 };
 
 interface IObjAttibute {
@@ -129,34 +131,35 @@ const ProductEditPage: NextPageWithLayout = () => {
   const router = useRouter();
   const productId = router.query.id as string;
 
-  const { t, i18n } = useTranslation();
+  const t = useTranslations("ProductPage");
+  const tError = useTranslations("Error");
+  const tSuccess = useTranslations("Success");
 
   const [tag, setTag] = useState<string>(TYPE_TAG.BASIC_INFOR);
 
-  const [product, setProduct] = useState<IProductData>(initData);
-  const [title, setTitle] = useState<string | null>(null);
-  const [categories, setCategories] = useState<IObjectCategory>({});
-  const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
-  const [categoriesParent, setCategoriesParent] = useState([]);
-  const [categorySelect, setCategorySelect] = useState<ICategorySelect>({
-    title: null,
-    node_id: null,
+  // validation project form
+  const schema = useMemo(() => {
+    return object().shape({
+      title: string().trim().required(tError("PLEASE_INPUT")),
+      shortDescription: string().trim().required(tError("PLEASE_INPUT")),
+      description: string().trim().required(tError("PLEASE_INPUT")),
+      categories: array().min(1, tError("PLEASE_SELECT")),
+      category: string().trim().required(tError("PLEASE_SELECT")),
+      thumbnail: string().required(tError("PLEASE_UPLOAD")),
+    });
+  }, [router.locale]);
+
+  // form control
+  const productForm = useForm<ICreateProduct>({
+    defaultValues: initData,
+    resolver: yupResolver(schema) as any,
   });
+  const [product, setProduct] = useState<IProduct | null>(null);
+  const [galleryFile, setGalleryFile] = useState<UploadFile[]>([]);
+
+  const [messageApi, contextHolder] = message.useMessage();
 
   const [optionsProduct, setOptionsProduct] = useState<IOptionProduct[]>([]);
-
-  const [mutipleCategories, setMultipleCategories] = useState<ISelectItem[]>(
-    [],
-  );
-  const [defaultCategory, setDefaultCategory] = useState<string | null>(null);
-
-  const [thumbnail, setThumbnail] = useState<string | null>(null);
-
-  const [gallery, setGallery] = useState<string[]>([]);
-
-  const [specifications, setSpecifications] = useState<
-    ISpecificationsProduct[]
-  >([]);
 
   const [variants, setVariants] = useState<IVariantProduct[]>([]);
   const [removeVariants, setRemoveVariants] = useState<string[]>([]);
@@ -169,8 +172,7 @@ const ProductEditPage: NextPageWithLayout = () => {
     useState<IObjectSelectAttribute>({});
 
   const [loading, setLoading] = useState<boolean>(true);
-  const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
-  const [loadingGallery, setLoadingGallery] = useState<boolean>(false);
+  const [isSubmit, setIsSubmit] = useState<boolean>(false);
 
   const [selectVariant, setSelectVariant] = useState<ISelectItem | null>(null);
   const [showPopupVariant, setPopupVariant] = useState<boolean>(false);
@@ -389,181 +391,6 @@ const ProductEditPage: NextPageWithLayout = () => {
     return result;
   };
 
-  const onSelectCategory = (title: string | null, node_id: string | null) => {
-    if (!node_id) {
-      toast.info("Choose another Home category ", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-
-      return;
-    }
-
-    const isExit = mutipleCategories.some(
-      (category) => category.title === title,
-    );
-
-    if (isExit) {
-      toast.info("Oh, category is exited", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-
-      return;
-    }
-
-    if (!defaultCategory) {
-      setDefaultCategory(node_id);
-    }
-
-    if (fieldsCheck.includes("categories")) {
-      const newFieldsCheck = handleRemoveCheck(fieldsCheck, "categories");
-      setFieldsCheck(newFieldsCheck);
-    }
-
-    const newItem: ISelectItem = { _id: node_id, title: title as string };
-
-    setCategorySelect({ title, node_id });
-    setMultipleCategories([...mutipleCategories, newItem]);
-  };
-
-  const changeMultipleCategories = (name: string, values: ISelectItem[]) => {
-    if (values.length > 0) {
-      const isExit = values.some(
-        (value: ISelectItem) => value._id === defaultCategory,
-      );
-
-      if (!isExit) {
-        setDefaultCategory(values[0]._id);
-      }
-    } else {
-      setDefaultCategory(null);
-    }
-    setMultipleCategories(values);
-  };
-
-  const onSelectDefaultCategory = useCallback(
-    (value: string) => {
-      setDefaultCategory(value);
-    },
-    [mutipleCategories, defaultCategory],
-  );
-
-  const changeValue = useCallback(
-    (name: string, value: string) => {
-      if (fieldsCheck.includes(name)) {
-        const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
-        setFieldsCheck(newFieldsCheck);
-      }
-      setProduct({ ...product, [name]: value });
-    },
-    [product],
-  );
-
-  const changePrice = useCallback(
-    (name: string, value: number) => {
-      if (name === "promotion_price" && product.price <= value) {
-        setFieldsCheck([...fieldsCheck, "promotion_price"]);
-        toast.error("Promotion price must less than default price", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-
-        return;
-      }
-
-      if (fieldsCheck.includes(name)) {
-        const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
-        setFieldsCheck(newFieldsCheck);
-      }
-      setProduct({ ...product, [name]: value });
-    },
-    [product],
-  );
-
-  const changePublic = (name: string, value: boolean) => {
-    setProduct({ ...product, [name]: value });
-  };
-
-  const uploadThumbnail = useCallback(
-    async (source: File) => {
-      if (source) {
-        if (fieldsCheck.includes("thumbnail")) {
-          const newFieldsCheck = handleRemoveCheck(fieldsCheck, "thumbnail");
-          setFieldsCheck(newFieldsCheck);
-          ("thumbnail");
-        }
-
-        const formData: FormData = new FormData();
-        formData.append("image", source);
-        setLoadingThumbnail(true);
-
-        try {
-          const { status, payload } = await uploadThumbnailProduct(formData);
-
-          if (status === 201) {
-            setThumbnail(payload);
-            setLoadingThumbnail(false);
-          }
-        } catch (error) {
-          toast.error("Upload thumbnail failed", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-          setLoadingThumbnail(false);
-          console.log(error);
-        }
-      }
-    },
-    [thumbnail, loadingThumbnail],
-  );
-
-  const onUploadGallery = useCallback(
-    async (source: File) => {
-      if (source) {
-        const formData: FormData = new FormData();
-        formData.append("image", source);
-        setLoadingGallery(true);
-
-        try {
-          const { status, payload } = await uploadThumbnailProduct(formData);
-
-          if (status === 201) {
-            setGallery([...gallery, payload]);
-            setLoadingGallery(false);
-          }
-        } catch (error) {
-          toast.error("Upload image failed", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-          setLoadingGallery(false);
-          console.log(error);
-        }
-      }
-    },
-    [gallery, loadingGallery],
-  );
-
-  const onRemoveGallary = useCallback(
-    async (url: string) => {
-      const newGallery = gallery.filter((image) => image !== url);
-      setGallery(newGallery);
-    },
-    [gallery, loadingGallery],
-  );
-
-  const onUpdateSpecifications = useCallback(
-    (newSpecifications: ISpecificationsProduct[]) => {
-      setSpecifications(newSpecifications);
-    },
-    [specifications],
-  );
-
-  const checkData = (data: any) => {
-    let fields = handleCheckFields(data);
-    setFieldsCheck(fields);
-    if (fields.length > 0) {
-      router.push(`#${fields[0]}`);
-    }
-    return fields;
-  };
-
   const handleDeleteProduct = async () => {
     if (!product._id) return;
 
@@ -584,227 +411,123 @@ const ProductEditPage: NextPageWithLayout = () => {
     }
   };
 
-  const handleOnSubmit = async () => {
-    const fields = checkData([
-      {
-        name: "title",
-        value: product.title,
-      },
-      {
-        name: "shortDescription",
-        value: product.shortDescription,
-      },
-      {
-        name: "description",
-        value: product.description,
-      },
-      {
-        name: "categories",
-        value: mutipleCategories,
-      },
-      {
-        name: "thumbnail",
-        value: thumbnail,
-      },
-    ]);
-
-    if (fields.length > 0) {
-      toast.error("Please input fields", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-
-      return;
-    }
+  const onSubmitUpdateProduct = async (
+    productId: string,
+    values: ICreateProduct,
+  ) => {
+    if (!productId) return;
+    setIsSubmit(true);
 
     try {
-      let breadcrumbs: string[] = [];
-      if (defaultCategory) {
-        breadcrumbs = generalBreadcrumbs(defaultCategory, categories);
-      } else {
-        breadcrumbs = generalBreadcrumbs(mutipleCategories[0]._id, categories);
-      }
-
-      const categoriesProduct = mutipleCategories.map(
-        (category: ISelectItem) => {
-          return category._id;
-        },
-      );
+      // let breadcrumbs: string[] = [];
+      // if (defaultCategory) {
+      //   breadcrumbs = generalBreadcrumbs(defaultCategory, categories);
+      // } else {
+      //   breadcrumbs = generalBreadcrumbs(mutipleCategories[0]._id, categories);
+      // }
 
       let variations_id: string[] = [];
-      let inventory: number = 0;
+      let inventory: number = values.inventory;
 
-      if (removeVariants.length > 0) {
-        await updateVariations(removeVariants);
-      }
+      // if (removeVariants.length > 0) {
+      //   await updateVariations(removeVariants);
+      // }
 
-      if (variants.length > 0) {
-        const variationsRes = await createVariations(
-          product._id as string,
-          variants,
-        );
+      // if (variants.length > 0) {
+      //   const variationsRes = await createVariations(
+      //     productId as string,
+      //     variants,
+      //   );
 
-        if (variationsRes.status !== 201) {
-          toast.error("Error in updated variations", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
+      //   if (variationsRes.status !== 201) {
+      //     toast.error("Error in updated variations", {
+      //       position: toast.POSITION.TOP_RIGHT,
+      //     });
 
-          return;
-        }
+      //     return;
+      //   }
 
-        variations_id = variationsRes.payload.map(
-          (item: IVariantProduct) => item._id,
-        );
+      //   variations_id = variationsRes.payload.map(
+      //     (item: IVariantProduct) => item._id,
+      //   );
 
-        inventory = variationsRes.payload.reduce(
-          (total: number, item: IVariantProduct) => {
-            return total + item.inventory;
-          },
-          0,
-        );
-      } else {
-        inventory = product.inventory;
-      }
+      //   inventory = variationsRes.payload.reduce(
+      //     (total: number, item: IVariantProduct) => {
+      //       return total + item.inventory;
+      //     },
+      //     0,
+      //   );
+      // }
 
-      const sendData: ISendProduct = {
-        title: product.title,
-        description: product.description,
-        shortDescription: product.shortDescription,
-        slug: generateSlug(generateSlug(`${product.title} ${product._id}`)),
-        meta_title: product.title,
-        meta_description: product.description,
-        thumbnail,
-        gallery,
-        category: defaultCategory as string,
-        categories: categoriesProduct as string[],
-        breadcrumbs,
-        specifications,
-        price: product.price,
-        promotion_price: product.promotion_price,
-        inventory,
-        public: product.public,
+      const dataSend: ICreateProduct = {
+        ...values,
         variations: variations_id,
-        options: optionsProduct,
-        sku: product.sku,
-        barcode: product.barcode,
+        inventory,
       };
 
-      const payload = await updateProduct(product._id as string, sendData);
+      if (!!galleryFile.length) {
+        for (const item of galleryFile) {
+          if (product?.gallery?.includes(item.name as string)) continue;
+
+          const formData: FormData = new FormData();
+          formData.append("image", item as FileType);
+
+          const res: IResponse<string> = await uploadThumbnailProduct(formData);
+
+          if (res.status === 201) {
+            dataSend.gallery.push(res.payload);
+          }
+        }
+      }
+
+      const payload = await updateProduct(productId, dataSend);
 
       if (payload.status === 201) {
-        toast.success("Success updated product", {
-          position: toast.POSITION.BOTTOM_RIGHT,
-        });
-        router.push("/products");
+        messageApi.success(tSuccess("create"));
+        // router.push("/products");
       }
     } catch (error) {
-      toast.error("Error in updated product", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      console.log(error);
+      messageApi.error("TRY_AGAIN");
     }
+
+    setIsSubmit(false);
   };
 
   const handleGetData = async (id: string) => {
     setLoading(true);
 
     try {
-      const { payload, status } = await getProduct(id as string);
-
-      const {
-        title,
-        description,
-        shortDescription,
-        categories,
-        category,
-        thumbnail,
-        gallery,
-        price,
-        promotion_price,
-        hotProduct,
-        inventory,
-        brand,
-        public: publicProduct,
-        rate,
-        viewer,
-        specifications,
-        variations,
-        options,
-        breadcrumbs,
-        sku,
-        barcode,
-        sold,
-      } = payload;
+      const { payload, status }: IResponse<IProduct> = await getProduct(
+        id as string,
+      );
 
       if (status === 200) {
-        let defaultCategoryPayload: IParentCategory | null = null;
+        const { breadcrumbs, category, categories, ...restProduct } = payload;
 
-        if (category) {
-          defaultCategoryPayload = {
-            _id: category._id,
-            title: category.title,
-          };
-        } else if (categories.length > 0) {
-          defaultCategoryPayload = {
-            _id: categories[0]._id,
-            title: categories[0].title,
-          };
-        }
-
-        const multipleCategoriesPayload: ISelectItem[] = categories.map(
-          (category: IParentCategory) => ({
-            _id: category._id,
-            title: category.title,
-          }),
-        );
-
-        const productData: IProductData = {
-          _id: id as string,
-          title,
-          description,
-          shortDescription,
-          category: defaultCategoryPayload
-            ? defaultCategoryPayload
-            : initData.category,
-          categories: multipleCategoriesPayload,
-          thumbnail,
-          gallery,
-          price,
-          promotion_price,
-          inventory,
-          public: publicProduct,
-          hotProduct,
-          options,
-          breadcrumbs,
-          specifications,
-          type: [],
-          rate,
-          viewer,
-          brand,
-          variants: variations ? variations : [],
-          sku,
-          barcode,
-          sold,
+        const formData: ICreateProduct = {
+          ...restProduct,
+          category: category._id,
+          categories: categories.map((item: IParentCategory) => item._id),
         };
-        setProduct(productData);
-        setTitle(title);
-        setOptionsProduct(options);
-        setDefaultCategory(
-          defaultCategoryPayload ? defaultCategoryPayload._id : null,
-        );
-        setMultipleCategories(multipleCategoriesPayload);
-        setThumbnail(thumbnail);
-        setGallery(gallery);
-        setSpecifications(specifications);
-        setVariants(variations);
+
+        const gallery: UploadFile[] = payload.gallery.map((item: string) => ({
+          uid: uuidv4(),
+          name: item,
+          url: process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + item,
+        }));
+
+        setProduct(payload);
+        setGalleryFile(gallery);
+
+        setOptionsProduct(payload.options);
+        setVariants(payload.variations);
+
+        productForm.reset(formData);
       }
 
       setLoading(false);
     } catch (error) {
-      console.log(error);
-      toast.error("Error server, please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setLoading(false);
+      messageApi.error(tError("TRY_AGAIN"));
     }
   };
 
@@ -847,34 +570,7 @@ const ProductEditPage: NextPageWithLayout = () => {
         setLoading(false);
       }
     } catch (error) {
-      console.log(error);
       setLoading(false);
-    }
-  };
-
-  const handleGetCategories = async () => {
-    let data: IObjectCategory = {};
-    try {
-      const response = await getAllCategories({ title: "1", childrens: "1" });
-
-      for (const item of response.payload) {
-        const { _id, parent_id, title, childrens, slug } = item;
-        data[_id] = { _id, parent_id, title, childrens, slug };
-      }
-
-      setCategories(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleGetCategoriesParent = async () => {
-    try {
-      const response = await getParentCategories();
-      const data = response.payload.map((item: any) => item._id);
-      setCategoriesParent(data);
-    } catch (error) {
-      console.log(error);
     }
   };
 
@@ -907,12 +603,34 @@ const ProductEditPage: NextPageWithLayout = () => {
     setRemoveVariants([...removeVariants, id]);
   };
 
+  const onUploadGallery = async (file: UploadFile | null) => {
+    if (!file) return;
+
+    setGalleryFile([...galleryFile, file]);
+  };
+
+  const onRemoveGallary = async (file: UploadFile | null) => {
+    if (!file) return;
+
+    const newListFile: UploadFile[] = galleryFile.filter(
+      (item: UploadFile) => item.uid !== file.uid,
+    );
+
+    if (product?.gallery?.includes(file.name as string)) {
+      const newGallery: string[] = productForm
+        .getValues("gallery")
+        .filter((item) => item !== file.name);
+
+      productForm.setValue("gallery", newGallery);
+    }
+
+    setGalleryFile(newListFile);
+  };
+
   useEffect(() => {
     if (!productId) return;
 
     handleGetData(productId);
-    handleGetCategories();
-    handleGetCategoriesParent();
   }, [productId, router.isReady]);
 
   if (!router.isReady) {
@@ -921,10 +639,12 @@ const ProductEditPage: NextPageWithLayout = () => {
 
   return (
     <FormLayout
-      title={`${t("EditProductPage.title")} ${title}`}
+      title={`${t("edit")}`}
       backLink="/products"
-      onSubmit={handleOnSubmit}
-      loading={loading}>
+      onSubmit={productForm.handleSubmit((values) =>
+        onSubmitUpdateProduct(productId, values),
+      )}
+      loading={isSubmit}>
       <Fragment>
         <div className="flex items-center py-5 gap-2">
           <button
@@ -934,7 +654,7 @@ const ProductEditPage: NextPageWithLayout = () => {
                 ? "text-success border-success"
                 : "dark:text-darkText"
             }  font-medium px-2 pb-2 border-b-2 `}>
-            {t("EditProductPage.tag.basic")}
+            {t("tabs.infomation")}
           </button>
           <button
             onClick={() => onSelectTag(TYPE_TAG.COMPINATION)}
@@ -943,209 +663,21 @@ const ProductEditPage: NextPageWithLayout = () => {
                 ? "text-success border-success"
                 : "dark:text-darkText"
             }  font-medium px-2 pb-2 border-b-2 `}>
-            {t("EditProductPage.tag.compination")}
+            {t("tabs.variants")}
           </button>
         </div>
 
-        {tag === TYPE_TAG.BASIC_INFOR && (
-          <div className="lg:w-2/4 w-full mx-auto">
-            <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-              <InputTextarea
-                title={t("CreateProductPage.field.title")}
-                width="w-full"
-                value={product.title || ""}
-                error={fieldsCheck.includes("title")}
-                name="title"
-                placeholder="Input product name..."
-                rows={2}
-                infor="Name of product must less than 120 characters"
-                getValue={changeValue}
-              />
-
-              <InputTextarea
-                title={t("CreateProductPage.field.shortDescription")}
-                width="w-full"
-                error={fieldsCheck.includes("shortDescription")}
-                value={product.shortDescription || ""}
-                name="shortDescription"
-                placeholder="Input short description about product"
-                rows={2}
-                getValue={changeValue}
-              />
-
-              <InputTextarea
-                title={t("CreateProductPage.field.description")}
-                width="w-full"
-                error={fieldsCheck.includes("description")}
-                value={product.description || ""}
-                name="description"
-                placeholder="Input description about product"
-                getValue={changeValue}
-              />
-            </div>
-
-            <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-              <MultipleValue
-                title={t("CreateProductPage.field.categories")}
-                width="w-full"
-                items={mutipleCategories}
-                name="categories"
-                infor="Categories select must be different Home Category"
-                placeholder="Please select a category or categories"
-                readonly={true}
-                error={fieldsCheck.includes("categories")}
-                getAttributes={changeMultipleCategories}
-              />
-
-              <div>
-                {categoriesParent.length > 0 &&
-                  Object.keys(categories).length > 0 && (
-                    <Tree
-                      categories={categories}
-                      categoriesParent={categoriesParent}
-                      node_id="Home"
-                      parent_id={null}
-                      categorySelect={categorySelect}
-                      onSelect={onSelectCategory}
-                    />
-                  )}
-              </div>
-
-              <SelectItem
-                width="w-full"
-                title={t("CreateProductPage.field.defaultCategory")}
-                name="category"
-                value={defaultCategory ? defaultCategory : ""}
-                onSelect={onSelectDefaultCategory}
-                data={mutipleCategories}
-              />
-            </div>
-
-            <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-              <Thumbnail
-                error={fieldsCheck.includes("thumbnail")}
-                url={thumbnail}
-                loading={loadingThumbnail}
-                onChange={uploadThumbnail}
-                option={{
-                  quality: 100,
-                  maxHeight: 200,
-                  maxWidth: 200,
-                  minHeight: 200,
-                  minWidth: 200,
-                  compressFormat: ECompressFormat.WEBP,
-                  type: ETypeImage.file,
-                }}
-              />
-
-              <Gallery
-                gallery={gallery}
-                loading={loadingGallery}
-                limited={6}
-                onChange={onUploadGallery}
-                onDelete={onRemoveGallary}
-                option={{
-                  quality: 90,
-                  maxHeight: 680,
-                  maxWidth: 680,
-                  minHeight: 680,
-                  minWidth: 680,
-                  compressFormat: ECompressFormat.JPEG,
-                  type: ETypeImage.file,
-                }}
-              />
-            </div>
-
-            <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-              <InputNumber
-                title={t("CreateProductPage.field.price")}
-                width="w-full"
-                error={fieldsCheck.includes("price")}
-                value={formatBigNumber(product.price)}
-                name="price"
-                getValue={changePrice}
-              />
-
-              <InputNumber
-                title={t("CreateProductPage.field.promotionPrice")}
-                width="w-full"
-                value={formatBigNumber(product.promotion_price)}
-                error={fieldsCheck.includes("promotion_price")}
-                name="promotion_price"
-                getValue={changePrice}
-              />
-
-              <InputNumber
-                title={t("CreateProductPage.field.inventory")}
-                width="w-full"
-                readonly={variants.length > 0 ? true : false}
-                infor="If product have variations, you can't edit input"
-                value={formatBigNumber(product.inventory)}
-                error={fieldsCheck.includes("inventory")}
-                name="inventory"
-                getValue={changePrice}
-              />
-            </div>
-
-            <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-              <InputText
-                title={t("CreateProductPage.field.SKU")}
-                width="w-full"
-                value={product.sku || ""}
-                error={fieldsCheck.includes("sku")}
-                placeholder="SKU..."
-                name="sku"
-                getValue={changeValue}
-                infor="Mã SKU giúp quản lí sản phẩm tốt hơn"
-              />
-
-              <InputText
-                title={t("CreateProductPage.field.barcode")}
-                width="w-full"
-                value={product.barcode || ""}
-                error={fieldsCheck.includes("barcode")}
-                name="barcode"
-                placeholder="Bar code..."
-                getValue={changeValue}
-              />
-
-              <InputNumber
-                title={t("EditProductPage.sold")}
-                width="w-full"
-                value={product.sold.toString()}
-                name="sold"
-                readonly={true}
-              />
-            </div>
-
-            <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-              <Specifications
-                specifications={specifications}
-                onUpdate={onUpdateSpecifications}
-              />
-            </div>
-
-            <div className="w-full flex lg:flex-nowrap flex-wrap items-end justify-between mt-5 gap-5">
-              {product._id && (
-                <ButtonCheck
-                  title={t("CreateProductPage.field.public")}
-                  name="public"
-                  width="w-fit"
-                  isChecked={product.public}
-                  onChange={changePublic}
-                />
-              )}
-
-              <button
-                onClick={handlePopup}
-                className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
-                {t("Action.delete")}
-              </button>
-            </div>
-          </div>
+        {tag === TYPE_TAG.BASIC_INFOR && product && (
+          <ProductForm
+            form={productForm}
+            data={product}
+            galleryFile={galleryFile}
+            onUploadGallery={onUploadGallery}
+            onRemoveGallery={onRemoveGallary}
+          />
         )}
 
-        {tag === TYPE_TAG.COMPINATION && (
+        {/* {tag === TYPE_TAG.COMPINATION && (
           <div>
             <SelectMutipleWrap
               data={showAttributes}
@@ -1326,7 +858,7 @@ const ProductEditPage: NextPageWithLayout = () => {
               </Popup>
             )}
           </div>
-        )}
+        )} */}
 
         {showPopup && (
           <Popup
@@ -1350,12 +882,24 @@ const ProductEditPage: NextPageWithLayout = () => {
             </div>
           </Popup>
         )}
+
+        {/* Message of Antd */}
+        {contextHolder}
       </Fragment>
     </FormLayout>
   );
 };
 
 export default ProductEditPage;
+
+export async function getServerSideProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../../../messages/${context.locale}.json`))
+        .default,
+    },
+  };
+}
 
 ProductEditPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

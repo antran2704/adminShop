@@ -12,7 +12,7 @@ import { typeCel } from "~/enums";
 
 import { IAttribute, IFilter, IPagination } from "~/interface";
 
-import ShowItemsLayout from "~/layouts/ShowItemsLayout";
+import ShowItemsLayout from "~/layouts/ManagerLayout";
 
 import Search from "~/components/Search";
 import { Table, CelTable } from "~/components/Table";

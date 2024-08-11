@@ -16,7 +16,7 @@ import { axiosGet } from "~/configs/configAxios";
 import { SelectDate, SelectItem, SelectTag } from "~/components/Select";
 import { ISelectItem } from "~/interface";
 import Statistic from "~/components/Statistic";
-import DefaultLayout from "~/layouts/DefaultLayout";
+import DefaultLayout from "~/layouts/Guard";
 import { NextPageWithLayout } from "~/interface/page";
 
 ChartJS.register(

@@ -122,6 +122,10 @@
       "title": "Confirm delete product",
       "description": "Note: Data can't restore after delete"
     },
+    "tabs": {
+      "infomation": "Main Infomation",
+      "variants": "Variants"
+    },
     "breadcrumb": {
       "list": "List product",
       "create": "Creat product",
@@ -297,7 +301,8 @@
     "UPLOAD_FILE": "Upload file faile",
     "PLEASE_SELECT": "Please select",
     "PLEASE_INPUT": "Please input",
-    "PLEASE_UPLOAD": "Please upload"
+    "PLEASE_UPLOAD": "Please upload",
+    "SESSION_EXPRIED": "Session is expried"
   },
   "Success": {
     "create": "Created success",

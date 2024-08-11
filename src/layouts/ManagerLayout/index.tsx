@@ -9,7 +9,7 @@ interface Props {
   link?: string;
 }
 
-const ShowItemsLayout = (props: Props) => {
+const ManagerLayout = (props: Props) => {
   const { title, titleCreate, link, breadcrumb, children } = props;
   return (
     <section className="px-5">
@@ -39,4 +39,4 @@ const ShowItemsLayout = (props: Props) => {
   );
 };
 
-export default ShowItemsLayout;
+export default ManagerLayout;

@@ -1,12 +1,13 @@
 import { useState, Fragment, useEffect } from "react";
+import { useRouter } from "next/router";
+import clsx from "clsx";
 
+import { GuardLayout } from "~/layouts";
 import SideBar from "~/components/SideBar";
 import Navbar from "~/components/Navbar";
-import DefaultLayout from "../DefaultLayout";
 import useViewport from "~/hooks/useViewport";
-import { useRouter } from "next/router";
+
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import clsx from "clsx";
 import { changeShowSideBar } from "~/store/slice/setting";
 
 interface Props {
@@ -34,7 +35,7 @@ const PrivateLayout = ({ children }: Props) => {
   }, [router.asPath]);
 
   return (
-    <DefaultLayout>
+    <GuardLayout>
       <Fragment>
         <SideBar showSideBar={showSidebar} onShowModal={onShowModal} />
         <div
@@ -46,7 +47,7 @@ const PrivateLayout = ({ children }: Props) => {
           {children}
         </div>
       </Fragment>
-    </DefaultLayout>
+    </GuardLayout>
   );
 };
 

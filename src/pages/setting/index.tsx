@@ -10,7 +10,7 @@ import { IUserInfor } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 import FormLayout from "~/layouts/FormLayout";
 import LayoutWithHeader from "~/layouts/Private";
-import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
+import LayoutWithoutHeader from "~/layouts/Public";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { loginReducer } from "~/store/slice/user";
 import { axiosPatch, axiosPost } from "~/configs/configAxios";

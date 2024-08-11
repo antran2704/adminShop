@@ -60,6 +60,10 @@ const UploadGallery = ({
 
     if (maxFile && fileList.length >= maxFile) return;
 
+    const isValid: boolean = checkFile(info.file as FileType, rules, fileSize);
+
+    if (!isValid) return;
+
     // update link for new file
     const newFileList = [...fileList];
 
@@ -107,10 +111,7 @@ const UploadGallery = ({
         onPreview={handlePreview}
         disabled={disable}
         onRemove={handleRemove}
-        onChange={(info: UploadChangeParam<UploadFile>) => {
-          checkFile(info.file as FileType, rules, fileSize) &&
-            handleChange(info);
-        }}>
+        onChange={handleChange}>
         {maxFile && fileList.length >= maxFile ? null : uploadButton}
       </Upload>
       {previewImage && (

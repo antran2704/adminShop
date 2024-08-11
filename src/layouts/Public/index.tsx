@@ -12,7 +12,7 @@ interface Props {
   children: JSX.Element;
 }
 
-const LayoutWithoutHeader = ({ children }: Props) => {
+const PublicLayout = ({ children }: Props) => {
   const router = useRouter();
 
   const dispatch = useAppDispatch();
@@ -62,4 +62,4 @@ const LayoutWithoutHeader = ({ children }: Props) => {
   );
 };
 
-export default LayoutWithoutHeader;
+export default PublicLayout;

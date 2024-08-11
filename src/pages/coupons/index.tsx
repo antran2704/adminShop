@@ -7,7 +7,7 @@ import {
 } from "react";
 import { toast } from "react-toastify";
 
-import ShowItemsLayout from "~/layouts/ShowItemsLayout";
+import ShowItemsLayout from "~/layouts/ManagerLayout";
 
 import { EDicount_type, typeCel } from "~/enums";
 

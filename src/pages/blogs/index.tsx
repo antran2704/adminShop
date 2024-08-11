@@ -21,7 +21,7 @@ import {
 } from "~/api-client";
 
 import LayoutWithHeader from "~/layouts/Private";
-import ShowItemsLayout from "~/layouts/ShowItemsLayout";
+import ShowItemsLayout from "~/layouts/ManagerLayout";
 
 import { Table, CelTable } from "~/components/Table";
 import { colHeadBlog as colHeadTable } from "~/components/Table/colHeadTable";

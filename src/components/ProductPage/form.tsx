@@ -8,6 +8,7 @@ import clsx from "clsx";
 import {
   ICreateProduct,
   IParentCategory,
+  IProduct,
   IResponse,
   IResponseWithPagination,
   ISpecificationsProduct,
@@ -29,7 +30,7 @@ import { UploadGallery, UploadImage } from "../Core/Upload";
 import { formatBigNumber } from "~/helper/format/number";
 
 interface Props {
-  data?: ICreateProduct | null;
+  data?: IProduct | null;
   galleryFile?: UploadFile[];
   form: UseFormReturn<ICreateProduct, any, undefined>;
   onUploadGallery: (source: UploadFile | null) => void;
@@ -37,7 +38,13 @@ interface Props {
 }
 
 const FormProduct = (props: Props) => {
-  const { form, galleryFile = [], onUploadGallery, onRemoveGallery } = props;
+  const {
+    form,
+    galleryFile = [],
+    data,
+    onUploadGallery,
+    onRemoveGallery,
+  } = props;
 
   const {
     control,
@@ -49,7 +56,6 @@ const FormProduct = (props: Props) => {
 
   const t = useTranslations("ProductPage");
   const tError = useTranslations("Error");
-
   // Category
   const [treeData, setTreeData] = useState<Omit<DefaultOptionType, "label">[]>([
     {
@@ -208,10 +214,39 @@ const FormProduct = (props: Props) => {
           }),
         );
 
+        if (data && !!data.categories.length) {
+          data.categories.forEach((item: IParentCategory) => {
+            if (!item.parent_id) return;
+
+            listTree.push({
+              id: item._id,
+              pId: item.parent_id,
+              value: item._id,
+              title: item.title,
+              isLeaf: !item.children.length,
+            });
+          });
+        }
+
         setTreeData([...treeData, ...listTree]);
       })
       .catch((err) => err);
   };
+
+  useEffect(() => {
+    if (!data) return;
+
+    if (!!data.categories.length) {
+      const itemSelectCategories: string[] = data.categories.map(
+        (item) => item._id,
+      );
+      const labelSelectCategories: string[] = data.categories.map(
+        (item) => item.title,
+      );
+
+      onSelectTree(itemSelectCategories, labelSelectCategories);
+    }
+  }, [data]);
 
   useEffect(() => {
     handleGetCategoriesParent();
@@ -394,7 +429,10 @@ const FormProduct = (props: Props) => {
                 className=""
                 rules={[ETypeFile.JPEG, ETypeFile.PNG, ETypeFile.WEBP]}
                 src={
-                  value ? process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + value : ""
+                  data?.thumbnail
+                    ? (process.env.NEXT_PUBLIC_IMAGE_ENDPOINT as string) +
+                      data.thumbnail
+                    : ""
                 }
                 error={!!errors.thumbnail?.message}
                 onChangeImage={uploadThumbnail}
@@ -562,6 +600,7 @@ const FormProduct = (props: Props) => {
         </div>
       </div>
 
+      {/* Specification */}
       <div className="w-full flex flex-col p-5 mt-5 bg-white rounded-md border-2 gap-5">
         <Controller
           name="specifications"

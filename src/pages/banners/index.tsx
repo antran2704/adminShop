@@ -2,7 +2,7 @@ import { useState, useEffect, Fragment, ReactElement } from "react";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
 
-import ShowItemsLayout from "~/layouts/ShowItemsLayout";
+import ShowItemsLayout from "~/layouts/ManagerLayout";
 
 import { EPermission, ERole, ORDER_PARAMATER_ENUM } from "~/enums";
 import {

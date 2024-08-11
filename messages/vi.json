@@ -122,6 +122,10 @@
       "title": "Xác nhận xóa sản phẩm",
       "description": "Lưu ý: Không thể phục hồi dữ liệu sau khi xóa"
     },
+    "tabs": {
+      "infomation": "Thông tin chung",
+      "variants": "Sản phẩm con"
+    },
     "breadcrumb": {
       "list": "Danh sách sản phẩm",
       "create": "Tạo sản phẩm",
@@ -296,7 +300,8 @@
     "UPLOAD_FILE": "Upload file lỗi",
     "PLEASE_SELECT": "Vui lòng lựa chọn",
     "PLEASE_INPUT": "Vui lòng nhập",
-    "PLEASE_UPLOAD": "Vui lòng upload"
+    "PLEASE_UPLOAD": "Vui lòng upload",
+    "SESSION_EXPRIED": "Hết phiên đăng nhập"
   },
   "Success": {
     "create": "Tạo thành công",

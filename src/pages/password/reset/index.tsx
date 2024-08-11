@@ -6,7 +6,7 @@ import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
 import { InputText } from "~/components/InputField";
 import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
+import LayoutWithoutHeader from "~/layouts/Public";
 import { axiosPost } from "~/configs/configAxios";
 
 interface IDataSend {

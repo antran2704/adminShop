@@ -9,11 +9,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 
 import ImageCus from "~/components/Image/ImageCus";
-import LayoutWithoutHeader from "~/layouts/LayoutWithoutHeader";
+import { PublicLayout } from "~/layouts";
 
 import { loginReducer } from "~/store/slice/user";
 import { useAppDispatch } from "~/store/hooks";
+
 import { login } from "~/api-client";
+
 import { NextPageWithLayout } from "~/interface/page";
 import { ILogin, IResponseLogin, IResponse } from "~/interface";
 
@@ -24,7 +26,7 @@ const initData: ILogin = {
   password: "",
 };
 
-const Layout = LayoutWithoutHeader;
+const Layout = PublicLayout;
 
 const LoginPage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -109,7 +111,9 @@ const LoginPage: NextPageWithLayout = () => {
 
         <div className="flex flex-col items-start mt-5 gap-5">
           <div className="w-full">
-            <h3 className="md:text-base text-base pb-2">{t("email.title")}</h3>
+            <h3 className="md:text-base text-base dark:text-white pb-2">
+              {t("email.title")}
+            </h3>
 
             <Controller
               name="email"
@@ -125,7 +129,7 @@ const LoginPage: NextPageWithLayout = () => {
             />
           </div>
           <div className="w-full">
-            <h3 className="md:text-base text-base pb-2">
+            <h3 className="md:text-base text-base dark:text-white pb-2">
               {t("password.title")}
             </h3>
             <Controller

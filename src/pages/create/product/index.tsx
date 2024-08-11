@@ -33,7 +33,7 @@ const initData: ICreateProduct = {
   hotProduct: false,
   options: [],
   specifications: [],
-  variants: [],
+  variations: [],
   sku: null,
   barcode: null,
   sold: 0,
@@ -76,18 +76,6 @@ const CreateProductPage: NextPageWithLayout = () => {
     if (!file) return;
 
     setGalleryFile([...galleryFile, file]);
-    // const formData: FormData = new FormData();
-    // formData.append("image", source);
-    // uploadThumbnailProduct(formData)
-    //   .then(({ status, payload }: IResponse<string>) => {
-    //     if (status === 201) {
-    //       setValue("gallery", [...getValues("gallery"), payload]);
-    //       setGallery([...gallery, payload]);
-    //     }
-    //   })
-    //   .catch(() => {
-    //     messageApi.error(tError("UPLOAD_IMAGE"));
-    //   });
   };
 
   const onRemoveGallary = async (file: UploadFile | null) => {
@@ -117,8 +105,6 @@ const CreateProductPage: NextPageWithLayout = () => {
             dataSend.gallery.push(res.payload);
           }
         }
-
-        galleryFile;
       }
 
       const payload = await createProduct(values);

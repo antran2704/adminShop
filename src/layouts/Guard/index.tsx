@@ -13,7 +13,7 @@ interface Props {
   children: JSX.Element;
 }
 
-const DefaultLayout = ({ children }: Props) => {
+const GuardLayout = ({ children }: Props) => {
   const router = useRouter();
 
   const { infor } = useAppSelector((state) => state.user);
@@ -75,4 +75,4 @@ const DefaultLayout = ({ children }: Props) => {
   );
 };
 
-export default DefaultLayout;
+export default GuardLayout;

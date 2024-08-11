@@ -194,6 +194,7 @@ export async function getServerSideProps(context: { locale: string }) {
     },
   };
 }
+
 EditCategoryPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
 };

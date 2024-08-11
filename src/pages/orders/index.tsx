@@ -11,7 +11,7 @@ import { IPagination } from "~/interface/pagination";
 
 import { colHeadOrder as colHeadTable } from "~/components/Table/colHeadTable";
 import Search from "~/components/Search";
-import ShowItemsLayout from "~/layouts/ShowItemsLayout";
+import ShowItemsLayout from "~/layouts/ManagerLayout";
 import { CelTable, Table } from "~/components/Table";
 import { typeCel } from "~/enums";
 import { orderStatus } from "~/components/Table/statusCel";

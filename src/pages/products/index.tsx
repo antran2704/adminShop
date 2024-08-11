@@ -9,8 +9,7 @@ import {
 } from "~/interface";
 
 import Search from "~/components/Search";
-import { colHeaderProduct as colHeadTable } from "~/components/Table/colHeadTable";
-import ShowItemsLayout from "~/layouts/ShowItemsLayout";
+import ShowItemsLayout from "~/layouts/ManagerLayout";
 import { initPagination } from "~/components/Pagination/initData";
 import { getProducts } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
