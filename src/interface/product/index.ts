@@ -43,15 +43,31 @@ interface IProduct {
   public: boolean;
   options: IOptionProduct[];
   specifications: ISpecificationsProduct[];
-  variations: IVariantProduct[];
+  variations: string[];
   breadcrumbs: string[];
-  viewer: number;
+  view: number;
   slug: string;
   rate: number;
-  createdAt: string;
+  createdAt?: string;
 }
 
-interface IVariantProduct extends IProduct {
+type IVariantProduct = Omit<
+  IProduct,
+  | "specifications"
+  | "variations"
+  | "breadcrumbs"
+  | "gallery"
+  | "options"
+  | "meta_title"
+  | "meta_description"
+  | "description"
+  | "shortDescription"
+  | "category"
+  | "categories"
+  | "view"
+  | "slug"
+  | "hotProduct"
+> & {
   product_id: string;
   available: boolean;
   option1: string | null;
@@ -59,12 +75,12 @@ interface IVariantProduct extends IProduct {
   option3: string | null;
   options: string[];
   url: string | null;
-}
+};
 
 type ICreateProduct = Omit<
   IProduct,
   | "_id"
-  | "viewer"
+  | "view"
   | "rate"
   | "slug"
   | "type"

@@ -1,5 +1,12 @@
-import { IAttribute, IFilter, ISendAttribute } from "~/interface";
+import qs from "qs";
+
 import {
+  IAttribute,
+  IFilter,
+  ISearchAttribute,
+  ISendAttribute,
+} from "~/interface";
+import httpConfig, {
   axiosDelete,
   axiosGet,
   axiosPatch,
@@ -8,16 +15,26 @@ import {
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
-const getAttributes = async (page: number = 1) => {
-  return await axiosGet(BASE_URL + `/attributes?page=${page}`);
+const getAttributes = async (paramater: ISearchAttribute) => {
+  const parseParameters = qs.stringify(paramater, {
+    filter: (_, value) => value || undefined,
+  });
+
+  return await httpConfig
+    .get(BASE_URL + `/admin/attributes?${parseParameters}`)
+    .then((res) => res.data);
 };
 
 const getChildAttributes = async (attribute_id: string) => {
-  return await axiosGet(BASE_URL + `/attributes/${attribute_id}`);
+  return await httpConfig
+    .get(BASE_URL + `/admin/attributes/${attribute_id}`)
+    .then((res) => res.data);
 };
 
 const getAttributesAvailable = async () => {
-  return await axiosGet(BASE_URL + `/attributes/available`);
+  return await httpConfig
+    .get(BASE_URL + `/admin/attributes/available`)
+    .then((res) => res.data);
 };
 
 const getAttributesWithFilter = async (

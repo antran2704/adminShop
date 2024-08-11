@@ -2,7 +2,7 @@ import { FC, useState, memo } from "react";
 
 import { ISelectItem } from "~/interface";
 import SelectMutipleItem from "./SelectMultipleItem";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 
 interface IObjectSelect {
   [key: string]: ISelectItem[];
@@ -20,7 +20,7 @@ interface Props {
 const SelectMultipleWrap: FC<Props> = (props: Props) => {
   const { className, data, selects, selectItem, removeItem, selectAll } = props;
 
-  const { t } = useTranslation();
+  const t = useTranslations("ProductPage");
 
   const [selectIndex, setSelectIndex] = useState<number | null>(null);
 
@@ -40,10 +40,8 @@ const SelectMultipleWrap: FC<Props> = (props: Props) => {
       {Object.keys(data || {}).map((key: any, index: number) => (
         <SelectMutipleItem
           key={key}
-          title={`${t("EditProductPage.compination.select")} ${
-            key === "default"
-              ? `${t("EditProductPage.compination.attribute")}`
-              : key
+          title={`${t("compination.select")} ${
+            key === "default" ? `${t("compination.attribute")}` : key
           }`}
           data={data[key]}
           show={selectIndex === index ? true : false}
