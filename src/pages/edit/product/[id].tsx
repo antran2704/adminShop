@@ -12,6 +12,7 @@ import {
   FileType,
   IOptionProduct,
   IResponseWithPagination,
+  ICreateVariant,
 } from "~/interface";
 
 import FormLayout from "~/layouts/FormLayout";
@@ -19,11 +20,11 @@ import Loading from "~/components/Loading";
 import Popup from "~/components/Popup";
 import {
   createVariations,
+  deleteAllVariationsInProduct,
   deleteProduct,
   getProduct,
   getVariations,
   updateProduct,
-  updateVariations,
   uploadThumbnailProduct,
 } from "~/api-client";
 import LayoutWithHeader from "~/layouts/Private";
@@ -54,7 +55,6 @@ const initData: ICreateProduct = {
   hotProduct: false,
   options: [],
   specifications: [],
-  variations: [],
   sku: null,
   barcode: null,
   sold: 0,
@@ -97,6 +97,7 @@ const ProductEditPage: NextPageWithLayout = () => {
   const [variants, setVariants] = useState<IVariantProduct[]>([]);
   const [optionsProduct, setOptionsProduct] = useState<IOptionProduct[]>([]);
   const [removeVariants, setRemoveVariants] = useState<string[]>([]);
+  const [isRemoveAll, setIsRemoveAll] = useState<boolean>(false);
 
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
@@ -124,6 +125,10 @@ const ProductEditPage: NextPageWithLayout = () => {
     setRemoveVariants(items);
   };
 
+  const onRemoveAllVariant = (value: boolean) => {
+    setIsRemoveAll(value);
+  };
+
   const handleDeleteProduct = async (productId: string) => {
     if (!productId) return;
 
@@ -147,27 +152,27 @@ const ProductEditPage: NextPageWithLayout = () => {
     productId: string,
     values: ICreateProduct,
   ) => {
-    // console.log("option", optionsProduct);
-    // console.log("variant", variants);
-    // console.log("remopve", removeVariants);
-
-    // return;
-
     if (!productId) return;
     setIsSubmit(true);
 
     try {
-      let variations_id: string[] = [];
       let inventory: number = values.inventory;
 
-      if (removeVariants.length > 0) {
-        await updateVariations(removeVariants);
+      if (isRemoveAll) {
+        console.log("remove all");
+        await deleteAllVariationsInProduct(productId);
       }
 
-      if (variants.length > 0) {
+      if (isRemoveAll && variants.length > 0) {
+        const parseData: ICreateVariant[] = variants.map((item) => {
+          const { _id, ...rest } = item;
+
+          return rest;
+        });
+
         const variationsRes = await createVariations(
           productId as string,
-          variants,
+          parseData,
         );
 
         if (variationsRes.status !== 201) {
@@ -177,10 +182,6 @@ const ProductEditPage: NextPageWithLayout = () => {
 
           return;
         }
-
-        variations_id = variationsRes.payload.map(
-          (item: IVariantProduct) => item._id,
-        );
 
         inventory = variationsRes.payload.reduce(
           (total: number, item: IVariantProduct) => {
@@ -192,7 +193,6 @@ const ProductEditPage: NextPageWithLayout = () => {
 
       const dataSend: ICreateProduct = {
         ...values,
-        variations: variations_id,
         options: optionsProduct,
         inventory,
       };
@@ -250,7 +250,6 @@ const ProductEditPage: NextPageWithLayout = () => {
 
         setProduct(payload);
         setGalleryFile(gallery);
-        // setVariants(payload.variations);
 
         productForm.reset(formData);
       }
@@ -268,7 +267,6 @@ const ProductEditPage: NextPageWithLayout = () => {
       page: 1,
       take: 16,
     }).then((res: IResponseWithPagination<IVariantProduct[]>) => {
-      // console.log("variant", res);
       setVariants(res.payload);
     });
   };
@@ -328,6 +326,7 @@ const ProductEditPage: NextPageWithLayout = () => {
             options={optionsProduct}
             removeVariants={removeVariants}
             product={product}
+            onRemoveAll={onRemoveAllVariant}
             handleChangeOption={handleChangeOption}
             handleChangeVariants={handleChangeVariants}
             handleRemoveVariant={handleRemoveVariant}

@@ -5,10 +5,9 @@ import {
   IAttribute,
   IOptionProduct,
   IProduct,
+  IResponseWithPagination,
   ISearchAttribute,
   ISelectItem,
-  IValueOption,
-  IVariant,
   IVariantProduct,
 } from "~/interface";
 
@@ -22,6 +21,10 @@ import { ORDER_PARAMATER_ENUM, typeCel } from "~/enums";
 import { ButtonDelete } from "../Button";
 import { formatBigNumber } from "~/helper/format/number";
 import { getAttributes } from "~/api-client";
+import { SelectProps } from "antd";
+import { SelectFilterCore } from "../Core";
+import { DefaultOptionType } from "antd/es/select";
+import VariantTable from "./VariantTable";
 
 interface IObjAttibute {
   [key: string]: IAttribute;
@@ -32,6 +35,10 @@ interface IObjectSelectAttribute {
 }
 
 interface ICompination {
+  [key: string]: string[];
+}
+
+interface ISelectAttributeItem {
   [key: string]: string[];
 }
 
@@ -53,7 +60,6 @@ const initVariant: IVariantProduct = {
   inventory: 0,
   sold: 0,
   public: true,
-  rate: 0,
 };
 
 interface Props {
@@ -61,6 +67,7 @@ interface Props {
   variants: IVariantProduct[];
   removeVariants: string[];
   options: IOptionProduct[];
+  onRemoveAll: (value: boolean) => void;
   handleChangeOption: (items: IOptionProduct[]) => void;
   handleChangeVariants: (items: IVariantProduct[]) => void;
   handleRemoveVariant: (items: string[]) => void;
@@ -72,6 +79,7 @@ const VariantForm = (props: Props) => {
     variants,
     removeVariants,
     options,
+    onRemoveAll,
     handleChangeVariants,
     handleRemoveVariant,
     handleChangeOption,
@@ -88,17 +96,14 @@ const VariantForm = (props: Props) => {
       public: true,
     });
 
-  //   const [optionsProduct, setOptionsProduct] = useState<IOptionProduct[]>([]);
+  const [attributesV2, setAtrributesV2] = useState<IAttribute[]>([]);
+  const [selectAttributeIds, setSelectAtrributesIds] = useState<string[]>([]);
 
-  const [attributes, setAtrributes] = useState<IObjAttibute>({});
-  const [showAttributes, setShowAttributes] = useState<IObjectSelectAttribute>(
-    {},
-  );
-  //   const [variants, setVariants] = useState<IVariantProduct[]>([]);
-  //   const [removeVariants, setRemoveVariants] = useState<string[]>([]);
-
-  const [selectAttributes, setSelectAttributes] =
-    useState<IObjectSelectAttribute>({});
+  const [selectAttributesV2, setSelectAttributesV2] = useState<
+    SelectProps["options"]
+  >([]);
+  const [selectAttributeItemV2, setSelectAttributeItemV2] =
+    useState<ISelectAttributeItem>({});
 
   const [selectVariant, setSelectVariant] = useState<ISelectItem | null>(null);
   const [showPopupVariant, setPopupVariant] = useState<boolean>(false);
@@ -117,98 +122,20 @@ const VariantForm = (props: Props) => {
     setPopupVariant(!showPopupVariant);
   };
 
-  const selectAll = (items: ISelectItem[], key: string) => {
-    const select = selectAttributes;
-
-    if (key === "default") {
-      const currentShowAttributes = showAttributes;
-      Object.keys(attributes).forEach((id: string) => {
-        const attribute: IAttribute = attributes[id];
-        currentShowAttributes[attribute.code] = [];
-
-        if (items.length > 0) {
-          attribute.children.forEach((item: any) => {
-            currentShowAttributes[attribute.code].push({
-              _id: item._id,
-              title: item.name,
-            });
-          });
-        } else {
-          select[attribute.code] = [];
-          delete currentShowAttributes[attribute.code];
-        }
-
-        setShowAttributes({ ...currentShowAttributes });
-      });
-    }
-    select[key] = items;
-    setSelectAttributes({ ...select });
-  };
-
-  const removeSelect = (items: ISelectItem[], id: string, key: string) => {
-    const select = selectAttributes;
-
-    if (key === "default") {
-      const currentShowAttributes = showAttributes;
-      const item: IAttribute = attributes[id];
-
-      select[item.code] = [];
-      delete currentShowAttributes[item.code];
-    }
-
-    select[key] = items;
-    setSelectAttributes({ ...select });
-  };
-
-  const selectAttribute = (item: ISelectItem, key: string) => {
-    console.log(item, key);
-    const select = selectAttributes;
-    const currentShowAttributes = showAttributes;
-
-    if (key === "default") {
-      if (Object.keys(showAttributes).length >= 4) {
-        // toast.warn("Maximum select attribute", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
-
-        return;
-      }
-      console.log(attributes);
-      const { children, code } = attributes[item._id as string];
-      currentShowAttributes[code] = [];
-
-      for (const item of children) {
-        const { _id, name, public: available }: IVariant = item;
-
-        if (available) {
-          currentShowAttributes[code].push({ _id, title: name });
-        }
-      }
-    }
-    select[key].push(item);
-    setShowAttributes(currentShowAttributes);
-    setSelectAttributes({ ...select });
-  };
-
   const onClearVariants = () => {
+    onRemoveAll(true);
     handleChangeVariants([]);
-
-    if (product.variations.length > 0) {
-      let items: string[] = [];
-      items = product.variations.map((variant: string) => variant) as string[];
-
-      handleRemoveVariant(items as string[]);
-    }
+    // if (product.variations.length > 0) {
+    //   let items: string[] = [];
+    //   items = product.variations.map((variant: string) => variant) as string[];
+    //   handleRemoveVariant(items as string[]);
+    // }
   };
 
   const onGenerateVariants = () => {
-    const compination = getCompination();
-    const options = getOptionsProduct();
+    const compination = selectAttributeItemV2;
+    const options = selectAttributesV2 as DefaultOptionType[];
     const keys = Object.keys(compination);
-
-    console.log("compination", compination);
-    console.log("options", options);
-
     if (keys.length === 0) {
       //   toast.error("Please select attribute", {
       //     position: toast.POSITION.TOP_RIGHT,
@@ -225,7 +152,15 @@ const VariantForm = (props: Props) => {
     );
 
     // setOptionsProduct(options);
-    handleChangeOption(options);
+
+    const newOption: IOptionProduct[] = options.map((option) => ({
+      code: option.title as string,
+      name: option.value as string,
+      values: option.childrend as string[],
+    }));
+
+    onRemoveAll(true);
+    handleChangeOption(newOption);
     handleChangeVariants(result);
   };
 
@@ -266,87 +201,54 @@ const VariantForm = (props: Props) => {
     return result;
   };
 
-  const getOptionsProduct = () => {
-    const selects = selectAttributes;
-    const result: IOptionProduct[] = [];
+  // v2
+  const onSelectAttribute = (
+    values: string[],
+    options: DefaultOptionType | DefaultOptionType[],
+  ) => {
+    const newSelectItems: ISelectAttributeItem = {};
 
-    for (const item of selects["default"]) {
-      const attribute = attributes[item._id as string];
-      const variants = selects[attribute.code];
-      let values: IValueOption[] = [];
+    options.forEach((option: DefaultOptionType) => {
+      const keyOfSelectAttribute = option.title as keyof ISelectAttributeItem;
 
-      for (const variant of variants) {
-        values.push({ _id: variant._id as string, label: variant.title });
+      if (selectAttributeItemV2[keyOfSelectAttribute]) {
+        newSelectItems[keyOfSelectAttribute] =
+          selectAttributeItemV2[keyOfSelectAttribute];
       }
+    });
 
-      result.push({
-        code: attribute.code,
-        name: attribute.name,
-        values,
-      });
-    }
-    return result;
+    setSelectAtrributesIds(values);
+    setSelectAttributesV2(options as DefaultOptionType[]);
+    setSelectAttributeItemV2(newSelectItems);
   };
 
-  const getCompination = () => {
-    const selects = selectAttributes;
-    const result: ICompination = {};
+  // v2
+  const onSelectAttributeItem = (
+    values: string[],
+    key: keyof typeof selectAttributeItemV2,
+  ) => {
+    const newSelectItems: ISelectAttributeItem = { ...selectAttributeItemV2 };
 
-    for (const key of Object.keys(selects)) {
-      if (key !== "default" && selects[key].length > 0) {
-        result[key] = [];
-        const items = selects[key];
-
-        for (const item of items) {
-          result[key].push(item.title);
-        }
-      }
+    if (!values.length) {
+      delete newSelectItems[key];
+    } else {
+      newSelectItems[key] = values;
     }
 
-    return result;
+    setSelectAttributeItemV2(newSelectItems);
   };
 
+  // v2
   const handleGetAttributes = async () => {
     setLoading(true);
 
-    try {
-      const { status, payload } = await getAttributes(attributeParamater);
+    await getAttributes(attributeParamater).then(
+      ({ payload }: IResponseWithPagination<IAttribute[]>) => {
+        setAtrributesV2(payload);
+      },
+    );
 
-      if (status === 200) {
-        let attributesPayload: IObjAttibute = {};
-        let showAttributesDefault: IObjectSelectAttribute = { default: [] };
-        let selectAttributesDefault: IObjectSelectAttribute = { default: [] };
-
-        for (const item of payload) {
-          const {
-            _id,
-            name,
-            children,
-            code,
-            public: status,
-          } = item as IAttribute;
-
-          attributesPayload[`${_id}`] = {
-            _id,
-            name,
-            children,
-            code,
-            public: status,
-          };
-
-          showAttributesDefault["default"].push({ _id, title: name });
-          selectAttributesDefault[code] = [];
-        }
-
-        setSelectAttributes(selectAttributesDefault);
-        setShowAttributes(showAttributesDefault);
-        setAtrributes(attributesPayload);
-
-        setLoading(false);
-      }
-    } catch (error) {
-      setLoading(false);
-    }
+    setLoading(false);
   };
 
   const onChangeValueVariant = (name: string, value: string, index: number) => {
@@ -354,7 +256,6 @@ const VariantForm = (props: Props) => {
     const newVariant = { ...currentVariants[index], [name]: value };
     currentVariants[index] = newVariant;
 
-    // setVariants([...currentVariants]);
     handleChangeVariants([...currentVariants]);
   };
 
@@ -367,7 +268,6 @@ const VariantForm = (props: Props) => {
     const newVariant = { ...currentVariants[index], [name]: value };
     currentVariants[index] = newVariant;
 
-    // setVariants([...currentVariants]);
     handleChangeVariants([...currentVariants]);
   };
 
@@ -375,10 +275,9 @@ const VariantForm = (props: Props) => {
     const newVariants = variants.filter(
       (variant: IVariantProduct) => variant._id !== id,
     );
-    // setVariants(newVariants);
+
     handleChangeVariants(newVariants);
     setPopupVariant(false);
-    // setRemoveVariants([...removeVariants, id]);
     handleRemoveVariant([...removeVariants, id]);
   };
 
@@ -388,16 +287,53 @@ const VariantForm = (props: Props) => {
 
   return (
     <div>
-      <SelectMutipleWrap
-        data={showAttributes}
-        selects={selectAttributes}
-        selectItem={selectAttribute}
-        removeItem={removeSelect}
-        selectAll={selectAll}
+      <SelectFilterCore
+        showSearch
+        mode="multiple"
+        filterOption={(input, option) =>
+          ((option?.label as string) ?? "")
+            .toLowerCase()
+            .includes(input.toLowerCase())
+        }
+        options={attributesV2.map((item: IAttribute) => ({
+          value: item._id,
+          label: item.name,
+          title: item.code,
+          children: item.children.map((child) => child.name) as any,
+        }))}
+        value={selectAttributeIds}
+        onChange={onSelectAttribute}
       />
 
+      {selectAttributesV2?.map(
+        (attribute: DefaultOptionType, index: number) => (
+          <SelectFilterCore
+            key={index}
+            showSearch
+            mode="multiple"
+            options={(attribute?.children as any[]).map((item) => ({
+              label: item,
+              value: item,
+            }))}
+            filterOption={(input, option) =>
+              ((option?.label as string) ?? "")
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+            onChange={(values) =>
+              onSelectAttributeItem(values, attribute.title as string)
+            }
+            value={
+              selectAttributeItemV2[
+                attribute.title as keyof ISelectAttributeItem
+              ]
+            }
+          />
+        ),
+      )}
+
       <div className="flex items-center justify-end mt-5 gap-5">
-        {Object.keys(showAttributes).length > 1 && (
+        {Object.keys(selectAttributeItemV2).length > 0 && (
           <button
             onClick={onGenerateVariants}
             className="text-sm bg-success text-white px-5 py-2 rounded-md">
@@ -443,7 +379,7 @@ const VariantForm = (props: Props) => {
 
       {variants.length > 0 && (
         <div className="mt-5">
-          <Table
+          {/* <Table
             colHeadTabel={colHeaderVariants[router.locale as string]}
             loading={loading}>
             <Fragment>
@@ -525,7 +461,12 @@ const VariantForm = (props: Props) => {
                 </tr>
               ))}
             </Fragment>
-          </Table>
+          </Table> */}
+
+          <VariantTable
+            data={variants.map((item) => ({ key: item._id, ...item }))}
+            getData={() => {}}
+          />
         </div>
       )}
 

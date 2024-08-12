@@ -8,7 +8,7 @@ interface IValueOption {
 interface IOptionProduct {
   code: string;
   name: string;
-  values: IValueOption[];
+  values: string[];
 }
 
 interface ISpecificationAttributes {
@@ -43,7 +43,7 @@ interface IProduct {
   public: boolean;
   options: IOptionProduct[];
   specifications: ISpecificationsProduct[];
-  variations: string[];
+  // variations: string[];
   breadcrumbs: string[];
   view: number;
   slug: string;
@@ -51,31 +51,32 @@ interface IProduct {
   createdAt?: string;
 }
 
-type IVariantProduct = Omit<
-  IProduct,
-  | "specifications"
-  | "variations"
-  | "breadcrumbs"
-  | "gallery"
-  | "options"
-  | "meta_title"
-  | "meta_description"
-  | "description"
-  | "shortDescription"
-  | "category"
-  | "categories"
-  | "view"
-  | "slug"
-  | "hotProduct"
-> & {
+interface IVariantProduct {
+  _id: string;
+  title: string;
+  thumbnail: string | null;
   product_id: string;
+  price: number;
+  promotion_price: number;
+  inventory: number;
+  sold: number;
+  barcode: string | null;
+  sku: string | null;
   available: boolean;
+  public: boolean;
   option1: string | null;
   option2: string | null;
   option3: string | null;
   options: string[];
   url: string | null;
-};
+  createdAt?: string;
+}
+
+type ICreateVariant = Omit<IVariantProduct, "_id" | "createdAt">;
+
+interface IVariantTable extends IVariantProduct {
+  key: string;
+}
 
 type ICreateProduct = Omit<
   IProduct,
@@ -88,9 +89,7 @@ type ICreateProduct = Omit<
   | "category"
   | "categories"
   | "breadcrumbs"
-  | "variations"
 > & {
-  variations: string[];
   category: string;
   categories: string[];
 };
@@ -113,6 +112,8 @@ export type {
   IProductTable,
   ICreateProduct,
   IVariantProduct,
+  IVariantTable,
+  ICreateVariant,
   IOptionProduct,
   ISpecificationsProduct,
   ISpecificationAttributes,
