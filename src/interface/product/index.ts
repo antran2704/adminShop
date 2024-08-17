@@ -43,12 +43,11 @@ interface IProduct {
   public: boolean;
   options: IOptionProduct[];
   specifications: ISpecificationsProduct[];
-  // variations: string[];
   breadcrumbs: string[];
   view: number;
   slug: string;
   rate: number;
-  createdAt?: string;
+  createdAt: string;
 }
 
 interface IVariantProduct {

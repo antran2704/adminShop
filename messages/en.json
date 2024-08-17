@@ -88,6 +88,8 @@
       "thumbnail": "Thumbnail",
       "category": "Category",
       "status": "Status",
+      "sku": "SKU",
+      "barcode": "Barcode",
       "createdAt": "Created At",
       "action": "Action",
       "price": "Price",
@@ -310,6 +312,7 @@
     "delete": "Deleted success"
   },
   "Common": {
+    "noData": "No data",
     "gross": {
       "subTotal": "Sub Gross",
       "total": "Total",

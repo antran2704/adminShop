@@ -26,6 +26,24 @@ const updateVariation = async (variantId: string, data: ICreateVariant) => {
     .then((res) => res.data);
 };
 
+const updateVariations = async (productId: string, data: ICreateVariant[]) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/variations/${productId}/items`, data)
+    .then((res) => res.data);
+};
+
+const activeVariation = async (variantId: string) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/variations/${variantId}/active`)
+    .then((res) => res.data);
+};
+
+const disableVariation = async (variantId: string) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/variations/${variantId}/disable`)
+    .then((res) => res.data);
+};
+
 const deleteVariation = async (variantId: string) => {
   return await httpConfig
     .delete(BASE_URL + `/admin/variations/${variantId}`)
@@ -42,6 +60,9 @@ export {
   getVariations,
   createVariations,
   updateVariation,
+  updateVariations,
+  activeVariation,
+  disableVariation,
   deleteVariation,
   deleteAllVariationsInProduct,
 };

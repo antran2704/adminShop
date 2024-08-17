@@ -1,7 +1,7 @@
 import { Button, ButtonProps } from "antd";
 import clsx from "clsx";
 import { memo } from "react";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { CiEdit } from "react-icons/ci";
 
 interface Props extends ButtonProps {
   children?: JSX.Element;
@@ -14,8 +14,8 @@ const BtnDelete = (props: Props) => {
   return (
     <Button
       size="middle"
-      className={clsx("hover:!border-error hover:!text-error", className)}
-      icon={<RiDeleteBin6Line className="text-xl" />}
+      className={clsx(className)}
+      icon={<CiEdit className="text-xl" />}
       {...rest}>
       {children}
     </Button>

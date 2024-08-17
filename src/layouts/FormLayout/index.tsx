@@ -29,7 +29,7 @@ const FormLayout = (props: props) => {
   const router = useRouter();
 
   return (
-    <section className="relative lg:w-2/4 w-full mx-auto p-5">
+    <section className="relative w-full mx-auto p-5">
       {breadcrumb}
 
       <h1 className="lg:text-2xl md:text-xl text-lg font-semibold text-primary line-clamp-1">

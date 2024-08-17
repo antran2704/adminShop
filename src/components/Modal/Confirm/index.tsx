@@ -37,7 +37,7 @@ const ModalConfirm = (props: Props) => {
               <BiSolidError className="text-3xl text-[#F0A328]" />
             )}
             {type === "info" && (
-              <FaInfoCircle className="text-3xl text-primary-200" />
+              <FaInfoCircle className="text-3xl text-primary" />
             )}
             {type === "error" && (
               <MdOutlineError className="text-3xl text-red-500" />
@@ -63,7 +63,7 @@ const ModalConfirm = (props: Props) => {
         className: clsx(
           "md:w-[100px] w-1/2",
           [type === "danger" && "!bg-[#F0A328] hover:bg-[#F0A328]"],
-          [type === "info" && "bg-primary-200 hover:bg-primary-200"],
+          [type === "info" && "bg-primary hover:bg-primary"],
           [type === "error" && "bg-red-500 hover:bg-red-500"],
           okButtonProps?.className,
         ),

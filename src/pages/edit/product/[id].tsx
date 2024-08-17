@@ -25,6 +25,7 @@ import {
   getProduct,
   getVariations,
   updateProduct,
+  updateVariations,
   uploadThumbnailProduct,
 } from "~/api-client";
 import LayoutWithHeader from "~/layouts/Private";
@@ -95,8 +96,8 @@ const ProductEditPage: NextPageWithLayout = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [variants, setVariants] = useState<IVariantProduct[]>([]);
+
   const [optionsProduct, setOptionsProduct] = useState<IOptionProduct[]>([]);
-  const [removeVariants, setRemoveVariants] = useState<string[]>([]);
   const [isRemoveAll, setIsRemoveAll] = useState<boolean>(false);
 
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
@@ -117,12 +118,7 @@ const ProductEditPage: NextPageWithLayout = () => {
   };
 
   const handleChangeVariants = (items: IVariantProduct[]) => {
-    console.log(items);
     setVariants(items);
-  };
-
-  const handleRemoveVariant = (items: string[]) => {
-    setRemoveVariants(items);
   };
 
   const onRemoveAllVariant = (value: boolean) => {
@@ -156,39 +152,29 @@ const ProductEditPage: NextPageWithLayout = () => {
     setIsSubmit(true);
 
     try {
-      let inventory: number = values.inventory;
+      let inventory: number = 0;
 
       if (isRemoveAll) {
-        console.log("remove all");
         await deleteAllVariationsInProduct(productId);
       }
 
-      if (isRemoveAll && variants.length > 0) {
-        const parseData: ICreateVariant[] = variants.map((item) => {
-          const { _id, ...rest } = item;
-
-          return rest;
-        });
-
-        const variationsRes = await createVariations(
-          productId as string,
-          parseData,
-        );
-
-        if (variationsRes.status !== 201) {
-          toast.error("Error in updated variations", {
-            position: toast.POSITION.TOP_RIGHT,
+      if (variants.length > 0) {
+        if (isRemoveAll) {
+          const parseData: ICreateVariant[] = variants.map((item) => {
+            const { _id, ...rest } = item;
+            return rest;
           });
 
-          return;
+          await createVariations(productId as string, parseData);
+        } else {
+          await updateVariations(productId as string, variants);
         }
 
-        inventory = variationsRes.payload.reduce(
-          (total: number, item: IVariantProduct) => {
-            return total + item.inventory;
-          },
-          0,
-        );
+        inventory = variants.reduce((total: number, item: IVariantProduct) => {
+          return total + item.inventory;
+        }, 0);
+      } else {
+        inventory = values.inventory;
       }
 
       const dataSend: ICreateProduct = {
@@ -197,25 +183,12 @@ const ProductEditPage: NextPageWithLayout = () => {
         inventory,
       };
 
-      if (!!galleryFile.length) {
-        for (const item of galleryFile) {
-          if (product?.gallery?.includes(item.name as string)) continue;
-
-          const formData: FormData = new FormData();
-          formData.append("image", item as FileType);
-
-          const res: IResponse<string> = await uploadThumbnailProduct(formData);
-
-          if (res.status === 201) {
-            dataSend.gallery.push(res.payload);
-          }
-        }
-      }
-
       const payload = await updateProduct(productId, dataSend);
 
       if (payload.status === 201) {
         messageApi.success(tSuccess("create"));
+        productForm.setValue("inventory", inventory);
+        // handleGetVariantsProduct(productId);
         // router.push("/products");
       }
     } catch (error) {
@@ -250,7 +223,7 @@ const ProductEditPage: NextPageWithLayout = () => {
 
         setProduct(payload);
         setGalleryFile(gallery);
-
+        setOptionsProduct(payload.options);
         productForm.reset(formData);
       }
 
@@ -273,26 +246,35 @@ const ProductEditPage: NextPageWithLayout = () => {
 
   const onUploadGallery = async (file: UploadFile | null) => {
     if (!file) return;
+    const formData: FormData = new FormData();
+    formData.append("image", file as FileType);
 
-    setGalleryFile([...galleryFile, file]);
+    uploadThumbnailProduct(formData)
+      .then((res: IResponse<string>) => {
+        if (res.status === 201) {
+          const gallery: string[] = productForm.getValues("gallery");
+          productForm.setValue("gallery", [...gallery, res.payload]);
+          product &&
+            setProduct({
+              ...product,
+              gallery: [...product.gallery, res.payload],
+            });
+        }
+      })
+      .catch((err) => err);
   };
 
   const onRemoveGallary = async (file: UploadFile | null) => {
     if (!file) return;
-
-    const newListFile: UploadFile[] = galleryFile.filter(
-      (item: UploadFile) => item.uid !== file.uid,
-    );
 
     if (product?.gallery?.includes(file.name as string)) {
       const newGallery: string[] = productForm
         .getValues("gallery")
         .filter((item) => item !== file.name);
 
+      setProduct({ ...product, gallery: newGallery });
       productForm.setValue("gallery", newGallery);
     }
-
-    setGalleryFile(newListFile);
   };
 
   useEffect(() => {
@@ -310,6 +292,7 @@ const ProductEditPage: NextPageWithLayout = () => {
         children: product && (
           <ProductForm
             form={productForm}
+            disableEditInventory={!!variants.length}
             data={product}
             galleryFile={galleryFile}
             onUploadGallery={onUploadGallery}
@@ -324,17 +307,15 @@ const ProductEditPage: NextPageWithLayout = () => {
           <VariantProductForm
             variants={variants}
             options={optionsProduct}
-            removeVariants={removeVariants}
             product={product}
             onRemoveAll={onRemoveAllVariant}
             handleChangeOption={handleChangeOption}
             handleChangeVariants={handleChangeVariants}
-            handleRemoveVariant={handleRemoveVariant}
           />
         ),
       },
     ],
-    [router.locale, product, variants, optionsProduct, removeVariants],
+    [router.locale, product, variants, optionsProduct],
   );
 
   if (!router.isReady) {

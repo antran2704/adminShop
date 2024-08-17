@@ -11,28 +11,15 @@ import {
   IVariantProduct,
 } from "~/interface";
 
-import { SelectMutipleWrap } from "../Select";
 import { useTranslations } from "next-intl";
 import Popup from "../Popup";
-import { CelTable, Table } from "../Table";
-import { colHeaderVariants } from "../Table/colHeadTable";
 import { useRouter } from "next/router";
-import { ORDER_PARAMATER_ENUM, typeCel } from "~/enums";
-import { ButtonDelete } from "../Button";
-import { formatBigNumber } from "~/helper/format/number";
+import { ORDER_PARAMATER_ENUM } from "~/enums";
 import { getAttributes } from "~/api-client";
 import { SelectProps } from "antd";
 import { SelectFilterCore } from "../Core";
 import { DefaultOptionType } from "antd/es/select";
 import VariantTable from "./VariantTable";
-
-interface IObjAttibute {
-  [key: string]: IAttribute;
-}
-
-interface IObjectSelectAttribute {
-  [key: string]: ISelectItem[];
-}
 
 interface ICompination {
   [key: string]: string[];
@@ -65,23 +52,19 @@ const initVariant: IVariantProduct = {
 interface Props {
   product: IProduct;
   variants: IVariantProduct[];
-  removeVariants: string[];
   options: IOptionProduct[];
   onRemoveAll: (value: boolean) => void;
   handleChangeOption: (items: IOptionProduct[]) => void;
   handleChangeVariants: (items: IVariantProduct[]) => void;
-  handleRemoveVariant: (items: string[]) => void;
 }
 
 const VariantForm = (props: Props) => {
   const {
     product,
     variants,
-    removeVariants,
     options,
     onRemoveAll,
     handleChangeVariants,
-    handleRemoveVariant,
     handleChangeOption,
   } = props;
 
@@ -125,11 +108,6 @@ const VariantForm = (props: Props) => {
   const onClearVariants = () => {
     onRemoveAll(true);
     handleChangeVariants([]);
-    // if (product.variations.length > 0) {
-    //   let items: string[] = [];
-    //   items = product.variations.map((variant: string) => variant) as string[];
-    //   handleRemoveVariant(items as string[]);
-    // }
   };
 
   const onGenerateVariants = () => {
@@ -151,12 +129,10 @@ const VariantForm = (props: Props) => {
       0,
     );
 
-    // setOptionsProduct(options);
-
     const newOption: IOptionProduct[] = options.map((option) => ({
       code: option.title as string,
-      name: option.value as string,
-      values: option.childrend as string[],
+      name: option.label as string,
+      values: option.children as string[],
     }));
 
     onRemoveAll(true);
@@ -173,7 +149,7 @@ const VariantForm = (props: Props) => {
   ) => {
     if (index > keys.length - 1) {
       variant.title = `${product.title} ${variant.options.join(" / ")}`;
-      variant._id = uuidv4();
+      variant._id = `new-${uuidv4()}`;
       variant.product_id = product._id as string;
       result.push(variant);
 
@@ -251,26 +227,6 @@ const VariantForm = (props: Props) => {
     setLoading(false);
   };
 
-  const onChangeValueVariant = (name: string, value: string, index: number) => {
-    const currentVariants: IVariantProduct[] = variants;
-    const newVariant = { ...currentVariants[index], [name]: value };
-    currentVariants[index] = newVariant;
-
-    handleChangeVariants([...currentVariants]);
-  };
-
-  const onChangeNumberVariant = (
-    name: string,
-    value: number,
-    index: number,
-  ) => {
-    const currentVariants: IVariantProduct[] = variants;
-    const newVariant = { ...currentVariants[index], [name]: value };
-    currentVariants[index] = newVariant;
-
-    handleChangeVariants([...currentVariants]);
-  };
-
   const onRemoveVariant = (id: string) => {
     const newVariants = variants.filter(
       (variant: IVariantProduct) => variant._id !== id,
@@ -278,7 +234,6 @@ const VariantForm = (props: Props) => {
 
     handleChangeVariants(newVariants);
     setPopupVariant(false);
-    handleRemoveVariant([...removeVariants, id]);
   };
 
   useEffect(() => {
@@ -287,50 +242,52 @@ const VariantForm = (props: Props) => {
 
   return (
     <div>
-      <SelectFilterCore
-        showSearch
-        mode="multiple"
-        filterOption={(input, option) =>
-          ((option?.label as string) ?? "")
-            .toLowerCase()
-            .includes(input.toLowerCase())
-        }
-        options={attributesV2.map((item: IAttribute) => ({
-          value: item._id,
-          label: item.name,
-          title: item.code,
-          children: item.children.map((child) => child.name) as any,
-        }))}
-        value={selectAttributeIds}
-        onChange={onSelectAttribute}
-      />
+      <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-5">
+        <SelectFilterCore
+          showSearch
+          mode="multiple"
+          filterOption={(input, option) =>
+            ((option?.label as string) ?? "")
+              .toLowerCase()
+              .includes(input.toLowerCase())
+          }
+          options={attributesV2.map((item: IAttribute) => ({
+            value: item._id,
+            label: item.name,
+            title: item.code,
+            children: item.children.map((child) => child.name) as any,
+          }))}
+          value={selectAttributeIds}
+          onChange={onSelectAttribute}
+        />
 
-      {selectAttributesV2?.map(
-        (attribute: DefaultOptionType, index: number) => (
-          <SelectFilterCore
-            key={index}
-            showSearch
-            mode="multiple"
-            options={(attribute?.children as any[]).map((item) => ({
-              label: item,
-              value: item,
-            }))}
-            filterOption={(input, option) =>
-              ((option?.label as string) ?? "")
-                .toLowerCase()
-                .includes(input.toLowerCase())
-            }
-            onChange={(values) =>
-              onSelectAttributeItem(values, attribute.title as string)
-            }
-            value={
-              selectAttributeItemV2[
-                attribute.title as keyof ISelectAttributeItem
-              ]
-            }
-          />
-        ),
-      )}
+        {selectAttributesV2?.map(
+          (attribute: DefaultOptionType, index: number) => (
+            <SelectFilterCore
+              key={index}
+              showSearch
+              mode="multiple"
+              options={(attribute?.children as any[]).map((item) => ({
+                label: item,
+                value: item,
+              }))}
+              filterOption={(input, option) =>
+                ((option?.label as string) ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              onChange={(values) =>
+                onSelectAttributeItem(values, attribute.title as string)
+              }
+              value={
+                selectAttributeItemV2[
+                  attribute.title as keyof ISelectAttributeItem
+                ]
+              }
+            />
+          ),
+        )}
+      </div>
 
       <div className="flex items-center justify-end mt-5 gap-5">
         {Object.keys(selectAttributeItemV2).length > 0 && (
@@ -464,7 +421,9 @@ const VariantForm = (props: Props) => {
           </Table> */}
 
           <VariantTable
+            product={product}
             data={variants.map((item) => ({ key: item._id, ...item }))}
+            handleChangeVariants={handleChangeVariants}
             getData={() => {}}
           />
         </div>

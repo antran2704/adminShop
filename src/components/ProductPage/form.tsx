@@ -11,7 +11,6 @@ import {
   IProduct,
   IResponse,
   IResponseWithPagination,
-  ISpecificationsProduct,
 } from "~/interface";
 import { ECompressFormat, ETypeImage } from "~/enums";
 import { ETypeFile } from "~/enums/file";
@@ -33,6 +32,7 @@ interface Props {
   data?: IProduct | null;
   galleryFile?: UploadFile[];
   form: UseFormReturn<ICreateProduct, any, undefined>;
+  disableEditInventory?: boolean;
   onUploadGallery: (source: UploadFile | null) => void;
   onRemoveGallery: (source: UploadFile | null) => void;
 }
@@ -42,6 +42,7 @@ const FormProduct = (props: Props) => {
     form,
     galleryFile = [],
     data,
+    disableEditInventory = false,
     onUploadGallery,
     onRemoveGallery,
   } = props;
@@ -56,6 +57,7 @@ const FormProduct = (props: Props) => {
 
   const t = useTranslations("ProductPage");
   const tError = useTranslations("Error");
+
   // Category
   const [treeData, setTreeData] = useState<Omit<DefaultOptionType, "label">[]>([
     {
@@ -69,11 +71,6 @@ const FormProduct = (props: Props) => {
   const [optionCategory, setOptionCategory] = useState<SelectProps["options"]>(
     [],
   );
-  const [defaultCategory, setDefaultCategory] = useState<string | null>(null);
-
-  const [specifications, setSpecifications] = useState<
-    ISpecificationsProduct[]
-  >([]);
 
   const [loading, setLoading] = useState<{
     thumbnail: boolean;
@@ -100,13 +97,6 @@ const FormProduct = (props: Props) => {
       setValue("category", "");
     }
   };
-
-  const onSelectDefaultCategory = useCallback(
-    (value: string) => {
-      setDefaultCategory(value);
-    },
-    [defaultCategory],
-  );
 
   const uploadThumbnail = useCallback(
     async (source: File | null) => {
@@ -137,12 +127,6 @@ const FormProduct = (props: Props) => {
     },
     [getValues("thumbnail"), errors.thumbnail],
   );
-
-  const onUpdateSpecifications = (
-    newSpecifications: ISpecificationsProduct[],
-  ) => {
-    setSpecifications(newSpecifications);
-  };
 
   const handleGetChildCategory = async (parentId: string) => {
     await getChildInCategory(parentId).then(
@@ -540,6 +524,7 @@ const FormProduct = (props: Props) => {
                 width="w-full"
                 error={!!errors.inventory?.message}
                 value={formatBigNumber(value)}
+                disabled={disableEditInventory}
                 onChangeValue={onChange}
                 {...rest}
               />

@@ -1,25 +1,25 @@
 import { Button, ButtonProps } from "antd";
 import clsx from "clsx";
 import { memo } from "react";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { MdOutlineCancel } from "react-icons/md";
 
 interface Props extends ButtonProps {
   children?: JSX.Element;
   className?: string;
 }
 
-const BtnDelete = (props: Props) => {
+const BtnCancel = (props: Props) => {
   const { className, children, ...rest } = props;
 
   return (
     <Button
       size="middle"
-      className={clsx("hover:!border-error hover:!text-error", className)}
-      icon={<RiDeleteBin6Line className="text-xl" />}
+      className={clsx(className)}
+      icon={<MdOutlineCancel className="text-xl" />}
       {...rest}>
       {children}
     </Button>
   );
 };
 
-export default memo(BtnDelete);
+export default memo(BtnCancel);

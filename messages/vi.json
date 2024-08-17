@@ -87,6 +87,8 @@
       "title": "Tên sản phẩm",
       "thumbnail": "Hình ảnh",
       "category": "Thư mục",
+      "sku": "Mã SKU",
+      "barcode": "Mã Barcode",
       "status": "Trạng thái",
       "createdAt": "Ngày tạo",
       "action": "Action",
@@ -309,6 +311,7 @@
     "delete": "Xóa thành công"
   },
   "Common": {
+    "noData": "Chưa có dữ liệu",
     "gross": {
       "subTotal": "Tạm tính",
       "total": "Tổng thu nhập",
