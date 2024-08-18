@@ -62,9 +62,9 @@ const ModalConfirm = (props: Props) => {
         ...okButtonProps,
         className: clsx(
           "md:w-[100px] w-1/2",
-          [type === "danger" && "!bg-[#F0A328] hover:bg-[#F0A328]"],
-          [type === "info" && "bg-primary hover:bg-primary"],
-          [type === "error" && "bg-red-500 hover:bg-red-500"],
+          [type === "danger" && "!bg-[#F0A328] hover:!bg-[#F0A328]"],
+          [type === "info" && "bg-primary hover:!bg-primary"],
+          [type === "error" && "bg-red-500 hover:!bg-red-500"],
           okButtonProps?.className,
         ),
       }}

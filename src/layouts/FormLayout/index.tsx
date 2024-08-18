@@ -1,61 +1,32 @@
-import { Button } from "antd";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/router";
+import { ItemType } from "antd/es/breadcrumb/Breadcrumb";
+import { BreadcrumbCore } from "~/components/Core";
+import SpinLoading from "~/components/Loading/SpinLoading";
 
 interface props {
   children: JSX.Element;
   title: string;
+  dataBreadcrumb?: ItemType[];
   loading?: boolean;
-  backLink?: string;
-  okText?: string;
-  cancelText?: string;
-  breadcrumb?: JSX.Element;
-  onSubmit: () => void;
 }
 
 const FormLayout = (props: props) => {
-  const {
-    children,
-    title,
-    backLink = "/",
-    loading = false,
-    breadcrumb,
-    okText,
-    cancelText,
-    onSubmit,
-  } = props;
-  const tCommon = useTranslations("Common");
-
-  const router = useRouter();
+  const { children, title, dataBreadcrumb, loading = false } = props;
 
   return (
     <section className="relative w-full mx-auto p-5">
-      {breadcrumb}
-
       <h1 className="lg:text-2xl md:text-xl text-lg font-semibold text-primary line-clamp-1">
         {title}
       </h1>
 
-      {children}
+      {!!dataBreadcrumb?.length && <BreadcrumbCore data={dataBreadcrumb} />}
 
-      <div className="sticky bottom-0 flex items-center justify-end bg-white py-4 px-5 mt-2 border rounded-md gap-5 z-20">
-        <Button
-          size="large"
-          type="default"
-          onClick={() => router.push(backLink)}
-          className="min-w-[100px] w-fit text-lg text-white font-medium bg-[#111926] px-5 py-1 opacity-90 hover:opacity-100 rounded-md">
-          {cancelText ? cancelText : tCommon("btn.back")}
-        </Button>
-        <Button
-          size="large"
-          type="primary"
-          onClick={onSubmit}
-          loading={loading}
-          disabled={loading}
-          className="min-w-[100px] w-fit text-lg font-medium bg-primary px-5 py-1 rounded-md z-10">
-          {okText ? okText : tCommon("btn.create")}
-        </Button>
-      </div>
+      <div className="px-5 pt-5 bg-white rounded-md border-2">{children}</div>
+
+      {loading && (
+        <div className="sticky bottom-0 w-full h-screen z-20">
+          <SpinLoading className="text-3xl" />
+        </div>
+      )}
     </section>
   );
 };

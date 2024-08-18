@@ -14,7 +14,7 @@ import { ICreateBanner, IResponse } from "~/interface";
 import FormLayout from "~/layouts/FormLayout";
 import LayoutWithHeader from "~/layouts/Private";
 import FormBanner from "~/components/BannerPage/form";
-import { BreadcrumbCore } from "~/components/Core";
+import FormFooter from "~/components/Footer/FormFooter";
 
 const initData: ICreateBanner = {
   title: "",
@@ -94,28 +94,29 @@ const CreateCategoryPage: NextPageWithLayout = () => {
   return (
     <FormLayout
       title={t("title")}
-      backLink="/banners"
-      loading={loading}
-      breadcrumb={
-        <BreadcrumbCore
-          data={[
-            {
-              title: t("breadcrumb.list"),
-              href: "/banners",
-            },
-            {
-              title: t("breadcrumb.create"),
-            },
-          ]}
-        />
-      }
-      onSubmit={bannerForm.handleSubmit(handleOnSubmit)}>
+      dataBreadcrumb={[
+        {
+          title: t("breadcrumb.list"),
+          href: "/banners",
+        },
+        {
+          title: t("breadcrumb.create"),
+        },
+      ]}>
       <Fragment>
         <FormBanner
           form={bannerForm}
           handleChangeThumbnail={onChangeThumbnail}
         />
 
+        <FormFooter
+          onCancel={() => router.push("/banners")}
+          okProps={{
+            loading,
+            disabled: loading,
+          }}
+          onOk={bannerForm.handleSubmit(handleOnSubmit)}
+        />
         {/* Message of antd */}
         {contextHolder}
       </Fragment>

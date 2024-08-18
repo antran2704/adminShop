@@ -13,6 +13,7 @@
   "BannerPage": {
     "title": "Danh sách banner",
     "create": "Tạo banner",
+    "edit": "Chỉnh sửa banner",
     "table": {
       "id": "ID",
       "title": "Tiêu đề",
@@ -20,6 +21,16 @@
       "status": "Trạng thái",
       "createdAt": "Ngày tạo",
       "action": "Action"
+    },
+    "form": {
+      "title": "Tiêu đề",
+      "metaTitle": "Meta title",
+      "thumbnail": "Hình ảnh",
+      "status": "Trạng thái"
+    },
+    "placeholder": {
+      "title": "Nhập tiêu đề...",
+      "metaTitle": "Nhập meta title..."
     },
     "modalDelete": {
       "title": "Xác nhận xóa Banner",
@@ -189,20 +200,6 @@
     },
     "submit": "Đăng nhập",
     "forgetPassword": "Quên mật khẩu"
-  },
-  "CreateBannerPage": {
-    "title": "Tạo banner",
-    "editTitle": "Chỉnh sửa banner",
-    "form": {
-      "title": "Tiêu đề",
-      "metaTitle": "Meta title",
-      "thumbnail": "Hình ảnh",
-      "status": "Trạng thái"
-    },
-    "placeholder": {
-      "title": "Nhập tiêu đề...",
-      "metaTitle": "Nhập meta title..."
-    }
   },
   "CreateCategoryPage": {
     "title": "Tạo thư mục",

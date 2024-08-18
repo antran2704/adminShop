@@ -10,7 +10,6 @@ import FormLayout from "~/layouts/FormLayout";
 import Loading from "~/components/Loading";
 import LayoutWithHeader from "~/layouts/Private";
 import FormBanner from "~/components/BannerPage/form";
-import { BreadcrumbCore } from "~/components/Core";
 
 import { getBanner, updateBanner, uploadBannerImage } from "~/api-client";
 
@@ -19,7 +18,7 @@ import { NextPageWithLayout } from "~/interface/page";
 import { EPermission, ERole } from "~/enums";
 
 import useAbility from "~/hooks/useAbility";
-import SpinLoading from "~/components/Loading/SpinLoading";
+import FormFooter from "~/components/Footer/FormFooter";
 
 const initData: ICreateBanner = {
   title: "",
@@ -35,7 +34,7 @@ const EditCategoryPage: NextPageWithLayout = () => {
   const router = useRouter();
   const bannerId = router.query.id as string;
 
-  const t = useTranslations("CreateBannerPage");
+  const t = useTranslations("BannerPage");
   const tError = useTranslations("Error");
   const tSuccess = useTranslations("Success");
 
@@ -59,12 +58,14 @@ const EditCategoryPage: NextPageWithLayout = () => {
     resolver: yupResolver(schema) as any,
   });
 
-  const [messageApi, contextHolder] = message.useMessage();
+  const [banner, setBanner] = useState<IBanner | null>(null);
 
   const [thumbnail, setThumbnail] = useState<File | null>(null);
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
+
+  const [messageApi, contextHolder] = message.useMessage();
 
   const onChangeThumbnail = (source: File | null) => {
     setThumbnail(source);
@@ -86,23 +87,22 @@ const EditCategoryPage: NextPageWithLayout = () => {
   const handleGetData = async (id: string) => {
     setLoading(true);
 
-    try {
-      const { status, payload }: IResponse<IBanner> = await getBanner(id);
+    getBanner(id)
+      .then(({ status, payload }: IResponse<IBanner>) => {
+        if (status === 200) {
+          bannerForm.reset({
+            image: payload.image,
+            title: payload.title,
+            meta_title: payload.meta_title,
+            path: payload.path,
+            public: payload.public,
+          });
+        }
 
-      if (status === 200) {
-        bannerForm.reset({
-          image: payload.image,
-          title: payload.title,
-          meta_title: payload.meta_title,
-          path: payload.path,
-          public: payload.public,
-        });
-      }
-
-      setLoading(false);
-    } catch (error) {
-      router.push("/banners");
-    }
+        setBanner(payload);
+        setLoading(false);
+      })
+      .catch(() => router.push("/banners"));
   };
 
   const handleOnSubmit = async (values: ICreateBanner) => {
@@ -148,34 +148,34 @@ const EditCategoryPage: NextPageWithLayout = () => {
 
   return (
     <FormLayout
-      title={t("editTitle")}
-      backLink="/banners"
-      loading={loadingSubmit}
-      onSubmit={bannerForm.handleSubmit(handleOnSubmit)}>
+      title={t("edit")}
+      dataBreadcrumb={[
+        {
+          title: t("breadcrumb.list"),
+          href: "/banners",
+        },
+        {
+          title: t("breadcrumb.update"),
+        },
+      ]}
+      loading={loading}>
       <Fragment>
-        <BreadcrumbCore
-          data={[
-            {
-              title: t("breadcrumb.list"),
-              href: "/banners",
-            },
-            {
-              title: t("breadcrumb.update"),
-            },
-          ]}
-        />
-
-        <FormBanner
-          form={bannerForm}
-          handleChangeThumbnail={onChangeThumbnail}
-        />
-
-        {/* loading */}
-        {!loading && (
-          <div className="sticky bottom-0 w-full h-screen z-30">
-            <SpinLoading className="text-3xl" />
-          </div>
+        {banner && (
+          <FormBanner
+            form={bannerForm}
+            banner={banner}
+            handleChangeThumbnail={onChangeThumbnail}
+          />
         )}
+
+        <FormFooter
+          onCancel={() => router.push("/banners")}
+          onOk={bannerForm.handleSubmit(handleOnSubmit)}
+          okProps={{
+            loading: loadingSubmit,
+            disabled: loadingSubmit,
+          }}
+        />
 
         {/* Message of antd */}
         {contextHolder}

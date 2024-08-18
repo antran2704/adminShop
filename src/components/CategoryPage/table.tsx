@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import ImageCus from "../Image/ImageCus";
 import { PATH_IMAGE } from "~/common/images";
 import { formatDate } from "~/helper/format/datetime";
-import { ButtonDelete, ButtonEdit } from "../Button";
+import { BtnDelete, BtnEdit } from "../Button";
 import { useRouter } from "next/router";
 import { ModalConfirm } from "../Modal";
 import { initPagination } from "../Pagination/initData";
@@ -110,13 +110,13 @@ const CategoryTable = (props: Props) => {
         render: (_, record: ICategoryTable) => {
           return (
             <div className="flex items-center justify-center gap-2">
-              <ButtonDelete
+              <BtnDelete
                 onClick={() => {
                   setSelectDelete(record);
                   handlePopup();
                 }}
               />
-              <ButtonEdit
+              <BtnEdit
                 onClick={() => router.push(`/edit/category/${record.id}`)}
               />
             </div>

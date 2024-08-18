@@ -4,5 +4,14 @@ import BtnCheck from "./BtnCheck";
 import BtnCancel from "./BtnCancel";
 import BtnExcel from "./BtnExcel";
 import BtnFilter from "./BtnFilter";
+import BtnSwitch from "./BtnSwitch";
 
-export { BtnEdit, BtnDelete, BtnExcel, BtnFilter, BtnCancel, BtnCheck };
+export {
+  BtnEdit,
+  BtnDelete,
+  BtnExcel,
+  BtnFilter,
+  BtnCancel,
+  BtnCheck,
+  BtnSwitch,
+};

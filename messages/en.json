@@ -13,6 +13,7 @@
   "BannerPage": {
     "title": "Banners",
     "create": "Create banner",
+    "edit": "Edit banner",
     "table": {
       "id": "ID",
       "title": "Title",
@@ -20,6 +21,16 @@
       "status": "Status",
       "createdAt": "Created At",
       "action": "Action"
+    },
+    "form": {
+      "title": "Title",
+      "metaTitle": "Meta title",
+      "thumbnail": "Thumbnail",
+      "status": "Status"
+    },
+    "placeholder": {
+      "title": "Input title...",
+      "metaTitle": "Input meta title..."
     },
     "modalDelete": {
       "title": "Confirm delete banner",
@@ -189,20 +200,6 @@
     },
     "submit": "Login",
     "forgetPassword": "Forget password"
-  },
-  "CreateBannerPage": {
-    "title": "Create banner",
-    "editTitle": "Edit banner",
-    "form": {
-      "title": "Title",
-      "metaTitle": "Meta title",
-      "thumbnail": "Thumbnail",
-      "status": "Status"
-    },
-    "placeholder": {
-      "title": "Input title...",
-      "metaTitle": "Input meta title..."
-    }
   },
   "CreateCategoryPage": {
     "title": "Create category",

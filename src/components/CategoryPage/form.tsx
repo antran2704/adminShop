@@ -162,7 +162,7 @@ const CategoryForm = (props: Props) => {
   }, []);
 
   return (
-    <div className="w-full flex flex-col  mx-auto p-5 mt-5 bg-white rounded-md border-2 gap-5">
+    <div className="w-full flex flex-col gap-5">
       {/* title */}
       <div className={clsx("relative w-full", [errors.title && "pb-2"])}>
         <Controller

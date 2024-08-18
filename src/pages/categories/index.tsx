@@ -17,7 +17,6 @@ import {
   ISearch,
 } from "~/interface";
 
-import Search from "~/components/Search";
 import { initPagination } from "~/components/Pagination/initData";
 import { getCategories } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";

@@ -14,6 +14,7 @@ import FormLayout from "~/layouts/FormLayout";
 
 import { CategoryForm } from "~/components/CategoryPage";
 import { BreadcrumbCore } from "~/components/Core";
+import FormFooter from "~/components/Footer/FormFooter";
 
 const initData: ICreateCategory = {
   parent_id: null,
@@ -53,7 +54,7 @@ const CreateCategoryPage = () => {
 
   const [thumbnail, setThumbnail] = useState<File | null>(null);
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
 
   const onChangeThumbnail = (source: File | null) => {
     setThumbnail(source);
@@ -73,13 +74,13 @@ const CreateCategoryPage = () => {
   };
 
   const handleOnSubmit = async (values: ICreateCategory) => {
-    setLoading(true);
+    setLoadingSubmit(true);
 
     try {
       const image = await uploadThumbnail(thumbnail);
 
       if (!image) {
-        setLoading(false);
+        setLoadingSubmit(false);
         return;
       }
 
@@ -97,33 +98,35 @@ const CreateCategoryPage = () => {
       messageApi.error(tError("TRY_AGAIN"));
     }
 
-    setLoading(false);
+    setLoadingSubmit(false);
   };
 
   return (
     <FormLayout
       title={t("create")}
-      backLink="/categories"
-      loading={loading}
-      onSubmit={categoryForm.handleSubmit(handleOnSubmit)}>
+      dataBreadcrumb={[
+        {
+          title: t("breadcrumb.list"),
+          href: "/categories",
+        },
+        {
+          title: t("breadcrumb.create"),
+        },
+      ]}>
       <Fragment>
-        <BreadcrumbCore
-          data={[
-            {
-              title: t("breadcrumb.list"),
-              href: "/categories",
-            },
-            {
-              title: t("breadcrumb.create"),
-            },
-          ]}
-        />
-
         <CategoryForm
           form={categoryForm}
           onChangeThumbnail={onChangeThumbnail}
         />
 
+        <FormFooter
+          onCancel={() => router.push("/categories")}
+          onOk={categoryForm.handleSubmit(handleOnSubmit)}
+          okProps={{
+            loading: loadingSubmit,
+            disabled: loadingSubmit,
+          }}
+        />
         {/* Message of Antd */}
         {contextHolder}
       </Fragment>

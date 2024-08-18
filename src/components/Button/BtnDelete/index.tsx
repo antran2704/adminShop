@@ -1,24 +1,35 @@
 import { Button, ButtonProps } from "antd";
 import clsx from "clsx";
-import { memo } from "react";
+import { Fragment, memo } from "react";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
 interface Props extends ButtonProps {
   children?: JSX.Element;
+  title?: string;
   className?: string;
 }
 
 const BtnDelete = (props: Props) => {
-  const { className, children, ...rest } = props;
+  const { className, title, children, type, ...rest } = props;
 
   return (
-    <Button
-      size="middle"
-      className={clsx("hover:!border-error hover:!text-error", className)}
-      icon={<RiDeleteBin6Line className="text-xl" />}
-      {...rest}>
-      {children}
-    </Button>
+    <Fragment>
+      {title && <p className={clsx("text-base pb-2")}>{title}</p>}
+      <Button
+        size="middle"
+        className={clsx(
+          "hover:!border-error  hover:!text-error",
+          [
+            type === "primary" &&
+              "border-transparent  !bg-error hover:!bg-error !text-white hover:!text-white",
+          ],
+          className,
+        )}
+        icon={<RiDeleteBin6Line className="text-xl" />}
+        {...rest}>
+        {children}
+      </Button>
+    </Fragment>
   );
 };
 
