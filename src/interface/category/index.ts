@@ -8,8 +8,8 @@ interface IOption {
 }
 
 interface IBreadcrumbCategory {
-  label: string;
-  url_path: string;
+  _id: string;
+  title: string;
 }
 
 interface IParentCategory {
@@ -22,13 +22,13 @@ interface IParentCategory {
 interface ICategory {
   _id: string;
   parent_id: string | null;
-  childrens: string[];
+  children: string[];
   title: string;
   description: string;
   slug?: string;
   public: boolean;
   thumbnail: string;
-  breadcrumbs?: IBreadcrumbCategory[] | string[];
+  breadcrumbs: IBreadcrumbCategory[];
   createdAt: string;
 }
 
@@ -36,7 +36,7 @@ interface ICreateCategory {
   title: string;
   description: string;
   parent_id: string | null;
-  childrens: string[];
+  children: string[];
   public: boolean;
   thumbnail: string;
 }

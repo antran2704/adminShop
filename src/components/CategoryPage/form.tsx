@@ -11,6 +11,7 @@ import { InputText, InputTextArea } from "~/components/Core/Input";
 import { useTranslations } from "next-intl";
 import { Fragment, useEffect, useState } from "react";
 import {
+  deleteCategory,
   getChildInCategory,
   getParentCategories,
   getParentCategory,
@@ -20,6 +21,9 @@ import { DefaultOptionType } from "antd/es/select";
 import { UploadImage } from "../Core/Upload";
 import { ECompressFormat, ETypeImage } from "~/enums";
 import { BtnDelete } from "../Button";
+import { ModalConfirm } from "../Modal";
+import { useRouter } from "next/router";
+import { BreadcrumbCore } from "../Core";
 
 interface Props {
   category?: ICategory | null;
@@ -30,14 +34,19 @@ interface Props {
 const CategoryForm = (props: Props) => {
   const { form, category, onChangeThumbnail } = props;
 
+  const t = useTranslations("CategoryPage");
+  const tCommon = useTranslations("Common");
+  const tError = useTranslations("Error");
+  const tSuccess = useTranslations("Success");
+
+  const router = useRouter();
+
   const {
     control,
     setValue,
     clearErrors,
     formState: { errors },
   } = form;
-
-  const t = useTranslations("CategoryPage");
 
   const [treeData, setTreeData] = useState<Omit<DefaultOptionType, "label">[]>([
     {
@@ -48,7 +57,13 @@ const CategoryForm = (props: Props) => {
     },
   ]);
 
+  console.log("tree", treeData);
+
   const [listParent, setListParent] = useState<string[]>([]);
+  const [listDisable, setListDisable] = useState<string[]>([]);
+
+  const [deleteModal, setDeleteModal] = useState<boolean>(false);
+
   const [messageApi, contextHolder] = message.useMessage();
 
   const onSelectTree = (categoryId: string) => {
@@ -70,44 +85,98 @@ const CategoryForm = (props: Props) => {
     onChangeThumbnail(file);
   };
 
+  const onDeleteModal = () => {
+    setDeleteModal(!deleteModal);
+  };
+
+  const onDelete = async (categoryId: string) => {
+    if (!categoryId) return;
+
+    try {
+      await deleteCategory(categoryId);
+      setDeleteModal(false);
+      messageApi.success(tSuccess("delete"));
+
+      router.push("/categories");
+    } catch (error) {
+      messageApi.error(tError("TRY_AGAIN"));
+    }
+  };
+
   const handleGetChildCategory = async (parentId: string) => {
-    await getChildInCategory(parentId).then(
-      (res: IResponseWithPagination<IParentCategory[]>) => {
+    if (!parentId) return;
+
+    await getChildInCategory(parentId)
+      .then((res: IResponseWithPagination<IParentCategory[]>) => {
+        const newDisableItems: string[] = [];
         const listTree: Omit<DefaultOptionType, "label">[] = res.payload.map(
-          (item: IParentCategory) => ({
-            id: item._id,
-            pId: parentId,
-            value: item._id,
-            title: item.title,
-            isLeaf: !item.children.length,
-            disabled: item._id === category?._id,
-          }),
+          (item: IParentCategory) => {
+            if (category?._id === item._id || listDisable.includes(parentId)) {
+              newDisableItems.push(item._id);
+            }
+
+            return {
+              id: item._id,
+              pId: parentId,
+              value: item._id,
+              title: item.title,
+              isLeaf: !item.children.length,
+              // disabled: category?._id === item._id || parentId === category?._id || listDisable.includes(parentId),
+              disabled:
+                category?._id === item._id || listDisable.includes(parentId),
+            };
+          },
         );
 
         setTreeData([...treeData, ...listTree]);
-      },
-    );
+        setListDisable([...listDisable, ...newDisableItems]);
+      })
+      .catch((err) => err);
   };
 
-  const handleGetFirstTime = async (
-    categoryId: string | null,
-    data: Omit<DefaultOptionType, "label">[],
-    listId: string[],
-  ) => {
-    if (!categoryId) {
-      setListParent(listId);
-      setTreeData([...treeData, ...data]);
-      return;
-    }
+  // const handleGetFirstTime = async (
+  //   categoryId: string | null,
+  //   data: Omit<DefaultOptionType, "label">[],
+  //   listId: string[],
+  // ) => {
+  //   if (!categoryId) {
+  //     setListParent(listId);
+  //     setTreeData([...treeData, ...data]);
+  //     return;
+  //   }
 
+  //   await getParentCategory(categoryId).then(
+  //     (res: IResponse<IParentCategory>) => {
+  //       if (!res.payload.parent_id) {
+  //         setTreeData([...treeData, ...data]);
+  //         setListParent([...listId, res.payload._id]);
+  //         return;
+  //       }
+
+  //       const itemTree: Omit<DefaultOptionType, "label"> = {
+  //         id: res.payload._id,
+  //         pId: res.payload.parent_id,
+  //         value: res.payload._id,
+  //         title: res.payload.title,
+  //         isLeaf: !res.payload.children.length,
+  //         disabled: true,
+  //       };
+
+  //       data.push(itemTree);
+  //       handleGetFirstTime(res.payload.parent_id, data, [
+  //         ...listId,
+  //         res.payload._id,
+  //       ]);
+  //     },
+  //   );
+  // };
+
+  const handleGetFirstTime = async (
+    categoryId: string,
+    data: Omit<DefaultOptionType, "label">[],
+  ) => {
     await getParentCategory(categoryId).then(
       (res: IResponse<IParentCategory>) => {
-        if (!res.payload.parent_id) {
-          setTreeData([...treeData, ...data]);
-          setListParent([...listId, res.payload._id]);
-          return;
-        }
-
         const itemTree: Omit<DefaultOptionType, "label"> = {
           id: res.payload._id,
           pId: res.payload.parent_id,
@@ -118,10 +187,7 @@ const CategoryForm = (props: Props) => {
         };
 
         data.push(itemTree);
-        handleGetFirstTime(res.payload.parent_id, data, [
-          ...listId,
-          res.payload._id,
-        ]);
+        setTreeData([...treeData, ...data]);
       },
     );
   };
@@ -130,6 +196,8 @@ const CategoryForm = (props: Props) => {
   const onLoadChildCategory: TreeSelectProps["loadData"] = async ({
     id: parentId,
   }) => {
+    if (!parentId) return;
+
     handleGetChildCategory(parentId);
   };
 
@@ -148,8 +216,9 @@ const CategoryForm = (props: Props) => {
               item._id === category?._id || item._id === category?.parent_id,
           }),
         );
+
         if (category?._id && category.parent_id) {
-          handleGetFirstTime(category.parent_id as string, listTree, []);
+          handleGetFirstTime(category.parent_id as string, listTree);
         } else {
           setTreeData([...treeData, ...listTree]);
         }
@@ -240,6 +309,17 @@ const CategoryForm = (props: Props) => {
           ])}>
           {t("form.parentCategory")}
         </p>
+
+        {category && (
+          <ul className="flex items-center text-sm pb-5 gap-2">
+            <li>{`Home >`}</li>
+            {category.breadcrumbs.map((item) => (
+              <li key={item._id}>{`${item.title} > `}</li>
+            ))}
+            <li>{category.title}</li>
+          </ul>
+        )}
+
         <Controller
           name="parent_id"
           control={control}
@@ -251,7 +331,8 @@ const CategoryForm = (props: Props) => {
               value={value || undefined}
               size="large"
               status={!!errors.parent_id?.message ? "error" : ""}
-              treeDefaultExpandedKeys={["home", ...listParent]}
+              // treeDefaultExpandedKeys={["home", ...listParent]}
+              treeDefaultExpandedKeys={["home"]}
               dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
               placeholder={t("placeholder.parent")}
               onChange={onSelectTree}
@@ -278,6 +359,40 @@ const CategoryForm = (props: Props) => {
           )}
         />
       </div>
+
+      {/* Delete */}
+      {category && (
+        <div>
+          <BtnDelete
+            type="primary"
+            title={tCommon("btn.delete")}
+            size="large"
+            onClick={onDeleteModal}
+            className="w-fit">
+            <p>{tCommon("btn.delete")}</p>
+          </BtnDelete>
+        </div>
+      )}
+
+      {/* Modal delete */}
+      <ModalConfirm
+        title={t("modalDelete.title")}
+        open={deleteModal}
+        onCancel={onDeleteModal}
+        centered
+        type="error"
+        destroyOnClose
+        onOk={() => onDelete(category?._id as string)}>
+        <img
+          src="/popup/trash.svg"
+          className="size-[200px] mx-auto"
+          title="delete image"
+          alt="delete image"
+        />
+        <p className="md:text-lg text-base text-center mb-10">
+          {t("modalDelete.description")}
+        </p>
+      </ModalConfirm>
 
       {/* Message of Antd */}
       {contextHolder}

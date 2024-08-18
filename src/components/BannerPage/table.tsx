@@ -200,6 +200,7 @@ const BannerTable = (props: Props) => {
         loading={loading}
         columns={columns}
         size="large"
+        showPagination={pagination.total > 0}
         paginationOptions={{
           total: pagination.total,
           pageSize: pagination.take,

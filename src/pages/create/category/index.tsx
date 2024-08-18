@@ -13,7 +13,6 @@ import LayoutWithHeader from "~/layouts/Private";
 import FormLayout from "~/layouts/FormLayout";
 
 import { CategoryForm } from "~/components/CategoryPage";
-import { BreadcrumbCore } from "~/components/Core";
 import FormFooter from "~/components/Footer/FormFooter";
 
 const initData: ICreateCategory = {
@@ -22,7 +21,7 @@ const initData: ICreateCategory = {
   description: "",
   public: true,
   thumbnail: "",
-  childrens: [],
+  children: [],
 };
 
 const Layout = LayoutWithHeader;
