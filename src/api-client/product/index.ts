@@ -1,13 +1,8 @@
 import qs from "qs";
 
 import { uploadImageOnServer } from "~/helper/handleImage";
-import { ICreateProduct, IFilter, ISearch } from "~/interface";
-import httpConfig, {
-  axiosDelete,
-  axiosGet,
-  axiosPatch,
-  axiosPost,
-} from "~/configs/configAxios";
+import { ICreateProduct, ISearch } from "~/interface";
+import httpConfig from "~/configs/configAxios";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
@@ -28,11 +23,27 @@ const getProduct = async (product_id: string) => {
 };
 
 const createProduct = async (data: ICreateProduct) => {
-  return await axiosPost(BASE_URL + "/admin/products", data);
+  return await httpConfig
+    .post(BASE_URL + "/admin/products", data)
+    .then((res) => res.data);
 };
 
 const updateProduct = async (product_id: string, data: any) => {
-  return await axiosPatch(BASE_URL + `/admin/products/${product_id}`, data);
+  return await httpConfig
+    .patch(BASE_URL + `/admin/products/${product_id}`, data)
+    .then((res) => res.data);
+};
+
+const activeProduct = async (product_id: string) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/products/${product_id}/active`)
+    .then((res) => res.data);
+};
+
+const disableProduct = async (product_id: string) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/products/${product_id}/disable`)
+    .then((res) => res.data);
 };
 
 const uploadThumbnailProduct = async (formData: FormData) => {
@@ -43,7 +54,9 @@ const uploadThumbnailProduct = async (formData: FormData) => {
 };
 
 const deleteProduct = async (product_id: string) => {
-  return await axiosDelete(BASE_URL + `/admin/products/${product_id}`);
+  return await httpConfig
+    .delete(BASE_URL + `/admin/products/${product_id}`)
+    .then((res) => res.data);
 };
 
 export {
@@ -51,6 +64,8 @@ export {
   getProduct,
   createProduct,
   updateProduct,
+  disableProduct,
+  activeProduct,
   uploadThumbnailProduct,
   deleteProduct,
 };

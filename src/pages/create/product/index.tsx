@@ -12,9 +12,9 @@ import { NextPageWithLayout } from "~/interface/page";
 import FormLayout from "~/layouts/FormLayout";
 import PrivateLayout from "~/layouts/Private";
 
-import { BreadcrumbCore } from "~/components/Core";
 import { ProductForm } from "~/components/ProductPage";
 import { createProduct, uploadThumbnailProduct } from "~/api-client";
+import FormFooter from "~/components/Footer/FormFooter";
 
 const initData: ICreateProduct = {
   title: "",
@@ -33,7 +33,6 @@ const initData: ICreateProduct = {
   hotProduct: false,
   options: [],
   specifications: [],
-  variations: [],
   sku: null,
   barcode: null,
   sold: 0,
@@ -115,30 +114,22 @@ const CreateProductPage: NextPageWithLayout = () => {
       }
     } catch (error) {
       messageApi.error("TRY_AGAIN");
+      setIsSubmit(false);
     }
-
-    setIsSubmit(false);
   };
 
   return (
     <FormLayout
       title={t("create")}
-      backLink="/products"
-      loading={isSubmit}
-      onSubmit={productForm.handleSubmit(handleOnSubmit)}
-      breadcrumb={
-        <BreadcrumbCore
-          data={[
-            {
-              title: t("breadcrumb.list"),
-              href: "/products",
-            },
-            {
-              title: t("breadcrumb.create"),
-            },
-          ]}
-        />
-      }>
+      dataBreadcrumb={[
+        {
+          title: t("breadcrumb.list"),
+          href: "/products",
+        },
+        {
+          title: t("breadcrumb.create"),
+        },
+      ]}>
       <Fragment>
         <ProductForm
           form={productForm}
@@ -147,6 +138,14 @@ const CreateProductPage: NextPageWithLayout = () => {
           onRemoveGallery={onRemoveGallary}
         />
 
+        <FormFooter
+          onCancel={() => router.push("/products")}
+          onOk={productForm.handleSubmit(handleOnSubmit)}
+          okProps={{
+            loading: isSubmit,
+            disabled: isSubmit,
+          }}
+        />
         {/* Message of Antd */}
         {contextHolder}
       </Fragment>

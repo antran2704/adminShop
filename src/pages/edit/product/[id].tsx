@@ -38,6 +38,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { message, TabsProps, UploadFile } from "antd";
 import Tabs from "~/components/Core/Tabs";
 import { ORDER_PARAMATER_ENUM } from "~/enums";
+import hanldeErrorAxios from "~/helper/handleErrorAxios";
+import FormFooter from "~/components/Footer/FormFooter";
 
 const initData: ICreateProduct = {
   title: "",
@@ -71,7 +73,7 @@ const ProductEditPage: NextPageWithLayout = () => {
   const tError = useTranslations("Error");
   const tSuccess = useTranslations("Success");
 
-  const [selectTab, setSelectTab] = useState<string>("2");
+  const [selectTab, setSelectTab] = useState<string>("1");
 
   // validation project form
   const schema = useMemo(() => {
@@ -159,20 +161,20 @@ const ProductEditPage: NextPageWithLayout = () => {
       }
 
       if (variants.length > 0) {
+        let res: IResponse<{ inventory: number }>;
+
         if (isRemoveAll) {
           const parseData: ICreateVariant[] = variants.map((item) => {
             const { _id, ...rest } = item;
             return rest;
           });
 
-          await createVariations(productId as string, parseData);
+          res = await createVariations(productId as string, parseData);
         } else {
-          await updateVariations(productId as string, variants);
+          res = await updateVariations(productId as string, variants);
         }
 
-        inventory = variants.reduce((total: number, item: IVariantProduct) => {
-          return total + item.inventory;
-        }, 0);
+        inventory = res.payload.inventory;
       } else {
         inventory = values.inventory;
       }
@@ -187,9 +189,7 @@ const ProductEditPage: NextPageWithLayout = () => {
 
       if (payload.status === 201) {
         messageApi.success(tSuccess("create"));
-        productForm.setValue("inventory", inventory);
-        // handleGetVariantsProduct(productId);
-        // router.push("/products");
+        handleGetData(productId);
       }
     } catch (error) {
       messageApi.error("TRY_AGAIN");
@@ -229,7 +229,13 @@ const ProductEditPage: NextPageWithLayout = () => {
 
       setLoading(false);
     } catch (error) {
-      messageApi.error(tError("TRY_AGAIN"));
+      const { status } = hanldeErrorAxios(error);
+
+      if (status === 404) {
+        router.push("/products");
+      } else {
+        messageApi.error(tError("TRY_AGAIN"));
+      }
     }
   };
 
@@ -293,7 +299,7 @@ const ProductEditPage: NextPageWithLayout = () => {
           <ProductForm
             form={productForm}
             disableEditInventory={!!variants.length}
-            data={product}
+            product={product}
             galleryFile={galleryFile}
             onUploadGallery={onUploadGallery}
             onRemoveGallery={onRemoveGallary}
@@ -315,7 +321,13 @@ const ProductEditPage: NextPageWithLayout = () => {
         ),
       },
     ],
-    [router.locale, product, variants, optionsProduct],
+    [
+      router.locale,
+      product,
+      productForm.formState.errors,
+      variants,
+      optionsProduct,
+    ],
   );
 
   if (!router.isReady) {
@@ -325,13 +337,29 @@ const ProductEditPage: NextPageWithLayout = () => {
   return (
     <FormLayout
       title={`${t("edit")}`}
-      backLink="/products"
-      onSubmit={productForm.handleSubmit((values) =>
-        onSubmitUpdateProduct(productId, values),
-      )}
-      loading={isSubmit}>
+      dataBreadcrumb={[
+        {
+          title: t("breadcrumb.list"),
+          href: "/products",
+        },
+        {
+          title: t("breadcrumb.update"),
+        },
+      ]}
+      loading={loading}>
       <Fragment>
         <Tabs activeKey={selectTab} items={tabItems} onChange={onSelectTab} />
+
+        <FormFooter
+          onCancel={() => router.push("/products")}
+          onOk={productForm.handleSubmit((values) =>
+            onSubmitUpdateProduct(productId, values),
+          )}
+          okProps={{
+            loading: isSubmit,
+            disabled: isSubmit,
+          }}
+        />
 
         {showPopup && (
           <Popup

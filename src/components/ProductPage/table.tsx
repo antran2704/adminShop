@@ -1,17 +1,20 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
-import { IProductTable, IPagination } from "~/interface";
-import { TableCore } from "../Core";
-import { message, Switch, TableColumnsType } from "antd";
-import { activeBanner, deleteBanner, disableBanner } from "~/api-client";
+import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
+import { message, Switch, TableColumnsType } from "antd";
+
+import { IProductTable, IPagination } from "~/interface";
+import { activeProduct, deleteProduct, disableProduct } from "~/api-client";
+
+import { formatBigNumber } from "~/helper/format/number";
+
+import { TableCore } from "../Core";
 import ImageCus from "../Image/ImageCus";
 import { PATH_IMAGE } from "~/common/images";
 import { formatDate } from "~/helper/format/datetime";
 import { BtnDelete, BtnEdit } from "../Button";
-import { useRouter } from "next/router";
 import { ModalConfirm } from "../Modal";
 import { initPagination } from "../Pagination/initData";
-import { formatBigNumber } from "~/helper/format/number";
 
 interface Props {
   data: IProductTable[];
@@ -67,7 +70,7 @@ const ProductTable = (props: Props) => {
             return (
               <ImageCus
                 src={PATH_IMAGE + image}
-                title="banner thumbnail"
+                title="Thumbnail"
                 className="w-[260px] min-w-[260px] h-[140px] object-cover object-center rounded-md mx-auto"
               />
             );
@@ -119,9 +122,9 @@ const ProductTable = (props: Props) => {
               checked={isPublic}
               onClick={() => {
                 if (isPublic) {
-                  onDisableBanner(reccord);
+                  onDisableProduct(reccord);
                 } else {
-                  onActiveBanner(reccord);
+                  onActiveProduct(reccord);
                 }
               }}
             />
@@ -177,18 +180,18 @@ const ProductTable = (props: Props) => {
     setModalDelete(!modalDelete);
   };
 
-  const onActiveBanner = async (reccord: IProductTable) => {
+  const onActiveProduct = async (reccord: IProductTable) => {
     try {
-      await activeBanner(reccord.productId);
+      await activeProduct(reccord.productId);
 
       const indexItem: number = listItem.findIndex(
-        (banner: IProductTable) => banner.productId === reccord.productId,
+        (item: IProductTable) => item.productId === reccord.productId,
       );
 
       if (indexItem > -1) {
-        const newBanners: IProductTable[] = [...listItem];
-        newBanners[indexItem] = { ...reccord, public: true };
-        setListItem(newBanners);
+        const newItems: IProductTable[] = [...listItem];
+        newItems[indexItem] = { ...reccord, public: true };
+        setListItem(newItems);
       }
 
       messageApi.success(tSuccess("update"));
@@ -197,18 +200,18 @@ const ProductTable = (props: Props) => {
     }
   };
 
-  const onDisableBanner = async (reccord: IProductTable) => {
+  const onDisableProduct = async (reccord: IProductTable) => {
     try {
-      await disableBanner(reccord.productId);
+      await disableProduct(reccord.productId);
 
       const indexItem: number = listItem.findIndex(
-        (banner: IProductTable) => banner.productId === reccord.productId,
+        (item: IProductTable) => item.productId === reccord.productId,
       );
 
       if (indexItem > -1) {
-        const newBanners: IProductTable[] = [...listItem];
-        newBanners[indexItem] = { ...reccord, public: false };
-        setListItem(newBanners);
+        const newItems: IProductTable[] = [...listItem];
+        newItems[indexItem] = { ...reccord, public: false };
+        setListItem(newItems);
       }
 
       messageApi.success(tSuccess("update"));
@@ -217,11 +220,11 @@ const ProductTable = (props: Props) => {
     }
   };
 
-  const onDeleteBanner = async () => {
+  const onDeleteProduct = async () => {
     if (!selectDelete) return;
 
     try {
-      await deleteBanner(selectDelete.productId);
+      await deleteProduct(selectDelete.productId);
       setModalDelete(false);
       setSelectDelete(null);
       getData();
@@ -259,7 +262,7 @@ const ProductTable = (props: Props) => {
         centered
         type="error"
         destroyOnClose
-        onOk={onDeleteBanner}>
+        onOk={onDeleteProduct}>
         <img
           src="/popup/trash.svg"
           className="size-[200px] mx-auto"

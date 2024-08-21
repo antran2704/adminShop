@@ -17,7 +17,6 @@ import { PrivateLayout } from "~/layouts";
 
 import { CategoryForm } from "~/components/CategoryPage";
 import { NextPageWithLayout } from "~/interface/page";
-import { BreadcrumbCore } from "~/components/Core";
 import FormFooter from "~/components/Footer/FormFooter";
 
 const initData: ICreateCategory = {
@@ -146,20 +145,19 @@ const EditCategoryPage: NextPageWithLayout = () => {
   }, [categoryId]);
 
   return (
-    <FormLayout title={t("edit")} loading={loading.getData}>
+    <FormLayout
+      title={t("edit")}
+      dataBreadcrumb={[
+        {
+          title: t("breadcrumb.list"),
+          href: "/categories",
+        },
+        {
+          title: t("breadcrumb.update"),
+        },
+      ]}
+      loading={loading.getData}>
       <Fragment>
-        <BreadcrumbCore
-          data={[
-            {
-              title: t("breadcrumb.list"),
-              href: "/categories",
-            },
-            {
-              title: t("breadcrumb.update"),
-            },
-          ]}
-        />
-
         {category && (
           <CategoryForm
             category={category}

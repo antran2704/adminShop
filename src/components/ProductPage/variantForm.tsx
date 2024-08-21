@@ -1,5 +1,8 @@
 import { Fragment, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { DefaultOptionType } from "antd/es/select";
+import { SelectProps } from "antd";
+import { useTranslations } from "next-intl";
 
 import {
   IAttribute,
@@ -7,19 +10,16 @@ import {
   IProduct,
   IResponseWithPagination,
   ISearchAttribute,
-  ISelectItem,
   IVariantProduct,
 } from "~/interface";
-
-import { useTranslations } from "next-intl";
-import Popup from "../Popup";
-import { useRouter } from "next/router";
 import { ORDER_PARAMATER_ENUM } from "~/enums";
+
 import { getAttributes } from "~/api-client";
-import { SelectProps } from "antd";
+
+import Popup from "../Popup";
 import { SelectFilterCore } from "../Core";
-import { DefaultOptionType } from "antd/es/select";
 import VariantTable from "./VariantTable";
+import { ModalConfirm } from "../Modal";
 
 interface ICompination {
   [key: string]: string[];
@@ -62,64 +62,49 @@ const VariantForm = (props: Props) => {
   const {
     product,
     variants,
-    options,
     onRemoveAll,
     handleChangeVariants,
     handleChangeOption,
   } = props;
 
   const t = useTranslations("ProductPage");
-  const router = useRouter();
 
-  const [attributeParamater, setAttributeParamater] =
-    useState<ISearchAttribute>({
-      page: 1,
-      take: 10,
-      order: ORDER_PARAMATER_ENUM.DESC,
-      public: true,
-    });
+  const [attributeParamater] = useState<ISearchAttribute>({
+    page: 1,
+    take: 10,
+    order: ORDER_PARAMATER_ENUM.DESC,
+    public: true,
+  });
 
-  const [attributesV2, setAtrributesV2] = useState<IAttribute[]>([]);
+  const [attributes, setAtrributes] = useState<IAttribute[]>([]);
   const [selectAttributeIds, setSelectAtrributesIds] = useState<string[]>([]);
 
-  const [selectAttributesV2, setSelectAttributesV2] = useState<
+  const [selectAttributes, setSelectAttributes] = useState<
     SelectProps["options"]
   >([]);
   const [selectAttributeItemV2, setSelectAttributeItemV2] =
     useState<ISelectAttributeItem>({});
 
-  const [selectVariant, setSelectVariant] = useState<ISelectItem | null>(null);
-  const [showPopupVariant, setPopupVariant] = useState<boolean>(false);
+  const [modal, setModal] = useState<{ clearAll: boolean }>({
+    clearAll: false,
+  });
 
-  const [showPopupClearVariants, setShowClearVariants] =
-    useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  const onShowPopupVariant = (variant: IVariantProduct | null = null) => {
-    if (variant) {
-      setSelectVariant({ _id: variant._id as string, title: variant.title });
-    } else {
-      setSelectVariant(null);
-    }
-
-    setPopupVariant(!showPopupVariant);
+  const onModal = (key: keyof typeof modal) => {
+    setModal({ ...modal, [key]: !modal[key] });
   };
 
   const onClearVariants = () => {
     onRemoveAll(true);
     handleChangeVariants([]);
+
+    onModal("clearAll");
   };
 
   const onGenerateVariants = () => {
     const compination = selectAttributeItemV2;
-    const options = selectAttributesV2 as DefaultOptionType[];
+    const options = selectAttributes as DefaultOptionType[];
     const keys = Object.keys(compination);
-    if (keys.length === 0) {
-      //   toast.error("Please select attribute", {
-      //     position: toast.POSITION.TOP_RIGHT,
-      //   });
-      //   return;
-    }
+    if (keys.length === 0) return;
 
     const result = handleGenerateVariants(
       compination,
@@ -132,7 +117,7 @@ const VariantForm = (props: Props) => {
     const newOption: IOptionProduct[] = options.map((option) => ({
       code: option.title as string,
       name: option.label as string,
-      values: option.children as string[],
+      values: option.children as any[],
     }));
 
     onRemoveAll(true);
@@ -177,7 +162,6 @@ const VariantForm = (props: Props) => {
     return result;
   };
 
-  // v2
   const onSelectAttribute = (
     values: string[],
     options: DefaultOptionType | DefaultOptionType[],
@@ -194,11 +178,11 @@ const VariantForm = (props: Props) => {
     });
 
     setSelectAtrributesIds(values);
-    setSelectAttributesV2(options as DefaultOptionType[]);
+    setSelectAttributes(options as DefaultOptionType[]);
     setSelectAttributeItemV2(newSelectItems);
   };
 
-  // v2
+  // hanlde when select attibutr item
   const onSelectAttributeItem = (
     values: string[],
     key: keyof typeof selectAttributeItemV2,
@@ -214,26 +198,13 @@ const VariantForm = (props: Props) => {
     setSelectAttributeItemV2(newSelectItems);
   };
 
-  // v2
+  // handle get list attibute: color, size,...
   const handleGetAttributes = async () => {
-    setLoading(true);
-
     await getAttributes(attributeParamater).then(
       ({ payload }: IResponseWithPagination<IAttribute[]>) => {
-        setAtrributesV2(payload);
+        setAtrributes(payload);
       },
     );
-
-    setLoading(false);
-  };
-
-  const onRemoveVariant = (id: string) => {
-    const newVariants = variants.filter(
-      (variant: IVariantProduct) => variant._id !== id,
-    );
-
-    handleChangeVariants(newVariants);
-    setPopupVariant(false);
   };
 
   useEffect(() => {
@@ -251,7 +222,7 @@ const VariantForm = (props: Props) => {
               .toLowerCase()
               .includes(input.toLowerCase())
           }
-          options={attributesV2.map((item: IAttribute) => ({
+          options={attributes.map((item: IAttribute) => ({
             value: item._id,
             label: item.name,
             title: item.code,
@@ -261,7 +232,7 @@ const VariantForm = (props: Props) => {
           onChange={onSelectAttribute}
         />
 
-        {selectAttributesV2?.map(
+        {selectAttributes?.map(
           (attribute: DefaultOptionType, index: number) => (
             <SelectFilterCore
               key={index}
@@ -299,127 +270,16 @@ const VariantForm = (props: Props) => {
         )}
 
         {variants.length > 0 && (
-          <Fragment>
-            <button
-              onClick={() => setShowClearVariants(!showPopupClearVariants)}
-              className="text-sm bg-error text-white px-5 py-2 rounded-md">
-              {t("compination.clear")}
-            </button>
-
-            {showPopupClearVariants && (
-              <Popup
-                title="Variants"
-                show={showPopupClearVariants}
-                onClose={() => setShowClearVariants(!showPopupClearVariants)}>
-                <div>
-                  <p className="text-lg">Do you want clear all variants</p>
-                  <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
-                    <button
-                      onClick={() =>
-                        setShowClearVariants(!showPopupClearVariants)
-                      }
-                      className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus">
-                      Cancle
-                    </button>
-                    <button
-                      onClick={onClearVariants}
-                      className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </Popup>
-            )}
-          </Fragment>
+          <button
+            onClick={() => onModal("clearAll")}
+            className="text-sm bg-error text-white px-5 py-2 rounded-md">
+            {t("compination.clear")}
+          </button>
         )}
       </div>
 
       {variants.length > 0 && (
         <div className="mt-5">
-          {/* <Table
-            colHeadTabel={colHeaderVariants[router.locale as string]}
-            loading={loading}>
-            <Fragment>
-              {variants.map((variant: IVariantProduct, index: number) => (
-                <tr
-                  id={`item-${variant._id}`}
-                  key={variant._id}
-                  className={`border-b ${
-                    variant.inventory <= 0 ? "" : ""
-                  } hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300`}>
-                  <CelTable
-                    type={typeCel.SELECT_IMAGE}
-                    images={[]}
-                    name="thumbnail"
-                    thumbnailUrl={variant.thumbnail}
-                    onChangeImage={(name: string, value: string) =>
-                      onChangeValueVariant(name, value, index)
-                    }
-                  />
-
-                  <CelTable
-                    type={typeCel.TEXT}
-                    value={variant.title}
-                    name="title"
-                  />
-                  <CelTable
-                    type={typeCel.INPUT}
-                    placeholder="SKU"
-                    className="min-w-[140px]"
-                    name="sku"
-                    value={(variant.sku as string) || ""}
-                    onChangeInput={(name: string, value: string) =>
-                      onChangeValueVariant(name, value, index)
-                    }
-                  />
-                  <CelTable
-                    type={typeCel.INPUT}
-                    className="min-w-[140px]"
-                    placeholder="Barcode"
-                    name="barcode"
-                    value={variant.barcode || ""}
-                    onChangeInput={(name: string, value: string) =>
-                      onChangeValueVariant(name, value, index)
-                    }
-                  />
-                  <CelTable
-                    type={typeCel.INPUT_NUMBER}
-                    placeholder="Price"
-                    className="min-w-[140px]"
-                    name="price"
-                    value={formatBigNumber(variant.price)}
-                    onChangeInputNumber={(name: string, value: number) =>
-                      onChangeNumberVariant(name, value, index)
-                    }
-                  />
-                  <CelTable
-                    type={typeCel.INPUT_NUMBER}
-                    placeholder="Promotion Price"
-                    className="min-w-[140px]"
-                    name="promotion_price"
-                    value={formatBigNumber(variant.promotion_price)}
-                    onChangeInputNumber={(name: string, value: number) =>
-                      onChangeNumberVariant(name, value, index)
-                    }
-                  />
-                  <CelTable
-                    type={typeCel.INPUT_NUMBER}
-                    placeholder="Inventory"
-                    className="min-w-[140px]"
-                    name="inventory"
-                    value={variant.inventory.toString()}
-                    onChangeInputNumber={(name: string, value: number) =>
-                      onChangeNumberVariant(name, value, index)
-                    }
-                  />
-                  <CelTable type={typeCel.GROUP}>
-                    <ButtonDelete onClick={() => onShowPopupVariant(variant)} />
-                  </CelTable>
-                </tr>
-              ))}
-            </Fragment>
-          </Table> */}
-
           <VariantTable
             product={product}
             data={variants.map((item) => ({ key: item._id, ...item }))}
@@ -429,32 +289,25 @@ const VariantForm = (props: Props) => {
         </div>
       )}
 
-      {showPopupVariant && selectVariant && (
-        <Popup
-          title="Variant"
-          show={showPopupVariant}
-          img="/popup/trash.svg"
-          onClose={() => onShowPopupVariant(null)}>
-          <div>
-            <p className="text-lg dark:text-darkText">
-              Do you want delete variant
-              <strong>{" " + selectVariant.title}</strong>
-            </p>
-            <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
-              <button
-                onClick={() => onShowPopupVariant()}
-                className="lg:w-fit w-full text-lg hover:text-white font-medium bg-[#e5e5e5] hover:bg-primary px-5 py-1 rounded-md transition-cus">
-                {t("Action.cancle")}
-              </button>
-              <button
-                onClick={() => onRemoveVariant(selectVariant?._id as string)}
-                className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
-                {t("Action.delete")}
-              </button>
-            </div>
-          </div>
-        </Popup>
-      )}
+      {/* Modal delete all variant */}
+      <ModalConfirm
+        title={t("modalDeleteAllVariant.title")}
+        open={modal.clearAll}
+        onCancel={() => onModal("clearAll")}
+        centered
+        type="error"
+        destroyOnClose
+        onOk={onClearVariants}>
+        <img
+          src="/popup/trash.svg"
+          className="size-[200px] mx-auto"
+          title="delete image"
+          alt="delete image"
+        />
+        <p className="text-base text-center mb-10">
+          {t("modalDeleteVariant.description")}
+        </p>
+      </ModalConfirm>
     </div>
   );
 };

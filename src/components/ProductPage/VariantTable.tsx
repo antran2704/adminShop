@@ -17,13 +17,11 @@ import {
   activeVariation,
   deleteVariation,
   disableVariation,
-  updateVariation,
 } from "~/api-client";
 
 interface Props {
   product: IProduct;
   data: IVariantTable[];
-  loading?: boolean;
   getData: () => void;
   handleChangeVariants: (items: IVariantProduct[]) => void;
 }
@@ -43,16 +41,27 @@ const VariantTable = (props: Props) => {
 
   const [selectItem, setSelectItem] = useState<IVariantTable | null>(null);
 
-  const [modal, setModal] = useState<{ changeImage: boolean }>({
+  const [modal, setModal] = useState<{ changeImage: boolean; delete: boolean }>(
+    {
+      changeImage: false,
+      delete: false,
+    },
+  );
+
+  const [loading, setloading] = useState<{
+    changeImage: boolean;
+    delete: boolean;
+  }>({
     changeImage: false,
+    delete: false,
   });
 
-  const onModalImage = () => {
-    if (modal.changeImage) {
+  const onModal = (key: keyof typeof modal) => {
+    if (modal[key]) {
       setSelectItem(null);
     }
 
-    setModal({ ...modal, changeImage: !modal.changeImage });
+    setModal({ ...modal, [key]: !modal[key] });
   };
 
   const onSelectImage = (variant: IVariantTable, url: string) => {
@@ -60,7 +69,7 @@ const VariantTable = (props: Props) => {
 
     newListItem[variant._id] = { ...variant, thumbnail: url };
     setListEditItem(newListItem);
-    onModalImage();
+    onModal("changeImage");
   };
 
   const onEdit = (item: IVariantTable) => {
@@ -69,46 +78,46 @@ const VariantTable = (props: Props) => {
     setListEditItem(newListItem);
   };
 
-  const onSave = async (item: IVariantTable, index: number) => {
-    const newData: IVariantTable = { ...listEditItem[item._id] };
+  const onSave = async (variantId: string, index: number) => {
+    const newData: IVariantTable = { ...listEditItem[variantId] };
     const newListItem: IVariantTable[] = [...listItem];
     const newListEditItem = { ...listEditItem };
 
-    // if (!item._id.includes("new")) {
-    //   const { _id, key, ...dataSend } = newData;
-    //   await updateVariation(item._id, dataSend);
-    // }
-
     newListItem[index] = newData;
-    delete newListEditItem[item._id];
+    delete newListEditItem[variantId];
 
     setListItem(newListItem);
     setListEditItem(newListEditItem);
     handleChangeVariants(newListItem);
   };
 
-  const onDelete = async (variant: IVariantTable) => {
+  const onDelete = async (variantId: string) => {
+    setloading({ ...loading, delete: true });
+
     const newListItem: IVariantTable[] = listItem.filter(
-      (item) => variant._id !== item._id,
+      (item) => variantId !== item._id,
     );
     const newListEditItem = { ...listEditItem };
 
-    if (!variant._id.includes("new")) {
-      await deleteVariation(variant._id);
+    if (!variantId.includes("new")) {
+      await deleteVariation(variantId);
     }
 
-    if (newListEditItem[variant._id]) {
-      delete newListEditItem[variant._id];
+    if (newListEditItem[variantId]) {
+      delete newListEditItem[variantId];
     }
 
     setListItem(newListItem);
     setListEditItem(newListEditItem);
     handleChangeVariants(newListItem);
+
+    onModal("delete");
+    setloading({ ...loading, delete: false });
   };
 
-  const onCancelEdit = (item: IVariantTable) => {
+  const onCancelEdit = (variantId: string) => {
     const newListItem = { ...listEditItem };
-    delete newListItem[item._id];
+    delete newListItem[variantId];
 
     setListEditItem({ ...newListItem });
   };
@@ -166,7 +175,7 @@ const VariantTable = (props: Props) => {
                   <div
                     onClick={() => {
                       setSelectItem(record);
-                      onModalImage();
+                      onModal("changeImage");
                     }}>
                     <ImageCus
                       src={
@@ -183,7 +192,7 @@ const VariantTable = (props: Props) => {
                   <button
                     onClick={() => {
                       setSelectItem(record);
-                      onModalImage();
+                      onModal("changeImage");
                     }}
                     className="text-sm hover:text-primary mt-2">
                     Change
@@ -341,13 +350,21 @@ const VariantTable = (props: Props) => {
           render: (_, record: IVariantTable, index: number) => {
             return (
               <div className="flex items-center justify-center gap-2">
-                <BtnDelete onClick={() => onDelete(record)} />
+                <BtnDelete
+                  onClick={() => {
+                    setSelectItem(record);
+                    onModal("delete");
+                  }}
+                />
 
                 {!listEditItem[record._id] && (
                   <BtnEdit onClick={() => onEdit(record)} />
                 )}
                 {listEditItem[record._id] && (
-                  <BtnCheck onClick={() => onSave(record, index)} />
+                  <BtnCancel onClick={() => onCancelEdit(record._id)} />
+                )}
+                {listEditItem[record._id] && (
+                  <BtnCheck onClick={() => onSave(record._id, index)} />
                 )}
               </div>
             );
@@ -364,20 +381,20 @@ const VariantTable = (props: Props) => {
     <Fragment>
       <TableCore
         dataSource={listItem}
-        //   loading={loading}
         showPagination={false}
         columns={columns}
         scroll={{ x: 2000 }}
         size="large"
       />
 
+      {/* Modal change image */}
       <ModalConfirm
         width={800}
         title="Change image"
         type="info"
         footer={null}
         open={modal.changeImage}
-        onCancel={onModalImage}>
+        onCancel={() => onModal("changeImage")}>
         <div className="grid lg:grid-cols-6 md:grid-cols-4 grid-cols-3 py-5 gap-5">
           {product.gallery.map((item: string, index: number) => (
             <div
@@ -392,6 +409,33 @@ const VariantTable = (props: Props) => {
             </div>
           ))}
         </div>
+      </ModalConfirm>
+
+      {/* Modal delete */}
+      <ModalConfirm
+        title={t("modalDelete.title")}
+        open={modal.delete}
+        onCancel={() => onModal("delete")}
+        centered
+        type="error"
+        destroyOnClose
+        onOk={() => onDelete(selectItem?._id as string)}
+        okButtonProps={{
+          loading: loading.delete,
+          disabled: loading.delete,
+        }}>
+        <img
+          src="/popup/trash.svg"
+          className="size-[200px] mx-auto"
+          title="delete image"
+          alt="delete image"
+        />
+        <p className="md:text-lg text-base text-center">
+          {t("modalDelete.title")} <strong>{selectItem?.title}</strong>
+        </p>
+        <p className="text-base text-center mb-10">
+          {t("modalDelete.description")}
+        </p>
       </ModalConfirm>
     </Fragment>
   );

@@ -20,7 +20,7 @@ const FormLayout = (props: props) => {
 
       {!!dataBreadcrumb?.length && <BreadcrumbCore data={dataBreadcrumb} />}
 
-      <div className="px-5 pt-5 bg-white rounded-md border-2">{children}</div>
+      <div className="p-5 bg-white rounded-md border-2">{children}</div>
 
       {loading && (
         <div className="sticky bottom-0 w-full h-screen z-20">

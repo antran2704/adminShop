@@ -135,6 +135,14 @@
       "title": "Xác nhận xóa sản phẩm",
       "description": "Lưu ý: Không thể phục hồi dữ liệu sau khi xóa"
     },
+    "modalDeleteVariant": {
+      "title": "Xác nhận xóa sản phẩm con",
+      "description": "Lưu ý: Không thể phục hồi dữ liệu sau khi xóa"
+    },
+    "modalDeleteAllVariant": {
+      "title": "Xác nhận xóa toàn bộ sản phẩm con",
+      "description": "Lưu ý: Không thể phục hồi dữ liệu sau khi xóa"
+    },
     "tabs": {
       "infomation": "Thông tin chung",
       "variants": "Sản phẩm con"

@@ -135,6 +135,14 @@
       "title": "Confirm delete product",
       "description": "Note: Data can't restore after delete"
     },
+    "modalDeleteVariant": {
+      "title": "Confirm delete variant of product",
+      "description": "Note: Data can't restore after delete"
+    },
+    "modalDeleteAllVariant": {
+      "title": "Confirm delete all variant of product",
+      "description": "Note: Data can't restore after delete"
+    },
     "tabs": {
       "infomation": "Main Infomation",
       "variants": "Variants"

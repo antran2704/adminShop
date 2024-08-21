@@ -14,7 +14,10 @@ const InputText = (props: Props, ref: Ref<InputRef>) => {
   return (
     <div>
       {title && (
-        <p className={clsx("text-base pb-2", [error && "text-error"])}>
+        <p
+          className={clsx("text-base pb-2 dark:text-darkInput", [
+            error && "text-error",
+          ])}>
           {title}
         </p>
       )}

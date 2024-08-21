@@ -1,4 +1,4 @@
-import { IParentCategory } from "../category";
+import { IBreadcrumbCategory, IParentCategory } from "../category";
 
 interface IValueOption {
   label: string;
@@ -43,7 +43,7 @@ interface IProduct {
   public: boolean;
   options: IOptionProduct[];
   specifications: ISpecificationsProduct[];
-  breadcrumbs: string[];
+  breadcrumbs: IBreadcrumbCategory[];
   view: number;
   slug: string;
   rate: number;

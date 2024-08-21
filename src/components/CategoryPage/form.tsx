@@ -23,7 +23,6 @@ import { ECompressFormat, ETypeImage } from "~/enums";
 import { BtnDelete } from "../Button";
 import { ModalConfirm } from "../Modal";
 import { useRouter } from "next/router";
-import { BreadcrumbCore } from "../Core";
 
 interface Props {
   category?: ICategory | null;
@@ -57,12 +56,14 @@ const CategoryForm = (props: Props) => {
     },
   ]);
 
-  console.log("tree", treeData);
-
-  const [listParent, setListParent] = useState<string[]>([]);
   const [listDisable, setListDisable] = useState<string[]>([]);
 
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
+  const [loading, setLoading] = useState<{
+    delete: boolean;
+  }>({
+    delete: false,
+  });
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -91,6 +92,7 @@ const CategoryForm = (props: Props) => {
 
   const onDelete = async (categoryId: string) => {
     if (!categoryId) return;
+    setLoading({ ...loading, delete: true });
 
     try {
       await deleteCategory(categoryId);
@@ -100,6 +102,7 @@ const CategoryForm = (props: Props) => {
       router.push("/categories");
     } catch (error) {
       messageApi.error(tError("TRY_AGAIN"));
+      setLoading({ ...loading, delete: false });
     }
   };
 
@@ -121,7 +124,6 @@ const CategoryForm = (props: Props) => {
               value: item._id,
               title: item.title,
               isLeaf: !item.children.length,
-              // disabled: category?._id === item._id || parentId === category?._id || listDisable.includes(parentId),
               disabled:
                 category?._id === item._id || listDisable.includes(parentId),
             };
@@ -133,43 +135,6 @@ const CategoryForm = (props: Props) => {
       })
       .catch((err) => err);
   };
-
-  // const handleGetFirstTime = async (
-  //   categoryId: string | null,
-  //   data: Omit<DefaultOptionType, "label">[],
-  //   listId: string[],
-  // ) => {
-  //   if (!categoryId) {
-  //     setListParent(listId);
-  //     setTreeData([...treeData, ...data]);
-  //     return;
-  //   }
-
-  //   await getParentCategory(categoryId).then(
-  //     (res: IResponse<IParentCategory>) => {
-  //       if (!res.payload.parent_id) {
-  //         setTreeData([...treeData, ...data]);
-  //         setListParent([...listId, res.payload._id]);
-  //         return;
-  //       }
-
-  //       const itemTree: Omit<DefaultOptionType, "label"> = {
-  //         id: res.payload._id,
-  //         pId: res.payload.parent_id,
-  //         value: res.payload._id,
-  //         title: res.payload.title,
-  //         isLeaf: !res.payload.children.length,
-  //         disabled: true,
-  //       };
-
-  //       data.push(itemTree);
-  //       handleGetFirstTime(res.payload.parent_id, data, [
-  //         ...listId,
-  //         res.payload._id,
-  //       ]);
-  //     },
-  //   );
-  // };
 
   const handleGetFirstTime = async (
     categoryId: string,
@@ -252,7 +217,7 @@ const CategoryForm = (props: Props) => {
       </div>
 
       {/* description */}
-      <div className={clsx("relative w-full", [errors.title && "pb-2"])}>
+      <div className={clsx("relative w-full", [errors.description && "pb-2"])}>
         <Controller
           name="description"
           control={control}
@@ -382,7 +347,8 @@ const CategoryForm = (props: Props) => {
         centered
         type="error"
         destroyOnClose
-        onOk={() => onDelete(category?._id as string)}>
+        onOk={() => onDelete(category?._id as string)}
+        okButtonProps={{ loading: loading.delete, disabled: loading.delete }}>
         <img
           src="/popup/trash.svg"
           className="size-[200px] mx-auto"

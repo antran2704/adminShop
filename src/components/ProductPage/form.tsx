@@ -17,9 +17,9 @@ import { ETypeFile } from "~/enums/file";
 
 import Specifications from "~/components/Specifications";
 import {
+  deleteProduct,
   getChildInCategory,
   getParentCategories,
-  getParentCategory,
   uploadThumbnailProduct,
 } from "~/api-client";
 
@@ -27,9 +27,12 @@ import { InputNumber, InputText, InputTextArea } from "../Core/Input";
 import { SelectFilterCore } from "../Core";
 import { UploadGallery, UploadImage } from "../Core/Upload";
 import { formatBigNumber } from "~/helper/format/number";
+import { ModalConfirm } from "../Modal";
+import { BtnDelete } from "../Button";
+import { useRouter } from "next/router";
 
 interface Props {
-  data?: IProduct | null;
+  product?: IProduct | null;
   galleryFile?: UploadFile[];
   form: UseFormReturn<ICreateProduct, any, undefined>;
   disableEditInventory?: boolean;
@@ -41,11 +44,18 @@ const FormProduct = (props: Props) => {
   const {
     form,
     galleryFile = [],
-    data,
+    product,
     disableEditInventory = false,
     onUploadGallery,
     onRemoveGallery,
   } = props;
+
+  const t = useTranslations("ProductPage");
+  const tCommon = useTranslations("Common");
+  const tError = useTranslations("Error");
+  const tSuccess = useTranslations("Success");
+
+  const router = useRouter();
 
   const {
     control,
@@ -54,9 +64,6 @@ const FormProduct = (props: Props) => {
     setValue,
     clearErrors,
   } = form;
-
-  const t = useTranslations("ProductPage");
-  const tError = useTranslations("Error");
 
   // Category
   const [treeData, setTreeData] = useState<Omit<DefaultOptionType, "label">[]>([
@@ -72,15 +79,23 @@ const FormProduct = (props: Props) => {
     [],
   );
 
+  const [deleteModal, setDeleteModal] = useState<boolean>(false);
+
   const [loading, setLoading] = useState<{
     thumbnail: boolean;
     gallery: boolean;
+    delete: boolean;
   }>({
     gallery: false,
     thumbnail: false,
+    delete: false,
   });
 
   const [messageApi, contextHolder] = message.useMessage();
+
+  const onDeleteModal = () => {
+    setDeleteModal(!deleteModal);
+  };
 
   const onSelectTree = (items: string[], labels: string[]) => {
     const data: SelectProps["options"] = items.map(
@@ -122,8 +137,6 @@ const FormProduct = (props: Props) => {
         .catch(() => {
           messageApi.error(tError("UPLOAD_IMAGE"));
         });
-
-      // setLoading({ ...loading, thumbnail: false });
     },
     [getValues("thumbnail"), errors.thumbnail],
   );
@@ -146,42 +159,28 @@ const FormProduct = (props: Props) => {
     );
   };
 
-  const handleGetFirstTime = async (
-    categoryId: string | null,
-    data: Omit<DefaultOptionType, "label">[],
-  ) => {
-    if (!categoryId) {
-      setTreeData(data);
-      return;
-    }
-
-    await getParentCategory(categoryId).then(
-      (res: IResponse<IParentCategory>) => {
-        if (!res.payload.parent_id) {
-          setTreeData(data);
-          return;
-        }
-
-        const itemTree: Omit<DefaultOptionType, "label"> = {
-          id: res.payload._id,
-          pId: res.payload.parent_id,
-          value: res.payload._id,
-          title: res.payload.title,
-          isLeaf: !res.payload.children.length,
-          disabled: true,
-        };
-
-        data.push(itemTree);
-        handleGetFirstTime(res.payload.parent_id, data);
-      },
-    );
-  };
-
   // hanlde get child in a category
   const onLoadChildCategory: TreeSelectProps["loadData"] = async ({
     id: parentId,
   }) => {
     handleGetChildCategory(parentId);
+  };
+
+  const onDelete = async (productId: string) => {
+    if (!productId) return;
+
+    setLoading({ ...loading, delete: true });
+
+    try {
+      await deleteProduct(productId);
+      setDeleteModal(false);
+      messageApi.success(tSuccess("delete"));
+
+      router.push("/categories");
+    } catch (error) {
+      messageApi.error(tError("TRY_AGAIN"));
+      setLoading({ ...loading, delete: false });
+    }
   };
 
   //   handle get parent categories
@@ -198,8 +197,8 @@ const FormProduct = (props: Props) => {
           }),
         );
 
-        if (data && !!data.categories.length) {
-          data.categories.forEach((item: IParentCategory) => {
+        if (product && !!product.categories.length) {
+          product.categories.forEach((item: IParentCategory) => {
             if (!item.parent_id) return;
 
             listTree.push({
@@ -218,19 +217,19 @@ const FormProduct = (props: Props) => {
   };
 
   useEffect(() => {
-    if (!data) return;
+    if (!product) return;
 
-    if (!!data.categories.length) {
-      const itemSelectCategories: string[] = data.categories.map(
+    if (!!product.categories.length) {
+      const itemSelectCategories: string[] = product.categories.map(
         (item) => item._id,
       );
-      const labelSelectCategories: string[] = data.categories.map(
+      const labelSelectCategories: string[] = product.categories.map(
         (item) => item.title,
       );
 
       onSelectTree(itemSelectCategories, labelSelectCategories);
     }
-  }, [data]);
+  }, [product]);
 
   useEffect(() => {
     handleGetCategoriesParent();
@@ -238,7 +237,7 @@ const FormProduct = (props: Props) => {
 
   return (
     <div className="w-full">
-      <div className="w-full flex flex-col p-5 mt-5 bg-white rounded-md border-2 gap-5">
+      <div className="w-full flex flex-col py-5 gap-5">
         {/* title */}
         <div className={clsx("relative w-full", [errors.title && "pb-2"])}>
           <Controller
@@ -310,11 +309,11 @@ const FormProduct = (props: Props) => {
         </div>
       </div>
 
-      <div className="w-full flex flex-col p-5 mt-5 bg-white rounded-md border-2 gap-5">
+      <div className="w-full flex flex-col py-5 border-t-2 gap-5">
         {/* categories */}
         <div className={clsx("relative w-full", [errors.categories && "pb-2"])}>
           <p
-            className={clsx("text-base pb-2", [
+            className={clsx("text-base pb-2 dark:text-darkInput", [
               errors.categories && "text-error",
             ])}>
             {t("form.categories")}
@@ -331,10 +330,7 @@ const FormProduct = (props: Props) => {
                 value={value || undefined}
                 size="large"
                 status={!!errors.categories?.message ? "error" : ""}
-                treeDefaultExpandedKeys={[
-                  "home",
-                  //   category?.parent_id ? category.parent_id : "",
-                ]}
+                treeDefaultExpandedKeys={["home"]}
                 dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
                 placeholder={t("placeholder.categories")}
                 treeData={treeData}
@@ -358,11 +354,21 @@ const FormProduct = (props: Props) => {
         {/* category */}
         <div className={clsx("relative w-full", [errors.categories && "pb-2"])}>
           <p
-            className={clsx("text-base pb-2", [
+            className={clsx("text-base pb-2 dark:text-darkInput", [
               errors.category && "text-error",
             ])}>
             {t("form.category")}
           </p>
+
+          {product && (
+            <ul className="flex items-center text-sm pb-2 gap-2">
+              <li>{`Home >`}</li>
+              {product.breadcrumbs.map((item) => (
+                <li key={item._id}>{`${item.title} > `}</li>
+              ))}
+              <li>{product.title}</li>
+            </ul>
+          )}
           <Controller
             name="category"
             control={control}
@@ -388,49 +394,34 @@ const FormProduct = (props: Props) => {
             </p>
           )}
         </div>
-
-        {/* <SelectItem
-          width="w-full"
-          title={t("CreateProductPage.field.defaultCategory")}
-          name="category"
-          value={defaultCategory ? defaultCategory : ""}
-          onSelect={onSelectDefaultCategory}
-          data={mutipleCategories}
-        /> */}
       </div>
 
-      <div className="w-full flex flex-col p-5 mt-5 bg-white rounded-md border-2 gap-5">
+      <div className="w-full flex flex-col py-5 border-t-2 gap-5">
         {/* Thumbnail */}
         <div className={clsx("relative", [errors.thumbnail && "pb-2"])}>
-          <Controller
-            name="category"
-            control={control}
-            render={({ field: { value } }) => (
-              <UploadImage
-                title={t("form.thumbnail")}
-                height={200}
-                width={200}
-                className=""
-                rules={[ETypeFile.JPEG, ETypeFile.PNG, ETypeFile.WEBP]}
-                src={
-                  data?.thumbnail
-                    ? (process.env.NEXT_PUBLIC_IMAGE_ENDPOINT as string) +
-                      data.thumbnail
-                    : ""
-                }
-                error={!!errors.thumbnail?.message}
-                onChangeImage={uploadThumbnail}
-                option={{
-                  quality: 100,
-                  maxHeight: 200,
-                  maxWidth: 200,
-                  minHeight: 200,
-                  minWidth: 200,
-                  compressFormat: ECompressFormat.WEBP,
-                  type: ETypeImage.file,
-                }}
-              />
-            )}
+          <UploadImage
+            title={t("form.thumbnail")}
+            height={200}
+            width={200}
+            className=""
+            rules={[ETypeFile.JPEG, ETypeFile.PNG, ETypeFile.WEBP]}
+            src={
+              product?.thumbnail
+                ? (process.env.NEXT_PUBLIC_IMAGE_ENDPOINT as string) +
+                  product.thumbnail
+                : ""
+            }
+            error={!!errors.thumbnail?.message}
+            onChangeImage={uploadThumbnail}
+            option={{
+              quality: 100,
+              maxHeight: 200,
+              maxWidth: 200,
+              minHeight: 200,
+              minWidth: 200,
+              compressFormat: ECompressFormat.WEBP,
+              type: ETypeImage.file,
+            }}
           />
           {errors.thumbnail?.message && (
             <p className="absolute text-sm text-error">
@@ -442,7 +433,7 @@ const FormProduct = (props: Props) => {
         {/* Gallery */}
         <div className="relative">
           <Controller
-            name="category"
+            name="gallery"
             control={control}
             render={() => (
               <UploadGallery
@@ -464,7 +455,7 @@ const FormProduct = (props: Props) => {
         </div>
       </div>
 
-      <div className="w-full flex flex-col p-5 mt-5 bg-white rounded-md border-2 gap-5">
+      <div className="w-full flex flex-col py-5 border-t-2 gap-5">
         {/* Price */}
         <div className="relative">
           <Controller
@@ -539,7 +530,7 @@ const FormProduct = (props: Props) => {
         </div>
       </div>
 
-      <div className="w-full flex flex-col p-5 mt-5 bg-white rounded-md border-2 gap-5">
+      <div className="w-full flex flex-col py-5 border-t-2 gap-5">
         {/* SKU */}
         <div className={clsx("relative w-full", [errors.title && "pb-2"])}>
           <Controller
@@ -586,7 +577,7 @@ const FormProduct = (props: Props) => {
       </div>
 
       {/* Specification */}
-      <div className="w-full flex flex-col p-5 mt-5 bg-white rounded-md border-2 gap-5">
+      <div className="w-full flex flex-col py-5 border-t-2 gap-5">
         <Controller
           name="specifications"
           control={control}
@@ -596,20 +587,56 @@ const FormProduct = (props: Props) => {
         />
       </div>
 
-      <div className="w-full p-5 mt-5 bg-white rounded-md border-2 lg:gap-5 gap-3">
-        <p className={clsx("text-base pb-2")}>{t("form.status")}</p>
+      <div className="w-full flex flex-col py-5 border-t-2 gap-5">
+        <div>
+          <p className={clsx("text-base pb-2 dark:text-darkInput")}>
+            {t("form.status")}
+          </p>
 
-        <Controller
-          name="public"
-          control={control}
-          render={({ field: { value, onChange } }) => (
-            <Switch value={value} onChange={onChange} />
-          )}
-        />
+          <Controller
+            name="public"
+            control={control}
+            render={({ field: { value, onChange } }) => (
+              <Switch value={value} onChange={onChange} />
+            )}
+          />
+        </div>
+
+        {/* Delete */}
+        {product && (
+          <div>
+            <BtnDelete
+              type="primary"
+              title={tCommon("btn.delete")}
+              size="large"
+              onClick={onDeleteModal}
+              className="w-fit">
+              <p>{tCommon("btn.delete")}</p>
+            </BtnDelete>
+          </div>
+        )}
       </div>
 
-      {/* {loading && <SpinLoading className="text-3xl" />} */}
-
+      {/* Modal delete */}
+      <ModalConfirm
+        title={t("modalDelete.title")}
+        open={deleteModal}
+        onCancel={onDeleteModal}
+        centered
+        type="error"
+        destroyOnClose
+        onOk={() => onDelete(product?._id as string)}
+        okButtonProps={{ loading: loading.delete, disabled: loading.delete }}>
+        <img
+          src="/popup/trash.svg"
+          className="size-[200px] mx-auto"
+          title="delete image"
+          alt="delete image"
+        />
+        <p className="md:text-lg text-base text-center mb-10">
+          {t("modalDelete.description")}
+        </p>
+      </ModalConfirm>
       {/* Message of Antd */}
       {contextHolder}
     </div>
