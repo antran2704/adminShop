@@ -1,14 +1,16 @@
 import { useRouter } from "next/router";
-import { useState, ReactElement, Fragment, useMemo } from "react";
+import { useState, ReactElement, Fragment, useMemo, useEffect } from "react";
 
 import FormLayout from "~/layouts/FormLayout";
 
 import {
-  ICreateAttibute,
+  IAttribute,
+  IAttributeChild,
   IFormAttibute,
-  INewAttributeChild,
+  IResponse,
+  IUpdateAttibute,
 } from "~/interface";
-import { createdAttribute } from "~/api-client";
+import { getAttribute, updateAttribute } from "~/api-client";
 import LayoutWithHeader from "~/layouts/Private";
 import { NextPageWithLayout } from "~/interface/page";
 import { useTranslations } from "next-intl";
@@ -30,6 +32,7 @@ const Layout = LayoutWithHeader;
 
 const CreateAttributePage: NextPageWithLayout = () => {
   const router = useRouter();
+  const attributeId = router.query.id as string;
 
   const t = useTranslations("AttributePage");
   const tError = useTranslations("Error");
@@ -49,53 +52,92 @@ const CreateAttributePage: NextPageWithLayout = () => {
     resolver: yupResolver(schema) as any,
   });
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [attribute, setAttribute] = useState<IAttribute | null>(null);
+
+  const [loading, setLoading] = useState<{
+    getData: boolean;
+    isSubmit: boolean;
+  }>({ getData: true, isSubmit: false });
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const handleOnSubmit = async (values: IFormAttibute) => {
-    setLoading(true);
+  const handeGetAttribute = async (itemId: string) => {
+    setLoading({ ...loading, getData: true });
 
-    const listAttributeChild: INewAttributeChild[] = values.children.map(
-      (item: string) => ({ name: item, public: true }),
-    );
-    const dataSend: ICreateAttibute = {
-      ...values,
-      children: listAttributeChild,
-    };
+    getAttribute(itemId)
+      .then(({ payload }: IResponse<IAttribute>) => {
+        const listChild = payload.children.map(
+          (item: IAttributeChild) => item.name,
+        );
 
-    await createdAttribute(dataSend)
-      .then(() => {
-        messageApi.success(tSuccess("create"));
-        router.push("/attributes");
+        attributeForm.reset({
+          name: payload.name,
+          children: listChild,
+          code: payload.code,
+          public: payload.public,
+        });
+        setAttribute(payload);
+        setLoading({ ...loading, getData: false });
       })
       .catch(() => {
-        messageApi.error(tError("TRY_AGAIN"));
-        setLoading(false);
+        router.push("/attributes");
       });
   };
 
+  const handleOnSubmit = async (attributeId: string, values: IFormAttibute) => {
+    if (!attributeId) return;
+
+    setLoading({ ...loading, isSubmit: true });
+
+    const dataSend: IUpdateAttibute = {
+      code: values.code,
+      name: values.name,
+      public: values.public,
+    };
+
+    await updateAttribute(attributeId, dataSend)
+      .then(() => {
+        messageApi.success(tSuccess("update"));
+      })
+      .catch(() => {
+        messageApi.error(tError("TRY_AGAIN"));
+      });
+
+    setLoading({ ...loading, isSubmit: false });
+  };
+
+  useEffect(() => {
+    if (!attributeId) {
+      router.push("/attributes");
+      return;
+    }
+
+    handeGetAttribute(attributeId);
+  }, [attributeId]);
+
   return (
     <FormLayout
-      title={t("create")}
+      title={t("edit")}
       dataBreadcrumb={[
         {
           title: t("breadcrumb.list"),
           href: "/attributes",
         },
         {
-          title: t("breadcrumb.create"),
+          title: t("breadcrumb.edit"),
         },
       ]}>
       <Fragment>
-        <AttributeForm form={attributeForm} />
+        <AttributeForm form={attributeForm} data={attribute} />
 
         <FormFooter
           onCancel={() => router.push("/attributes")}
-          onOk={attributeForm.handleSubmit(handleOnSubmit)}
+          onOk={attributeForm.handleSubmit((values) =>
+            handleOnSubmit(attributeId, values),
+          )}
           okProps={{
-            loading,
-            disabled: loading,
+            loading: loading.isSubmit,
+            disabled: loading.isSubmit,
           }}
         />
         {/* Message of Antd */}
@@ -107,7 +149,7 @@ const CreateAttributePage: NextPageWithLayout = () => {
 
 export default CreateAttributePage;
 
-export async function getStaticProps(context: { locale: string }) {
+export async function getServerSideProps(context: { locale: string }) {
   return {
     props: {
       messages: (await import(`../../../../messages/${context.locale}.json`))

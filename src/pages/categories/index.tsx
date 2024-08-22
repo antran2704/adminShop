@@ -5,7 +5,9 @@ import {
   useCallback,
   ReactElement,
 } from "react";
-import { toast } from "react-toastify";
+import { message } from "antd";
+import { useRouter } from "next/router";
+import { useTranslations } from "next-intl";
 
 import ShowItemsLayout from "~/layouts/ManagerLayout";
 
@@ -17,18 +19,15 @@ import {
   ISearch,
 } from "~/interface";
 
-import { initPagination } from "~/components/Pagination/initData";
 import { getCategories } from "~/api-client";
+
 import { NextPageWithLayout } from "~/interface/page";
-import { useRouter } from "next/router";
-import { useTranslations } from "next-intl";
+import { ORDER_PARAMATER_ENUM } from "~/enums";
 
 import { PrivateLayout } from "~/layouts";
+import { initPagination } from "~/components/Pagination/initData";
 import Loading from "~/components/Loading";
 import { CategoryTable } from "~/components/CategoryPage";
-import { ORDER_PARAMATER_ENUM } from "~/enums";
-import { BreadcrumbCore } from "~/components/Core";
-import { message } from "antd";
 
 const Layout = PrivateLayout;
 const CategoriesPage: NextPageWithLayout = () => {
@@ -92,9 +91,6 @@ const CategoriesPage: NextPageWithLayout = () => {
         }
       } catch (error) {
         messageApi.error(tError("TRY_AGAIN"));
-        toast.error("Error in server, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
       }
 
       setLoading(false);
@@ -115,15 +111,11 @@ const CategoriesPage: NextPageWithLayout = () => {
       title={t("title")}
       titleCreate={t("create")}
       link="/create/category"
-      breadcrumb={
-        <BreadcrumbCore
-          data={[
-            {
-              title: t("breadcrumb.list"),
-            },
-          ]}
-        />
-      }>
+      dataBreadcrumb={[
+        {
+          title: t("breadcrumb.list"),
+        },
+      ]}>
       <Fragment>
         {/* <Search
             search={filter?.search || ""}

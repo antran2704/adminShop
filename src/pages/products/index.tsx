@@ -1,4 +1,7 @@
 import { useState, useEffect, Fragment, ReactElement } from "react";
+import { useRouter } from "next/router";
+import { useTranslations } from "next-intl";
+import { message } from "antd";
 
 import {
   IPagination,
@@ -14,12 +17,8 @@ import { initPagination } from "~/components/Pagination/initData";
 import { getProducts } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
 import PrivateLayout from "~/layouts/Private";
-import { useRouter } from "next/router";
-import { BreadcrumbCore } from "~/components/Core";
-import { useTranslations } from "next-intl";
 import { EPermission, ERole, ORDER_PARAMATER_ENUM } from "~/enums";
 import useAbility from "~/hooks/useAbility";
-import { message } from "antd";
 import Loading from "~/components/Loading";
 import { ProductTable } from "~/components/ProductPage";
 
@@ -99,15 +98,11 @@ const ProductPage: NextPageWithLayout = () => {
       title={t("title")}
       titleCreate={isCan ? t("create") : null}
       link="/create/product"
-      breadcrumb={
-        <BreadcrumbCore
-          data={[
-            {
-              title: t("breadcrumb.list"),
-            },
-          ]}
-        />
-      }>
+      dataBreadcrumb={[
+        {
+          title: t("breadcrumb.list"),
+        },
+      ]}>
       <Fragment>
         <ProductTable
           data={products}

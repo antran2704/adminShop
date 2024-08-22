@@ -9,7 +9,6 @@ import { store } from "../store";
 import { AppPropsWithLayout } from "~/interface/page";
 import MainLayout from "~/layouts/GlobalLayout";
 
-import "react-toastify/dist/ReactToastify.css";
 import "~/styles/globals.scss";
 import "~/styles/UploadFile.component.scss";
 import "~/styles/UploadImage.component.scss";

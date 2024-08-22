@@ -1,44 +1,25 @@
-import { ParsedUrlQuery } from "querystring";
+import { useState, useEffect, Fragment, ReactElement } from "react";
+import { useRouter } from "next/router";
+import { useTranslations } from "next-intl";
+
 import {
-  useState,
-  useEffect,
-  Fragment,
-  useCallback,
-  ReactElement,
-} from "react";
-import { toast } from "react-toastify";
-
-import { typeCel } from "~/enums";
-
-import { IAttribute, IFilter, IPagination } from "~/interface";
+  IAttribute,
+  IAttributeTable,
+  IPagination,
+  IResponseWithPagination,
+  ISearchAttribute,
+} from "~/interface";
 
 import ShowItemsLayout from "~/layouts/ManagerLayout";
 
 import Search from "~/components/Search";
-import { Table, CelTable } from "~/components/Table";
-import { colHeaderAttribute as colHeadTable } from "~/components/Table/colHeadTable";
-import { ButtonDelete, ButtonEdit } from "~/components/Button";
 import { initPagination } from "~/components/Pagination/initData";
-import {
-  deleteAttribute,
-  getAttributes,
-  getAttributesWithFilter,
-  updateAttribute,
-} from "~/api-client";
+import { getAttributes } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/Private";
-import { useTranslation } from "react-i18next";
-import { useRouter } from "next/router";
-
-interface ISelectAttribute {
-  id: string | null;
-  title: string;
-}
-
-const initSelect: ISelectAttribute = {
-  id: null,
-  title: "",
-};
+import { AttributeTable } from "~/components/AttributePage";
+import { ORDER_PARAMATER_ENUM } from "~/enums";
+import Loading from "~/components/Loading";
 
 const Layout = LayoutWithHeader;
 
@@ -46,285 +27,108 @@ const AttributesPage: NextPageWithLayout = () => {
   const router = useRouter();
 
   const { query } = router;
-  const currentPage = query.page ? Number(query.page) : 1;
 
-  const { t, i18n } = useTranslation();
+  const t = useTranslations("AttributePage");
 
-  const [attributes, setAttribute] = useState<IAttribute[]>([]);
-  const [selectAttributes, setSelectAttributes] = useState<string[]>([]);
+  const pageParam = query.page ? Number(query.page) : 1;
+  const takeParam = query.take ? Number(query.take) : 10;
+  const searchParam = query.search ? query.search : "";
+  const orderParam = query.order ? query.order : ORDER_PARAMATER_ENUM.DESC;
+  const publicParam = query.public ? query.public : "";
 
-  const [message, setMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [showPopup, setShowPopup] = useState<boolean>(false);
-  const [selectItem, setSelectItem] = useState<ISelectAttribute>(initSelect);
+  const [paramater, setParamter] = useState<ISearchAttribute>({
+    take: takeParam,
+    page: pageParam,
+    search: searchParam as string,
+    order: orderParam as ORDER_PARAMATER_ENUM,
+    public: publicParam as string,
+  });
+
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [filter, setFilter] = useState<IFilter | null>(
-    query.searchText ? ({ search: query.searchText } as IFilter) : null,
-  );
 
-  const onSelectCheckBox = useCallback(
-    (id: string) => {
-      const isExit = selectAttributes.find((select: string) => select === id);
-      if (isExit) {
-        const newSelects = selectAttributes.filter(
-          (select: string) => select !== id,
+  const [attributes, setAttribute] = useState<IAttributeTable[]>([]);
+
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const onChangePage = (page: number, pageSize: number) => {
+    setParamter({ ...paramater, page, take: pageSize });
+    router.replace({
+      query: { ...router.query, page, take: pageSize },
+    });
+  };
+
+  const handleGetData = async (query: ISearchAttribute) => {
+    setLoading(true);
+
+    await getAttributes(query).then(
+      ({ payload, pagination }: IResponseWithPagination<IAttribute[]>) => {
+        const data: IAttributeTable[] = payload.map(
+          (item: IAttribute): IAttributeTable => ({
+            id: item._id,
+            key: item._id,
+            code: item.code,
+            title: item.name,
+            public: item.public,
+            createdAt: item.createdAt,
+          }),
         );
-        setSelectAttributes(newSelects);
-      } else {
-        setSelectAttributes([...selectAttributes, id]);
-      }
-    },
-    [selectAttributes],
-  );
 
-  const onReset = useCallback(() => {
-    setFilter(null);
-    handleGetData();
-  }, [filter, attributes]);
-
-  const onChangeSearch = useCallback(
-    (name: string, value: string) => {
-      setFilter({ ...filter, [name]: value });
-    },
-    [filter],
-  );
-
-  const onChangePublic = async (id: string, status: boolean) => {
-    if (!id) {
-      toast.error("False change public", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
-
-    try {
-      const payload = await updateAttribute(id, { public: status });
-
-      if (payload.status === 201) {
-        toast.success("Success updated attribute", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
-    } catch (error) {
-      toast.error("Please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
-  };
-
-  const onSelectDeleteItem = (item: ISelectAttribute) => {
-    setSelectItem(item);
-    handlePopup();
-  };
-
-  const handlePopup = () => {
-    if (showPopup) {
-      console.log("close");
-      setSelectItem(initSelect);
-    }
-
-    setShowPopup(!showPopup);
-  };
-
-  const handleGetData = async () => {
-    setMessage(null);
-    setLoading(true);
-
-    try {
-      const response = await getAttributes(currentPage);
-      if (response.status === 200) {
-        if (response.payload.length === 0) {
-          setAttribute([]);
-          setMessage("No attribute");
-          setLoading(false);
-          return;
-        }
-
-        const data: IAttribute[] = response.payload.map((item: IAttribute) => {
-          return {
-            _id: item._id,
-            name: item.name,
-            code: item.code,
-            public: item.public,
-            createdAt: item.createdAt,
-          };
-        });
-        setPagination(response.pagination);
         setAttribute(data);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.log(error);
-      setMessage("Error in server");
-      setLoading(false);
-    }
+        setPagination(pagination);
+      },
+    );
+
+    setLoading(false);
   };
-
-  const handleGetDataByFilter = useCallback(async () => {
-    setMessage(null);
-    setLoading(true);
-
-    try {
-      const response = await getAttributesWithFilter(filter, currentPage);
-      if (response.status === 200) {
-        if (response.payload.length === 0) {
-          setAttribute([]);
-          setMessage("No attribute");
-          setLoading(false);
-          return;
-        }
-
-        const data: IAttribute[] = response.payload.map((item: IAttribute) => {
-          return {
-            _id: item._id,
-            name: item.name,
-            code: item.code,
-            public: item.public,
-            createdAt: item.createdAt,
-          };
-        });
-        setPagination(response.pagination);
-        setAttribute(data);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.log(error);
-      setMessage("Error in server");
-      setLoading(false);
-    }
-  }, [filter]);
-
-  const handleDeleteAttribute = useCallback(async () => {
-    if (!selectItem) {
-      setShowPopup(false);
-      toast.error("False delete attribute", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      return;
-    }
-
-    try {
-      await deleteAttribute(selectItem.id as string);
-      setShowPopup(false);
-
-      if (filter) {
-        handleGetDataByFilter();
-      } else {
-        handleGetData();
-      }
-
-      toast.success("Success delete attribute", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } catch (error) {
-      toast.error("Error delete attribute", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      console.log(error);
-    }
-  }, [selectItem]);
 
   useEffect(() => {
-    if (filter) {
-      handleGetDataByFilter();
-    } else {
-      handleGetData();
-    }
-  }, [currentPage]);
+    handleGetData(paramater);
+  }, [paramater]);
 
-  useEffect(() => {
-    if (selectAttributes.length > 0) {
-      setSelectAttributes([]);
-    }
-  }, [attributes, currentPage]);
+  if (!router.isReady) {
+    return <Loading />;
+  }
 
   return (
     <ShowItemsLayout
-      title={t("AttributesPage.title")}
-      titleCreate={t("AttributesPage.create")}
+      title={t("title")}
+      titleCreate={t("create")}
       link="/create/attribute"
-      selectItem={{
-        title: selectItem?.title ? selectItem.title : "",
-        id: selectItem?.id || null,
-      }}
-      pagination={pagination}
-      handleDelete={handleDeleteAttribute}
-      showPopup={showPopup}
-      handlePopup={handlePopup}>
+      dataBreadcrumb={[
+        {
+          title: t("breadcrumb.list"),
+        },
+      ]}>
       <Fragment>
-        <Search
+        <AttributeTable
+          data={attributes}
+          loading={loading}
+          getData={() => handleGetData(paramater)}
+          onChangePage={onChangePage}
+          pagination={pagination}
+        />
+        {/* <Search
           search={filter?.search || ""}
           onReset={onReset}
           onSearch={onChangeSearch}
           onFilter={handleGetDataByFilter}
           placeholder={t("AttributesPage.search")}
-        />
-
-        <Table
-          items={attributes}
-          selects={selectAttributes}
-          setSelects={setSelectAttributes}
-          selectAll={true}
-          isSelected={
-            selectAttributes.length === attributes.length ? true : false
-          }
-          colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
-          message={message}
-          loading={loading}>
-          <Fragment>
-            {attributes.map((item: IAttribute) => (
-              <tr
-                key={item._id}
-                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none">
-                <CelTable
-                  type={typeCel.SELECT}
-                  isSelected={
-                    selectAttributes.includes(item._id as string) ? true : false
-                  }
-                  onSelectCheckBox={() => onSelectCheckBox(item._id as string)}
-                />
-                <CelTable type={typeCel.TEXT} center={true} value={item.code} />
-                <CelTable
-                  type={typeCel.LINK}
-                  value={item.name}
-                  center={true}
-                  href={`/attributes/${item._id}`}
-                  className="hover:text-primary"
-                />
-                <CelTable
-                  id={item._id as string}
-                  type={typeCel.PUBLIC}
-                  checked={item.public}
-                  onGetChecked={onChangePublic}
-                />
-                <CelTable
-                  type={typeCel.DATE}
-                  center={true}
-                  value={item.createdAt}
-                />
-                <CelTable type={typeCel.GROUP}>
-                  <div className="flex items-center justify-end gap-2">
-                    <ButtonEdit link={`/attributes/${item._id}`} />
-
-                    <ButtonDelete
-                      onClick={() =>
-                        onSelectDeleteItem({
-                          id: item._id as string,
-                          title: item.name,
-                        })
-                      }
-                    />
-                  </div>
-                </CelTable>
-              </tr>
-            ))}
-          </Fragment>
-        </Table>
+        /> */}
       </Fragment>
     </ShowItemsLayout>
   );
 };
 
 export default AttributesPage;
+
+export async function getStaticProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../../messages/${context.locale}.json`))
+        .default,
+    },
+  };
+}
 
 AttributesPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

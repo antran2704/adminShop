@@ -1,6 +1,5 @@
 import axios from "axios";
 import Resizer from "react-image-file-resizer";
-import { toast } from "react-toastify";
 import { IOptionImage, IThumbnail } from "~/interface/image";
 import { axiosPost } from "~/configs/configAxios";
 
@@ -47,26 +46,6 @@ const deleteGallery = (index: number, gallery: IThumbnail[]) => {
   return gallery;
 };
 
-const checkImage = (file: File, size: number = 500000): boolean => {
-  if (!file || !/^image\//.test(file.type)) {
-    toast.error("Only upload file type image", {
-      position: toast.POSITION.TOP_RIGHT,
-    });
-
-    return false;
-  }
-
-  if (file.size > size) {
-    toast.error(`File size is larger than ${size} bytes`, {
-      position: toast.POSITION.TOP_RIGHT,
-    });
-
-    return false;
-  }
-
-  return true;
-};
-
 const resizeImage = (file: File, option: IOptionImage) => {
   return new Promise((resolve) => {
     Resizer.imageFileResizer(
@@ -88,7 +67,6 @@ const resizeImage = (file: File, option: IOptionImage) => {
 
 export {
   uploadImage,
-  checkImage,
   deleteGallery,
   deleteImageInSever,
   deleteImagesInServer,

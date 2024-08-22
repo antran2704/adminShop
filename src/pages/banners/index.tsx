@@ -1,6 +1,7 @@
 import { useState, useEffect, Fragment, ReactElement } from "react";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
+import { message } from "antd";
 
 import ShowItemsLayout from "~/layouts/ManagerLayout";
 
@@ -18,14 +19,12 @@ import { initPagination } from "~/components/Pagination/initData";
 import Loading from "~/components/Loading";
 import Can from "~/components/Ability/Can";
 import { BannerTable } from "~/components/BannerPage";
-import { BreadcrumbCore } from "~/components/Core";
 
 import LayoutWithHeader from "~/layouts/Private";
 
 import { getBanners } from "~/api-client";
 
 import useAbility from "~/hooks/useAbility";
-import { message } from "antd";
 
 const Layout = LayoutWithHeader;
 const BannersPage: NextPageWithLayout = () => {
@@ -57,9 +56,9 @@ const BannersPage: NextPageWithLayout = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const onChangePage = (page: number, pageSize: number) => {
-    setParamter({ ...paramater, page });
+    setParamter({ ...paramater, page, take: pageSize });
     router.replace({
-      query: { ...router.query, page },
+      query: { ...router.query, page, take: pageSize },
     });
   };
 
@@ -100,15 +99,11 @@ const BannersPage: NextPageWithLayout = () => {
       title={tBanner("title")}
       titleCreate={isCan ? tBanner("create") : null}
       link="/create/banner"
-      breadcrumb={
-        <BreadcrumbCore
-          data={[
-            {
-              title: tBanner("breadcrumb.list"),
-            },
-          ]}
-        />
-      }>
+      dataBreadcrumb={[
+        {
+          title: tBanner("breadcrumb.list"),
+        },
+      ]}>
       <Fragment>
         <BannerTable
           data={banners}

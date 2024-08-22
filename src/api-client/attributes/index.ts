@@ -2,16 +2,11 @@ import qs from "qs";
 
 import {
   IAttribute,
-  IFilter,
+  ICreateAttibute,
   ISearchAttribute,
-  ISendAttribute,
+  IUpdateAttibute,
 } from "~/interface";
-import httpConfig, {
-  axiosDelete,
-  axiosGet,
-  axiosPatch,
-  axiosPost,
-} from "~/configs/configAxios";
+import httpConfig from "~/configs/configAxios";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
@@ -25,9 +20,15 @@ const getAttributes = async (paramater: ISearchAttribute) => {
     .then((res) => res.data);
 };
 
+const getAttribute = async (attributeId: string) => {
+  return await httpConfig
+    .get(BASE_URL + `/admin/attributes/${attributeId}`)
+    .then((res) => res.data);
+};
+
 const getChildAttributes = async (attribute_id: string) => {
   return await httpConfig
-    .get(BASE_URL + `/admin/attributes/${attribute_id}`)
+    .get(BASE_URL + `/admin/attributes/child/${attribute_id}`)
     .then((res) => res.data);
 };
 
@@ -37,22 +38,30 @@ const getAttributesAvailable = async () => {
     .then((res) => res.data);
 };
 
-const getAttributesWithFilter = async (
-  filter: IFilter | null,
-  page: number = 1,
-) => {
-  return await axiosGet(
-    BASE_URL + `/attributes/search?search=${filter?.search || ""}&page=${page}`,
-  );
+const createdAttribute = async (data: ICreateAttibute) => {
+  return await httpConfig
+    .post(BASE_URL + "/admin/attributes", data)
+    .then((res) => res.data);
 };
 
-const updateAttribute = async (
-  attribute_id: string,
-  options?: Partial<IAttribute>,
-) => {
-  return await axiosPatch(BASE_URL + `/attributes/${attribute_id}`, {
-    ...options,
-  });
+const updateAttribute = async (attribute_id: string, data: IUpdateAttibute) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/attributes/${attribute_id}`, {
+      ...data,
+    })
+    .then((res) => res.data);
+};
+
+const activeAttribute = async (attribute_id: string) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/attributes/${attribute_id}/active`)
+    .then((res) => res.data);
+};
+
+const disableAttribute = async (attribute_id: string) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/attributes/${attribute_id}/disable`)
+    .then((res) => res.data);
 };
 
 const updateChildAttribute = async (
@@ -60,40 +69,46 @@ const updateChildAttribute = async (
   children_id: string,
   data: any,
 ) => {
-  return await axiosPatch(BASE_URL + `/attributes/child/${attribute_id}`, {
-    children_id,
-    ...data,
-  });
-};
-
-const createdAttribute = async (data: ISendAttribute) => {
-  return await axiosPost(BASE_URL + "/attributes", data);
+  return await httpConfig
+    .patch(BASE_URL + `/admin/attributes/child/${attribute_id}`, {
+      children_id,
+      ...data,
+    })
+    .then((res) => res.data);
 };
 
 const createChildAttribute = async (attribute_id: string, data: any) => {
-  return await axiosPost(BASE_URL + `/attributes/child/${attribute_id}`, data);
+  return await httpConfig
+    .post(BASE_URL + `/admin/attributes/child/${attribute_id}`, data)
+    .then((res) => res.data);
 };
 
 const deleteAttribute = async (attribute_id: string) => {
-  return await axiosDelete(BASE_URL + `/attributes/${attribute_id}`);
+  return await httpConfig
+    .delete(BASE_URL + `/admin/attributes/${attribute_id}`)
+    .then((res) => res.data);
 };
 
 const deleteChildAttribute = async (
   attribute_id: string,
   children_id: string,
 ) => {
-  return await axiosPatch(BASE_URL + `/attributes/child/delete`, {
-    parent_id: attribute_id,
-    children_id,
-  });
+  return await httpConfig
+    .patch(BASE_URL + `/admin/attributes/child/delete`, {
+      parent_id: attribute_id,
+      children_id,
+    })
+    .then((res) => res.data);
 };
 
 export {
   getAttributes,
+  getAttribute,
   getChildAttributes,
   getAttributesAvailable,
-  getAttributesWithFilter,
   updateAttribute,
+  activeAttribute,
+  disableAttribute,
   updateChildAttribute,
   createdAttribute,
   createChildAttribute,

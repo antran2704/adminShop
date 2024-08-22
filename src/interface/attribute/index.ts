@@ -1,38 +1,62 @@
 import { ISearch } from "../queryParams";
 
-interface IVariant {
+interface IAttributeChild {
   _id: string;
   name: string;
   public: boolean;
 }
 
-type INewVariant = Omit<IVariant, "_id">;
+type INewAttributeChild = Omit<IAttributeChild, "_id">;
 
 interface IAttribute {
   _id: string;
   code: string;
   name: string;
-  children: IVariant[];
+  children: IAttributeChild[];
   public: boolean;
-  createdAt?: string;
-  updateAt?: string;
+  createdAt: string;
 }
 
-interface ISendAttribute {
+interface ICreateAttibute {
   code: string;
   name: string;
-  variants: Omit<IVariant, "_id">[];
+  children: INewAttributeChild[];
   public: boolean;
+}
+
+interface IUpdateAttibute {
+  code: string;
+  name: string;
+  public: boolean;
+}
+
+interface IFormAttibute {
+  code: string;
+  name: string;
+  children: string[];
+  public: boolean;
+}
+
+interface IAttributeTable {
+  key: string;
+  id: string;
+  code: string;
+  title: string;
+  public: boolean;
+  createdAt: string;
 }
 
 interface ISearchAttribute extends ISearch {
-  public?: boolean;
+  public?: string;
 }
 
 export type {
-  IVariant,
+  IAttributeChild,
   IAttribute,
-  INewVariant,
-  ISendAttribute,
+  INewAttributeChild,
+  IAttributeTable,
+  ICreateAttibute,
+  IUpdateAttibute,
+  IFormAttibute,
   ISearchAttribute,
 };

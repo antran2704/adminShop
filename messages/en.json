@@ -153,10 +153,56 @@
       "update": "Update product"
     }
   },
-  "AttributesPage": {
+  "AttributePage": {
     "title": "Attributes",
     "create": "Create attribute",
-    "search": "Search by attribute name..."
+    "search": "Search by attribute name...",
+    "edit": "Change attribute",
+    "table": {
+      "code": "Code",
+      "title": "Name",
+      "status": "Status",
+      "createdAt": "Created At",
+      "action": "Action"
+    },
+    "form": {
+      "title": "Attribute name",
+      "code": "Attribute Code",
+      "children": "Attribute children",
+      "status": "Status"
+    },
+    "variants": {
+      "title": "Variants",
+      "placeholder": "Press enter to add variant"
+    },
+    "modalDelete": {
+      "title": "Confirm delete attribute",
+      "description": "Note: Data can't restore after delete"
+    },
+    "breadcrumb": {
+      "list": "List attribute",
+      "create": "Creat attribute",
+      "update": "Update attribute",
+      "edit": "Change attribute"
+    }
+  },
+  "AttributeItemPage": {
+    "title": "Attributes value",
+    "create": "Add value",
+    "table": {
+      "title": "Name",
+      "status": "Status",
+      "action": "Action"
+    },
+    "addPopup": {
+      "title": "Add Attribute Value",
+      "description": "Add your attribute values and necessary information from here",
+      "inpTitle": "Attribute Title"
+    },
+    "updatePopup": {
+      "title": "Update Attribute Value",
+      "description": "Update your attribute values"
+    }
   },
   "CouponsPage": {
     "title": "Coupons",
@@ -219,18 +265,6 @@
       "public": "Public"
     }
   },
-  "CreateAttributePage": {
-    "title": "Create attribute",
-    "field": {
-      "title": "Attribute Title",
-      "code": "Attribute Code",
-      "public": "Public"
-    },
-    "variants": {
-      "title": "Variants",
-      "placeholder": "Press enter to add variant"
-    }
-  },
   "CreateCouponPage": {
     "title": "Create coupon",
     "field": {
@@ -252,19 +286,6 @@
   },
   "EditCategoryPage": {
     "title": "Edit category"
-  },
-  "EditAttributePage": {
-    "title": "Attributes value",
-    "create": "Add value",
-    "addPopup": {
-      "title": "Add Attribute Value",
-      "description": "Add your attribute values and necessary information from here",
-      "inpTitle": "Attribute Title"
-    },
-    "updatePopup": {
-      "title": "Update Attribute Value",
-      "description": "Update your attribute values"
-    }
   },
   "Thumbnail": {
     "upload": "Click to upload",

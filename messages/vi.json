@@ -153,10 +153,56 @@
       "update": "Chỉnh sửa sản phẩm"
     }
   },
-  "AttributesPage": {
+  "AttributePage": {
     "title": "Danh sách thuộc tính",
     "create": "Tạo thuộc tính",
-    "search": "Tìm kiếm bằng tên thuộc tính..."
+    "edit": "Thay đổi thuộc tính",
+    "search": "Tìm kiếm bằng tên thuộc tính...",
+    "table": {
+      "code": "Mã",
+      "title": "Tên thuộc tính",
+      "status": "Trạng thái",
+      "createdAt": "Ngày tạo",
+      "action": "Action"
+    },
+    "form": {
+      "title": "Tên thuộc tính",
+      "code": "Mã thuộc tính",
+      "children": "Thuộc tính con",
+      "status": "Trạng thái"
+    },
+    "variants": {
+      "title": "Biến thể",
+      "placeholder": "Nhấn enter để thêm"
+    },
+    "modalDelete": {
+      "title": "Xác nhận xóa thuộc tính",
+      "description": "Lưu ý: Không thể phục hồi dữ liệu sau khi xóa"
+    },
+    "breadcrumb": {
+      "list": "Danh sách thuộc tính",
+      "create": "Tạo thuộc tính",
+      "update": "Chỉnh sửa thuộc tính",
+      "edit": "Thay đổi thuộc tính"
+    }
+  },
+  "AttributeItemPage": {
+    "title": "Danh sách giá trị của thuộc tính",
+    "create": "Thêm giá trị",
+    "table": {
+      "title": "Tên",
+      "status": "Trạng thái",
+      "action": "Action"
+    },
+    "addPopup": {
+      "title": "Thêm giá trị mới",
+      "description": "Thêm giá trị tại đây",
+      "inpTitle": "Tiêu đề"
+    },
+    "updatePopup": {
+      "title": "Thay đổi giá trị",
+      "description": "Thay đổi giá trị tại đây"
+    }
   },
   "CouponsPage": {
     "title": "Danh sách mã giảm giá",
@@ -219,18 +265,6 @@
       "public": "Hiện"
     }
   },
-  "CreateAttributePage": {
-    "title": "Tạo thuộc tính",
-    "field": {
-      "title": "Tiêu đề",
-      "code": "Mã thuộc tính",
-      "public": "Hiện"
-    },
-    "variants": {
-      "title": "Biến thể",
-      "placeholder": "Nhấn enter để thêm"
-    }
-  },
   "CreateCouponPage": {
     "title": "Tạo mã giảm giá",
     "field": {
@@ -252,19 +286,6 @@
   },
   "EditCategoryPage": {
     "title": "Chỉnh sửa thư mục"
-  },
-  "EditAttributePage": {
-    "title": "Danh sách giá trị của thuộc tính",
-    "create": "Thêm giá trị",
-    "addPopup": {
-      "title": "Thêm giá trị mới",
-      "description": "Thêm giá trị tại đây",
-      "inpTitle": "Tiêu đề"
-    },
-    "updatePopup": {
-      "title": "Thay đổi giá trị",
-      "description": "Thay đổi giá trị tại đây"
-    }
   },
   "Thumbnail": {
     "upload": "Ấn để tải ảnh",

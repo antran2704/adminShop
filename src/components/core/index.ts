@@ -6,3 +6,4 @@ export { default as DateFilterCore } from "./Filter/Date";
 export { default as DateRangeFilterCore } from "./Filter/Date/Range";
 export { default as FromToFilterCore } from "./Filter/FromTo";
 export { default as BreadcrumbCore } from "./Breadcrumb";
+export { default as LisTagCore } from "./ListTags";
