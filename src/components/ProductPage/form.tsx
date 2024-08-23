@@ -361,7 +361,7 @@ const FormProduct = (props: Props) => {
           </p>
 
           {product && (
-            <ul className="flex items-center text-sm pb-2 gap-2">
+            <ul className="flex items-center dark:text-darkInput text-sm pb-2 gap-2">
               <li>{`Home >`}</li>
               {product.breadcrumbs.map((item) => (
                 <li key={item._id}>{`${item.title} > `}</li>

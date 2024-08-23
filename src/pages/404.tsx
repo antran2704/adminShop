@@ -1,16 +1,11 @@
 import Link from "next/link";
-import { ReactElement } from "react";
 import ImageCus from "~/components/Image/ImageCus";
 import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithoutHeader from "~/layouts/Public";
-
-const Layout = LayoutWithoutHeader;
 
 const NotFoundPage: NextPageWithLayout = () => {
   return (
     <div className="flex items-center justify-center h-screen w-full">
       <div className="md:w-1/2 sm:w-3/4 w-full">
-        {/* <img src="/404.svg" alt="404 Image" /> */}
         <ImageCus
           src="/404.png"
           title="404"
@@ -27,7 +22,3 @@ const NotFoundPage: NextPageWithLayout = () => {
 };
 
 export default NotFoundPage;
-
-NotFoundPage.getLayout = function getLayout(page: ReactElement) {
-  return <Layout>{page}</Layout>;
-};

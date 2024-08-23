@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { useState, useEffect, Fragment, ReactElement, useMemo } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { toast } from "react-toastify";
 
 import {
   IProduct,
@@ -103,7 +102,6 @@ const ProductEditPage: NextPageWithLayout = () => {
   const [isRemoveAll, setIsRemoveAll] = useState<boolean>(false);
 
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
 
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
@@ -134,15 +132,11 @@ const ProductEditPage: NextPageWithLayout = () => {
       await deleteProduct(productId);
       setShowPopup(false);
 
-      toast.success("Success delete product", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+      messageApi.success(tSuccess("delete"));
 
       router.push("/products");
     } catch (error) {
-      toast.error("Error delete product", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+      messageApi.error(tError("TRY_AGAIN"));
     }
   };
 
@@ -199,8 +193,6 @@ const ProductEditPage: NextPageWithLayout = () => {
   };
 
   const handleGetData = async (id: string) => {
-    setLoading(true);
-
     try {
       const { payload, status }: IResponse<IProduct> = await getProduct(
         id as string,
@@ -226,8 +218,6 @@ const ProductEditPage: NextPageWithLayout = () => {
         setOptionsProduct(payload.options);
         productForm.reset(formData);
       }
-
-      setLoading(false);
     } catch (error) {
       const { status } = hanldeErrorAxios(error);
 
@@ -346,7 +336,7 @@ const ProductEditPage: NextPageWithLayout = () => {
           title: t("breadcrumb.update"),
         },
       ]}
-      loading={loading}>
+      loading={!product}>
       <Fragment>
         <Tabs activeKey={selectTab} items={tabItems} onChange={onSelectTab} />
 

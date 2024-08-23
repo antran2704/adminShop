@@ -49,7 +49,7 @@
     "next": "13.4.2",
     "next-intl": "^3.17.2",
     "postcss": "8.4.23",
-    "qs": "^6.11.2",
+    "qs": "^6.12.3",
     "rc-pagination": "^4.0.4",
     "react": "18.2.0",
     "react-chartjs-2": "^5.2.0",

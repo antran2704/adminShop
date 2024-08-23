@@ -1,22 +1,20 @@
-import qs from "qs";
-
 import {
-  IAttribute,
   ICreateAttibute,
+  INewAttributeChild,
+  ISearch,
   ISearchAttribute,
   IUpdateAttibute,
 } from "~/interface";
 import httpConfig from "~/configs/configAxios";
+import { parseQueryString } from "~/helper/url";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
 const getAttributes = async (paramater: ISearchAttribute) => {
-  const parseParameters = qs.stringify(paramater, {
-    filter: (_, value) => value || undefined,
-  });
+  const parseParameters = parseQueryString(paramater);
 
   return await httpConfig
-    .get(BASE_URL + `/admin/attributes?${parseParameters}`)
+    .get(BASE_URL + "/admin/attributes" + parseParameters)
     .then((res) => res.data);
 };
 
@@ -26,9 +24,11 @@ const getAttribute = async (attributeId: string) => {
     .then((res) => res.data);
 };
 
-const getChildAttributes = async (attribute_id: string) => {
+const getChildAttributes = async (attributeId: string, paramater: ISearch) => {
+  const parseParameters = parseQueryString(paramater);
+
   return await httpConfig
-    .get(BASE_URL + `/admin/attributes/child/${attribute_id}`)
+    .get(BASE_URL + `/admin/attributes/child/${attributeId}` + parseParameters)
     .then((res) => res.data);
 };
 
@@ -44,60 +44,65 @@ const createdAttribute = async (data: ICreateAttibute) => {
     .then((res) => res.data);
 };
 
-const updateAttribute = async (attribute_id: string, data: IUpdateAttibute) => {
+const updateAttribute = async (attributeId: string, data: IUpdateAttibute) => {
   return await httpConfig
-    .patch(BASE_URL + `/admin/attributes/${attribute_id}`, {
+    .patch(BASE_URL + `/admin/attributes/${attributeId}`, {
       ...data,
     })
     .then((res) => res.data);
 };
 
-const activeAttribute = async (attribute_id: string) => {
+const activeAttribute = async (attributeId: string) => {
   return await httpConfig
-    .patch(BASE_URL + `/admin/attributes/${attribute_id}/active`)
+    .patch(BASE_URL + `/admin/attributes/${attributeId}/active`)
     .then((res) => res.data);
 };
 
-const disableAttribute = async (attribute_id: string) => {
+const disableAttribute = async (attributeId: string) => {
   return await httpConfig
-    .patch(BASE_URL + `/admin/attributes/${attribute_id}/disable`)
+    .patch(BASE_URL + `/admin/attributes/${attributeId}/disable`)
+    .then((res) => res.data);
+};
+
+const activeChildAttribute = async (childId: string) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/attributes/child/${childId}/active`)
+    .then((res) => res.data);
+};
+
+const disableChildAttribute = async (childId: string) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/attributes/child/${childId}/disable`)
+    .then((res) => res.data);
+};
+
+const createChildAttribute = async (
+  attributeId: string,
+  data: INewAttributeChild,
+) => {
+  return await httpConfig
+    .post(BASE_URL + `/admin/attributes/child/${attributeId}`, data)
     .then((res) => res.data);
 };
 
 const updateChildAttribute = async (
-  attribute_id: string,
-  children_id: string,
-  data: any,
+  childId: string,
+  data: INewAttributeChild,
 ) => {
   return await httpConfig
-    .patch(BASE_URL + `/admin/attributes/child/${attribute_id}`, {
-      children_id,
-      ...data,
-    })
+    .patch(BASE_URL + `/admin/attributes/child/${childId}`, data)
     .then((res) => res.data);
 };
 
-const createChildAttribute = async (attribute_id: string, data: any) => {
+const deleteAttribute = async (attributeId: string) => {
   return await httpConfig
-    .post(BASE_URL + `/admin/attributes/child/${attribute_id}`, data)
+    .delete(BASE_URL + `/admin/attributes/${attributeId}`)
     .then((res) => res.data);
 };
 
-const deleteAttribute = async (attribute_id: string) => {
+const deleteChildAttribute = async (childId: string) => {
   return await httpConfig
-    .delete(BASE_URL + `/admin/attributes/${attribute_id}`)
-    .then((res) => res.data);
-};
-
-const deleteChildAttribute = async (
-  attribute_id: string,
-  children_id: string,
-) => {
-  return await httpConfig
-    .patch(BASE_URL + `/admin/attributes/child/delete`, {
-      parent_id: attribute_id,
-      children_id,
-    })
+    .delete(BASE_URL + `/admin/attributes/child/${childId}`)
     .then((res) => res.data);
 };
 
@@ -109,6 +114,8 @@ export {
   updateAttribute,
   activeAttribute,
   disableAttribute,
+  activeChildAttribute,
+  disableChildAttribute,
   updateChildAttribute,
   createdAttribute,
   createChildAttribute,

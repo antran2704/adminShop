@@ -12,7 +12,6 @@ import {
 
 import ShowItemsLayout from "~/layouts/ManagerLayout";
 
-import Search from "~/components/Search";
 import { initPagination } from "~/components/Pagination/initData";
 import { getAttributes } from "~/api-client";
 import { NextPageWithLayout } from "~/interface/page";
@@ -64,7 +63,7 @@ const AttributesPage: NextPageWithLayout = () => {
       ({ payload, pagination }: IResponseWithPagination<IAttribute[]>) => {
         const data: IAttributeTable[] = payload.map(
           (item: IAttribute): IAttributeTable => ({
-            id: item._id,
+            _id: item._id,
             key: item._id,
             code: item.code,
             title: item.name,

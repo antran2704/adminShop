@@ -14,7 +14,9 @@ const BtnDelete = (props: Props) => {
 
   return (
     <Fragment>
-      {title && <p className={clsx("text-base pb-2")}>{title}</p>}
+      {title && (
+        <p className={clsx("text-base dark:text-darkInput pb-2")}>{title}</p>
+      )}
       <Button
         size="middle"
         className={clsx(

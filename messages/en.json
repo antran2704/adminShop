@@ -155,7 +155,9 @@
   },
   "AttributePage": {
     "title": "Attributes",
+    "childTitle": "Child of attributes",
     "create": "Create attribute",
+    "createChild": "Create child",
     "search": "Search by attribute name...",
     "edit": "Change attribute",
     "table": {
@@ -183,6 +185,7 @@
       "list": "List attribute",
       "create": "Creat attribute",
       "update": "Update attribute",
+      "child": "Child of attribute",
       "edit": "Change attribute"
     }
   },

@@ -112,12 +112,12 @@ const AttributeTable = (props: Props) => {
                 title="Chỉnh sửa thuộc tính con"
                 size="middle"
                 icon={<AiOutlineAppstore className="text-xl" />}
-                // onClick={() => router.push(`/edit/attribute/${record.id}`)}
+                onClick={() => router.push(`/attributes/${record._id}`)}
               />
 
               <BtnEdit
                 title="Chỉnh sửa thuộc tính"
-                onClick={() => router.push(`/edit/attribute/${record.id}`)}
+                onClick={() => router.push(`/edit/attribute/${record._id}`)}
               />
             </div>
           );
@@ -136,10 +136,10 @@ const AttributeTable = (props: Props) => {
 
   const onActiveItem = async (reccord: IAttributeTable) => {
     try {
-      await activeAttribute(reccord.id);
+      await activeAttribute(reccord._id);
 
       const indexItem: number = listItem.findIndex(
-        (item: IAttributeTable) => item.id === reccord.id,
+        (item: IAttributeTable) => item._id === reccord._id,
       );
 
       if (indexItem > -1) {
@@ -156,10 +156,10 @@ const AttributeTable = (props: Props) => {
 
   const onDisableItem = async (reccord: IAttributeTable) => {
     try {
-      await disableAttribute(reccord.id);
+      await disableAttribute(reccord._id);
 
       const indexItem: number = listItem.findIndex(
-        (item: IAttributeTable) => item.id === reccord.id,
+        (item: IAttributeTable) => item._id === reccord._id,
       );
 
       if (indexItem > -1) {
@@ -178,7 +178,7 @@ const AttributeTable = (props: Props) => {
     if (!selectDelete) return;
 
     try {
-      await deleteAttribute(selectDelete.id);
+      await deleteAttribute(selectDelete._id);
       setModalDelete(false);
       setSelectDelete(null);
       getData();

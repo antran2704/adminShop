@@ -276,7 +276,7 @@ const CategoryForm = (props: Props) => {
         </p>
 
         {category && (
-          <ul className="flex items-center text-sm pb-5 gap-2">
+          <ul className="flex items-center text-sm dark:text-darkInput pb-5 gap-2">
             <li>{`Home >`}</li>
             {category.breadcrumbs.map((item) => (
               <li key={item._id}>{`${item.title} > `}</li>

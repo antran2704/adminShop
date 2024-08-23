@@ -155,7 +155,9 @@
   },
   "AttributePage": {
     "title": "Danh sách thuộc tính",
+    "childTitle": "Danh sách thuộc tính con",
     "create": "Tạo thuộc tính",
+    "createChild": "Thêm thuộc tính con",
     "edit": "Thay đổi thuộc tính",
     "search": "Tìm kiếm bằng tên thuộc tính...",
     "table": {
@@ -183,6 +185,7 @@
       "list": "Danh sách thuộc tính",
       "create": "Tạo thuộc tính",
       "update": "Chỉnh sửa thuộc tính",
+      "child": "Thuộc tính con",
       "edit": "Thay đổi thuộc tính"
     }
   },

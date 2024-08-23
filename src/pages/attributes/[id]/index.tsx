@@ -1,496 +1,128 @@
 import { useRouter } from "next/router";
-import { ParsedUrlQuery } from "querystring";
+import { useState, useEffect, Fragment, ReactElement } from "react";
+import { useTranslations } from "next-intl";
+
+import { ORDER_PARAMATER_ENUM } from "~/enums";
+import { IPagination } from "~/interface/pagination";
 import {
-  useState,
-  useEffect,
-  Fragment,
-  useCallback,
-  ReactElement,
-} from "react";
-import { toast } from "react-toastify";
+  IAttributeChild,
+  IAttributeChildTable,
+  IResponseWithPagination,
+  ISearch,
+} from "~/interface";
 
-import { typeCel } from "~/enums";
-
-import { INewVariant, IVariant } from "~/interface";
-import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
+import { getChildAttributes } from "~/api-client";
 
 import ShowItemsLayout from "~/layouts/ManagerLayout";
+import { PrivateLayout } from "~/layouts";
+import { initPagination } from "~/components/Pagination/initData";
+import { AttributeChildTable } from "~/components/AttributePage";
 
-import { Table, CelTable } from "~/components/Table";
-import { colHeaderAttributeValue as colHeadTable } from "~/components/Table/colHeadTable";
-import { IPagination } from "~/interface/pagination";
-import PopupForm from "~/components/Popup/PopupForm";
-import { InputText } from "~/components/InputField";
-import ButtonCheck from "~/components/Button/ButtonCheck";
-import { ButtonDelete, ButtonEdit } from "~/components/Button";
-import Loading from "~/components/Loading";
-import {
-  createChildAttribute,
-  deleteChildAttribute,
-  getChildAttributes,
-  updateChildAttribute,
-} from "~/api-client";
-import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithHeader from "~/layouts/Private";
-import { useTranslation } from "react-i18next";
-
-interface ISelectAttribute {
-  id: string | null;
-  title: string;
-  public: boolean;
-}
-
-const initSelect: ISelectAttribute = {
-  id: null,
-  title: "",
-  public: true,
-};
-
-const initNewVariant: INewVariant = {
-  name: "",
-  public: true,
-};
-
-const initPagination: IPagination = {
-  currentPage: 1,
-  totalItems: 0,
-  pageSize: 0,
-};
-
-const Layout = LayoutWithHeader;
+const Layout = PrivateLayout;
 
 const AttributeValuesPage = () => {
   const router = useRouter();
 
   const { query } = router;
-  const { id } = query;
+  const { id: attributeId } = query;
 
-  const { t, i18n } = useTranslation();
+  const t = useTranslations("AttributePage");
 
-  const [attributes, setAttribute] = useState<IVariant[]>([]);
-  const [message, setMessage] = useState<string | null>(null);
-  const [showPopup, setShowPopup] = useState<boolean>(false);
-  const [showFormUpdate, setShowFormUpdate] = useState<boolean>(false);
-  const [showFormCreate, setShowFormCreate] = useState<boolean>(false);
-  const [newVarinat, setNewVariant] = useState<INewVariant>(initNewVariant);
-  const [selectItem, setSelectItem] = useState<ISelectAttribute>(initSelect);
-  const [pagination] = useState<IPagination>(initPagination);
+  const pageParam = query.page ? Number(query.page) : 1;
+  const takeParam = query.take ? Number(query.take) : 10;
+  const searchParam = query.search ? query.search : "";
+  const orderParam = query.order ? query.order : ORDER_PARAMATER_ENUM.DESC;
 
-  const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
+  const [paramater, setParamter] = useState<ISearch>({
+    take: takeParam,
+    page: pageParam,
+    search: searchParam as string,
+    order: orderParam as ORDER_PARAMATER_ENUM,
+  });
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [loadingTable, setLoadingTable] = useState<boolean>(true);
+  const [attributes, setAttribute] = useState<IAttributeChildTable[]>([]);
 
-  const changePublic = useCallback(
-    (name: string, value: boolean) => {
-      setSelectItem({ ...selectItem, [name]: value });
-    },
-    [selectItem],
-  );
+  const [pagination, setPagination] = useState<IPagination>(initPagination);
 
-  const changePublicNewVariant = useCallback(
-    (name: string, value: boolean) => {
-      setNewVariant({ ...newVarinat, [name]: value });
-    },
-    [newVarinat],
-  );
+  const [loading, setLoading] = useState<{ getData: boolean }>({
+    getData: true,
+  });
 
-  const changeValue = useCallback(
-    (name: string, value: string) => {
-      if (fieldsCheck.includes(name)) {
-        const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
-        setFieldsCheck(newFieldsCheck);
-      }
-      setSelectItem({ ...selectItem, [name]: value });
-    },
-    [selectItem],
-  );
-
-  const changeValueNewVariant = useCallback(
-    (name: string, value: string) => {
-      if (fieldsCheck.includes(name)) {
-        const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
-        setFieldsCheck(newFieldsCheck);
-      }
-      setNewVariant({ ...newVarinat, [name]: value });
-    },
-    [newVarinat],
-  );
-
-  const onChangePublic = async (
-    children_id: string,
-    status: boolean,
-    data: any = null,
-  ) => {
-    if (!children_id) {
-      toast.error("False change public", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
-
-    try {
-      const payload = await updateChildAttribute(id as string, children_id, {
-        ...data,
-        public: status,
-      });
-
-      if (payload.status === 201) {
-        toast.success("Success updated attribute", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
-    } catch (error) {
-      toast.error("Please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
+  const onChangePage = (page: number, pageSize: number) => {
+    setParamter({ ...paramater, page, take: pageSize });
+    router.replace({
+      query: { ...router.query, page, take: pageSize },
+    });
   };
 
-  const handleUpdate = async () => {
-    if (!selectItem.id) {
-      toast.error("False change public", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
+  const handleGetData = async (attributeId: string, query: ISearch) => {
+    setLoading({ ...loading, getData: true });
 
-    const fields = checkData([
-      {
-        name: "title",
-        value: selectItem.title,
-      },
-    ]);
-
-    if (fields.length > 0) {
-      toast.error("Please input fields", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-
-      return;
-    }
-    setLoading(true);
-    try {
-      const payload = await updateChildAttribute(
-        id as string,
-        selectItem.id as string,
-        {
-          name: selectItem.title,
-          public: selectItem.public,
-        },
-      );
-
-      if (payload.status === 201) {
-        toast.success("Success updated attribute", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        handleGetData();
-        handlePopupFormUpdate();
-      }
-
-      setLoading(false);
-    } catch (error) {
-      toast.error("Please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setLoading(false);
-    }
-  };
-
-  const onSelectDeleteItem = (item: ISelectAttribute) => {
-    setSelectItem(item);
-    handlePopup();
-  };
-
-  const checkData = (data: any) => {
-    let fields = handleCheckFields(data);
-    setFieldsCheck(fields);
-    if (fields.length > 0) {
-      router.push(`#${fields[0]}`);
-    }
-
-    return fields;
-  };
-
-  const handlePopup = () => {
-    if (showPopup) {
-      setSelectItem(initSelect);
-    }
-
-    setShowPopup(!showPopup);
-  };
-
-  const handlePopupFormUpdate = (data?: ISelectAttribute | null) => {
-    if (showFormUpdate) {
-      setSelectItem(initSelect);
-    }
-
-    if (!showFormUpdate && data) {
-      setSelectItem(data);
-    }
-
-    setShowFormUpdate(!showFormUpdate);
-  };
-
-  const handlePopupFormCreate = () => {
-    if (showFormCreate) {
-      setNewVariant(initNewVariant);
-    }
-
-    setShowFormCreate(!showFormCreate);
-  };
-
-  const handleGetData = async () => {
-    setMessage(null);
-    setLoadingTable(true);
-
-    try {
-      const response = await getChildAttributes(id as string);
-      if (response.status === 200) {
-        if (response.payload.variants.length === 0) {
-          setAttribute([]);
-          setMessage("No attribute value");
-          setLoadingTable(false);
-          return;
-        }
-
-        const data: IVariant[] = response.payload.variants.map(
-          (item: IVariant) => {
-            return {
-              _id: item._id,
-              name: item.name,
-              public: item.public,
-            };
-          },
+    await getChildAttributes(attributeId, query).then(
+      ({ payload, pagination }: IResponseWithPagination<IAttributeChild[]>) => {
+        const data: IAttributeChildTable[] = payload.map(
+          (item: IAttributeChild) => ({
+            key: item._id,
+            _id: item._id,
+            public: item.public,
+            title: item.name,
+            createdAt: item.createdAt,
+          }),
         );
+
         setAttribute(data);
-        setLoadingTable(false);
-      }
-    } catch (error) {
-      console.log(error);
-      setMessage("Error in server");
-      setLoadingTable(false);
-    }
-  };
-
-  const handleDeleteAttribute = useCallback(async () => {
-    if (!selectItem) {
-      setShowPopup(false);
-      toast.error("False delete attribute value", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      return;
-    }
-
-    try {
-      await deleteChildAttribute(id as string, selectItem.id as string);
-      setShowPopup(false);
-      handleGetData();
-      toast.success("Success delete attribute value", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } catch (error) {
-      toast.error("Error delete attribute value", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      console.log(error);
-    }
-  }, [selectItem]);
-
-  const handleAddVarinat = async () => {
-    const fields = checkData([
-      {
-        name: "name",
-        value: newVarinat.name,
+        setPagination(pagination);
       },
-    ]);
+    );
 
-    if (fields.length > 0) {
-      toast.error("Please input fields", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-
-      return;
-    }
-
-    try {
-      const payload = await createChildAttribute(id as string, {
-        name: newVarinat.name,
-        public: newVarinat.public,
-      });
-
-      if (payload.status === 201) {
-        handlePopupFormCreate();
-        handleGetData();
-        toast.success("Success add attribute value", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
-    } catch (error) {
-      toast.error("Add attribute value failed", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
+    setLoading({ ...loading, getData: false });
   };
 
   useEffect(() => {
-    handleGetData();
-  }, []);
+    if (!attributeId) {
+      router.push("/attributes");
+      return;
+    }
+
+    handleGetData(attributeId as string, paramater);
+  }, [attributeId, paramater]);
 
   return (
     <ShowItemsLayout
-      title={t("EditAttributePage.title")}
-      titleCreate={t("EditAttributePage.create")}
-      selectItem={{
-        title: selectItem?.title ? selectItem.title : "",
-        id: selectItem?.id || null,
-      }}
-      onCreate={handlePopupFormCreate}
-      pagination={pagination}
-      handleDelete={handleDeleteAttribute}
-      showPopup={showPopup}
-      handlePopup={handlePopup}>
+      title={t("childTitle")}
+      dataBreadcrumb={[
+        {
+          title: t("breadcrumb.list"),
+          href: "/attributes",
+        },
+        {
+          title: t("breadcrumb.child"),
+        },
+      ]}>
       <Fragment>
-        <Table
-          colHeadTabel={colHeadTable[i18n.resolvedLanguage as string]}
-          message={message}
-          loading={loadingTable}>
-          <Fragment>
-            {attributes.map((item: IVariant) => (
-              <tr
-                key={item._id}
-                className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none">
-                <CelTable type={typeCel.TEXT} center={true} value={item.name} />
-                <CelTable
-                  id={item._id as string}
-                  type={typeCel.PUBLIC}
-                  data={item}
-                  checked={item.public}
-                  onGetChecked={onChangePublic}
-                />
-                <CelTable type={typeCel.GROUP}>
-                  <div className="flex items-center justify-end gap-2">
-                    <ButtonEdit
-                      onClick={() =>
-                        handlePopupFormUpdate({
-                          id: item._id as string,
-                          title: item.name,
-                          public: item.public,
-                        })
-                      }
-                    />
-
-                    <ButtonDelete
-                      onClick={() =>
-                        onSelectDeleteItem({
-                          id: item._id as string,
-                          title: item.name,
-                          public: item.public,
-                        })
-                      }
-                    />
-                  </div>
-                </CelTable>
-              </tr>
-            ))}
-          </Fragment>
-        </Table>
-
-        {/* Popup Form for update */}
-        <PopupForm
-          title={t("EditAttributePage.updatePopup.title")}
-          description={t("EditAttributePage.updatePopup.description")}
-          show={showFormUpdate}
-          onClose={handlePopupFormUpdate}>
-          <Fragment>
-            {selectItem && selectItem.id && (
-              <div className="flex flex-col justify-between h-full">
-                <div className="w-full flex flex-col px-5 gap-5">
-                  <InputText
-                    title={t("EditAttributePage.addPopup.inpTitle")}
-                    width="w-full"
-                    value={selectItem.title}
-                    name="title"
-                    error={fieldsCheck.includes("title")}
-                    getValue={changeValue}
-                    placeholder="Color or Size or Material"
-                  />
-
-                  <ButtonCheck
-                    title={t("CreateAttributePage.field.public")}
-                    name="public"
-                    width="w-fit"
-                    isChecked={selectItem.public}
-                    onChange={changePublic}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-5 mt-5 border-t gap-5">
-                  <button
-                    onClick={() => handlePopupFormUpdate()}
-                    className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
-                    {t("Action.cancle")}
-                  </button>
-                  <button
-                    onClick={handleUpdate}
-                    className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md">
-                    {t("Action.add")}
-                  </button>
-                </div>
-              </div>
-            )}
-          </Fragment>
-        </PopupForm>
-
-        {/* Popup Form for add value */}
-        <PopupForm
-          title={t("EditAttributePage.addPopup.title")}
-          description={t("EditAttributePage.addPopup.description")}
-          show={showFormCreate}
-          onClose={handlePopupFormCreate}>
-          <Fragment>
-            <div className="flex flex-col justify-between h-full">
-              <div className="w-full flex flex-col px-5 gap-5">
-                <InputText
-                  title={t("EditAttributePage.addPopup.inpTitle")}
-                  width="w-full"
-                  name="name"
-                  value={newVarinat.name}
-                  getValue={changeValueNewVariant}
-                  error={fieldsCheck.includes("name")}
-                  placeholder="Color or Size or Material"
-                />
-
-                <ButtonCheck
-                  title={t("CreateAttributePage.field.public")}
-                  name="public"
-                  width="w-fit"
-                  isChecked={newVarinat.public}
-                  onChange={changePublicNewVariant}
-                />
-              </div>
-
-              <div className="flex items-center justify-between p-5 mt-5 border-t gap-5">
-                <button
-                  onClick={() => handlePopupFormCreate()}
-                  className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
-                  {t("Action.cancle")}
-                </button>
-                <button
-                  onClick={handleAddVarinat}
-                  className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md">
-                  {t("Action.add")}
-                </button>
-              </div>
-            </div>
-          </Fragment>
-        </PopupForm>
-
-        {loading && <Loading />}
+        <AttributeChildTable
+          attributeId={attributeId as string}
+          data={attributes}
+          loading={loading.getData}
+          getData={() => handleGetData(attributeId as string, paramater)}
+          pagination={pagination}
+          onChangePage={onChangePage}
+        />
       </Fragment>
     </ShowItemsLayout>
   );
 };
 
 export default AttributeValuesPage;
+
+export async function getServerSideProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../../../messages/${context.locale}.json`))
+        .default,
+    },
+  };
+}
 
 AttributeValuesPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
