@@ -6,22 +6,20 @@ import { message } from "antd";
 import { object, string } from "yup";
 import { useForm } from "react-hook-form";
 
-import { createBanner, uploadBannerImage } from "~/api-client";
-
 import { NextPageWithLayout } from "~/interface/page";
-import { ICreateBanner, IResponse } from "~/interface";
+import { IResponse } from "~/interface";
 
 import FormLayout from "~/layouts/FormLayout";
 import { PrivateLayout } from "~/layouts";
-import FormBanner from "~/components/BannerPage/form";
 import FormFooter from "~/components/Footer/FormFooter";
+import { ICreateBlogTag } from "~/interface/blog/blogTag";
+import { createTagBlog, uploadTagBlogImage } from "~/api-client/blogs/tagBlog";
+import FormBlogTag from "~/components/BlogTagPage/form";
 
-const initData: ICreateBanner = {
+const initData: ICreateBlogTag = {
   title: "",
-  meta_title: "",
   public: true,
-  image: "",
-  path: null,
+  thumbnail: "",
 };
 
 const Layout = PrivateLayout;
@@ -29,7 +27,7 @@ const Layout = PrivateLayout;
 const CreateCategoryPage: NextPageWithLayout = () => {
   const router = useRouter();
 
-  const t = useTranslations("BannerPage");
+  const t = useTranslations("BlogTagPage");
   const tError = useTranslations("Error");
   const tSuccess = useTranslations("Success");
 
@@ -37,13 +35,12 @@ const CreateCategoryPage: NextPageWithLayout = () => {
   const schema = useMemo(() => {
     return object().shape({
       title: string().trim().required(tError("PLEASE_INPUT")),
-      meta_title: string().trim().required(tError("PLEASE_INPUT")),
-      image: string().required(tError("PLEASE_UPLOAD")),
+      thumbnail: string().required(tError("PLEASE_UPLOAD")),
     });
   }, [router.locale]);
 
   // form control
-  const bannerForm = useForm<ICreateBanner>({
+  const blogTagForm = useForm<ICreateBlogTag>({
     defaultValues: initData,
     resolver: yupResolver(schema) as any,
   });
@@ -64,26 +61,26 @@ const CreateCategoryPage: NextPageWithLayout = () => {
     const formData: FormData = new FormData();
     formData.append("thumbnail", source);
 
-    return await uploadBannerImage(formData)
+    return await uploadTagBlogImage(formData)
       .then((res: IResponse<string>) => res.payload)
       .catch(() => {
         messageApi.error(tError("UPLOAD_IMAGE"));
+        setLoading(false);
       });
   };
 
-  const handleOnSubmit = async (values: ICreateBanner) => {
+  const handleOnSubmit = async (values: ICreateBlogTag) => {
     setLoading(true);
 
     try {
       const image = await uploadThumbnail(thumbnail);
-
       if (!image) return;
 
-      const payload = await createBanner({ ...values, image });
+      const payload = await createTagBlog({ ...values, thumbnail: image });
 
       if (payload.status === 201) {
         messageApi.success(tSuccess("create"));
-        router.push("/banners");
+        router.push("/blog-tag");
       }
     } catch (error) {
       messageApi.error(tError("TRY_AGAIN"));
@@ -97,25 +94,25 @@ const CreateCategoryPage: NextPageWithLayout = () => {
       dataBreadcrumb={[
         {
           title: t("breadcrumb.list"),
-          href: "/banners",
+          href: "/blog-tag",
         },
         {
           title: t("breadcrumb.create"),
         },
       ]}>
       <Fragment>
-        <FormBanner
-          form={bannerForm}
+        <FormBlogTag
+          form={blogTagForm}
           handleChangeThumbnail={onChangeThumbnail}
         />
 
         <FormFooter
-          onCancel={() => router.push("/banners")}
+          onCancel={() => router.push("/blog-tag")}
           okProps={{
             loading,
             disabled: loading,
           }}
-          onOk={bannerForm.handleSubmit(handleOnSubmit)}
+          onOk={blogTagForm.handleSubmit(handleOnSubmit)}
         />
         {/* Message of antd */}
         {contextHolder}

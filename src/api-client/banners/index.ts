@@ -1,14 +1,11 @@
-import qs from "qs";
-
 import { IBanner, ICreateBanner, ISearch } from "~/interface";
 import httpConfig from "~/configs/configAxios";
+import { parseQueryString } from "~/helper/url";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
 const getBanners = async (paramater: ISearch) => {
-  const parseParameters = qs.stringify(paramater, {
-    filter: (_, value) => value || undefined,
-  });
+  const parseParameters = parseQueryString(paramater);
 
   return await httpConfig
     .get(BASE_URL + `/admin/banners?${parseParameters}`)

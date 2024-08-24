@@ -1,4 +1,3 @@
-import { ITagBlog } from "../tagBlog";
 import { IUserInfor } from "../user";
 
 type AuthorBlog = Pick<IUserInfor, "_id" | "name">;

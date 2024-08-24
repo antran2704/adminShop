@@ -66,13 +66,15 @@ const Layout = LayoutWithHeader;
 
 const ProductEditPage: NextPageWithLayout = () => {
   const router = useRouter();
-  const productId = router.query.id as string;
+  const { query } = router;
+  const productId = query.id as string;
+  const tabParam = query.tab as string;
 
   const t = useTranslations("ProductPage");
   const tError = useTranslations("Error");
   const tSuccess = useTranslations("Success");
 
-  const [selectTab, setSelectTab] = useState<string>("1");
+  const [selectTab, setSelectTab] = useState<string>(tabParam ? tabParam : "1");
 
   // validation project form
   const schema = useMemo(() => {
@@ -111,6 +113,10 @@ const ProductEditPage: NextPageWithLayout = () => {
 
   const onSelectTab = (value: string) => {
     setSelectTab(value);
+
+    router.replace({
+      query: { ...router.query, tab: value },
+    });
   };
 
   const handleChangeOption = (items: IOptionProduct[]) => {

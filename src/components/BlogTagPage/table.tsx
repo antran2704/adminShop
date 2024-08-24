@@ -3,19 +3,24 @@ import { message, Switch, TableColumnsType } from "antd";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/router";
 
-import { IBannerTable, IPagination } from "~/interface";
+import { IPagination } from "~/interface";
+import { IBlogTagTable } from "~/interface/blog/blogTag";
 
 import { TableCore } from "../Core";
-import { activeBanner, deleteBanner, disableBanner } from "~/api-client";
 import ImageCus from "../Image/ImageCus";
 import { PATH_IMAGE } from "~/common/images";
 import { formatDate } from "~/helper/format/datetime";
 import { BtnDelete, BtnEdit } from "../Button";
 import { ModalConfirm } from "../Modal";
 import { initPagination } from "../Pagination/initData";
+import {
+  activeTagBlog,
+  deleteTagBlog,
+  disableTagBlog,
+} from "~/api-client/blogs/tagBlog";
 
 interface Props {
-  data: IBannerTable[];
+  data: IBlogTagTable[];
   pagination: IPagination;
   loading?: boolean;
   getData: () => void;
@@ -31,35 +36,29 @@ const BannerTable = (props: Props) => {
     onChangePage,
   } = props;
 
-  const tBanner = useTranslations("BannerPage");
+  const t = useTranslations("BlogTagPage");
   const tError = useTranslations("Error");
   const tSuccess = useTranslations("Success");
 
   const router = useRouter();
 
-  const [listItem, setListItem] = useState<IBannerTable[]>([]);
-  const [selectDelete, setSelectDelete] = useState<IBannerTable | null>(null);
+  const [listItem, setListItem] = useState<IBlogTagTable[]>([]);
+  const [selectDelete, setSelectDelete] = useState<IBlogTagTable | null>(null);
 
   const [modalDelete, setModalDelete] = useState<boolean>(false);
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const columns: TableColumnsType<IBannerTable> = useMemo(() => {
+  const columns: TableColumnsType<IBlogTagTable> = useMemo(() => {
     return [
       {
-        title: tBanner("table.id"),
-        dataIndex: "bannerId",
-        className: "whitespace-nowrap",
-        align: "center",
-      },
-      {
-        title: tBanner("table.title"),
+        title: t("table.title"),
         dataIndex: "title",
         className: "whitespace-nowrap",
         align: "center",
       },
       {
-        title: tBanner("table.thumbnail"),
+        title: t("table.thumbnail"),
         dataIndex: "image",
         className: "whitespace-nowrap",
         align: "center",
@@ -68,23 +67,23 @@ const BannerTable = (props: Props) => {
             <ImageCus
               src={PATH_IMAGE + image}
               title="banner thumbnail"
-              className="w-[260px] min-w-[260px] h-[140px] object-cover object-center rounded-md mx-auto"
+              className="w-[160px] min-w-[160px] h-[160px] object-cover object-center rounded-md mx-auto"
             />
           );
         },
       },
       {
-        title: tBanner("table.status"),
+        title: t("table.status"),
         dataIndex: "public",
         className: "whitespace-nowrap",
-        render: (isPublic: boolean, reccord: IBannerTable) => (
+        render: (isPublic: boolean, reccord: IBlogTagTable) => (
           <Switch
             checked={isPublic}
             onClick={() => {
               if (isPublic) {
-                onDisableBanner(reccord);
+                onDisable(reccord);
               } else {
-                onActiveBanner(reccord);
+                onActive(reccord);
               }
             }}
           />
@@ -92,7 +91,7 @@ const BannerTable = (props: Props) => {
         align: "center",
       },
       {
-        title: tBanner("table.createdAt"),
+        title: t("table.createdAt"),
         dataIndex: "createdAt",
         className: "whitespace-nowrap",
         align: "center",
@@ -105,11 +104,11 @@ const BannerTable = (props: Props) => {
         },
       },
       {
-        title: tBanner("table.action"),
+        title: t("table.action"),
         dataIndex: "action",
         className: "whitespace-nowrap",
         align: "center",
-        render: (_, record: IBannerTable) => {
+        render: (_, record: IBlogTagTable) => {
           return (
             <div className="flex items-center justify-center gap-2">
               <BtnDelete
@@ -119,7 +118,7 @@ const BannerTable = (props: Props) => {
                 }}
               />
               <BtnEdit
-                onClick={() => router.push(`/edit/banner/${record.bannerId}`)}
+                onClick={() => router.push(`/edit/blog-tag/${record.id}`)}
               />
             </div>
           );
@@ -136,18 +135,18 @@ const BannerTable = (props: Props) => {
     setModalDelete(!modalDelete);
   };
 
-  const onActiveBanner = async (reccord: IBannerTable) => {
+  const onActive = async (reccord: IBlogTagTable) => {
     try {
-      await activeBanner(reccord.bannerId);
+      await activeTagBlog(reccord.id);
 
       const indexItem: number = listItem.findIndex(
-        (banner: IBannerTable) => banner.bannerId === reccord.bannerId,
+        (item: IBlogTagTable) => item.id === reccord.id,
       );
 
       if (indexItem > -1) {
-        const newBanners: IBannerTable[] = [...listItem];
-        newBanners[indexItem] = { ...reccord, public: true };
-        setListItem(newBanners);
+        const newItems: IBlogTagTable[] = [...listItem];
+        newItems[indexItem] = { ...reccord, public: true };
+        setListItem(newItems);
       }
 
       messageApi.success(tSuccess("update"));
@@ -156,18 +155,18 @@ const BannerTable = (props: Props) => {
     }
   };
 
-  const onDisableBanner = async (reccord: IBannerTable) => {
+  const onDisable = async (reccord: IBlogTagTable) => {
     try {
-      await disableBanner(reccord.bannerId);
+      await disableTagBlog(reccord.id);
 
       const indexItem: number = listItem.findIndex(
-        (banner: IBannerTable) => banner.bannerId === reccord.bannerId,
+        (item: IBlogTagTable) => item.id === reccord.id,
       );
 
       if (indexItem > -1) {
-        const newBanners: IBannerTable[] = [...listItem];
-        newBanners[indexItem] = { ...reccord, public: false };
-        setListItem(newBanners);
+        const newItems: IBlogTagTable[] = [...listItem];
+        newItems[indexItem] = { ...reccord, public: false };
+        setListItem(newItems);
       }
 
       messageApi.success(tSuccess("update"));
@@ -176,11 +175,11 @@ const BannerTable = (props: Props) => {
     }
   };
 
-  const onDeleteBanner = async () => {
+  const onDelete = async () => {
     if (!selectDelete) return;
 
     try {
-      await deleteBanner(selectDelete.bannerId);
+      await deleteTagBlog(selectDelete.id);
       setModalDelete(false);
       setSelectDelete(null);
       getData();
@@ -202,6 +201,7 @@ const BannerTable = (props: Props) => {
         loading={loading}
         columns={columns}
         size="large"
+        scroll={{ x: 1200 }}
         showPagination={pagination.total > 0}
         paginationOptions={{
           total: pagination.total,
@@ -212,13 +212,13 @@ const BannerTable = (props: Props) => {
       />
 
       <ModalConfirm
-        title={tBanner("modalDelete.title")}
+        title={t("modalDelete.title")}
         open={modalDelete}
         onCancel={handlePopup}
         centered
         type="error"
         destroyOnClose
-        onOk={onDeleteBanner}>
+        onOk={onDelete}>
         <img
           src="/popup/trash.svg"
           className="size-[200px] mx-auto"
@@ -226,7 +226,7 @@ const BannerTable = (props: Props) => {
           alt="delete image"
         />
         <p className="md:text-lg text-base text-center mb-10">
-          {tBanner("modalDelete.description")}
+          {t("modalDelete.description")}
         </p>
       </ModalConfirm>
 

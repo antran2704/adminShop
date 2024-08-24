@@ -221,6 +221,32 @@
     "create": "Create blog",
     "search": "Search by name..."
   },
+  "BlogTagPage": {
+    "title": "List of blog tag",
+    "create": "Create tag",
+    "edit": "Update blog tag",
+    "table": {
+      "title": "Title",
+      "thumbnail": "Thumbnail",
+      "status": "Status",
+      "createdAt": "Created At",
+      "action": "Action"
+    },
+    "form": {
+      "title": "Title",
+      "thumbnail": "Thumbnail",
+      "status": "Status"
+    },
+    "modalDelete": {
+      "title": "Confirm delete blog tag",
+      "description": "Note: Data can't restore after delete"
+    },
+    "breadcrumb": {
+      "list": "Blog tags",
+      "create": "Create blog tag",
+      "update": "Update blog tag"
+    }
+  },
   "OrderPage": {
     "recentOrder": "Recent order",
     "table": {

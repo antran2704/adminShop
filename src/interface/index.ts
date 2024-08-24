@@ -18,8 +18,6 @@ export * from "./options";
 export * from "./banner";
 export * from "./notification";
 export * from "./permission";
-export * from "./tagBlog";
-export * from "./blog";
 export * from "./auth";
 export * from "./response";
 export * from "./currency";

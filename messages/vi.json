@@ -221,6 +221,32 @@
     "create": "Tạo bài viết",
     "search": "Tìm kiếm theo tiêu đề..."
   },
+  "BlogTagPage": {
+    "title": "Danh sách thẻ blog",
+    "create": "Tạo thẻ",
+    "edit": "Chỉnh sửa thẻ blog",
+    "table": {
+      "title": "Tên",
+      "thumbnail": "Hình ảnh",
+      "status": "Trạng thái",
+      "createdAt": "Ngày tạo",
+      "action": "Action"
+    },
+    "form": {
+      "title": "Tên thuộc tính",
+      "thumbnail": "Hình ảnh",
+      "status": "Trạng thái"
+    },
+    "modalDelete": {
+      "title": "Xác nhận xóa thẻ",
+      "description": "Lưu ý: Không thể phục hồi dữ liệu sau khi xóa"
+    },
+    "breadcrumb": {
+      "list": "Danh sách thẻ blog",
+      "create": "Tạo thẻ blog",
+      "update": "Chỉnh sửa thẻ blog"
+    }
+  },
   "OrderPage": {
     "recentOrder": "Đơn hàng gần đây",
     "table": {

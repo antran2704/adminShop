@@ -11,7 +11,6 @@ import {
   ISearch,
 } from "~/interface";
 
-import Search from "~/components/Search";
 import ShowItemsLayout from "~/layouts/ManagerLayout";
 import { initPagination } from "~/components/Pagination/initData";
 import { getProducts } from "~/api-client";
@@ -19,7 +18,6 @@ import { NextPageWithLayout } from "~/interface/page";
 import PrivateLayout from "~/layouts/Private";
 import { EPermission, ERole, ORDER_PARAMATER_ENUM } from "~/enums";
 import useAbility from "~/hooks/useAbility";
-import Loading from "~/components/Loading";
 import { ProductTable } from "~/components/ProductPage";
 
 const Layout = PrivateLayout;
@@ -88,10 +86,6 @@ const ProductPage: NextPageWithLayout = () => {
   useEffect(() => {
     handleGetData(paramater);
   }, [paramater]);
-
-  if (!router.isReady) {
-    return <Loading />;
-  }
 
   return (
     <ShowItemsLayout

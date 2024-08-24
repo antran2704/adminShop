@@ -88,7 +88,7 @@ const listBody: itemNav[] = [
           en: "Tag Blog",
           vi: "Tag Blog",
         },
-        path: "/tag-blogs",
+        path: "/blog-tag",
         role: [ERole.ADMIN, ERole.STAFF],
       },
     ],

@@ -7,5 +7,3 @@ export * from "./coupons";
 export * from "./auth";
 export * from "./banners";
 export * from "./notifications";
-export * from "./blogs";
-export * from "./tagBlogs";

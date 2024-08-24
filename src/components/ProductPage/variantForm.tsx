@@ -108,7 +108,7 @@ const VariantForm = (props: Props) => {
     const newOption: IOptionProduct[] = [];
 
     for (const option of options) {
-      const key = option.title as keyof ISelectAttributeItem;
+      const key = option.value as keyof ISelectAttributeItem;
       if (compination[key] && compination[key].length > 0) {
         newOption.push({
           code: option.title as string,
@@ -151,6 +151,7 @@ const VariantForm = (props: Props) => {
 
     const key = keys[index];
     const items = compination[key];
+
     const optionKey =
       index === 0 ? "option1" : index === 1 ? "option2" : "option3";
 
@@ -187,10 +188,11 @@ const VariantForm = (props: Props) => {
     const newOptions: SelectProps["options"] = [];
 
     for (const option of options as DefaultOptionType[]) {
-      const keyOfSelectAttribute = option.title as keyof ISelectAttributeItem;
+      // const keyOfSelectAttribute = option.title as keyof ISelectAttributeItem;
+      const keyOfSelectAttribute = option.value as keyof ISelectAttributeItem;
 
       const index: number = (selectAttributes as any[]).findIndex(
-        (item) => item.title === keyOfSelectAttribute,
+        (item) => item.value === keyOfSelectAttribute,
       );
 
       if (selectAttributeIds.includes(option.value as string)) {
@@ -287,12 +289,12 @@ const VariantForm = (props: Props) => {
                   .includes(input.toLowerCase())
               }
               onChange={(values) =>
-                onSelectAttributeItem(values, attribute.title as string)
+                onSelectAttributeItem(values, attribute.value as string)
               }
               placeholder={tError("PLEASE_SELECT")}
               value={
                 selectAttributeItem[
-                  attribute.title as keyof ISelectAttributeItem
+                  attribute.value as keyof ISelectAttributeItem
                 ]
               }
             />
