@@ -184,7 +184,7 @@ const BannerTable = (props: Props) => {
       setSelectDelete(null);
       getData();
 
-      messageApi.success(tSuccess("create"));
+      messageApi.success(tSuccess("delete"));
     } catch (error) {
       messageApi.error(tError("TRY_AGAIN"));
     }
