@@ -1,45 +1,34 @@
-import qs from "qs";
 import { uploadImageOnServer } from "~/helper/handleImage";
-import { IBlog, ICreateBlog, IFilter, IQueryParam } from "~/interface";
-import {
-  axiosDelete,
-  axiosGet,
-  axiosPatch,
-  axiosPost,
-} from "~/configs/configAxios";
+import httpConfig from "~/configs/configAxios";
+import { parseQueryString } from "~/helper/url";
+import { ISearch } from "~/interface";
+import { ICreateBlog } from "~/interface/blog";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
-const getBlogs = async (page: number = 1) => {
-  return await axiosGet(BASE_URL + `/admin/blogs?page=${page}`);
+const getBlogs = async (paramater: ISearch) => {
+  const parseParameters = parseQueryString(paramater);
+  return await httpConfig
+    .get(BASE_URL + "/admin/blogs" + parseParameters)
+    .then((res) => res.data);
 };
 
-const getBlog = async (blog_id: string) => {
-  return await axiosGet(BASE_URL + `/admin/blogs/id/${blog_id}`);
-};
-
-const getBlogsWithFilter = async (
-  filter: IFilter | null,
-  query?: IQueryParam<Partial<IBlog>>,
-  page: number = 1,
-) => {
-  const parseQuery = qs.stringify(query);
-  return await axiosGet(
-    BASE_URL +
-      `/admin/blogs/search?search=${filter?.search || ""}${
-        parseQuery && "&" + parseQuery
-      }&page=${page}`,
-  );
+const getBlog = async (blogId: string) => {
+  return await httpConfig
+    .get(BASE_URL + `/admin/blogs/id/${blogId}`)
+    .then((res) => res.data);
 };
 
 const createBlog = async (payload: ICreateBlog) => {
-  return await axiosPost(BASE_URL + "/admin/blogs", payload);
+  return await httpConfig
+    .post(BASE_URL + "/admin/blogs", payload)
+    .then((res) => res.data);
 };
 
-const updateBlog = async (blog_id: string, options?: Partial<ICreateBlog>) => {
-  return await axiosPatch(BASE_URL + `/admin/blogs/${blog_id}`, {
-    ...options,
-  });
+const updateBlog = async (blogId: string, data: ICreateBlog) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/blogs/${blogId}`, data)
+    .then((res) => res.data);
 };
 
 const uploadBlogImage = async (formData: FormData) => {
@@ -49,16 +38,31 @@ const uploadBlogImage = async (formData: FormData) => {
   );
 };
 
-const deleteBlog = async (blog_id: string) => {
-  return await axiosDelete(BASE_URL + `/admin/blogs/${blog_id}`);
+const activeBlog = async (blogId: string) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/blogs/${blogId}/active`)
+    .then((res) => res.data);
+};
+
+const disableBlog = async (blogId: string) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/blogs/${blogId}/disable`)
+    .then((res) => res.data);
+};
+
+const deleteBlog = async (blogId: string) => {
+  return await httpConfig
+    .delete(BASE_URL + `/admin/blogs/${blogId}`)
+    .then((res) => res.data);
 };
 
 export {
   getBlogs,
   getBlog,
-  getBlogsWithFilter,
   updateBlog,
   uploadBlogImage,
+  disableBlog,
+  activeBlog,
   deleteBlog,
   createBlog,
 };

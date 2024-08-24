@@ -216,10 +216,38 @@
       "endDate": "End date"
     }
   },
-  "BlogsPage": {
+  "BlogPage": {
     "title": "Blogs",
     "create": "Create blog",
-    "search": "Search by name..."
+    "edit": "Edit Blog",
+    "table": {
+      "id": "ID",
+      "title": "Tiêu đề",
+      "thumbnail": "Hình ảnh",
+      "status": "Trạng thái",
+      "createdAt": "Ngày tạo",
+      "action": "Action"
+    },
+    "form": {
+      "title": "Title",
+      "metaTitle": "Meta title",
+      "description": "Description",
+      "metaDescription": "Meta description",
+      "thumbnail": "Thumbnail",
+      "tags": "Tags",
+      "tag": "Tag",
+      "content": "Content",
+      "status": "Status"
+    },
+    "modalDelete": {
+      "title": "Confirm delete Blog",
+      "description": "Note: Data can't restore after delete"
+    },
+    "breadcrumb": {
+      "list": "Blog",
+      "create": "Create blog",
+      "update": "Update blog"
+    }
   },
   "BlogTagPage": {
     "title": "List of blog tag",
@@ -356,6 +384,7 @@
     "EMAIL_PASSWORD_INCORECT": "Email or password incorect",
     "UPLOAD_IMAGE": "Upload image faile",
     "UPLOAD_FILE": "Upload file faile",
+    "AT_LEAST_CHARACTERS": "At least {number} characters",
     "PLEASE_SELECT": "Please select",
     "PLEASE_INPUT": "Please input",
     "PLEASE_UPLOAD": "Please upload",

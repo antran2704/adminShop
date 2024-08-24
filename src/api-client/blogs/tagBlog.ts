@@ -1,12 +1,11 @@
 import { uploadImageOnServer } from "~/helper/handleImage";
 import httpConfig from "~/configs/configAxios";
-import { ISearch } from "~/interface";
 import { parseQueryString } from "~/helper/url";
-import { ICreateBlogTag } from "~/interface/blog/blogTag";
+import { IBlogTagSearch, ICreateBlogTag } from "~/interface/blog/blogTag";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
-const getTagBlogs = async (paramater: ISearch) => {
+const getTagBlogs = async (paramater: IBlogTagSearch) => {
   const parseParameters = parseQueryString(paramater);
   return await httpConfig
     .get(BASE_URL + "/admin/blog-tags" + parseParameters)

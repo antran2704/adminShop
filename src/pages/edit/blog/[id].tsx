@@ -1,406 +1,197 @@
-import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { ReactElement, useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { Fragment, ReactElement, useEffect, useMemo, useState } from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useTranslations } from "next-intl";
+import { message } from "antd";
+import { array, object, string } from "yup";
+import { useForm } from "react-hook-form";
 
-import {
-  IBlog,
-  ICreateBlog,
-  IResponseSuccess,
-  ISelectItem,
-  ITagBlog,
-  TagBlog,
-  TagBlogUpdate,
-} from "~/interface";
+import { NextPageWithLayout } from "~/interface/page";
+import { IResponse } from "~/interface";
+import { IBlog, ICreateBlog } from "~/interface/blog";
+
 import FormLayout from "~/layouts/FormLayout";
-import { InputText, InputTextarea } from "~/components/InputField";
-import Thumbnail from "~/components/Image/Thumbnail";
-import ButtonCheck from "~/components/Button/ButtonCheck";
-import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
-import Loading from "~/components/Loading";
+import { PrivateLayout } from "~/layouts";
+import FormFooter from "~/components/Footer/FormFooter";
 import {
   createBlog,
-  deleteBlog,
   getBlog,
-  getTagBlogs,
   updateBlog,
   uploadBlogImage,
-} from "~/api-client";
-import { ECompressFormat, ETypeImage } from "~/enums";
-import LayoutWithHeader from "~/layouts/Private";
-import { NextPageWithLayout } from "~/interface/page";
-import { useTranslation } from "react-i18next";
-import SelectMultipleItem from "~/components/Select/SelectMultipleItem";
-import { useAppSelector } from "~/store/hooks";
-import Popup from "~/components/Popup";
+} from "~/api-client/blogs";
+import FormBlog from "~/components/BlogPage/form";
 
-const CustomEditor = dynamic(
-  () => {
-    return import("~/components/Editor");
-  },
-  { ssr: false },
-);
-
-const initData: IBlog = {
-  _id: "",
-  author: null,
+const initData: ICreateBlog = {
   title: "",
-  content: "",
   description: "",
-  thumbnail: "",
+  meta_description: "",
+  meta_title: "",
   public: true,
+  thumbnail: "",
+  content: "",
+  tag: "",
   tags: [],
-  slug: "",
 };
 
-const Layout = LayoutWithHeader;
+const Layout = PrivateLayout;
 
 const EditBlogPage: NextPageWithLayout = () => {
   const router = useRouter();
-  const blogIdParam: string = router.query.id as string;
+  const blogId = router.query.id as string;
 
-  const { t } = useTranslation();
-  const user = useAppSelector((state) => state.user);
+  const t = useTranslations("BlogPage");
+  const tError = useTranslations("Error");
+  const tSuccess = useTranslations("Success");
 
-  const [data, setData] = useState<IBlog>(initData);
-  const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
+  // validation project form
+  const schema = useMemo(() => {
+    return object().shape({
+      title: string().trim().required(tError("PLEASE_INPUT")),
+      meta_title: string().trim().required(tError("PLEASE_INPUT")),
+      description: string().trim().required(tError("PLEASE_INPUT")),
+      meta_description: string().trim().required(tError("PLEASE_INPUT")),
+      thumbnail: string().required(tError("PLEASE_UPLOAD")),
+      content: string().min(10, tError("AT_LEAST_CHARACTERS", { number: 10 })),
+      tags: array().min(1, tError("PLEASE_SELECT")),
+      tag: string().trim().required(tError("PLEASE_INPUT")),
+    });
+  }, [router.locale]);
 
-  const [listTags, setListTags] = useState<ITagBlog[]>([]);
-  const [tags, setTags] = useState<ISelectItem[]>([]);
-  const [selectTag, setSelectTag] = useState<ISelectItem[]>([]);
+  // form control
+  const blogForm = useForm<ICreateBlog>({
+    defaultValues: initData,
+    resolver: yupResolver(schema) as any,
+  });
+  const [blog, setBlog] = useState<IBlog | null>(null);
 
-  const [image, setImage] = useState<string | null>(null);
-  const [content, setContend] = useState<string>("");
+  const [messageApi, contextHolder] = message.useMessage();
 
-  const [showPopup, setShowPopup] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
 
-  const handlePopup = () => {
-    setShowPopup(!showPopup);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const onChangeThumbnail = (source: File | null) => {
+    setThumbnail(source);
   };
 
-  const changeValue = (name: string, value: string) => {
-    if (fieldsCheck.includes(name)) {
-      const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
-      setFieldsCheck(newFieldsCheck);
-    }
-    setData({ ...data, [name]: value });
-  };
+  const uploadThumbnail = async (source: File | null) => {
+    if (!source) return;
 
-  const changePublic = (name: string, value: boolean) => {
-    setData({ ...data, [name]: value });
-  };
+    const formData: FormData = new FormData();
+    formData.append("image", source);
 
-  const uploadThumbnail = async (source: File) => {
-    if (source) {
-      if (fieldsCheck.includes("image")) {
-        const newFieldsCheck = handleRemoveCheck(fieldsCheck, "image");
-        setFieldsCheck(newFieldsCheck);
-        ("image");
-      }
-
-      const formData: FormData = new FormData();
-      formData.append("image", source);
-      setLoadingThumbnail(true);
-
-      try {
-        const { status, payload } = await uploadBlogImage(formData);
-
-        if (status === 201) {
-          setImage(payload);
-          setLoadingThumbnail(false);
-        }
-      } catch (error) {
-        toast.error("Upload image failed", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        setLoadingThumbnail(false);
-        console.log(error);
-      }
-    }
-  };
-
-  const changeSelectTag = (select: ISelectItem[]) => {
-    setSelectTag(select);
-  };
-
-  const handleChangeContent = (newContent: string) => {
-    if (!newContent) return;
-    setContend(newContent);
-  };
-
-  const checkData = (data: any) => {
-    let fields = handleCheckFields(data);
-    setFieldsCheck(fields);
-    if (fields.length > 0) {
-      router.push(`#${fields[0]}`);
-    }
-    return fields;
-  };
-
-  const handleDeleteBlog = async () => {
-    if (!blogIdParam) {
-      setShowPopup(false);
-      toast.error("False delete blog", {
-        position: toast.POSITION.TOP_RIGHT,
+    return await uploadBlogImage(formData)
+      .then((res: IResponse<string>) => res.payload)
+      .catch(() => {
+        messageApi.error(tError("UPLOAD_IMAGE"));
+        setLoading(false);
       });
-      return;
-    }
+  };
 
+  const handleGetData = async (id: string) => {
+    setLoading(true);
+
+    getBlog(id)
+      .then(({ payload }: IResponse<IBlog>) => {
+        const data: ICreateBlog = {
+          title: payload.title,
+          meta_title: payload.meta_title,
+          description: payload.description,
+          meta_description: payload.meta_description,
+          content: payload.content,
+          thumbnail: payload.thumbnail,
+          public: payload.public,
+          tag: payload.tag._id,
+          tags: payload.tags.map((item) => item._id),
+        };
+
+        blogForm.reset(data);
+
+        setBlog(payload);
+        setLoading(false);
+      })
+      .catch(() => router.push("/blogs"));
+  };
+
+  const handleOnSubmit = async (id: string, values: ICreateBlog) => {
     setLoading(true);
 
     try {
-      await deleteBlog(blogIdParam);
-      setShowPopup(false);
+      let image: string = values.thumbnail;
 
-      toast.success("Success delete blog", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-
-      router.push("/blogs");
-    } catch (error) {
-      toast.error("Error delete blog", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setLoading(false);
-      console.log(error);
-    }
-  };
-
-  const handleGetData = async (blogId: string) => {
-    if (!blogId) return;
-    setLoading(true);
-
-    try {
-      const { status, payload }: IResponseSuccess<IBlog> =
-        await getBlog(blogId);
-
-      if (status === 200) {
-        const tags: ISelectItem[] = payload.tags.map((item: TagBlog) => ({
-          _id: item.tag._id,
-          title: item.tag.title,
-        }));
-
-        setData(payload);
-        setContend(payload.content);
-        setImage(payload.thumbnail);
-        setSelectTag(tags);
+      if (thumbnail) {
+        image = (await uploadThumbnail(thumbnail)) as string;
       }
-    } catch (error) {
-      console.log(error);
-      toast.error("Error get data", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
 
+      if (!image) return;
+
+      await updateBlog(id, { ...values, thumbnail: image });
+
+      messageApi.success(tSuccess("update"));
+    } catch (error) {
+      messageApi.error(tError("TRY_AGAIN"));
+    }
     setLoading(false);
   };
 
-  const handleGetTags = async () => {
-    try {
-      const { status, payload } = await getTagBlogs(1);
-
-      if (status === 200) {
-        const tagsBlog: ISelectItem[] = payload.map((item: ITagBlog) => ({
-          _id: item._id,
-          title: item.title,
-        }));
-
-        setTags(tagsBlog);
-        setListTags(payload);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleOnSubmit = async () => {
-    const fields = checkData([
-      {
-        name: "title",
-        value: data.title,
-      },
-      {
-        name: "description",
-        value: data.description,
-      },
-      {
-        name: "thumbnail",
-        value: image,
-      },
-    ]);
-
-    if (fields.length > 0) {
-      toast.error("Please input fields", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-
+  useEffect(() => {
+    if (!blogId) {
+      router.push("/blogs");
       return;
     }
 
-    if (!user.infor._id || !blogIdParam) return;
-
-    setLoading(true);
-
-    const listTagSend = selectTag.map((tag: ISelectItem) => {
-      const item = listTags.find((item: ITagBlog) => item._id === tag._id);
-
-      if (item) {
-        return {
-          tag: item._id,
-          slug: item.slug,
-        };
-      }
-    });
-
-    const sendData: ICreateBlog = {
-      author: user.infor._id,
-      title: data.title,
-      description: data.description,
-      meta_title: data.title,
-      meta_description: data.description,
-      thumbnail: image as string,
-      content,
-      tags: listTagSend as TagBlogUpdate[],
-      public: data.public,
-    };
-
-    try {
-      const payload = await updateBlog(blogIdParam, sendData);
-
-      if (payload.status === 201) {
-        toast.success("Success update blog", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        router.push("/blogs");
-      }
-    } catch (error) {
-      toast.error("Error in update blog", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    handleGetTags();
-  }, []);
-
-  useEffect(() => {
-    if (blogIdParam) {
-      handleGetData(blogIdParam);
-    }
-  }, [blogIdParam]);
+    handleGetData(blogId);
+  }, [blogId]);
 
   return (
     <FormLayout
-      title={t("CreateBannerPage.title")}
-      backLink="/blogs"
-      loading={loading}
-      onSubmit={handleOnSubmit}>
-      <div className="lg:w-2/4 w-full mx-auto">
-        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-          <InputText
-            title={t("CreateBannerPage.field.title")}
-            width="w-full"
-            value={data.title}
-            error={fieldsCheck.includes("title")}
-            name="title"
-            placeholder="Title blog..."
-            getValue={changeValue}
+      title={t("title")}
+      loading={!blog}
+      dataBreadcrumb={[
+        {
+          title: t("breadcrumb.list"),
+          href: "/blogs",
+        },
+        {
+          title: t("breadcrumb.update"),
+        },
+      ]}>
+      <Fragment>
+        {blog && (
+          <FormBlog
+            form={blogForm}
+            data={blog}
+            handleChangeThumbnail={onChangeThumbnail}
           />
-
-          <InputTextarea
-            title="Description"
-            width="w-full"
-            value={data.description}
-            error={fieldsCheck.includes("description")}
-            name="description"
-            placeholder="Description blog.."
-            getValue={changeValue}
-          />
-
-          <SelectMultipleItem
-            title={"Tags"}
-            width="w-full"
-            select={selectTag}
-            data={tags}
-            name="tags"
-            placeholder="Please select tag..."
-            error={fieldsCheck.includes("tags")}
-            getSelect={changeSelectTag}
-          />
-        </div>
-        <div className="w-full py-5">
-          {data._id && (
-            <CustomEditor content={content} getContent={handleChangeContent} />
-          )}
-        </div>
-        <div className="w-full flex flex-col p-5 mt-5 rounded-md border-2 gap-5">
-          <Thumbnail
-            error={fieldsCheck.includes("thumbnail")}
-            url={image}
-            loading={loadingThumbnail}
-            onChange={uploadThumbnail}
-            option={{
-              quality: 80,
-              maxHeight: 600,
-              maxWidth: 600,
-              minHeight: 400,
-              minWidth: 400,
-              compressFormat: ECompressFormat.WEBP,
-              type: ETypeImage.file,
-            }}
-          />
-        </div>
-
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-end justify-between mt-5 gap-5">
-          {data?._id && (
-            <ButtonCheck
-              title={t("CreateBannerPage.field.public")}
-              name="public"
-              width="w-fit"
-              isChecked={data.public}
-              onChange={changePublic}
-            />
-          )}
-
-          <button
-            onClick={handlePopup}
-            className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
-            {t("Action.delete")}
-          </button>
-        </div>
-
-        {showPopup && (
-          <Popup
-            title="Xác nhận xóa Blog"
-            show={showPopup}
-            img="/popup/trash.svg"
-            onClose={handlePopup}>
-            <div>
-              <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
-                <button
-                  onClick={handlePopup}
-                  className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-90 hover:opacity-100 rounded-md transition-cus">
-                  Cancle
-                </button>
-                <button
-                  onClick={handleDeleteBlog}
-                  className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-90 hover:opacity-100 rounded-md">
-                  Delete
-                </button>
-              </div>
-            </div>
-          </Popup>
         )}
-      </div>
+
+        <FormFooter
+          onCancel={() => router.push("/blogs")}
+          okProps={{
+            loading,
+            disabled: loading,
+          }}
+          onOk={blogForm.handleSubmit((values) =>
+            handleOnSubmit(blogId, values),
+          )}
+        />
+        {/* Message of antd */}
+        {contextHolder}
+      </Fragment>
     </FormLayout>
   );
 };
 
 export default EditBlogPage;
+
+export async function getServerSideProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../../../messages/${context.locale}.json`))
+        .default,
+    },
+  };
+}
 
 EditBlogPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

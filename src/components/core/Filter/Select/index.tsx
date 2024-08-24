@@ -52,7 +52,9 @@ const SelectFilter = (props: Props, ref: any) => {
       className={clsx("w-full flex flex-col gap-2", {
         "pb-4 border-b border-b-neutral-200": borderBottom,
       })}>
-      {title && <p className="text-base font-medium">{title}</p>}
+      {title && (
+        <p className={clsx("text-base pb-2 dark:text-darkInput")}>{title}</p>
+      )}
       <Select
         size="large"
         ref={ref}

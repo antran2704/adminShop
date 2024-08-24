@@ -101,7 +101,7 @@ const AttributeForm = (props: Props) => {
       </div>
 
       {/* list attribute */}
-      <div className={clsx("relative w-full", [errors.code && "pb-2"])}>
+      <div className={clsx("relative w-full", [errors.children && "pb-2"])}>
         <Controller
           name="children"
           control={control}

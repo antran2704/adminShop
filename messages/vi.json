@@ -216,10 +216,38 @@
       "endDate": "Ngày kết thúc"
     }
   },
-  "BlogsPage": {
-    "title": "Danh sác bài viết",
-    "create": "Tạo bài viết",
-    "search": "Tìm kiếm theo tiêu đề..."
+  "BlogPage": {
+    "title": "Danh sách Blog",
+    "create": "Tạo Blog",
+    "edit": "Chỉnh sửa Blog",
+    "table": {
+      "id": "ID",
+      "title": "Tiêu đề",
+      "thumbnail": "Hình ảnh",
+      "status": "Trạng thái",
+      "createdAt": "Ngày tạo",
+      "action": "Action"
+    },
+    "form": {
+      "title": "Tiêu đề",
+      "metaTitle": "Thẻ meta tiêu đề",
+      "description": "Mô tả",
+      "metaDescription": "Thẻ meta mô tả",
+      "thumbnail": "Hình ảnh",
+      "tags": "Tags",
+      "tag": "Tag",
+      "content": "Nội dung",
+      "status": "Trạng thái"
+    },
+    "modalDelete": {
+      "title": "Xác nhận xóa Blog",
+      "description": "Lưu ý: Không thể phục hồi dữ liệu sau khi xóa"
+    },
+    "breadcrumb": {
+      "list": "Danh sách blog",
+      "create": "Tạo blog",
+      "update": "Chỉnh sửa blog"
+    }
   },
   "BlogTagPage": {
     "title": "Danh sách thẻ blog",
@@ -233,7 +261,7 @@
       "action": "Action"
     },
     "form": {
-      "title": "Tên thuộc tính",
+      "title": "Tên thẻ",
       "thumbnail": "Hình ảnh",
       "status": "Trạng thái"
     },
@@ -355,6 +383,7 @@
     "EMAIL_PASSWORD_INCORECT": "Email hoặc mật khẩu không đúng",
     "UPLOAD_IMAGE": "Upload ảnh lỗi",
     "UPLOAD_FILE": "Upload file lỗi",
+    "AT_LEAST_CHARACTERS": "Ít nhất {number} ký tự",
     "PLEASE_SELECT": "Vui lòng lựa chọn",
     "PLEASE_INPUT": "Vui lòng nhập",
     "PLEASE_UPLOAD": "Vui lòng upload",

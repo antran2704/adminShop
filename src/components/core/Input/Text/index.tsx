@@ -13,12 +13,7 @@ const InputText = (props: Props, ref: Ref<InputRef>) => {
   return (
     <Fragment>
       {title && (
-        <p
-          className={clsx("text-base pb-2 dark:text-darkInput", [
-            error && "text-error",
-          ])}>
-          {title}
-        </p>
+        <p className={clsx("text-base pb-2 dark:text-darkInput")}>{title}</p>
       )}
       <Input ref={ref} size="large" {...rest} status={error ? "error" : ""} />
     </Fragment>

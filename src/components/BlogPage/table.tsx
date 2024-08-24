@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/router";
 
 import { IPagination } from "~/interface";
-import { IBlogTagTable } from "~/interface/blog/blogTag";
 
 import { TableCore } from "../Core";
 import ImageCus from "../Image/ImageCus";
@@ -13,21 +12,19 @@ import { formatDate } from "~/helper/format/datetime";
 import { BtnDelete, BtnEdit } from "../Button";
 import { ModalConfirm } from "../Modal";
 import { initPagination } from "../Pagination/initData";
-import {
-  activeTagBlog,
-  deleteTagBlog,
-  disableTagBlog,
-} from "~/api-client/blogs/tagBlog";
+
+import { activeBlog, deleteBlog, disableBlog } from "~/api-client/blogs";
+import { IBlogTable } from "~/interface/blog";
 
 interface Props {
-  data: IBlogTagTable[];
+  data: IBlogTable[];
   pagination: IPagination;
   loading?: boolean;
   getData: () => void;
   onChangePage: (page: number, pageSize: number) => void;
 }
 
-const BlogTagTable = (props: Props) => {
+const BlogTable = (props: Props) => {
   const {
     data,
     loading = false,
@@ -42,14 +39,14 @@ const BlogTagTable = (props: Props) => {
 
   const router = useRouter();
 
-  const [listItem, setListItem] = useState<IBlogTagTable[]>([]);
-  const [selectDelete, setSelectDelete] = useState<IBlogTagTable | null>(null);
+  const [listItem, setListItem] = useState<IBlogTable[]>([]);
+  const [selectDelete, setSelectDelete] = useState<IBlogTable | null>(null);
 
   const [modalDelete, setModalDelete] = useState<boolean>(false);
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const columns: TableColumnsType<IBlogTagTable> = useMemo(() => {
+  const columns: TableColumnsType<IBlogTable> = useMemo(() => {
     return [
       {
         title: t("table.title"),
@@ -76,7 +73,7 @@ const BlogTagTable = (props: Props) => {
         title: t("table.status"),
         dataIndex: "public",
         className: "whitespace-nowrap",
-        render: (isPublic: boolean, reccord: IBlogTagTable) => (
+        render: (isPublic: boolean, reccord: IBlogTable) => (
           <Switch
             checked={isPublic}
             onClick={() => {
@@ -108,7 +105,7 @@ const BlogTagTable = (props: Props) => {
         dataIndex: "action",
         className: "whitespace-nowrap",
         align: "center",
-        render: (_, record: IBlogTagTable) => {
+        render: (_, record: IBlogTable) => {
           return (
             <div className="flex items-center justify-center gap-2">
               <BtnDelete
@@ -117,9 +114,7 @@ const BlogTagTable = (props: Props) => {
                   handlePopup();
                 }}
               />
-              <BtnEdit
-                onClick={() => router.push(`/edit/blog-tag/${record.id}`)}
-              />
+              <BtnEdit onClick={() => router.push(`/edit/blog/${record.id}`)} />
             </div>
           );
         },
@@ -135,16 +130,16 @@ const BlogTagTable = (props: Props) => {
     setModalDelete(!modalDelete);
   };
 
-  const onActive = async (reccord: IBlogTagTable) => {
+  const onActive = async (reccord: IBlogTable) => {
     try {
-      await activeTagBlog(reccord.id);
+      await activeBlog(reccord.id);
 
       const indexItem: number = listItem.findIndex(
-        (item: IBlogTagTable) => item.id === reccord.id,
+        (item: IBlogTable) => item.id === reccord.id,
       );
 
       if (indexItem > -1) {
-        const newItems: IBlogTagTable[] = [...listItem];
+        const newItems: IBlogTable[] = [...listItem];
         newItems[indexItem] = { ...reccord, public: true };
         setListItem(newItems);
       }
@@ -155,16 +150,16 @@ const BlogTagTable = (props: Props) => {
     }
   };
 
-  const onDisable = async (reccord: IBlogTagTable) => {
+  const onDisable = async (reccord: IBlogTable) => {
     try {
-      await disableTagBlog(reccord.id);
+      await disableBlog(reccord.id);
 
       const indexItem: number = listItem.findIndex(
-        (item: IBlogTagTable) => item.id === reccord.id,
+        (item: IBlogTable) => item.id === reccord.id,
       );
 
       if (indexItem > -1) {
-        const newItems: IBlogTagTable[] = [...listItem];
+        const newItems: IBlogTable[] = [...listItem];
         newItems[indexItem] = { ...reccord, public: false };
         setListItem(newItems);
       }
@@ -179,7 +174,7 @@ const BlogTagTable = (props: Props) => {
     if (!selectDelete) return;
 
     try {
-      await deleteTagBlog(selectDelete.id);
+      await deleteBlog(selectDelete.id);
       setModalDelete(false);
       setSelectDelete(null);
       getData();
@@ -236,4 +231,4 @@ const BlogTagTable = (props: Props) => {
   );
 };
 
-export default BlogTagTable;
+export default BlogTable;

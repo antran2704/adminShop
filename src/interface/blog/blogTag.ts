@@ -1,3 +1,6 @@
+import { STATUS_PARAMATER_ENUM } from "~/enums";
+import { ISearch } from "../queryParams";
+
 interface IBlogTag {
   _id: string;
   title: string;
@@ -22,4 +25,8 @@ interface IBlogTagTable {
   createdAt: string;
 }
 
-export type { IBlogTag, ICreateBlogTag, IBlogTagTable };
+interface IBlogTagSearch extends ISearch {
+  status?: STATUS_PARAMATER_ENUM;
+}
+
+export type { IBlogTag, ICreateBlogTag, IBlogTagTable, IBlogTagSearch };

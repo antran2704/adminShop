@@ -348,32 +348,36 @@ body::-webkit-scrollbar {
 }
 
 .quill {
-  height: 80vh;
-  border-radius: 6px;
-  border: 1px solid;
-  overflow: hidden;
+  height: 100%;
+}
 
-  & .ql-editor {
-    @include scroll();
+.ql-editor {
+  min-height: 300px;
+  resize: vertical;
+}
 
-    padding: 12px 16px 80px;
-  }
-
-  & .ql-toolbar.ql-snow {
-    border: none;
-    border-bottom: 1px solid #ccc;
-  }
-
-  & .ql-container.ql-snow {
-    border: none;
+.error {
+  .ql-toolbar.ql-snow,
+  .ql-container.ql-snow {
+    border: 1px solid red;
   }
 }
 
-.dark {
-  .quill {
-    background-color: white;
+.disabled {
+  .ql-toolbar.ql-snow {
+    display: none;
+  }
+  .ql-editor {
+    border-top: 1px solid #ccc;
   }
 }
+
+.quill__image {
+  width: 400px;
+  height: 400px;
+  margin: 0 auto;
+}
+
 
 // Overide css Button component antd
 .ant-btn:disabled,

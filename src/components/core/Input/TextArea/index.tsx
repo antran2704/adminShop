@@ -14,12 +14,7 @@ const InputText = (props: Props, ref: Ref<InputRef>) => {
   return (
     <div>
       {title && (
-        <p
-          className={clsx("text-base pb-2 dark:text-darkInput", [
-            error && "text-error",
-          ])}>
-          {title}
-        </p>
+        <p className={clsx("text-base pb-2 dark:text-darkInput")}>{title}</p>
       )}
       <Input.TextArea
         ref={ref}

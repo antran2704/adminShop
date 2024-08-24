@@ -24,7 +24,7 @@ const initData: ICreateBlogTag = {
 
 const Layout = PrivateLayout;
 
-const CreateCategoryPage: NextPageWithLayout = () => {
+const CreateBlogTagPage: NextPageWithLayout = () => {
   const router = useRouter();
 
   const t = useTranslations("BlogTagPage");
@@ -121,7 +121,7 @@ const CreateCategoryPage: NextPageWithLayout = () => {
   );
 };
 
-export default CreateCategoryPage;
+export default CreateBlogTagPage;
 
 export async function getStaticProps(context: { locale: string }) {
   return {
@@ -132,6 +132,6 @@ export async function getStaticProps(context: { locale: string }) {
   };
 }
 
-CreateCategoryPage.getLayout = function getLayout(page: ReactElement) {
+CreateBlogTagPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
 };

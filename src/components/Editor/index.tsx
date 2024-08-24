@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, memo, useEffect, useMemo, useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
@@ -8,11 +8,14 @@ import "highlight.js/styles/tokyo-night-dark.css";
 
 import { uploadBannerImage } from "~/api-client";
 import { ECompressFormat, ETypeImage } from "~/enums";
-import { checkImage, resizeImage } from "~/helper/handleImage";
-import { IOptionImage } from "~/interface";
+import { resizeImage } from "~/helper/handleImage";
+import { FileType, IOptionImage } from "~/interface";
 
 import useDebounce from "~/hooks/useDebounce";
 import SpinLoading from "../Loading/SpinLoading";
+import { checkFile } from "~/helper/file";
+import { ETypeFile } from "~/enums/file";
+import clsx from "clsx";
 
 const initOption: IOptionImage = {
   quality: 100,
@@ -25,17 +28,20 @@ const initOption: IOptionImage = {
 };
 
 interface Props {
+  title?: string;
   content?: string;
   option?: IOptionImage;
   debounce?: number;
   placeholder?: string;
+  error?: boolean;
+  disabled?: boolean;
+  maxLength?: number;
   getContent: (content: string) => void;
 }
 
 //Add class Image Quill Editor
 let Image = ReactQuill.Quill.import("formats/image");
 Image.className = "quill__image";
-
 ReactQuill.Quill.register(Image, true);
 
 //Font Quill Editor
@@ -84,10 +90,14 @@ const backgroundColors: string[] = ["red"];
 
 const Editor = (props: Props) => {
   const {
+    title,
     content = "",
     option = initOption,
     debounce = 1000,
     placeholder = "Enter your content...",
+    error = false,
+    disabled = false,
+    maxLength,
     getContent,
   } = props;
   const quillRef = useRef(null);
@@ -114,16 +124,20 @@ const Editor = (props: Props) => {
       // setLoadMessage("Hình ảnh đang tải lên...")
       if (!input.files) return;
 
-      const file = input.files[0];
+      const file = input.files[0] as FileType;
 
-      const isValidImage: boolean = checkImage(file, 500000);
+      const isValidImage: boolean = checkFile(file, [
+        ETypeFile.JPEG,
+        ETypeFile.PNG,
+        ETypeFile.WEBP,
+      ]);
 
       if (!isValidImage) return;
       const newImage = (await resizeImage(file, option)) as File;
       const source: File = newImage;
 
       const formData: FormData = new FormData();
-      formData.append("image", source);
+      formData.append("thumbnail", source);
       const { payload, status } = await uploadBannerImage(formData);
 
       // onChange(source, url);
@@ -186,23 +200,29 @@ const Editor = (props: Props) => {
   }, [newValue]);
 
   return (
-    <div className="relative overflow-hidden z-0">
-      <ReactQuill
-        modules={modules}
-        formats={formats}
-        ref={quillRef}
-        theme="snow"
-        value={value}
-        onChange={onChangeContent}
-        placeholder={placeholder}
-      />
-
-      {loading && (
-        <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black/40 rounded-md">
-          <SpinLoading className="text-3xl text-white" />
-        </div>
+    <Fragment>
+      {title && (
+        <p className={clsx("text-base pb-2 dark:text-darkInput")}>{title}</p>
       )}
-    </div>
+      <div className="relative overflow-hidden z-0">
+        <ReactQuill
+          modules={modules}
+          formats={formats}
+          ref={quillRef}
+          theme="snow"
+          value={value}
+          className={clsx([error && "error"], [disabled && "disabled"])}
+          onChange={onChangeContent}
+          placeholder={placeholder}
+        />
+
+        {loading && (
+          <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black/40 rounded-md">
+            <SpinLoading className="text-3xl text-white" />
+          </div>
+        )}
+      </div>
+    </Fragment>
   );
 };
 
