@@ -1,6 +1,6 @@
 import qs from "qs";
 
-import { ICreateVariant, ISearch, IVariantProduct } from "~/interface";
+import { ICreateVariant, ISearch } from "~/interface";
 import httpConfig from "~/configs/configAxios";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;

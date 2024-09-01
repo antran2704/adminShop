@@ -45,24 +45,27 @@ const getCategoriesWithFilter = async (
   filter: IFilter | null,
   page: number = 1,
 ) => {
-  return await httpConfig.get(
-    BASE_URL +
-      `/admin/categories/search?search=${filter?.search || ""}&page=${page}`,
-  );
+  return await httpConfig
+    .get(
+      BASE_URL +
+        `/admin/categories/search?search=${filter?.search || ""}&page=${page}`,
+    )
+    .then((res) => res.data);
 };
 
 const createCategory = async (data: Partial<ICategory>) => {
-  return await httpConfig.post(BASE_URL + "/admin/categories", data);
+  return await httpConfig
+    .post(BASE_URL + "/admin/categories", data)
+    .then((res) => res.data);
 };
 
 const updateCategory = async (
   category_id: string,
   data: Partial<ICategory>,
 ) => {
-  return await httpConfig.patch(
-    BASE_URL + `/admin/categories/${category_id}`,
-    data,
-  );
+  return await httpConfig
+    .patch(BASE_URL + `/admin/categories/${category_id}`, data)
+    .then((res) => res.data);
 };
 
 const activeCategory = async (id: string) => {
@@ -85,7 +88,9 @@ const uploadThumbnailCategory = async (formData: FormData) => {
 };
 
 const deleteCategory = async (category_id: string) => {
-  return await httpConfig.delete(BASE_URL + `/admin/categories/${category_id}`);
+  return await httpConfig
+    .delete(BASE_URL + `/admin/categories/${category_id}`)
+    .then((res) => res.data);
 };
 
 export {

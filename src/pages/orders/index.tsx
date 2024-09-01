@@ -24,7 +24,7 @@ const OrdersPage: NextPageWithLayout = () => {
   const { query } = router;
 
   const pageParam = query.page ? Number(query.page) : 1;
-  const takeParam = query.take ? Number(query.take) : 2;
+  const takeParam = query.take ? Number(query.take) : 16;
   const searchParam = query.search ? query.search : "";
   const orderParam = query.order ? query.order : ORDER_PARAMATER_ENUM.DESC;
 
@@ -42,7 +42,7 @@ const OrdersPage: NextPageWithLayout = () => {
 
   const [pagination, setPagination] = useState<IPagination>(initPagination);
   const [loading, setLoading] = useState<boolean>(true);
-  console.log("pagination", pagination);
+
   const [messageApi, contextHolder] = message.useMessage();
 
   const onChangePage = (page: number, pageSize: number) => {

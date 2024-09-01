@@ -47,18 +47,22 @@ const updateCoupon = async (
   data: Partial<ICoupon>,
   headers?: Partial<AxiosRequestHeadersCus>,
 ) => {
-  return await httpConfig.patch(BASE_URL + `/discounts/${coupon_id}`, data, {
-    headers,
-  });
+  return await httpConfig
+    .patch(BASE_URL + `/discounts/${coupon_id}`, data, {
+      headers,
+    })
+    .then((res) => res.data);
 };
 
 const deleteCoupon = async (
   coupon_id: string,
   headers?: Partial<AxiosRequestHeadersCus>,
 ) => {
-  return await httpConfig.delete(BASE_URL + `/discounts/${coupon_id}`, {
-    headers,
-  });
+  return await httpConfig
+    .delete(BASE_URL + `/discounts/${coupon_id}`, {
+      headers,
+    })
+    .then((res) => res.data);
 };
 
 export { getCoupons, getCouponsWithFilter, updateCoupon, deleteCoupon };

@@ -19,17 +19,15 @@ interface Props {
   pagination?: IPagination;
   loading?: boolean;
   showPagination?: boolean;
-  getData?: () => void;
   onChangePage?: (page: number, pageSize: number) => void;
 }
 
-const CategoryTable = (props: Props) => {
+const Table = (props: Props) => {
   const {
     data,
     loading = false,
     pagination = initPagination,
     showPagination = true,
-    getData,
     onChangePage,
   } = props;
 
@@ -150,9 +148,7 @@ const CategoryTable = (props: Props) => {
         render: (_, record: IOrderTable) => {
           return (
             <div className="flex items-center justify-center gap-2">
-              <BtnEdit
-                onClick={() => router.push(`/edit/category/${record.id}`)}
-              />
+              <BtnEdit onClick={() => router.push(`/orders/${record.id}`)} />
             </div>
           );
         },
@@ -181,4 +177,4 @@ const CategoryTable = (props: Props) => {
   );
 };
 
-export default CategoryTable;
+export default Table;

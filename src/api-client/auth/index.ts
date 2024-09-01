@@ -8,7 +8,9 @@ const getInfoUser = async () => {
 };
 
 const logout = async () => {
-  return await httpConfig.post(BASE_URL + "/admin/logout");
+  return await httpConfig
+    .post(BASE_URL + "/admin/logout")
+    .then((res) => res.data);
 };
 
 const login = async (body: { email: string; password: string }) => {
@@ -26,7 +28,9 @@ const getRefreshToken = async (refreshToken: string) => {
 };
 
 const getPermission = async (userId: string) => {
-  return await httpConfig.get(BASE_URL + `/admin/permission/${userId}`);
+  return await httpConfig
+    .get(BASE_URL + `/admin/permission/${userId}`)
+    .then((res) => res.data);
 };
 
 export { getRefreshToken, getInfoUser, logout, login, getPermission };

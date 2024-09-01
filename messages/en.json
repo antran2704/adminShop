@@ -277,6 +277,7 @@
   },
   "OrderPage": {
     "title": "List of order",
+    "detailTitle": "Order Detail",
     "recentOrder": "Recent order",
     "table": {
       "id": "Order ID",
@@ -286,6 +287,27 @@
       "status": "Status",
       "action": "Action",
       "createdAt": "Created At"
+    },
+    "tableDetail": {
+      "orderNumber": "NO",
+      "thumbnail":"Thumbnail",
+      "product": "Product",
+      "model": "Model",
+      "quantity":"Quantity",
+      "price": "Price",
+      "promotionPrice": "Promotion Price",
+      "amount": "Amount"
+    },
+    "mainInfo": {
+      "title": "Infomation of customer",
+      "orderId": "Order ID",
+      "email": "Email",
+      "address": "Address",
+      "phone": "Phone",
+      "customerName": "Customer name",
+      "status": "Status of order",
+      "createdAt": "Created At",
+      "updatedAt": "Last updated"
     },
     "orderStatus": {
       "pending": "Pending",

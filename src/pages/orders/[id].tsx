@@ -11,50 +11,43 @@ import {
   ChangeEvent,
   ReactElement,
 } from "react";
-import { toast } from "react-toastify";
 import { AiOutlinePrinter } from "react-icons/ai";
 
-import { getDateTime } from "~/helper/format/datetime";
-import { optionsCancle, optionsCancleByPayment } from "~/data/optionCancle";
+import {
+  IItemOrder,
+  IOrder,
+  IOrderDetailTable,
+  statusOrder,
+} from "~/interface/order";
 
-import { IOptionCancle } from "~/interface";
-import { IOrder, statusOrder, IItemOrder } from "~/interface/order";
-import { PaymentStatus, typeCel } from "~/enums";
-
-import { Table } from "~/components/Table";
-import { CelTable } from "~/components/Table";
-
-import { colHeaderOrderDetail as colHeadTable } from "~/components/Table/colHeadTable";
-import Popup from "~/components/Popup";
-import { ButtonClassic } from "~/components/Button";
 import Loading from "~/components/Loading";
-import { formatBigNumber } from "~/helper/number/fomatterCurrency";
 import { getOrder, updateOrder, updatePaymentStatusOrder } from "~/api-client";
 import { getValueCoupon } from "~/helper/number/coupon";
 import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithHeader from "~/layouts/Private";
-import { NO_IMAGE } from "~/common/images";
+import { PrivateLayout } from "~/layouts";
+import { IResponse } from "~/interface";
+import { MainInfoOrder, OrderDetailTable } from "~/components/OrderPage";
+import { formatBigNumber } from "~/helper/format/number";
+import { useTranslations } from "next-intl";
 
-const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {
-  loading: () => <Loading />,
-  ssr: false,
-});
+// const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {
+//   loading: () => <Loading />,
+//   ssr: false,
+// });
 
-const BG_STATUS = {
-  pending: "bg-warn",
-  processing: "bg-primary",
-  delivered: "bg-success",
-  cancle: "bg-cancle",
-};
-
-const Layout = LayoutWithHeader;
+const Layout = PrivateLayout;
 
 const OrderDetail: NextPageWithLayout = () => {
+  const t = useTranslations("OrderPage");
+
   const router: NextRouter = useRouter();
   const orderId = router.query.id;
+
   const noteRef = useRef<HTMLTextAreaElement>(null);
-  const [data, setData] = useState<IOrder | null>(null);
-  const [message] = useState<string | null>(null);
+
+  const [order, setOrder] = useState<IOrder | null>(null);
+  const [orderTable, setOrderTable] = useState<IOrderDetailTable[]>([]);
+
   const [cancle, setCancle] = useState<string | null>(null);
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -169,33 +162,52 @@ const OrderDetail: NextPageWithLayout = () => {
     }
   };
 
-  const getDataOrder = async (id: string) => {
+  const getData = async (id: string) => {
     setLoading(true);
-    try {
-      const response = await getOrder(id);
-      if (response.status === 200) {
-        setData(response.payload);
-      }
-    } catch (error) {
-      router.push("/404");
-      return;
-    }
 
-    setLoading(false);
+    await getOrder(id)
+      .then(({ payload }: IResponse<IOrder>) => {
+        const dataTable: IOrderDetailTable[] = payload.items.map(
+          (item: IItemOrder, index: number) => ({
+            key: item._id,
+            id: item.product_id,
+            orderNumber: index + 1,
+            productName: item.model_name,
+            price: item.price,
+            promotionPrice: item.promotion_price,
+            thumbnail: item.image,
+            quantity: item.quantity,
+            total: !!item.promotion_price
+              ? item.quantity * item.promotion_price
+              : item.quantity * item.price,
+          }),
+        );
+
+        setOrder(payload);
+        setOrderTable(dataTable);
+
+        setLoading(false);
+      })
+      .catch(() => {
+        router.push("/404");
+      });
   };
 
   useEffect(() => {
     if (orderId) {
-      getDataOrder(orderId as string);
+      getData(orderId as string);
     }
   }, [orderId]);
 
   return (
     <section className="p-5">
       <h1 className="lg:text-2xl md:text-xl text-lg dark:text-darkText font-medium">
-        Order detail
+        {t("detailTitle")}
       </h1>
-      {data && (
+
+      {order && <MainInfoOrder data={order} />}
+
+      {/* {data && (
         <ul className="py-5">
           <h2 className="md:text-lg text-base dark:text-darkText text-primary font-medium">
             Information
@@ -370,76 +382,14 @@ const OrderDetail: NextPageWithLayout = () => {
             </div>
           )}
         </ul>
-      )}
-      {data && (
-        <div className="my-5">
-          <Table
-            colHeadTabel={colHeadTable}
-            message={message}
-            loading={loading}>
-            <Fragment>
-              {data.items.map((item: IItemOrder, index: number) => (
-                <tr
-                  key={item._id}
-                  className="hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-900 dark:text-white border-b border-gray-300 last:border-none">
-                  <CelTable
-                    center={true}
-                    type={typeCel.TEXT}
-                    value={(index + 1).toString()}
-                  />
-                  <CelTable
-                    type={typeCel.THUMBNAIL}
-                    value={(item.product?.thumbnail as string) || NO_IMAGE}
-                    href={`/edit/product/${item.product._id}`}
-                    className="w-20 h-20"
-                  />
-                  <CelTable
-                    type={typeCel.LINK}
-                    value={
-                      item.variation ? item.variation.title : item.product.title
-                    }
-                    href={`/edit/product/${item.product._id}`}
-                  />
-                  <CelTable
-                    center={true}
-                    type={typeCel.TEXT}
-                    value={
-                      item.variation
-                        ? item.variation.options?.join(" / ")
-                        : "Default"
-                    }
-                  />
-                  <CelTable
-                    center={true}
-                    type={typeCel.TEXT}
-                    value={item.quantity.toString()}
-                  />
-                  <CelTable
-                    center={true}
-                    type={typeCel.TEXT}
-                    value={formatBigNumber(item.price) + " VND"}
-                  />
-                  <CelTable
-                    center={true}
-                    type={typeCel.TEXT}
-                    value={formatBigNumber(item.promotion_price) + " VND"}
-                  />
-                  <CelTable
-                    center={true}
-                    type={typeCel.TEXT}
-                    value={
-                      (item.promotion_price > 0
-                        ? formatBigNumber(item.promotion_price * item.quantity)
-                        : formatBigNumber(item.price * item.quantity)) + " VND"
-                    }
-                  />
-                </tr>
-              ))}
-            </Fragment>
-          </Table>
-        </div>
-      )}
-      {data && (
+      )} */}
+
+      {/* Table */}
+      <div className="py-10">
+        <OrderDetailTable data={orderTable} />
+      </div>
+
+      {order && (
         <div className="flex md:flex-row flex-col md:items-start items-start justify-between bg-[#f9fafb] dark:bg-gray-800 p-5 border rounded-md gap-5">
           <div>
             <h3 className="lg:text-lg  md:text-base dark:text-darkText text-sm font-medium uppercase">
@@ -454,10 +404,10 @@ const OrderDetail: NextPageWithLayout = () => {
               Shipping cost
             </h3>
             <p className="md:text-base dark:text-darkText text-sm font-medium mt-2">
-              {formatBigNumber(data.shipping_cost)} VND
+              {formatBigNumber(order.shipping.shipping_fee)} VND
             </p>
           </div>
-          {data.discount && (
+          {order.discount && (
             <div>
               <h3 className="lg:text-lg  md:text-base dark:text-darkText text-sm font-medium uppercase">
                 Discount
@@ -468,7 +418,7 @@ const OrderDetail: NextPageWithLayout = () => {
                     Name:
                   </p>
                   <p className="md:text-base dark:text-darkText text-sm font-medium mt-2">
-                    {data.discount.discount_code}
+                    {order.discount.discount_code}
                   </p>
                 </li>
                 <li className="flex items-center justify-between gap-2">
@@ -479,9 +429,9 @@ const OrderDetail: NextPageWithLayout = () => {
                     -
                     {formatBigNumber(
                       getValueCoupon(
-                        data.sub_total,
-                        data.discount.discount_value as number,
-                        data.discount.discount_type as string,
+                        order.sub_total,
+                        order.discount.discount_value as number,
+                        order.discount.discount_type as string,
                       ),
                     )}{" "}
                     VND
@@ -495,7 +445,7 @@ const OrderDetail: NextPageWithLayout = () => {
               Total
             </h3>
             <p className="md:text-base text-sm text-[#0E9F6E] font-medium mt-2">
-              {formatBigNumber(data.total)} VND
+              {formatBigNumber(order.total)} VND
             </p>
           </div>
         </div>
@@ -514,218 +464,34 @@ const OrderDetail: NextPageWithLayout = () => {
           <AiOutlinePrinter />
         </button>
 
-        {showPrint && data && (
+        {/* print pdf */}
+        {/* {showPrint && order && (
           <div className="fixed top-0 left-0 right-0 bottom-0 z-[9999]">
             <div className="absolute w-full h-full bg-[#ffffffbf] backdrop-blur z-10"></div>
             <div
               onClick={() => onShow(showPrint, setShowPrint)}
               className="absolute w-full h-full bg-black opacity-60 z-20"></div>
             <div className="absolute w-10/12 h-screen top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 z-30">
-              <PDFDocument data={data} />
+              <PDFDocument data={order} />
             </div>
           </div>
-        )}
+        )} */}
       </div>
-      {showConfirmBanking && (
-        <Popup
-          show={showConfirmBanking}
-          title="Xác nhận đã chuyển khoản"
-          onClose={onShowConfirmBanking}>
-          <div className="flex items-center justify-between">
-            <ButtonClassic
-              title="Cancle"
-              size="S"
-              handleClick={onShowConfirmBanking}
-              className="bg-error"
-            />
 
-            <ButtonClassic
-              title="Accept"
-              size="S"
-              handleClick={() => {
-                onShowConfirmBanking();
-                hanldeChangePaymentStatus(PaymentStatus.success);
-              }}
-              className="bg-success text-white opacity-80 hover:opacity-100"
-            />
-          </div>
-        </Popup>
-      )}
-
-      {showCancle && data?.payment_status === PaymentStatus.success && (
-        <Popup show={showCancle} title="Lý do hủy đơn" onClose={onShowCancle}>
-          <div className="mx-auto">
-            <fieldset>
-              <legend className="sr-only">Countries</legend>
-
-              {optionsCancle.map((option: IOptionCancle) => (
-                <div key={option.id} className="flex items-center mb-4">
-                  <input
-                    id={option.id}
-                    type="radio"
-                    name="options"
-                    onChange={(e) => onChooseOption(e)}
-                    value={option.value}
-                    className="h-4 w-4 border-gray-300"
-                  />
-                  <label
-                    htmlFor={option.id}
-                    className="text-sm font-medium text-gray-900 dark:text-darkText  ml-2 block">
-                    {option.lable}
-                  </label>
-                </div>
-              ))}
-            </fieldset>
-
-            <div className="my-4">
-              <h3 className="text-base dark:text-darkText mb-2">Note</h3>
-              <textarea
-                ref={noteRef}
-                className="w-full px-3 py-2 rounded-md border-2"
-                name="note_option"
-                id="note_option"
-                cols={30}
-                rows={4}
-                placeholder="Enter note..."></textarea>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <ButtonClassic
-                title="Cancle"
-                size="S"
-                handleClick={onShowCancle}
-                className="bg-error"
-              />
-
-              <ButtonClassic
-                title="Accept"
-                disable={disableBtnCancle}
-                size="S"
-                handleClick={() => {
-                  onShowCancle();
-                  hanldeChangeStatus(statusOrder.cancle);
-                }}
-                className="bg-success"
-              />
-            </div>
-          </div>
-        </Popup>
-      )}
-
-      {showCancle && data?.payment_status !== PaymentStatus.success && (
-        <Popup show={showCancle} title="Lý do hủy đơn" onClose={onShowCancle}>
-          <div className="mx-auto">
-            <fieldset>
-              <legend className="sr-only">Countries</legend>
-
-              {optionsCancleByPayment.map((option: IOptionCancle) => (
-                <div key={option.id} className="flex items-center mb-4">
-                  <input
-                    id={option.id}
-                    type="radio"
-                    name="options"
-                    onChange={(e) => onChooseOption(e)}
-                    value={option.value}
-                    className="h-4 w-4 border-gray-300"
-                  />
-                  <label
-                    htmlFor={option.id}
-                    className="text-sm font-medium text-gray-900 dark:text-darkText ml-2 block">
-                    {option.lable}
-                  </label>
-                </div>
-              ))}
-            </fieldset>
-
-            <div className="my-4">
-              <h3 className="text-base dark:text-darkText mb-2">Note</h3>
-              <textarea
-                ref={noteRef}
-                className="w-full px-3 py-2 rounded-md border-2"
-                name="note_option"
-                id="note_option"
-                cols={30}
-                rows={4}
-                placeholder="Enter note..."></textarea>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <ButtonClassic
-                title="Cancle"
-                size="S"
-                handleClick={onShowCancle}
-                className="bg-error"
-              />
-
-              <ButtonClassic
-                title="Accept"
-                disable={disableBtnCancle}
-                size="S"
-                handleClick={() => {
-                  onShowCancle();
-                  hanldeChangeStatus(statusOrder.cancle);
-                }}
-                className={`${disableBtnCancle ? "bg-[#d1d6e2]" : "bg-success"}`}
-              />
-            </div>
-          </div>
-        </Popup>
-      )}
-      {showDelivered && (
-        <Popup
-          title="Bạn có muốn hoàn thành đơn hàng này"
-          show={showDelivered}
-          onClose={onShowDelivered}>
-          <div className="flex items-center justify-between">
-            <ButtonClassic
-              title="Cancle"
-              size="S"
-              handleClick={onShowDelivered}
-              className="bg-error"
-            />
-
-            <ButtonClassic
-              title="Accept"
-              size="S"
-              handleClick={() => {
-                onShowDelivered();
-                hanldeChangeStatus(statusOrder.delivered);
-              }}
-              className="bg-success text-white opacity-80 hover:opacity-100"
-            />
-          </div>
-        </Popup>
-      )}
-      {showProcessing && (
-        <Popup
-          title="Đang chuẩn bị đơn hàng"
-          show={showProcessing}
-          onClose={onShowProcessing}>
-          <div className="flex items-center justify-between">
-            <ButtonClassic
-              title="Cancle"
-              size="S"
-              handleClick={onShowProcessing}
-              className="bg-error"
-            />
-
-            <ButtonClassic
-              title="Accept"
-              size="S"
-              handleClick={() => {
-                onShowProcessing();
-                hanldeChangeStatus(statusOrder.processing);
-              }}
-              className="bg-success text-white opacity-80 hover:opacity-100"
-            />
-          </div>
-        </Popup>
-      )}
       {loading && <Loading />}
     </section>
   );
 };
 export default OrderDetail;
+
+export async function getServerSideProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../../messages/${context.locale}.json`))
+        .default,
+    },
+  };
+}
 
 OrderDetail.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

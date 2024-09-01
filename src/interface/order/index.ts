@@ -14,9 +14,12 @@ export enum statusOrder {
   cancle = "cancle",
 }
 
-type ICouponOrder = Pick<ICoupon, "discount_name" | "discount_code">;
+type ICouponOrder = Pick<
+  ICoupon,
+  "discount_name" | "discount_code" | "discount_type" | "discount_value"
+>;
 
-interface Address {
+interface IAddressOrder {
   shipping_name: string;
   shipping_address: string;
   shipping_phone: string;
@@ -28,7 +31,7 @@ interface Cancel {
   content: null;
 }
 
-interface Item {
+interface IItemOrder {
   _id: string;
   product_id: string;
   model_id: string;
@@ -53,9 +56,9 @@ interface Shipping {
 interface IOrder {
   _id: string;
   order_id: string;
-  address: Address;
+  address: IAddressOrder;
   user_id: string;
-  items: Item[];
+  items: IItemOrder[];
   shipping: Shipping;
   processing_info: ProcessingInfo[];
   order_status: ENUM_ORDER_STATUS;
@@ -82,10 +85,29 @@ interface IOrderTable {
   createdAt: string;
 }
 
+interface IOrderDetailTable {
+  key: string;
+  id: string;
+  orderNumber: number;
+  productName: string;
+  thumbnail: string;
+  price: number;
+  promotionPrice: number;
+  quantity: number;
+  total: number;
+}
+
 interface ISearchOrder extends ISearch {
   paymentMethod?: ENUM_PAYMENT_METHOD;
   paymentStatus?: ENUM_PAYMENT_STATUS;
   orderStatus?: ENUM_ORDER_STATUS;
 }
 
-export type { IOrder, ISearchOrder, IOrderTable };
+export type {
+  IOrder,
+  ISearchOrder,
+  IOrderTable,
+  IOrderDetailTable,
+  IItemOrder,
+  IAddressOrder,
+};
