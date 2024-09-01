@@ -4,14 +4,14 @@ const CURRENCY: { [k: string]: ICurrency } = {
   vi: {
     symbol: "VND",
     locale: "en-GB",
-    calc: (value) => {
+    calc: (value: number) => {
       return value;
     },
   },
   en: {
     symbol: "USD",
     locale: "en-IN",
-    calc: (value) => {
+    calc: (value: number) => {
       return value / 25 / 1000;
     },
   },

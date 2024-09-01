@@ -276,13 +276,15 @@
     }
   },
   "OrderPage": {
+    "title": "List of order",
     "recentOrder": "Recent order",
     "table": {
-      "orderId": "Order ID",
+      "id": "Order ID",
       "customer": "Customer",
       "paymentMethod": "Payment Method",
       "total": "Total",
       "status": "Status",
+      "action": "Action",
       "createdAt": "Created At"
     },
     "orderStatus": {
@@ -296,7 +298,12 @@
       "cod": "Cod",
       "banking": "Banking",
       "cash": "Cash",
-      "card": "Card"
+      "card": "Card",
+      "vnPay": "VNPay"
+    },
+    "breadcrumb": {
+      "list": "List of order",
+      "update": "Update order"
     }
   },
   "LoginPage": {

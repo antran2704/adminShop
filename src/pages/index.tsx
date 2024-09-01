@@ -30,31 +30,26 @@ import {
   ChartOptions,
   ChartData,
 } from "chart.js";
-import { TableColumnsType } from "antd";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/router";
 
-import { ChartCore, TableCore } from "~/components/Core";
+import { ChartCore } from "~/components/Core";
 import SpringCount from "~/components/SpringCount";
 import Statistic from "~/components/Statistic";
 import { PrivateLayout } from "~/layouts";
 
-import { ICurrency, IGross, IGrossDate, IResponse } from "~/interface";
+import { IGross, IGrossDate, IResponse } from "~/interface";
 import { IOrder, IOrderTable, ISearchOrder } from "~/interface/order";
 import { NextPageWithLayout } from "~/interface/page";
 
-import {
-  ORDER_PARAMATER_ENUM,
-  ORDER_STATUS_ENUM,
-  PAYMENT_METHOD_ENUM,
-} from "~/enums";
+import { ORDER_PARAMATER_ENUM } from "~/enums";
 
 import { countOrders, getOrders } from "~/api-client";
 import { getGross, getGrossInWeek } from "~/api-client/gross/gross-date";
 
-import { formatDate, getFirstDayInWeek } from "~/helper/format/datetime";
-import { formatBigNumber } from "~/helper/format/number";
-import CURRENCY from "~/common/currency";
+import { getFirstDayInWeek } from "~/helper/format/datetime";
+import { ENUM_ORDER_STATUS } from "~/enums/order";
+import { OrderTable } from "~/components/OrderPage";
 
 ChartJS.register(
   CategoryScale,
@@ -120,141 +115,6 @@ const HomePage: NextPageWithLayout = () => {
         },
       ],
     };
-  }, [router.locale]);
-
-  const columns: TableColumnsType<IOrderTable> = useMemo(() => {
-    return [
-      {
-        title: tOrder("table.orderId"),
-        dataIndex: "orderId",
-        key: "orderId",
-        align: "center",
-      },
-      {
-        title: tOrder("table.customer"),
-        dataIndex: "customer",
-        key: "customer",
-        align: "center",
-      },
-      {
-        title: tOrder("table.paymentMethod"),
-        dataIndex: "paymentMethod",
-        key: "paymentMethod",
-        align: "center",
-        render: (method: PAYMENT_METHOD_ENUM) => {
-          switch (method) {
-            case PAYMENT_METHOD_ENUM.BANKING:
-              return (
-                <span className="capitalize block text-sm mx-auto">
-                  {tOrder("paymentMethod.banking")}
-                </span>
-              );
-
-            case PAYMENT_METHOD_ENUM.CARD:
-              return (
-                <span className="capitalize block text-sm mx-auto">
-                  {tOrder("paymentMethod.card")}
-                </span>
-              );
-
-            case PAYMENT_METHOD_ENUM.CASH:
-              return (
-                <span className="capitalize block text-sm mx-auto">
-                  {tOrder("paymentMethod.cash")}
-                </span>
-              );
-
-            case PAYMENT_METHOD_ENUM.COD:
-              return (
-                <span className="capitalize block text-sm mx-auto">
-                  {tOrder("paymentMethod.cod")}
-                </span>
-              );
-
-            default:
-              return (
-                <span className="capitalize block text-sm mx-auto">
-                  {method}
-                </span>
-              );
-          }
-        },
-        className: "whitespace-nowrap",
-      },
-      {
-        title: tOrder("table.total"),
-        dataIndex: "total",
-        key: "total",
-        align: "center",
-        render: (total: number) => {
-          const currency: ICurrency =
-            CURRENCY[router.locale as keyof typeof CURRENCY];
-          return (
-            <span className="capitalize block text-sm mx-auto">
-              {`${formatBigNumber(currency.calc(total), currency.locale, { style: "currency", currency: currency.symbol })}`}
-            </span>
-          );
-        },
-      },
-      {
-        title: tOrder("table.status"),
-        dataIndex: "orderStatus",
-        key: "orderStatus",
-        className: "whitespace-nowrap",
-        render: (status: ORDER_STATUS_ENUM) => {
-          switch (status) {
-            case ORDER_STATUS_ENUM.PENDING:
-              return (
-                <div className="px-3 py-1 rounded-md text-sm w-fit mx-auto bg-pending text-white">
-                  {tOrder("orderStatus.pending")}
-                </div>
-              );
-
-            case ORDER_STATUS_ENUM.PROCESS:
-              return (
-                <div className="px-3 py-1 rounded-md text-sm w-fit mx-auto bg-primary text-white">
-                  {tOrder("orderStatus.process")}
-                </div>
-              );
-
-            case ORDER_STATUS_ENUM.CANCEL:
-              return (
-                <div className="px-3 py-1 rounded-md text-sm w-fit mx-auto bg-error text-white">
-                  {tOrder("orderStatus.cancel")}
-                </div>
-              );
-
-            case ORDER_STATUS_ENUM.SUCCESS:
-              return (
-                <div className="px-3 py-1 rounded-md text-sm w-fit mx-auto bg-success text-white">
-                  {tOrder("orderStatus.success")}
-                </div>
-              );
-
-            case ORDER_STATUS_ENUM.SHIPPING:
-              return (
-                <div className="px-3 py-1 rounded-md text-sm w-fit mx-auto bg-fuchsia-400 text-white">
-                  {tOrder("orderStatus.shipping")}
-                </div>
-              );
-          }
-        },
-        align: "center",
-      },
-      {
-        title: tOrder("table.createdAt"),
-        dataIndex: "createdAt",
-        key: "createdAt",
-        align: "center",
-        render: (date: string) => {
-          return (
-            <span className="whitespace-nowrap capitalize block text-sm mx-auto">
-              {formatDate(date)}
-            </span>
-          );
-        },
-      },
-    ];
   }, [router.locale]);
 
   const [grossToday, setGrossToday] = useState<IGross>(initGross);
@@ -326,7 +186,7 @@ const HomePage: NextPageWithLayout = () => {
   };
 
   const handleCountOrders = async (
-    statusOrder: ORDER_STATUS_ENUM,
+    statusOrder: ENUM_ORDER_STATUS,
     callback: Dispatch<SetStateAction<number>>,
   ) => {
     countOrders(statusOrder)
@@ -338,7 +198,7 @@ const HomePage: NextPageWithLayout = () => {
       .catch((err) => err);
   };
 
-  const handleGetData = async (paramater: ISearchOrder) => {
+  const handleGetOrder = async (paramater: ISearchOrder) => {
     setLoading(true);
 
     await getOrders(paramater).then(
@@ -346,11 +206,11 @@ const HomePage: NextPageWithLayout = () => {
         if (status === 200) {
           const ordersTable: IOrderTable[] = payload.map((order) => ({
             key: order._id,
-            customer: order.address.shipping_email,
-            orderId: order.order_id,
-            paymentMethod: order.payment_method,
-            orderStatus: order.order_status,
+            id: order.order_id,
+            customer: order.address.shipping_name,
             total: order.total,
+            orderStatus: order.order_status,
+            paymentMethod: order.payment_method,
             createdAt: order.createdAt,
           }));
 
@@ -367,13 +227,13 @@ const HomePage: NextPageWithLayout = () => {
     handleGetGrossToday();
 
     // count orders with PENDING status
-    handleCountOrders(ORDER_STATUS_ENUM.PENDING, setPendingOrders);
+    handleCountOrders(ENUM_ORDER_STATUS.PENDING, setPendingOrders);
 
     // count orders with PROCESS status
-    handleCountOrders(ORDER_STATUS_ENUM.PROCESS, setProcessingOrders);
+    handleCountOrders(ENUM_ORDER_STATUS.PROCESS, setProcessingOrders);
 
     // get orders
-    handleGetData({ order: ORDER_PARAMATER_ENUM.DESC, page: 1, take: 16 });
+    handleGetOrder({ order: ORDER_PARAMATER_ENUM.DESC, page: 1, take: 16 });
   }, []);
 
   useEffect(() => {
@@ -500,13 +360,7 @@ const HomePage: NextPageWithLayout = () => {
         </div>
 
         {/* Table orders */}
-        <TableCore
-          dataSource={orders}
-          loading={loading}
-          columns={columns}
-          size="large"
-          showPagination={false}
-        />
+        <OrderTable data={orders} loading={loading} showPagination={false} />
       </div>
     </section>
   );

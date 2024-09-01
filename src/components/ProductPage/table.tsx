@@ -10,7 +10,7 @@ import { formatBigNumber } from "~/helper/format/number";
 
 import { TableCore } from "../Core";
 import ImageCus from "../Image/ImageCus";
-import { PATH_IMAGE } from "~/common/images";
+
 import { formatDate } from "~/helper/format/datetime";
 import { BtnDelete, BtnEdit } from "../Button";
 import { ModalConfirm } from "../Modal";
@@ -69,7 +69,7 @@ const ProductTable = (props: Props) => {
           render: (image: string) => {
             return (
               <ImageCus
-                src={PATH_IMAGE + image}
+                src={image}
                 title="Thumbnail"
                 className="w-[260px] min-w-[260px] h-[140px] object-cover object-center rounded-md mx-auto"
               />

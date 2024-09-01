@@ -378,10 +378,34 @@ body::-webkit-scrollbar {
   margin: 0 auto;
 }
 
-
 // Overide css Button component antd
 .ant-btn:disabled,
 .ant-btn:disabled:hover {
   color: rgba(0, 0, 0, 0.25) !important;
   background: rgba(0, 0, 0, 0.04) !important;
+}
+
+// Overide css Pagination component antd
+.ant-pagination-item:not(.ant-pagination-item-active):hover {
+  border-color: #418efd;
+  background-color: white !important;
+
+  a {
+    color: #418efd;
+  }
+}
+
+
+.ant-pagination .ant-pagination-item-active {
+  background-color: #418efd;
+
+  &:hover{
+    a {
+      color: white;
+    }
+  }
+
+  a {
+    color: white;
+  }
 }

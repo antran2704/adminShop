@@ -1,13 +1,8 @@
 import qs from "qs";
 
 import { uploadImageOnServer } from "~/helper/handleImage";
-import { ICategory, IFilter, IQueryParam, ISearch } from "~/interface";
-import httpConfig, {
-  axiosDelete,
-  axiosGet,
-  axiosPatch,
-  axiosPost,
-} from "~/configs/configAxios";
+import { ICategory, IFilter, ISearch } from "~/interface";
+import httpConfig from "~/configs/configAxios";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
@@ -50,21 +45,24 @@ const getCategoriesWithFilter = async (
   filter: IFilter | null,
   page: number = 1,
 ) => {
-  return await axiosGet(
+  return await httpConfig.get(
     BASE_URL +
       `/admin/categories/search?search=${filter?.search || ""}&page=${page}`,
   );
 };
 
 const createCategory = async (data: Partial<ICategory>) => {
-  return await axiosPost(BASE_URL + "/admin/categories", data);
+  return await httpConfig.post(BASE_URL + "/admin/categories", data);
 };
 
 const updateCategory = async (
   category_id: string,
   data: Partial<ICategory>,
 ) => {
-  return await axiosPatch(BASE_URL + `/admin/categories/${category_id}`, data);
+  return await httpConfig.patch(
+    BASE_URL + `/admin/categories/${category_id}`,
+    data,
+  );
 };
 
 const activeCategory = async (id: string) => {
@@ -87,7 +85,7 @@ const uploadThumbnailCategory = async (formData: FormData) => {
 };
 
 const deleteCategory = async (category_id: string) => {
-  return await axiosDelete(BASE_URL + `/admin/categories/${category_id}`);
+  return await httpConfig.delete(BASE_URL + `/admin/categories/${category_id}`);
 };
 
 export {

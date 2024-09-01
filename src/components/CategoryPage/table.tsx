@@ -5,7 +5,7 @@ import { message, Switch, TableColumnsType } from "antd";
 import { activeCategory, deleteCategory, disableCategory } from "~/api-client";
 import { useTranslations } from "next-intl";
 import ImageCus from "../Image/ImageCus";
-import { PATH_IMAGE } from "~/common/images";
+
 import { formatDate } from "~/helper/format/datetime";
 import { BtnDelete, BtnEdit } from "../Button";
 import { useRouter } from "next/router";
@@ -64,7 +64,7 @@ const CategoryTable = (props: Props) => {
         render: (image: string) => {
           return (
             <ImageCus
-              src={PATH_IMAGE + image}
+              src={image}
               title="banner thumbnail"
               className="w-[260px] min-w-[260px] h-[140px] object-cover object-center rounded-md mx-auto"
             />

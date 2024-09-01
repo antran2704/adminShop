@@ -1,18 +1,5 @@
 /* eslint-disable no-unused-vars */
-export enum MethodPayment {
-  Cash = "cash",
-  Banking = "banking",
-  Cod = "cod",
-  VNPay = "vnpay",
-}
-
-export enum PaymentStatus {
-  pending = "pending",
-  success = "success",
-  cancle = "cancle",
-}
-
-export enum ORDER_STATUS_ENUM {
+export enum ENUM_ORDER_STATUS {
   PENDING = "PENDING",
   PROCESS = "PROCESS",
   SHIPPING = "SHIPPING",
@@ -20,14 +7,14 @@ export enum ORDER_STATUS_ENUM {
   CANCEL = "CANCEL",
 }
 
-export enum PAYMENT_STATUS_ENUM {
+export enum ENUM_PAYMENT_STATUS {
   CHECKING = "CHECKING",
   PENDING = "PENDING",
   SUCCESS = "SUCCESS",
   FAIL = "FAIL",
 }
 
-export enum PROCESS_ORDER_ENUM {
+export enum ENUM_ORDER_PROCESS {
   ORDER_TIME = "ORDER_TIME",
   PAYMENT_TIME = "PAYMENT_TIME",
   SHIP_TIME = "SHIP_TIME",
@@ -35,7 +22,7 @@ export enum PROCESS_ORDER_ENUM {
   CANCEL_TIME = "CANCEL_TIME",
 }
 
-export enum PAYMENT_METHOD_ENUM {
+export enum ENUM_PAYMENT_METHOD {
   COD = "COD",
   CARD = "CARD",
   CASH = "CASH",

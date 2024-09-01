@@ -1,4 +1,5 @@
-import httpConfig, { axiosGet, axiosPost } from "~/configs/configAxios";
+import axios from "axios";
+import httpConfig from "~/configs/configAxios";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
@@ -7,11 +8,11 @@ const getInfoUser = async () => {
 };
 
 const logout = async () => {
-  return await axiosPost(BASE_URL + "/admin/logout");
+  return await httpConfig.post(BASE_URL + "/admin/logout");
 };
 
 const login = async (body: { email: string; password: string }) => {
-  return await httpConfig
+  return await axios
     .post(BASE_URL + "/admin/login", body)
     .then((res) => res.data);
 };
@@ -25,7 +26,7 @@ const getRefreshToken = async (refreshToken: string) => {
 };
 
 const getPermission = async (userId: string) => {
-  return await axiosGet(BASE_URL + `/admin/permission/${userId}`);
+  return await httpConfig.get(BASE_URL + `/admin/permission/${userId}`);
 };
 
 export { getRefreshToken, getInfoUser, logout, login, getPermission };

@@ -13,41 +13,45 @@ const httpConfig = axios.create({
   timeout: 30000,
 });
 
-const axiosGet = async (
-  path: string,
-  config?: AxiosRequestConfig | undefined,
-) => {
-  const payload = await httpConfig.get(path, { ...config });
-  return payload.data;
-};
+// const axiosGet = async (
+//   path: string,
+//   config?: AxiosRequestConfig | undefined,
+// ) => {
+//   const payload = await httpConfig.get(path, { ...config });
+//   return payload.data;
+// };
 
-const axiosPost = async <T>(
-  path: string,
-  data?: T,
-  config?: AxiosRequestConfig | undefined,
-) => {
-  const payload = await httpConfig.post(path, data, { ...config });
-  return payload.data;
-};
+// const axiosPost = async <T>(
+//   path: string,
+//   data?: T,
+//   config?: AxiosRequestConfig | undefined,
+// ) => {
+//   const payload = await httpConfig.post(path, data, { ...config });
+//   return payload.data;
+// };
 
-const axiosPatch = async <T>(
-  path: string,
-  data: T,
-  config?: AxiosRequestConfig | undefined,
-) => {
-  const payload = await httpConfig.patch(path, data, { ...config });
-  return payload.data;
-};
+// const axiosPatch = async <T>(
+//   path: string,
+//   data: T,
+//   config?: AxiosRequestConfig | undefined,
+// ) => {
+//   const payload = await httpConfig.patch(path, data, { ...config });
+//   return payload.data;
+// };
 
-const axiosDelete = async (
-  path: string,
-  config?: AxiosRequestConfig | undefined,
-) => {
-  const payload = await httpConfig.delete(path, { ...config });
-  return payload.data;
-};
+// const axiosDelete = async (
+//   path: string,
+//   config?: AxiosRequestConfig | undefined,
+// ) => {
+//   const payload = await httpConfig.delete(path, { ...config });
+//   return payload.data;
+// };
 
 let isRefresh = false;
+const resfreshTokenUrl: string =
+  (process.env.NEXT_PUBLIC_ENDPOINT_API as string) + "/admin/refreshToken";
+const MAX_RETRY: number = 3;
+
 let translate: any;
 let router: NextRouter;
 let dispatch: AppDispatch;
@@ -64,10 +68,6 @@ export const injectRouter = (_router: NextRouter) => {
   router = _router;
 };
 
-const SKIP_URL: string[] = [
-  process.env.NEXT_PUBLIC_ENDPOINT_API + "/admin/login",
-];
-
 const handleLogout = async () => {
   clearAuthLocal();
   dispatch(logoutReducer());
@@ -80,12 +80,6 @@ httpConfig.interceptors.request.use(
     const refreshToken = getAuthLocal("refreshToken") as string;
     const publicToken = getAuthLocal("publicKey") as string;
     const apiKeyToken = getAuthLocal("apiKey") as string;
-
-    /**
-     *  get uri of url request
-     *  expample: internal/user/login
-     **/
-    const url: string = config.url as string;
 
     // controller for cancle request to server if refreshToken expried
     const controller = new AbortController();
@@ -104,7 +98,8 @@ httpConfig.interceptors.request.use(
       }
 
       const accessTokenExp: number = decoded?.exp as number;
-      const currentTime: number = Math.floor(new Date().getTime() / 1000) + 60;
+      const currentTime: number =
+        Math.floor(new Date().getTime() / 1000) + 3 * 60;
 
       // check accessToken still live or was expried
       if (currentTime >= accessTokenExp && !isRefresh) {
@@ -137,12 +132,8 @@ httpConfig.interceptors.request.use(
       config.headers["Public-Key"] = publicToken;
       config.headers["X-Api-Key"] = apiKeyToken;
     }
-    if (SKIP_URL.includes(url)) return config;
 
-    if (
-      (!accessToken || !refreshToken || !publicToken) &&
-      !SKIP_URL.includes(url)
-    ) {
+    if (!accessToken || !refreshToken || !publicToken) {
       handleLogout();
       controller.abort();
 
@@ -165,24 +156,15 @@ httpConfig.interceptors.response.use(
     return response;
   },
   async (error) => {
-    // If the error status is 401 and there is no originalRequest._retry flag,
-    // it means the token has expired and we need to refresh it
-
     if (!error.response) {
       return Promise.reject(error);
     }
 
-    // if (
-    //   error.response.status === 401 &&
-    //   error.response.data.message === MESSAGE_ERROR.UNAUTHORIZED &&
-    //   isRefresh
-    // ) {
-    //   isRefresh = false;
-    //   handleLogout();
-    // }
+    const url: string = error.config.url;
 
     if (
       error.response.status === 401 &&
+      url === resfreshTokenUrl &&
       error.response.data.message === MESSAGE_ERROR.JWT_EXPRIED
     ) {
       isRefresh = false;
@@ -190,9 +172,18 @@ httpConfig.interceptors.response.use(
       handleLogout();
     }
 
+    // If the error status is 401 and there is no originalRequest._retry flag,
+    // it means the token has expired and we need to refresh it
+    // if retry more than 3 times, logout user
+    if (error.response.status === 401 && url !== resfreshTokenUrl) {
+      if (!error.config.retry || error.config.retry <= MAX_RETRY) {
+        error.config.retry = error.config.retry ? error.config.retry + 1 : 1;
+        return httpConfig(error.config);
+      }
+    }
+
     return Promise.reject(error);
   },
 );
 
 export default httpConfig;
-export { axiosGet, axiosPatch, axiosPost, axiosDelete };

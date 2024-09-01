@@ -1,9 +1,9 @@
 import qs from "qs";
 
-import { ORDER_STATUS_ENUM, PaymentStatus } from "~/enums";
 import { IFilter } from "~/interface";
 import { ISearchOrder, statusOrder } from "~/interface/order";
-import httpConfig, { axiosGet, axiosPatch } from "~/configs/configAxios";
+import httpConfig from "~/configs/configAxios";
+import { ENUM_ORDER_STATUS, ENUM_PAYMENT_STATUS } from "~/enums/order";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
@@ -17,7 +17,7 @@ const getOrders = async (paramater: ISearchOrder) => {
     .then((res) => res.data);
 };
 
-const countOrders = async (orderStatus: ORDER_STATUS_ENUM) => {
+const countOrders = async (orderStatus: ENUM_ORDER_STATUS) => {
   return await httpConfig
     .get(BASE_URL + `/admin/orders/count?order_status=${orderStatus}`)
     .then((res) => res.data);
@@ -27,7 +27,7 @@ const getOrdersWithFilter = async (
   filter: IFilter | null,
   page: number = 1,
 ) => {
-  return await axiosGet(
+  return await httpConfig.get(
     BASE_URL +
       `${process.env.NEXT_PUBLIC_ENDPOINT_API}/orders/search?search=${
         filter?.search || ""
@@ -40,7 +40,7 @@ const getOrdersWithFilter = async (
 };
 
 const getOrder = async (order_id: string) => {
-  return await axiosGet(BASE_URL + `/orders/order_id/${order_id}`);
+  return await httpConfig.get(BASE_URL + `/orders/order_id/${order_id}`);
 };
 
 const updateOrder = async (
@@ -48,7 +48,7 @@ const updateOrder = async (
   status: statusOrder,
   // options?: Partial<IOrderCancle>,
 ) => {
-  return await axiosPatch(BASE_URL + `/orders/status/${order_id}`, {
+  return await httpConfig.patch(BASE_URL + `/orders/status/${order_id}`, {
     status,
     // ...options,
   });
@@ -56,13 +56,14 @@ const updateOrder = async (
 
 const updatePaymentStatusOrder = async (
   order_id: string,
-  status: PaymentStatus,
-  // options?: Partial<IOrderCancle>,
+  status: ENUM_PAYMENT_STATUS,
 ) => {
-  return await axiosPatch(BASE_URL + `/orders/payment_status/${order_id}`, {
-    payment_status: status,
-    // ...options,
-  });
+  return await httpConfig.patch(
+    BASE_URL + `/orders/payment_status/${order_id}`,
+    {
+      payment_status: status,
+    },
+  );
 };
 
 export {

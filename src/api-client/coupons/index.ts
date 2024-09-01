@@ -1,11 +1,11 @@
 import qs from "qs";
+import httpConfig from "~/configs/configAxios";
 import {
   AxiosRequestHeadersCus,
   ICoupon,
   IFilter,
   IQueryParam,
 } from "~/interface";
-import { axiosDelete, axiosGet, axiosPatch } from "~/configs/configAxios";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
@@ -15,9 +15,12 @@ const getCoupons = async (
   headers?: Partial<AxiosRequestHeadersCus>,
 ) => {
   const parseQuery = qs.stringify(select);
-  return await axiosGet(BASE_URL + `/discounts?page=${page}&${parseQuery}`, {
-    headers,
-  });
+  return await httpConfig.get(
+    BASE_URL + `/discounts?page=${page}&${parseQuery}`,
+    {
+      headers,
+    },
+  );
 };
 
 const getCouponsWithFilter = async (
@@ -28,7 +31,7 @@ const getCouponsWithFilter = async (
 ) => {
   const parseQuery = qs.stringify(select);
 
-  return await axiosGet(
+  return await httpConfig.get(
     BASE_URL +
       `/discounts/search?search=${filter?.search || ""}&start_date=${
         filter?.start_date || ""
@@ -44,7 +47,7 @@ const updateCoupon = async (
   data: Partial<ICoupon>,
   headers?: Partial<AxiosRequestHeadersCus>,
 ) => {
-  return await axiosPatch(BASE_URL + `/discounts/${coupon_id}`, data, {
+  return await httpConfig.patch(BASE_URL + `/discounts/${coupon_id}`, data, {
     headers,
   });
 };
@@ -53,7 +56,9 @@ const deleteCoupon = async (
   coupon_id: string,
   headers?: Partial<AxiosRequestHeadersCus>,
 ) => {
-  return await axiosDelete(BASE_URL + `/discounts/${coupon_id}`, { headers });
+  return await httpConfig.delete(BASE_URL + `/discounts/${coupon_id}`, {
+    headers,
+  });
 };
 
 export { getCoupons, getCouponsWithFilter, updateCoupon, deleteCoupon };

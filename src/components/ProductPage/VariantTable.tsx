@@ -11,7 +11,6 @@ import { BtnDelete, BtnEdit, BtnCheck, BtnCancel } from "../Button";
 import { ModalConfirm } from "../Modal";
 import ImageCus from "../Image/ImageCus";
 
-import { PATH_IMAGE } from "~/common/images";
 import { formatBigNumber } from "~/helper/format/number";
 import {
   activeVariation,
@@ -165,7 +164,7 @@ const VariantTable = (props: Props) => {
               <div>
                 {!listEditItem[record._id] && (
                   <ImageCus
-                    src={PATH_IMAGE + image}
+                    src={image}
                     title="banner thumbnail"
                     className="size-[120px] object-cover object-center rounded-md mx-auto"
                   />
@@ -178,10 +177,7 @@ const VariantTable = (props: Props) => {
                       onModal("changeImage");
                     }}>
                     <ImageCus
-                      src={
-                        (PATH_IMAGE as string) +
-                        listEditItem[record._id].thumbnail
-                      }
+                      src={listEditItem[record._id].thumbnail as string}
                       title="banner thumbnail"
                       className="size-[120px] object-cover object-center cursor-pointer rounded-md mx-auto"
                     />
@@ -402,7 +398,7 @@ const VariantTable = (props: Props) => {
               onClick={() => selectItem && onSelectImage(selectItem, item)}
               key={index}>
               <img
-                src={PATH_IMAGE + item}
+                src={item}
                 className="w-full h-full object-cover object-center"
                 alt="product gallery"
               />

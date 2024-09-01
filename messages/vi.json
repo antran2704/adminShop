@@ -276,13 +276,15 @@
     }
   },
   "OrderPage": {
+    "title": "Danh sách đơn hàng",
     "recentOrder": "Đơn hàng gần đây",
     "table": {
-      "orderId": "Mã đơn",
+      "id": "Mã đơn",
       "customer": "Khách hàng",
       "paymentMethod": "Phương thức thanh toán",
       "total": "Tổng tiền",
       "status": "Trạng thái",
+      "action": "Action",
       "createdAt": "Ngày tạo"
     },
     "orderStatus": {
@@ -296,7 +298,12 @@
       "cod": "Cod",
       "banking": "Chuyển khoản",
       "cash": "Tiền mặt",
-      "card": "Thẻ ngân hàng"
+      "card": "Thẻ ngân hàng",
+      "vnPay": "VNPay"
+    },
+    "breadcrumb": {
+      "list": "Danh sách đơn hàng",
+      "update": "Cập nhật đơn hàng"
     }
   },
   "LoginPage": {
