@@ -12,6 +12,7 @@ interface Props {
   cancelText?: string;
   okElement?: ReactNode;
   cancelElement?: ReactNode;
+  align?: "left" | "right" | "center";
   onOk?: () => void;
   onCancel?: () => void;
 }
@@ -26,13 +27,22 @@ const FormFooter = (props: Props) => {
     cancelText,
     okProps,
     cancelProps,
+    align = "right",
     onCancel,
     onOk,
   } = props;
   const tCommon = useTranslations("Common");
 
   return (
-    <div className="sticky bottom-0 flex items-center justify-end py-4 px-5 -mx-5 mt-5 bg-white/60 backdrop-blur-md border-t gap-5 z-20">
+    <div
+      className={clsx(
+        "sticky bottom-0 flex items-center py-4 px-5 -mx-5 mt-5 bg-white/60 backdrop-blur-md border-t gap-5 z-20",
+        [
+          align === "right" && "justify-end",
+          align === "left" && "justify-start",
+          align === "center" && "justify-center",
+        ],
+      )}>
       {beforeEl}
 
       {!cancelElement ? (

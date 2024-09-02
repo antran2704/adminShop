@@ -9,26 +9,30 @@ import {
   SetStateAction,
   ChangeEvent,
   ReactElement,
+  useMemo,
 } from "react";
 import { AiOutlinePrinter } from "react-icons/ai";
-
-import {
-  IItemOrder,
-  IOrder,
-  IOrderDetailTable,
-  statusOrder,
-} from "~/interface/order";
-
-import Loading from "~/components/Loading";
-import { getOrder, updateOrder, updatePaymentStatusOrder } from "~/api-client";
-import { NextPageWithLayout } from "~/interface/page";
-import { PrivateLayout } from "~/layouts";
-import { IResponse } from "~/interface";
-import { MainInfoOrder, OrderDetailTable } from "~/components/OrderPage";
 import { useTranslations } from "next-intl";
 import { Button } from "antd";
 import clsx from "clsx";
+
+import { IItemOrder, IOrder, IOrderDetailTable } from "~/interface/order";
+import { IResponse } from "~/interface";
+import { NextPageWithLayout } from "~/interface/page";
+
+import { getOrder, updateOrder, updatePaymentStatusOrder } from "~/api-client";
+
+import Loading from "~/components/Loading";
+import { PrivateLayout } from "~/layouts";
+import {
+  MainInfoOrder,
+  OrderDetailTable,
+  OrderProcess,
+} from "~/components/OrderPage";
+
 import { formatBigNumber } from "~/helper/format/number";
+import CURRENCY from "~/common/currency";
+import FormFooter from "~/components/Footer/FormFooter";
 
 const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {
   loading: () => <Loading />,
@@ -58,6 +62,10 @@ const OrderDetail: NextPageWithLayout = () => {
   const [showProcessing, setShowProcessing] = useState<boolean>(false);
   const [showConfirmBanking, setShowConfirmBanking] = useState<boolean>(false);
   const [disableBtnCancle, setDisableBtn] = useState<boolean>(true);
+
+  const currency = useMemo(() => {
+    return CURRENCY[router.locale as keyof typeof CURRENCY];
+  }, [router.locale]);
 
   const onShowCancle = useCallback(() => {
     setShowCancle(!showCancle);
@@ -201,7 +209,7 @@ const OrderDetail: NextPageWithLayout = () => {
   }, [orderId]);
 
   return (
-    <section className="p-5">
+    <section className="px-5 pt-5">
       <div className="flex items-center justify-between gap-10">
         <h1 className="md:text-xl text-lg dark:text-darkText font-medium">
           {t("detailTitle")}{" "}
@@ -218,8 +226,80 @@ const OrderDetail: NextPageWithLayout = () => {
         </Button>
       </div>
 
-      {/* Infomation */}
-      {order && <MainInfoOrder data={order} />}
+      <div className="flex items-start lg:flex-row flex-col justify-between my-10 gap-10">
+        <div className="lg:w-8/12 w-full flex flex-col gap-5">
+          {/* Infomation */}
+          {order && <MainInfoOrder data={order} />}
+
+          {/* Table */}
+          <div className="bg-[#f9fafb] border rounded-lg overflow-hidden">
+            <OrderDetailTable data={orderTable} />
+
+            {order && (
+              <div className="flex items-start justify-end p-5">
+                <div className="w-1/4 flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="md:text-base text-sm">
+                      {t("detailTable.subtotal")}
+                    </h3>
+                    <p className="md:text-base text-sm">
+                      {formatBigNumber(
+                        currency.calc(order.sub_total),
+                        currency.locale,
+                        { style: "currency", currency: currency.symbol },
+                      )}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <h3 className="md:text-base text-sm">
+                      {t("detailTable.ship")}
+                    </h3>
+                    <p className="md:text-base text-sm">
+                      {formatBigNumber(
+                        currency.calc(order.shipping.shipping_fee),
+                        currency.locale,
+                        { style: "currency", currency: currency.symbol },
+                      )}
+                    </p>
+                  </div>
+                  {order.discount && (
+                    <div className="flex items-center justify-between">
+                      <h3 className="md:text-base text-sm">
+                        {t("detailTable.discount")}
+                      </h3>
+                      <p className="md:text-base text-sm">
+                        {" "}
+                        -{" "}
+                        {formatBigNumber(
+                          currency.calc(order.discount.discount_value),
+                          currency.locale,
+                          { style: "currency", currency: currency.symbol },
+                        )}
+                      </p>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-black">
+                    <h3 className="md:text-lg text-base font-medium">
+                      {t("detailTable.total")}
+                    </h3>
+                    <p className="md:text-lg text-base font-medium text-primary">
+                      {formatBigNumber(
+                        currency.calc(order.total),
+                        currency.locale,
+                        { style: "currency", currency: currency.symbol },
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="scroll lg:w-4/12 w-full bg-[#f9fafb] max-h-[500px] p-5 border rounded-lg overflow-auto">
+          {order && <OrderProcess data={order.processing_info} />}
+        </div>
+      </div>
 
       {/* {data && (
         <ul className="py-5">
@@ -398,78 +478,20 @@ const OrderDetail: NextPageWithLayout = () => {
         </ul>
       )} */}
 
-      {/* Table */}
-      <div className="bg-[#f9fafb] border rounded-lg overflow-hidden">
-        <OrderDetailTable data={orderTable} />
+      <FormFooter onCancel={() => router.push("/orders")} okElement={null} />
 
-        {order && (
-          <div className="flex items-start justify-end p-5">
-            <div className="w-1/4 flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <h3 className="md:text-base text-sm">
-                  {t("detailTable.subtotal")}
-                </h3>
-                <p className="md:text-base text-sm">
-                  {formatBigNumber(order.sub_total)}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <h3 className="md:text-base text-sm">
-                  {t("detailTable.ship")}
-                </h3>
-                <p className="md:text-base text-sm">
-                  {formatBigNumber(order.shipping.shipping_fee)}
-                </p>
-              </div>
-              {order.discount && (
-                <div className="flex items-center justify-between">
-                  <h3 className="md:text-base text-sm">
-                    {t("detailTable.discount")}
-                  </h3>
-                  <p className="md:text-base text-sm">
-                    {" "}
-                    - {formatBigNumber(order.discount.discount_value)}
-                  </p>
-                </div>
-              )}
-              <div className="flex items-center justify-between mt-2 pt-2 border-t border-black">
-                <h3 className="md:text-lg text-base font-medium">
-                  {t("detailTable.total")}
-                </h3>
-                <p className="md:text-lg text-base font-medium text-primary">
-                  {formatBigNumber(order.total)}
-                </p>
-              </div>
-            </div>
+      {/* print pdf */}
+      {showPrint && order && (
+        <div className="fixed top-0 left-0 right-0 bottom-0 z-[9999]">
+          <div className="absolute w-full h-full bg-[#ffffffbf] backdrop-blur z-10"></div>
+          <div
+            onClick={() => onShow(showPrint, setShowPrint)}
+            className="absolute w-full h-full bg-black opacity-60 z-20"></div>
+          <div className="absolute w-10/12 h-screen top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 z-30">
+            <PDFDocument data={order} />
           </div>
-        )}
-      </div>
-
-      <div className="flex items-center justify-between mt-5">
-        <Button
-          size="large"
-          type="primary"
-          onClick={() => router.push("/orders")}
-          className={clsx(
-            "min-w-[100px] w-fit text-lg text-white font-medium bg-[#111926] hover:!bg-[#111926] px-5 py-1 opacity-90 hover:opacity-100 rounded-md",
-          )}>
-          {tCommon("btn.back")}
-        </Button>
-
-        {/* print pdf */}
-        {showPrint && order && (
-          <div className="fixed top-0 left-0 right-0 bottom-0 z-[9999]">
-            <div className="absolute w-full h-full bg-[#ffffffbf] backdrop-blur z-10"></div>
-            <div
-              onClick={() => onShow(showPrint, setShowPrint)}
-              className="absolute w-full h-full bg-black opacity-60 z-20"></div>
-            <div className="absolute w-10/12 h-screen top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 z-30">
-              <PDFDocument data={order} />
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {loading && <Loading />}
     </section>

@@ -316,6 +316,14 @@
       "createdAt": "Created At",
       "updatedAt": "Last updated"
     },
+    "process": {
+      "title": "Order Process",
+      "createdOrder": "Create order success",
+      "payment": "Payment success",
+      "ship": "Shipping",
+      "cancel": "Cancel",
+      "success": "Received"
+    },
     "orderStatus": {
       "pending": "Pending",
       "process": "Process",

@@ -52,7 +52,7 @@ const MainInfoOrder = (props: Props) => {
   }, [router.locale, data]);
 
   return (
-    <div className="p-5 my-10 bg-[#f9fafb] border-2 rounded-lg">
+    <div className="p-5 bg-[#f9fafb] border-2 rounded-lg">
       <h2 className="lg:text-xl md:text-lg text-base text-primary font-medium pb-1 mb-2 border-b">
         {t("mainInfo.title")}
       </h2>

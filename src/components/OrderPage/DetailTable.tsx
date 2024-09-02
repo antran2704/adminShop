@@ -3,8 +3,8 @@ import { ICurrency } from "~/interface";
 import { TableCore } from "../Core";
 import { TableColumnsType } from "antd";
 import { useTranslations } from "next-intl";
-
 import { useRouter } from "next/router";
+
 import { IOrderDetailTable } from "~/interface/order";
 import { formatBigNumber } from "~/helper/format/number";
 import CURRENCY from "~/common/currency";
@@ -62,8 +62,7 @@ const DetailTable = (props: Props) => {
           return (
             <div>
               <p>
-                {`${formatBigNumber(currency.calc(!!record.promotionPrice ? record.promotionPrice : value), currency.locale, { style: "currency", currency: currency.symbol })}`}
-                X {record.quantity}
+                {`${formatBigNumber(currency.calc(!!record.promotionPrice ? record.promotionPrice : value), currency.locale, { style: "currency", currency: currency.symbol })} X ${record.quantity}`}
               </p>
 
               {!!record.promotionPrice && (

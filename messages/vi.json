@@ -323,6 +323,14 @@
       "createdAt": "Ngày tạo",
       "updatedAt": "Cập nhật lần cuối"
     },
+    "process": {
+      "title": "Quy trình đơn hàng",
+      "createdOrder": "Đặt hàng thành công",
+      "payment": "Thanh toán thành công",
+      "ship": "Đang được vận chuyển",
+      "cancel": "Hủy",
+      "success": "Đã nhận hàng"
+    },
     "paymentMethod": {
       "cod": "Cod",
       "banking": "Chuyển khoản",

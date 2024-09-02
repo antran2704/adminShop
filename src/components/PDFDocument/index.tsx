@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import {
   Page,
   Text,
@@ -286,25 +287,31 @@ const PDFDocument = (props: Props) => {
                   </Text>
                   <View style={[styles.col, styles.textCenter]}>
                     <Text>
-                      {formatBigNumber(
-                        !!item.promotion_price
-                          ? item.promotion_price
-                          : item.price,
-                      )}{" "}
-                      X {item.quantity}
+                      {`${formatBigNumber(currency.calc(!!item.promotion_price ? item.promotion_price : item.price), currency.locale, { style: "currency", currency: currency.symbol })} X ${item.quantity}`}
                     </Text>
 
                     {!!item.promotion_price && (
                       <Text style={[styles.content, styles.lineThrough]}>
-                        {item.price}
+                        {formatBigNumber(
+                          currency.calc(item.price),
+                          currency.locale,
+                          { style: "currency", currency: currency.symbol },
+                        )}
                       </Text>
                     )}
                   </View>
                   <Text style={[styles.col, styles.textCenter]}>
                     {item.promotion_price > 0
-                      ? formatBigNumber(item.promotion_price * item.quantity)
-                      : formatBigNumber(item.price * item.quantity)}{" "}
-                    VND
+                      ? formatBigNumber(
+                          currency.calc(item.promotion_price * item.quantity),
+                          currency.locale,
+                          { style: "currency", currency: currency.symbol },
+                        )
+                      : formatBigNumber(
+                          currency.calc(item.price * item.quantity),
+                          currency.locale,
+                          { style: "currency", currency: currency.symbol },
+                        )}
                   </Text>
                 </View>
               ))}
@@ -321,7 +328,11 @@ const PDFDocument = (props: Props) => {
                     {t("detailTable.subtotal")}:
                   </Text>
                   <Text style={styles.content}>
-                    {formatBigNumber(data.sub_total)} VND
+                    {formatBigNumber(
+                      currency.calc(data.sub_total),
+                      currency.locale,
+                      { style: "currency", currency: currency.symbol },
+                    )}
                   </Text>
                 </View>
                 {data.discount && (
@@ -333,13 +344,16 @@ const PDFDocument = (props: Props) => {
                     <Text style={styles.content}>
                       -{" "}
                       {formatBigNumber(
-                        getValueCoupon(
-                          data.sub_total,
-                          data.discount.discount_value as number,
-                          data.discount.discount_type as string,
+                        currency.calc(
+                          getValueCoupon(
+                            data.sub_total,
+                            data.discount.discount_value as number,
+                            data.discount.discount_type as string,
+                          ),
                         ),
-                      )}{" "}
-                      VND
+                        currency.locale,
+                        { style: "currency", currency: currency.symbol },
+                      )}
                     </Text>
                   </View>
                 )}
@@ -349,7 +363,11 @@ const PDFDocument = (props: Props) => {
                     {t("detailTable.ship")}:
                   </Text>
                   <Text style={styles.content}>
-                    {formatBigNumber(data.shipping.shipping_fee)} VND
+                    {formatBigNumber(
+                      currency.calc(data.shipping.shipping_fee),
+                      currency.locale,
+                      { style: "currency", currency: currency.symbol },
+                    )}
                   </Text>
                 </View>
                 <View
@@ -363,7 +381,11 @@ const PDFDocument = (props: Props) => {
                     {t("detailTable.total")}:
                   </Text>
                   <Text style={styles.content}>
-                    {formatBigNumber(data.total)} VND
+                    {formatBigNumber(
+                      currency.calc(data.total),
+                      currency.locale,
+                      { style: "currency", currency: currency.symbol },
+                    )}
                   </Text>
                 </View>
               </View>

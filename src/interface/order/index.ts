@@ -7,13 +7,6 @@ import {
 import { ICoupon } from "../coupon";
 import { ISearch } from "../queryParams";
 
-export enum statusOrder {
-  pending = "pending",
-  processing = "processing",
-  delivered = "delivered",
-  cancle = "cancle",
-}
-
 type ICouponOrder = Pick<
   ICoupon,
   "discount_name" | "discount_code" | "discount_type" | "discount_value"
@@ -42,7 +35,7 @@ interface IItemOrder {
   quantity: number;
 }
 
-interface ProcessingInfo {
+interface IProcessingOrder {
   _id: string;
   label: ENUM_ORDER_PROCESS;
   value: Date;
@@ -60,7 +53,7 @@ interface IOrder {
   user_id: string;
   items: IItemOrder[];
   shipping: Shipping;
-  processing_info: ProcessingInfo[];
+  processing_info: IProcessingOrder[];
   order_status: ENUM_ORDER_STATUS;
   sub_total: number;
   total_before_discount: number;
@@ -110,4 +103,5 @@ export type {
   IOrderDetailTable,
   IItemOrder,
   IAddressOrder,
+  IProcessingOrder,
 };
