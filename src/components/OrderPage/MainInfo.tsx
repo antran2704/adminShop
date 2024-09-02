@@ -2,20 +2,55 @@ import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ENUM_ORDER_STATUS, ENUM_PAYMENT_METHOD } from "~/enums/order";
 import { formatDate } from "~/helper/format/datetime";
 import { IOrder } from "~/interface/order";
+import { SelectFilterCore } from "../Core";
+import { DefaultOptionType } from "antd/es/select";
+import { ModalConfirm } from "../Modal";
+import { updateOrder } from "~/api-client";
+import { message } from "antd";
 
 interface Props {
   data: IOrder;
+  getData: () => void;
 }
 
 const MainInfoOrder = (props: Props) => {
-  const { data } = props;
+  const { data, getData } = props;
 
   const t = useTranslations("OrderPage");
+  const tError = useTranslations("Error");
+  const tSuccess = useTranslations("Success");
+
   const router = useRouter();
+
+  const [modal, setModal] = useState<{
+    process: boolean;
+    shipping: boolean;
+    success: boolean;
+    cancel: boolean;
+  }>({
+    process: false,
+    cancel: false,
+    shipping: false,
+    success: false,
+  });
+
+  const [loading, setLoading] = useState<{
+    process: boolean;
+    shipping: boolean;
+    success: boolean;
+    cancel: boolean;
+  }>({
+    process: false,
+    cancel: false,
+    shipping: false,
+    success: false,
+  });
+
+  const [messageApi, contextHolder] = message.useMessage();
 
   const status: { color: string; title: string } = useMemo(() => {
     let color: string;
@@ -50,6 +85,115 @@ const MainInfoOrder = (props: Props) => {
 
     return { color, title };
   }, [router.locale, data]);
+
+  const optionStatus: DefaultOptionType[] = useMemo((): DefaultOptionType[] => {
+    switch (data.order_status) {
+      case ENUM_ORDER_STATUS.PENDING:
+        return [
+          { label: t("orderStatus.process"), value: ENUM_ORDER_STATUS.PROCESS },
+          { label: t("orderStatus.cancel"), value: ENUM_ORDER_STATUS.CANCEL },
+        ];
+
+      case ENUM_ORDER_STATUS.PROCESS:
+        return [
+          {
+            label: t("orderStatus.shipping"),
+            value: ENUM_ORDER_STATUS.SHIPPING,
+          },
+          { label: t("orderStatus.cancel"), value: ENUM_ORDER_STATUS.CANCEL },
+        ];
+
+      case ENUM_ORDER_STATUS.SHIPPING:
+        return [
+          {
+            label: t("orderStatus.success"),
+            value: ENUM_ORDER_STATUS.SUCCESS,
+          },
+        ];
+
+      default:
+        return [];
+    }
+  }, [router.locale, data]);
+
+  const onModal = (key: keyof typeof modal, value: boolean) => {
+    setModal({ ...modal, [key]: value });
+  };
+
+  const onLoading = (key: keyof typeof loading, value: boolean) => {
+    setLoading({ ...loading, [key]: value });
+  };
+
+  const onChangeOption = (value: ENUM_ORDER_STATUS) => {
+    switch (value) {
+      case ENUM_ORDER_STATUS.PROCESS:
+        onModal("process", true);
+        break;
+
+      case ENUM_ORDER_STATUS.SHIPPING:
+        onModal("shipping", true);
+        break;
+
+      case ENUM_ORDER_STATUS.SUCCESS:
+        onModal("success", true);
+        break;
+
+      case ENUM_ORDER_STATUS.CANCEL:
+        onModal("cancel", true);
+        break;
+    }
+  };
+
+  const onProcess = async () => {
+    onLoading("process", true);
+
+    await updateOrder(data.order_id, ENUM_ORDER_STATUS.PROCESS)
+      .then(() => {
+        messageApi.success(tSuccess("update"));
+
+        onModal("process", false);
+        getData();
+      })
+      .catch(() => {
+        messageApi.error(tError("TRY_AGAIN"));
+      });
+
+    onLoading("process", false);
+  };
+
+  const onShipping = async () => {
+    onLoading("shipping", true);
+
+    await updateOrder(data.order_id, ENUM_ORDER_STATUS.SHIPPING)
+      .then(() => {
+        messageApi.success(tSuccess("update"));
+
+        onModal("shipping", false);
+        getData();
+      })
+      .catch(() => {
+        messageApi.error(tError("TRY_AGAIN"));
+      });
+
+    onLoading("shipping", false);
+  };
+
+  const onSuccess = async () => {
+    onLoading("success", true);
+
+    await updateOrder(data.order_id, ENUM_ORDER_STATUS.SUCCESS)
+      .then(() => {
+        messageApi.success(tSuccess("update"));
+
+        onModal("success", false);
+        getData();
+      })
+      .catch(() => {
+        messageApi.error(tError("TRY_AGAIN"));
+      });
+
+    onLoading("success", false);
+  };
 
   return (
     <div className="p-5 bg-[#f9fafb] border-2 rounded-lg">
@@ -113,15 +257,25 @@ const MainInfoOrder = (props: Props) => {
             <h3 className="capitalize">{t("mainInfo.updatedAt")}:</h3>
             <p>{formatDate(data.updatedAt)}</p>
           </li>
-          <li className="flex items-center justify-start text-base mt-2 gap-1">
+          <li className="flex items-center flex-wrap text-base mt-2 gap-1">
             <h3 className="capitalize">{t("mainInfo.status")}:</h3>
-            <p
-              className={clsx(
-                "w-fit font-medium text-white text-xs capitalize px-5 py-2 rounded-md",
-                [status.color],
-              )}>
-              {status.title}
-            </p>
+
+            {!!optionStatus.length && (
+              <SelectFilterCore
+                options={optionStatus}
+                value={status.title}
+                onChange={onChangeOption}
+              />
+            )}
+            {!optionStatus.length && (
+              <p
+                className={clsx(
+                  "w-fit font-medium text-white text-xs capitalize px-5 py-2 rounded-md",
+                  [status.color],
+                )}>
+                {status.title}
+              </p>
+            )}
           </li>
         </ul>
       </div>
@@ -445,6 +599,60 @@ const MainInfoOrder = (props: Props) => {
           </div>
         </Popup>
       )} */}
+
+      <ModalConfirm
+        title={t("modalProcess.title")}
+        open={modal.process}
+        onCancel={() => onModal("process", false)}
+        centered
+        type="info"
+        okButtonProps={{
+          loading: loading.process,
+          disabled: loading.process,
+        }}
+        destroyOnClose
+        onOk={onProcess}>
+        <p className="md:text-lg text-base text-center mb-10">
+          {t("modalProcess.description")}
+        </p>
+      </ModalConfirm>
+
+      <ModalConfirm
+        title={t("modalShipping.title")}
+        open={modal.shipping}
+        onCancel={() => onModal("shipping", false)}
+        centered
+        type="info"
+        destroyOnClose
+        okButtonProps={{
+          loading: loading.shipping,
+          disabled: loading.shipping,
+        }}
+        onOk={onShipping}>
+        <p className="md:text-lg text-base text-center mb-10">
+          {t("modalShipping.description")}
+        </p>
+      </ModalConfirm>
+
+      <ModalConfirm
+        title={t("modalSuccess.title")}
+        open={modal.success}
+        onCancel={() => onModal("success", false)}
+        centered
+        type="info"
+        destroyOnClose
+        okButtonProps={{
+          loading: loading.success,
+          disabled: loading.success,
+        }}
+        onOk={onSuccess}>
+        <p className="md:text-lg text-base text-center mb-10">
+          {t("modalSuccess.description")}
+        </p>
+      </ModalConfirm>
+
+      {/* Message of antd */}
+      {contextHolder}
     </div>
   );
 };

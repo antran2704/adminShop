@@ -326,6 +326,7 @@
     "process": {
       "title": "Quy trình đơn hàng",
       "createdOrder": "Đặt hàng thành công",
+      "inProcess": "Đang chuẩn bị",
       "payment": "Thanh toán thành công",
       "ship": "Đang được vận chuyển",
       "cancel": "Hủy",
@@ -337,6 +338,22 @@
       "cash": "Tiền mặt",
       "card": "Thẻ ngân hàng",
       "vnPay": "VNPay"
+    },
+    "modalProcess": {
+      "title": "Xác nhận đang xử lý đơn hàng",
+      "description": "Bạn có muôn xác nhận đang xử lý đơn hàng?"
+    },
+    "modalShipping": {
+      "title": "Xác nhận đơn hàng được vận chuyển",
+      "description": "Bạn có muôn xác nhận đơn hàng được vận chuyển?"
+    },
+    "modalSuccess": {
+      "title": "Xác nhận đơn hàng thành công",
+      "description": "Bạn có muôn xác nhận đơn hàng thành công?"
+    },
+    "modalCancel": {
+      "title": "Xác nhận hủy đơn hàng",
+      "description": "Bạn có muôn xác nhận hủy đơn hàng?"
     },
     "breadcrumb": {
       "list": "Danh sách đơn hàng",

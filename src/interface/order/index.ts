@@ -38,7 +38,7 @@ interface IItemOrder {
 interface IProcessingOrder {
   _id: string;
   label: ENUM_ORDER_PROCESS;
-  value: Date;
+  value: string;
 }
 
 interface Shipping {
