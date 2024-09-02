@@ -277,7 +277,8 @@
   },
   "OrderPage": {
     "title": "Danh sách đơn hàng",
-    "detailTitle": "Chi tiết đơn hàng",
+    "detailTitle": "Đơn hàng",
+    "invoice": "Hóa đơn",
     "recentOrder": "Đơn hàng gần đây",
     "table": {
       "id": "Mã đơn",
@@ -288,7 +289,7 @@
       "action": "Action",
       "createdAt": "Ngày tạo"
     },
-    "tableDetail": {
+    "detailTable": {
       "orderNumber": "Số thứ tự",
       "thumbnail": "Hình ảnh sản phẩm",
       "product": "Sản phẩm",
@@ -296,7 +297,11 @@
       "quantity": "Số lượng",
       "price": "Giá",
       "promotionPrice": "Giá giảm",
-      "amount": "Tổng"
+      "amount": "Tổng",
+      "subtotal": "Tạm tính",
+      "ship": "Phí ship",
+      "discount": "Giảm giá",
+      "total": "Tổng tiền"
     },
     "orderStatus": {
       "pending": "Chờ xác nhận",
@@ -307,11 +312,13 @@
     },
     "mainInfo": {
       "title": "Thông tin khách hàng",
+      "product": "Sản phẩm",
       "orderId": "Mã đơn",
       "email": "Email",
       "address": "Địa chỉ",
       "phone": "Số điện thoại",
       "customerName": "Tên khách hàng",
+      "paymentMethod": "Phương thức thanh toán",
       "status": "Trạng thái đơn hàng",
       "createdAt": "Ngày tạo",
       "updatedAt": "Cập nhật lần cuối"

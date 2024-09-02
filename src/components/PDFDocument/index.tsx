@@ -8,9 +8,14 @@ import {
   StyleSheet,
   PDFViewer,
 } from "@react-pdf/renderer";
-import { getDateTime } from "~/helper/format/datetime";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/router";
+import CURRENCY from "~/common/currency";
+import { ENUM_ORDER_STATUS, ENUM_PAYMENT_METHOD } from "~/enums/order";
+import { formatDate } from "~/helper/format/datetime";
+import { formatBigNumber } from "~/helper/format/number";
 import { getValueCoupon } from "~/helper/number/coupon";
-import { formatBigNumber } from "~/helper/number/fomatterCurrency";
+import { ICurrency } from "~/interface";
 import { IOrder, IItemOrder } from "~/interface/order";
 
 interface Props {
@@ -95,6 +100,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "semibold",
     textTransform: "capitalize",
+    fontFamily: "Roboto",
     marginBottom: 10,
   },
   wrapContent: {
@@ -125,8 +131,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   col: {
-    width: "20%",
+    width: "25%",
     padding: "0 6px",
+  },
+  lineThrough: {
+    textDecoration: "line-through",
   },
   paddingRow: {
     padding: "10px 0",
@@ -146,75 +155,104 @@ const styles = StyleSheet.create({
 const PDFDocument = (props: Props) => {
   const { data } = props;
 
-  const date = new Date().toLocaleDateString("en-GB", {
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-  });
+  const t = useTranslations("OrderPage");
+  const router = useRouter();
+
+  const currency: ICurrency = CURRENCY[router.locale as keyof typeof CURRENCY];
 
   return (
     <PDFViewer style={styles.viewer}>
       <Document pageLayout="singlePage" language="vi_VN">
         <Page size="A3" style={styles.page}>
           <View style={styles.section}>
-            <Text style={styles.date}>{date}</Text>
+            <Text style={styles.date}>
+              {formatDate(new Date().toISOString())}
+            </Text>
           </View>
           <View style={styles.section}>
             <Image
               style={styles.logo}
               src="https://res.cloudinary.com/neyul/image/upload/f_auto,q_auto/v1/web/master/general/uyosn9e11tw0pk3lbcij"
             />
-            <Text style={styles.headerTitle}>Invoice</Text>
-            <Text style={styles.sectionTitle}>Information</Text>
+            <Text style={styles.headerTitle}>{t("invoice")}</Text>
+            <Text style={styles.sectionTitle}>{t("mainInfo.title")}</Text>
 
             <View style={styles.groupContent}>
               <View>
                 <View style={styles.wrapContent}>
-                  <Text style={styles.title}>Order ID: </Text>
+                  <Text style={styles.title}>{t("mainInfo.orderId")}: </Text>
                   <Text style={styles.content}>{data.order_id}</Text>
                 </View>
 
                 <View style={styles.wrapContent}>
-                  <Text style={styles.title}>Name: </Text>
-                  <Text style={styles.content}>{data.user_infor.name}</Text>
-                </View>
-
-                <View style={styles.wrapContent}>
-                  <Text style={styles.title}>Email: </Text>
-                  <Text style={styles.content}>{data.user_infor.email}</Text>
-                </View>
-
-                <View style={styles.wrapContent}>
-                  <Text style={styles.title}>Address: </Text>
-                  <Text style={styles.content}>{data.user_infor.address}</Text>
-                </View>
-
-                <View style={styles.wrapContent}>
-                  <Text style={styles.title}>Date: </Text>
+                  <Text style={styles.title}>
+                    {t("mainInfo.customerName")}:{" "}
+                  </Text>
                   <Text style={styles.content}>
-                    {getDateTime(data.createdAt)}
+                    {data.address.shipping_name}
+                  </Text>
+                </View>
+
+                <View style={styles.wrapContent}>
+                  <Text style={styles.title}>{t("mainInfo.email")}: </Text>
+                  <Text style={styles.content}>
+                    {data.address.shipping_email}
+                  </Text>
+                </View>
+
+                <View style={styles.wrapContent}>
+                  <Text style={styles.title}>{t("mainInfo.address")}: </Text>
+                  <Text style={styles.content}>
+                    {data.address.shipping_address}
+                  </Text>
+                </View>
+
+                <View style={styles.wrapContent}>
+                  <Text style={styles.title}>{t("mainInfo.createdAt")}: </Text>
+                  <Text style={styles.content}>
+                    {formatDate(data.createdAt)}
                   </Text>
                 </View>
               </View>
 
               <View>
                 <View style={styles.wrapContent}>
-                  <Text style={styles.title}>Status: </Text>
+                  <Text style={styles.title}>{t("mainInfo.status")}: </Text>
                   <Text style={[styles.content, styles.capitalize]}>
-                    {data.status}
+                    {data.order_status === ENUM_ORDER_STATUS.PENDING &&
+                      t("orderStatus.pending")}
+                    {data.order_status === ENUM_ORDER_STATUS.PROCESS &&
+                      t("orderStatus.process")}
+                    {data.order_status === ENUM_ORDER_STATUS.SHIPPING &&
+                      t("orderStatus.shipping")}
+                    {data.order_status === ENUM_ORDER_STATUS.SUCCESS &&
+                      t("orderStatus.success")}
+                    {data.order_status === ENUM_ORDER_STATUS.CANCEL &&
+                      t("orderStatus.cancel")}
                   </Text>
                 </View>
                 <View style={styles.wrapContent}>
-                  <Text style={styles.title}>Payment method: </Text>
+                  <Text style={styles.title}>
+                    {t("mainInfo.paymentMethod")}:{" "}
+                  </Text>
                   <Text style={[styles.content, styles.capitalize]}>
-                    {data.payment_method}
+                    {data.payment_method === ENUM_PAYMENT_METHOD.COD &&
+                      t("paymentMethod.cod")}
+                    {data.payment_method === ENUM_PAYMENT_METHOD.BANKING &&
+                      t("paymentMethod.banking")}
+                    {data.payment_method === ENUM_PAYMENT_METHOD.CASH &&
+                      t("paymentMethod.cash")}
+                    {data.payment_method === ENUM_PAYMENT_METHOD.CARD &&
+                      t("paymentMethod.card")}
+                    {data.payment_method === ENUM_PAYMENT_METHOD.VNPAY &&
+                      t("paymentMethod.vnPay")}
                   </Text>
                 </View>
               </View>
             </View>
           </View>
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Products</Text>
+            <Text style={styles.sectionTitle}>{t("mainInfo.product")}</Text>
             <View style={styles.table}>
               <View
                 style={[
@@ -222,15 +260,18 @@ const PDFDocument = (props: Props) => {
                   styles.paddingRow,
                   { fontFamily: "Roboto", fontWeight: "medium" },
                 ]}>
-                <Text style={[styles.col, styles.textCenter]}>NO</Text>
-                <Text style={[styles.col, styles.textCenter]}>Product</Text>
-                <Text style={[styles.col, styles.textCenter]}>Type</Text>
-                <Text style={[styles.col, styles.textCenter]}>Quantity</Text>
-                <Text style={[styles.col, styles.textCenter]}>Price</Text>
                 <Text style={[styles.col, styles.textCenter]}>
-                  Promotion Price
+                  {t("detailTable.orderNumber")}
                 </Text>
-                <Text style={[styles.col, styles.textCenter]}>Amount</Text>
+                <Text style={[styles.col, styles.textCenter]}>
+                  {t("detailTable.product")}
+                </Text>
+                <Text style={[styles.col, styles.textCenter]}>
+                  {t("detailTable.price")}
+                </Text>
+                <Text style={[styles.col, styles.textCenter]}>
+                  {t("detailTable.amount")}
+                </Text>
               </View>
 
               {data.items.map((item: IItemOrder, index: number) => (
@@ -240,23 +281,25 @@ const PDFDocument = (props: Props) => {
                   <Text style={[styles.col, styles.textCenter]}>
                     {index + 1}
                   </Text>
-                  <Text style={[styles.col, styles.textJustify]}>
-                    {item.variation ? item.variation.title : item.product.title}
-                  </Text>
                   <Text style={[styles.col, styles.textCenter]}>
-                    {item.variation
-                      ? item.variation.options?.join(" / ")
-                      : "Default"}
+                    {item.model_name}
                   </Text>
-                  <Text style={[styles.col, styles.textCenter]}>
-                    {item.quantity}
-                  </Text>
-                  <Text style={[styles.col, styles.textCenter]}>
-                    {formatBigNumber(item.price)} VND
-                  </Text>
-                  <Text style={[styles.col, styles.textCenter]}>
-                    {formatBigNumber(item.promotion_price)} VND
-                  </Text>
+                  <View style={[styles.col, styles.textCenter]}>
+                    <Text>
+                      {formatBigNumber(
+                        !!item.promotion_price
+                          ? item.promotion_price
+                          : item.price,
+                      )}{" "}
+                      X {item.quantity}
+                    </Text>
+
+                    {!!item.promotion_price && (
+                      <Text style={[styles.content, styles.lineThrough]}>
+                        {item.price}
+                      </Text>
+                    )}
+                  </View>
                   <Text style={[styles.col, styles.textCenter]}>
                     {item.promotion_price > 0
                       ? formatBigNumber(item.promotion_price * item.quantity)
@@ -275,7 +318,7 @@ const PDFDocument = (props: Props) => {
                 <View
                   style={[styles.wrapContent, styles.justifyContent_between]}>
                   <Text style={[styles.title, styles.footerTitle]}>
-                    Total Amount:
+                    {t("detailTable.subtotal")}:
                   </Text>
                   <Text style={styles.content}>
                     {formatBigNumber(data.sub_total)} VND
@@ -285,7 +328,7 @@ const PDFDocument = (props: Props) => {
                   <View
                     style={[styles.wrapContent, styles.justifyContent_between]}>
                     <Text style={[styles.title, styles.footerTitle]}>
-                      Discount:
+                      {t("detailTable.discount")}:
                     </Text>
                     <Text style={styles.content}>
                       -{" "}
@@ -303,10 +346,10 @@ const PDFDocument = (props: Props) => {
                 <View
                   style={[styles.wrapContent, styles.justifyContent_between]}>
                   <Text style={[styles.title, styles.footerTitle]}>
-                    Shipping cost:
+                    {t("detailTable.ship")}:
                   </Text>
                   <Text style={styles.content}>
-                    {formatBigNumber(data.shipping_cost)} VND
+                    {formatBigNumber(data.shipping.shipping_fee)} VND
                   </Text>
                 </View>
                 <View
@@ -316,7 +359,9 @@ const PDFDocument = (props: Props) => {
                     styles.borderTop,
                     styles.paddingRow,
                   ]}>
-                  <Text style={[styles.title, styles.footerTitle]}>Total:</Text>
+                  <Text style={[styles.title, styles.footerTitle]}>
+                    {t("detailTable.total")}:
+                  </Text>
                   <Text style={styles.content}>
                     {formatBigNumber(data.total)} VND
                   </Text>

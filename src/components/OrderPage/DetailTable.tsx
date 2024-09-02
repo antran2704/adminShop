@@ -27,79 +27,54 @@ const DetailTable = (props: Props) => {
   const columns: TableColumnsType<IOrderDetailTable> = useMemo(() => {
     return [
       {
-        title: t("tableDetail.orderNumber"),
+        title: t("detailTable.orderNumber"),
         dataIndex: "orderNumber",
         className: "whitespace-nowrap",
         align: "center",
       },
       {
-        title: t("tableDetail.product"),
+        title: t("detailTable.product"),
         dataIndex: "productName",
         className: "whitespace-nowrap",
         align: "center",
-      },
-      {
-        title: t("tableDetail.thumbnail"),
-        dataIndex: "thumbnail",
-        className: "whitespace-nowrap",
-        align: "center",
-        render: (image: string) => {
+        render: (value: string, record: IOrderDetailTable) => {
           return (
-            <ImageCus
-              src={image}
-              title="product thumbnail"
-              className="w-[140px] min-w-[140px] h-[140px] object-cover object-center rounded-md mx-auto"
-            />
+            <div className="flex items-center gap-5">
+              <ImageCus
+                src={record.thumbnail}
+                title="product thumbnail"
+                className="w-[140px] h-[140px] object-cover object-center rounded-md"
+              />
+              <span>{value}</span>
+            </div>
           );
         },
       },
       {
-        title: t("tableDetail.price"),
+        title: t("detailTable.price"),
         dataIndex: "price",
         className: "whitespace-nowrap",
         align: "center",
-        render: (value: number) => {
+        render: (value: number, record: IOrderDetailTable) => {
           const currency: ICurrency =
             CURRENCY[router.locale as keyof typeof CURRENCY];
 
           return (
-            <span>
-              {value
-                ? `${formatBigNumber(currency.calc(value), currency.locale, { style: "currency", currency: currency.symbol })}`
-                : 0}
-            </span>
-          );
-        },
-      },
-      {
-        title: t("tableDetail.promotionPrice"),
-        dataIndex: "promotionPrice",
-        className: "whitespace-nowrap",
-        align: "center",
-        render: (value: number) => {
-          const currency: ICurrency =
-            CURRENCY[router.locale as keyof typeof CURRENCY];
+            <div>
+              <p>
+                {`${formatBigNumber(currency.calc(!!record.promotionPrice ? record.promotionPrice : value), currency.locale, { style: "currency", currency: currency.symbol })}`}
+                X {record.quantity}
+              </p>
 
-          return (
-            <span>
-              {value
-                ? `${formatBigNumber(currency.calc(value), currency.locale, { style: "currency", currency: currency.symbol })}`
-                : 0}
-            </span>
+              {!!record.promotionPrice && (
+                <p className="line-through text-neutral-500">{value}</p>
+              )}
+            </div>
           );
         },
       },
       {
-        title: t("tableDetail.quantity"),
-        dataIndex: "quantity",
-        className: "whitespace-nowrap",
-        align: "center",
-        render: (value: number) => (
-          <span>{value ? formatBigNumber(value) : 0}</span>
-        ),
-      },
-      {
-        title: t("tableDetail.amount"),
+        title: t("detailTable.amount"),
         dataIndex: "total",
         className: "whitespace-nowrap",
         align: "center",

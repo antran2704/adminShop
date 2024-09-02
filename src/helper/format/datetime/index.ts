@@ -1,12 +1,3 @@
-const getDateTime = (timestamps: string) => {
-  const date = new Date(timestamps);
-  return date.toLocaleDateString("en-GB", {
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-  });
-};
-
 const formatDate = (timestamps: string) => {
   const date = new Date(timestamps);
   return date.toLocaleDateString("en-GB", {
@@ -29,4 +20,4 @@ const getEndDayInWeek = (value: string) => {
   return endDay;
 };
 
-export { getDateTime, getFirstDayInWeek, getEndDayInWeek, formatDate };
+export { getFirstDayInWeek, getEndDayInWeek, formatDate };

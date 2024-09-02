@@ -277,7 +277,8 @@
   },
   "OrderPage": {
     "title": "List of order",
-    "detailTitle": "Order Detail",
+    "detailTitle": "Order",
+    "invoice": "Invoice",
     "recentOrder": "Recent order",
     "table": {
       "id": "Order ID",
@@ -288,7 +289,7 @@
       "action": "Action",
       "createdAt": "Created At"
     },
-    "tableDetail": {
+    "detailTable": {
       "orderNumber": "NO",
       "thumbnail":"Thumbnail",
       "product": "Product",
@@ -296,15 +297,21 @@
       "quantity":"Quantity",
       "price": "Price",
       "promotionPrice": "Promotion Price",
-      "amount": "Amount"
+      "amount": "Amount",
+      "subtotal": "Subtotal",
+      "ship": "Ship fee",
+      "discount": "Discount",
+      "total": "Total"
     },
     "mainInfo": {
       "title": "Infomation of customer",
+      "product": "Product",
       "orderId": "Order ID",
       "email": "Email",
       "address": "Address",
       "phone": "Phone",
       "customerName": "Customer name",
+      "paymentMethod": "Payment Method",
       "status": "Status of order",
       "createdAt": "Created At",
       "updatedAt": "Last updated"

@@ -2,7 +2,6 @@ import dynamic from "next/dynamic";
 import { NextRouter, useRouter } from "next/router";
 import {
   useState,
-  Fragment,
   useRef,
   useCallback,
   useEffect,
@@ -22,23 +21,25 @@ import {
 
 import Loading from "~/components/Loading";
 import { getOrder, updateOrder, updatePaymentStatusOrder } from "~/api-client";
-import { getValueCoupon } from "~/helper/number/coupon";
 import { NextPageWithLayout } from "~/interface/page";
 import { PrivateLayout } from "~/layouts";
 import { IResponse } from "~/interface";
 import { MainInfoOrder, OrderDetailTable } from "~/components/OrderPage";
-import { formatBigNumber } from "~/helper/format/number";
 import { useTranslations } from "next-intl";
+import { Button } from "antd";
+import clsx from "clsx";
+import { formatBigNumber } from "~/helper/format/number";
 
-// const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {
-//   loading: () => <Loading />,
-//   ssr: false,
-// });
+const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {
+  loading: () => <Loading />,
+  ssr: false,
+});
 
 const Layout = PrivateLayout;
 
 const OrderDetail: NextPageWithLayout = () => {
   const t = useTranslations("OrderPage");
+  const tCommon = useTranslations("Common");
 
   const router: NextRouter = useRouter();
   const orderId = router.query.id;
@@ -201,10 +202,23 @@ const OrderDetail: NextPageWithLayout = () => {
 
   return (
     <section className="p-5">
-      <h1 className="lg:text-2xl md:text-xl text-lg dark:text-darkText font-medium">
-        {t("detailTitle")}
-      </h1>
+      <div className="flex items-center justify-between gap-10">
+        <h1 className="md:text-xl text-lg dark:text-darkText font-medium">
+          {t("detailTitle")}{" "}
+          <strong className="text-primary">#{orderId}</strong>
+        </h1>
 
+        <Button
+          onClick={() => onShow(showPrint, setShowPrint)}
+          icon={<AiOutlinePrinter />}
+          size="large"
+          type="primary"
+          className="flex items-center text-base text-white bg-[#0E9F6E] hover:!bg-[#0E9F6E] px-5 py-2 rounded-md gap-2">
+          Print Invoice
+        </Button>
+      </div>
+
+      {/* Infomation */}
       {order && <MainInfoOrder data={order} />}
 
       {/* {data && (
@@ -385,87 +399,66 @@ const OrderDetail: NextPageWithLayout = () => {
       )} */}
 
       {/* Table */}
-      <div className="py-10">
+      <div className="bg-[#f9fafb] border rounded-lg overflow-hidden">
         <OrderDetailTable data={orderTable} />
+
+        {order && (
+          <div className="flex items-start justify-end p-5">
+            <div className="w-1/4 flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <h3 className="md:text-base text-sm">
+                  {t("detailTable.subtotal")}
+                </h3>
+                <p className="md:text-base text-sm">
+                  {formatBigNumber(order.sub_total)}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <h3 className="md:text-base text-sm">
+                  {t("detailTable.ship")}
+                </h3>
+                <p className="md:text-base text-sm">
+                  {formatBigNumber(order.shipping.shipping_fee)}
+                </p>
+              </div>
+              {order.discount && (
+                <div className="flex items-center justify-between">
+                  <h3 className="md:text-base text-sm">
+                    {t("detailTable.discount")}
+                  </h3>
+                  <p className="md:text-base text-sm">
+                    {" "}
+                    - {formatBigNumber(order.discount.discount_value)}
+                  </p>
+                </div>
+              )}
+              <div className="flex items-center justify-between mt-2 pt-2 border-t border-black">
+                <h3 className="md:text-lg text-base font-medium">
+                  {t("detailTable.total")}
+                </h3>
+                <p className="md:text-lg text-base font-medium text-primary">
+                  {formatBigNumber(order.total)}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {order && (
-        <div className="flex md:flex-row flex-col md:items-start items-start justify-between bg-[#f9fafb] dark:bg-gray-800 p-5 border rounded-md gap-5">
-          <div>
-            <h3 className="lg:text-lg  md:text-base dark:text-darkText text-sm font-medium uppercase">
-              Payment method
-            </h3>
-            <p className="md:text-base dark:text-darkText text-sm font-medium mt-2">
-              Card
-            </p>
-          </div>
-          <div>
-            <h3 className="lg:text-lg  md:text-base dark:text-darkText text-sm font-medium uppercase">
-              Shipping cost
-            </h3>
-            <p className="md:text-base dark:text-darkText text-sm font-medium mt-2">
-              {formatBigNumber(order.shipping.shipping_fee)} VND
-            </p>
-          </div>
-          {order.discount && (
-            <div>
-              <h3 className="lg:text-lg  md:text-base dark:text-darkText text-sm font-medium uppercase">
-                Discount
-              </h3>
-              <ul>
-                <li className="flex items-center justify-between gap-2">
-                  <p className="md:text-base dark:text-darkText text-sm font-medium text-[#707275] mt-2">
-                    Name:
-                  </p>
-                  <p className="md:text-base dark:text-darkText text-sm font-medium mt-2">
-                    {order.discount.discount_code}
-                  </p>
-                </li>
-                <li className="flex items-center justify-between gap-2">
-                  <p className="md:text-base dark:text-darkText text-sm font-medium text-[#707275] mt-2">
-                    Value:
-                  </p>
-                  <p className="md:text-base dark:text-darkText text-sm font-medium mt-2">
-                    -
-                    {formatBigNumber(
-                      getValueCoupon(
-                        order.sub_total,
-                        order.discount.discount_value as number,
-                        order.discount.discount_type as string,
-                      ),
-                    )}{" "}
-                    VND
-                  </p>
-                </li>
-              </ul>
-            </div>
-          )}
-          <div>
-            <h3 className="lg:text-lg dark:text-darkText md:text-base text-sm font-medium uppercase">
-              Total
-            </h3>
-            <p className="md:text-base text-sm text-[#0E9F6E] font-medium mt-2">
-              {formatBigNumber(order.total)} VND
-            </p>
-          </div>
-        </div>
-      )}
       <div className="flex items-center justify-between mt-5">
-        <button
+        <Button
+          size="large"
+          type="primary"
           onClick={() => router.push("/orders")}
-          className="min-w-[100px] text-base text-white bg-[#111926] px-5 py-2 opacity-90 hover:opacity-100 border-2 rounded-md">
-          Back
-        </button>
-
-        <button
-          onClick={() => onShow(showPrint, setShowPrint)}
-          className="flex items-center text-base text-white bg-[#0E9F6E] px-5 py-2 rounded-md gap-2">
-          Print Invoice
-          <AiOutlinePrinter />
-        </button>
+          className={clsx(
+            "min-w-[100px] w-fit text-lg text-white font-medium bg-[#111926] hover:!bg-[#111926] px-5 py-1 opacity-90 hover:opacity-100 rounded-md",
+          )}>
+          {tCommon("btn.back")}
+        </Button>
 
         {/* print pdf */}
-        {/* {showPrint && order && (
+        {showPrint && order && (
           <div className="fixed top-0 left-0 right-0 bottom-0 z-[9999]">
             <div className="absolute w-full h-full bg-[#ffffffbf] backdrop-blur z-10"></div>
             <div
@@ -475,7 +468,7 @@ const OrderDetail: NextPageWithLayout = () => {
               <PDFDocument data={order} />
             </div>
           </div>
-        )} */}
+        )}
       </div>
 
       {loading && <Loading />}

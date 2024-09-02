@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
-import { ENUM_ORDER_STATUS } from "~/enums/order";
+import { ENUM_ORDER_STATUS, ENUM_PAYMENT_METHOD } from "~/enums/order";
 import { formatDate } from "~/helper/format/datetime";
 import { IOrder } from "~/interface/order";
 
@@ -52,87 +52,86 @@ const MainInfoOrder = (props: Props) => {
   }, [router.locale, data]);
 
   return (
-    <ul className="py-5">
-      <h2 className="md:text-lg text-base dark:text-darkText text-primary font-medium">
+    <div className="p-5 my-10 bg-[#f9fafb] border-2 rounded-lg">
+      <h2 className="lg:text-xl md:text-lg text-base text-primary font-medium pb-1 mb-2 border-b">
         {t("mainInfo.title")}
       </h2>
-      <li className="flex items-center justify-start text-base mt-1 gap-1">
-        <h3 className="font-medium capitalize dark:text-darkText">
-          {t("mainInfo.orderId")}:
-        </h3>
-        <p className="text-[#707275] dark:text-darkText">{data.order_id}</p>
-      </li>
-      <li className="flex items-start justify-start text-base mt-1 gap-1">
-        <h3 className="font-medium capitalize dark:text-darkText">
-          {t("mainInfo.customerName")}:
-        </h3>
-        <p className="text-[#707275] dark:text-darkText">
-          {data.address.shipping_name}
-        </p>
-      </li>
-      <li className="flex items-start justify-start text-base mt-1 gap-1">
-        <h3 className="font-medium capitalize dark:text-darkText">
-          {t("mainInfo.phone")}:
-        </h3>
-        <Link
-          href={`tel:${data.address.shipping_phone}`}
-          className="text-primary hover:underline">
-          {data.address.shipping_phone}
-        </Link>
-      </li>
-      <li className="flex items-start justify-start text-base mt-1 gap-1">
-        <h3 className="font-medium capitalize dark:text-darkText">
-          {t("mainInfo.email")}:
-        </h3>
-        <Link
-          href={`mailto:${data.address.shipping_email}`}
-          className="text-primary hover:underline">
-          {data.address.shipping_email}
-        </Link>
-      </li>
-      <li className="flex items-start justify-start text-base mt-1 gap-1">
-        <h3 className="font-medium capitalize dark:text-darkText">
-          {t("mainInfo.address")}:
-        </h3>
-        <p className="text-[#707275] dark:text-darkText">
-          {data.address.shipping_address}
-        </p>
-      </li>
-      <li className="flex items-start justify-start text-base mt-1 gap-1">
-        <h3 className="font-medium capitalize dark:text-darkText">
-          {t("mainInfo.createdAt")}:
-        </h3>
-        <p className="text-[#707275] dark:text-darkText">
-          {formatDate(data.createdAt)}
-        </p>
-      </li>
-      <li className="flex items-start justify-start text-base mt-1 gap-1">
-        <h3 className="font-medium capitalize dark:text-darkText">
-          {t("mainInfo.updatedAt")}:
-        </h3>
-        <p className="text-[#707275] dark:text-darkText">
-          {formatDate(data.updatedAt)}
-        </p>
-      </li>
-      <li className="flex items-start justify-start text-base mt-2 gap-1">
-        <h3 className="font-medium capitalize dark:text-darkText">
-          {t("mainInfo.status")}:
-        </h3>
-        <p
-          className={clsx(
-            "w-fit font-medium text-white text-xs capitalize px-5 py-2 rounded-md",
-            [status.color],
-          )}>
-          {status.title}
-        </p>
-      </li>
+
+      <div className="flex items-start justify-between gap-10">
+        <ul>
+          <li className="flex items-center justify-start text-base mt-1 gap-1">
+            <h3 className="capitalize">{t("mainInfo.orderId")}:</h3>
+            <p className="font-medium">{data.order_id}</p>
+          </li>
+          <li className="flex items-start justify-start text-base mt-1 gap-1">
+            <h3 className="capitalize">{t("mainInfo.customerName")}:</h3>
+            <p className="font-medium">{data.address.shipping_name}</p>
+          </li>
+          <li className="flex items-start justify-start text-base mt-1 gap-1">
+            <h3 className="capitalize">{t("mainInfo.phone")}:</h3>
+            <Link
+              href={`tel:${data.address.shipping_phone}`}
+              className="font-medium text-primary hover:underline">
+              {data.address.shipping_phone}
+            </Link>
+          </li>
+          <li className="flex items-start justify-start text-base mt-1 gap-1">
+            <h3 className="capitalize">{t("mainInfo.email")}:</h3>
+            <Link
+              href={`mailto:${data.address.shipping_email}`}
+              className="font-medium text-primary hover:underline">
+              {data.address.shipping_email}
+            </Link>
+          </li>
+          <li className="flex items-start justify-start text-base mt-1 gap-1">
+            <h3 className="capitalize">{t("mainInfo.address")}:</h3>
+            <p className="font-medium ">{data.address.shipping_address}</p>
+          </li>
+        </ul>
+
+        <ul>
+          <li className="flex items-center text-base mt-1 gap-1">
+            <h3 className="capitalize">{t("mainInfo.paymentMethod")}:</h3>
+            <p className="font-medium">
+              {data.payment_method === ENUM_PAYMENT_METHOD.COD &&
+                t("paymentMethod.cod")}
+              {data.payment_method === ENUM_PAYMENT_METHOD.BANKING &&
+                t("paymentMethod.banking")}
+              {data.payment_method === ENUM_PAYMENT_METHOD.CASH &&
+                t("paymentMethod.cash")}
+              {data.payment_method === ENUM_PAYMENT_METHOD.CARD &&
+                t("paymentMethod.card")}
+              {data.payment_method === ENUM_PAYMENT_METHOD.VNPAY &&
+                t("paymentMethod.vnPay")}
+            </p>
+          </li>
+          <li className="flex items-start justify-start text-base mt-1 gap-1">
+            <h3 className="capitalize">{t("mainInfo.createdAt")}:</h3>
+            <p>{formatDate(data.createdAt)}</p>
+          </li>
+          <li className="flex items-start justify-start text-base mt-1 gap-1">
+            <h3 className="capitalize">{t("mainInfo.updatedAt")}:</h3>
+            <p>{formatDate(data.updatedAt)}</p>
+          </li>
+          <li className="flex items-center justify-start text-base mt-2 gap-1">
+            <h3 className="capitalize">{t("mainInfo.status")}:</h3>
+            <p
+              className={clsx(
+                "w-fit font-medium text-white text-xs capitalize px-5 py-2 rounded-md",
+                [status.color],
+              )}>
+              {status.title}
+            </p>
+          </li>
+        </ul>
+      </div>
 
       {/* {data.payment_status === PaymentStatus.success && (
         <div>
           {data.status === statusOrder.cancle && (
             <Fragment>
               <li className="flex items-start justify-start text-base mt-1 gap-1">
-                <h3 className="font-medium capitalize dark:text-darkText">
+                <h3 className="font-medium capitalize">
                   Why:
                 </h3>
                 <p
@@ -142,7 +141,7 @@ const MainInfoOrder = (props: Props) => {
               </li>
               {data.note && (
                 <li className="flex items-start justify-start text-base mt-1 gap-1">
-                  <h3 className="font-medium capitalize dark:text-darkText">
+                  <h3 className="font-medium capitalize">
                     Note:
                   </h3>
                   <p
@@ -156,7 +155,7 @@ const MainInfoOrder = (props: Props) => {
 
           {data.status === statusOrder.pending && (
             <li className="flex items-center justify-start mt-5 text-base gap-1">
-              <h3 className="font-medium capitalize dark:text-darkText">
+              <h3 className="font-medium capitalize">
                 Change Status:
               </h3>
               <div className="flex items-center gap-3">
@@ -178,7 +177,7 @@ const MainInfoOrder = (props: Props) => {
 
           {data.status === statusOrder.processing && (
             <li className="flex items-center justify-start mt-5 text-base gap-1">
-              <h3 className="font-medium capitalize dark:text-darkText">
+              <h3 className="font-medium capitalize">
                 Change Status:
               </h3>
               <div className="flex items-center gap-3">
@@ -205,7 +204,7 @@ const MainInfoOrder = (props: Props) => {
           {data.status === statusOrder.cancle && (
             <Fragment>
               <li className="flex items-start justify-start text-base mt-1 gap-1">
-                <h3 className="font-medium capitalize dark:text-darkText">
+                <h3 className="font-medium capitalize">
                   Why:
                 </h3>
                 <p
@@ -215,7 +214,7 @@ const MainInfoOrder = (props: Props) => {
               </li>
               {data.note && (
                 <li className="flex items-start justify-start text-base mt-1 gap-1">
-                  <h3 className="font-medium capitalize dark:text-darkText">
+                  <h3 className="font-medium capitalize">
                     Note:
                   </h3>
                   <p
@@ -229,7 +228,7 @@ const MainInfoOrder = (props: Props) => {
 
           {data.status === statusOrder.pending && (
             <li className="flex items-center justify-start mt-5 text-base gap-1">
-              <h3 className="font-medium capitalize dark:text-darkText">
+              <h3 className="font-medium capitalize">
                 Confirm banking:
               </h3>
               <div className="flex items-center gap-3">
@@ -295,7 +294,7 @@ const MainInfoOrder = (props: Props) => {
                   />
                   <label
                     htmlFor={option.id}
-                    className="text-sm font-medium text-gray-900 dark:text-darkText  ml-2 block">
+                    className="text-sm font-medium text-gray-900  ml-2 block">
                     {option.lable}
                   </label>
                 </div>
@@ -303,7 +302,7 @@ const MainInfoOrder = (props: Props) => {
             </fieldset>
 
             <div className="my-4">
-              <h3 className="text-base dark:text-darkText mb-2">Note</h3>
+              <h3 className="text-base mb-2">Note</h3>
               <textarea
                 ref={noteRef}
                 className="w-full px-3 py-2 rounded-md border-2"
@@ -355,7 +354,7 @@ const MainInfoOrder = (props: Props) => {
                   />
                   <label
                     htmlFor={option.id}
-                    className="text-sm font-medium text-gray-900 dark:text-darkText ml-2 block">
+                    className="text-sm font-medium text-gray-900 ml-2 block">
                     {option.lable}
                   </label>
                 </div>
@@ -363,7 +362,7 @@ const MainInfoOrder = (props: Props) => {
             </fieldset>
 
             <div className="my-4">
-              <h3 className="text-base dark:text-darkText mb-2">Note</h3>
+              <h3 className="text-base mb-2">Note</h3>
               <textarea
                 ref={noteRef}
                 className="w-full px-3 py-2 rounded-md border-2"
@@ -446,7 +445,7 @@ const MainInfoOrder = (props: Props) => {
           </div>
         </Popup>
       )} */}
-    </ul>
+    </div>
   );
 };
 
