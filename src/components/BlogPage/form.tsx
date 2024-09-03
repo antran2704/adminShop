@@ -237,12 +237,7 @@ const FormBlog = (props: Props) => {
                 title={t("form.thumbnail")}
                 height={300}
                 width={"100%"}
-                src={
-                  getValues("thumbnail")
-                    ? process.env.NEXT_PUBLIC_IMAGE_ENDPOINT +
-                      getValues("thumbnail")
-                    : ""
-                }
+                src={getValues("thumbnail") ? getValues("thumbnail") : ""}
                 error={!!errors.thumbnail?.message}
                 onChangeImage={onChangeImage}
                 option={{

@@ -73,6 +73,7 @@ const Table = (props: Props) => {
         title: t("table.status"),
         dataIndex: "orderStatus",
         className: "whitespace-nowrap",
+        align: "center",
         render: (value: ENUM_ORDER_STATUS) => {
           let bg: string;
 
@@ -99,7 +100,11 @@ const Table = (props: Props) => {
           }
 
           return (
-            <span className={clsx("px-3 py-2 text-white rounded-md", [bg])}>
+            <span
+              className={clsx(
+                "block min-w-[100px] w-fit font-medium text-white text-sm text-center capitalize px-5 py-2 mx-auto rounded-md",
+                [bg],
+              )}>
               {value === ENUM_ORDER_STATUS.PENDING && t("orderStatus.pending")}
               {value === ENUM_ORDER_STATUS.PROCESS && t("orderStatus.process")}
               {value === ENUM_ORDER_STATUS.SHIPPING &&
@@ -109,7 +114,6 @@ const Table = (props: Props) => {
             </span>
           );
         },
-        align: "center",
       },
       {
         title: t("table.paymentMethod"),

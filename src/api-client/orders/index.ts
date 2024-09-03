@@ -1,4 +1,4 @@
-import { ISearchOrder } from "~/interface/order";
+import { ICancelOrder, ISearchOrder } from "~/interface/order";
 import httpConfig from "~/configs/configAxios";
 import { ENUM_ORDER_STATUS, ENUM_PAYMENT_STATUS } from "~/enums/order";
 import { parseQueryString } from "~/helper/url";
@@ -25,11 +25,20 @@ const getOrder = async (order_id: string) => {
     .then((res) => res.data);
 };
 
-const updateOrder = async (order_id: string, status: ENUM_ORDER_STATUS) => {
+const updateStatusOrder = async (
+  order_id: string,
+  status: ENUM_ORDER_STATUS,
+) => {
   return await httpConfig
     .patch(BASE_URL + `/admin/orders/${order_id}/status`, {
       status,
     })
+    .then((res) => res.data);
+};
+
+const cancelOrder = async (order_id: string, data: ICancelOrder) => {
+  return await httpConfig
+    .patch(BASE_URL + `/admin/orders/${order_id}/cancel`, data)
     .then((res) => res.data);
 };
 
@@ -48,6 +57,7 @@ export {
   getOrders,
   countOrders,
   getOrder,
-  updateOrder,
+  updateStatusOrder,
   updatePaymentStatusOrder,
+  cancelOrder,
 };

@@ -405,12 +405,7 @@ const FormProduct = (props: Props) => {
             width={200}
             className=""
             rules={[ETypeFile.JPEG, ETypeFile.PNG, ETypeFile.WEBP]}
-            src={
-              product?.thumbnail
-                ? (process.env.NEXT_PUBLIC_IMAGE_ENDPOINT as string) +
-                  product.thumbnail
-                : ""
-            }
+            src={product?.thumbnail ? product.thumbnail : ""}
             error={!!errors.thumbnail?.message}
             onChangeImage={uploadThumbnail}
             option={{

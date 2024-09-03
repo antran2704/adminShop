@@ -313,6 +313,8 @@
       "customerName": "Customer name",
       "paymentMethod": "Payment Method",
       "status": "Status of order",
+      "reason": "Reason",
+      "noteCancel": "Note cancel",
       "createdAt": "Created At",
       "updatedAt": "Last updated"
     },
@@ -353,7 +355,10 @@
     },
     "modalCancel": {
       "title": "Confirm cancel order",
-      "description": "Do you want confirm cancel order?"
+      "description": "Do you want confirm cancel order?",
+      "selectTitle": "Please select reason:",
+      "outOfStock": "Out of stock",
+      "other": "Another reason"
     },
     "breadcrumb": {
       "list": "List of order",

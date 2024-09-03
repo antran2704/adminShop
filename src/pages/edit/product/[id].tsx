@@ -216,7 +216,7 @@ const ProductEditPage: NextPageWithLayout = () => {
         const gallery: UploadFile[] = payload.gallery.map((item: string) => ({
           uid: uuidv4(),
           name: item,
-          url: process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + item,
+          url: item,
         }));
 
         setProduct(payload);

@@ -1,4 +1,5 @@
 import {
+  ENUM_ORDER_CANCEL,
   ENUM_ORDER_PROCESS,
   ENUM_ORDER_STATUS,
   ENUM_PAYMENT_METHOD,
@@ -21,7 +22,8 @@ interface IAddressOrder {
 
 interface Cancel {
   canCancle: boolean;
-  content: null;
+  content: ENUM_ORDER_CANCEL | null;
+  note: string | null;
 }
 
 interface IItemOrder {
@@ -90,6 +92,12 @@ interface IOrderDetailTable {
   total: number;
 }
 
+interface ICancelOrder {
+  status: ENUM_ORDER_STATUS;
+  optionCancel: ENUM_ORDER_CANCEL;
+  note: string | null;
+}
+
 interface ISearchOrder extends ISearch {
   paymentMethod?: ENUM_PAYMENT_METHOD;
   paymentStatus?: ENUM_PAYMENT_STATUS;
@@ -104,4 +112,5 @@ export type {
   IItemOrder,
   IAddressOrder,
   IProcessingOrder,
+  ICancelOrder,
 };

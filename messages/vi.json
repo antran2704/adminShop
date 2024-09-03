@@ -321,6 +321,8 @@
       "paymentMethod": "Phương thức thanh toán",
       "status": "Trạng thái đơn hàng",
       "createdAt": "Ngày tạo",
+      "reason": "Lý do",
+      "noteCancel": "Ghi chú hủy đơn",
       "updatedAt": "Cập nhật lần cuối"
     },
     "process": {
@@ -329,7 +331,7 @@
       "inProcess": "Đang chuẩn bị",
       "payment": "Thanh toán thành công",
       "ship": "Đang được vận chuyển",
-      "cancel": "Hủy",
+      "cancel": "Hủy đơn hàng",
       "success": "Đã nhận hàng"
     },
     "paymentMethod": {
@@ -353,7 +355,10 @@
     },
     "modalCancel": {
       "title": "Xác nhận hủy đơn hàng",
-      "description": "Bạn có muôn xác nhận hủy đơn hàng?"
+      "description": "Bạn có muôn xác nhận hủy đơn hàng?",
+      "selectTitle": "Vui lòng lựa lý do:",
+      "outOfStock": "Hết hàng",
+      "other": "Lý do khác"
     },
     "breadcrumb": {
       "list": "Danh sách đơn hàng",

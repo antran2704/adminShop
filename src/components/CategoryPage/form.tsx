@@ -249,7 +249,7 @@ const CategoryForm = (props: Props) => {
               height={200}
               width={200}
               className=""
-              src={value ? process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + value : ""}
+              src={value ? value : ""}
               error={!!errors.thumbnail?.message}
               onChangeImage={onChangeImage}
               option={{

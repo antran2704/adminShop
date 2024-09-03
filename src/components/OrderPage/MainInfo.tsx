@@ -3,14 +3,19 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
-import { ENUM_ORDER_STATUS, ENUM_PAYMENT_METHOD } from "~/enums/order";
+import {
+  ENUM_ORDER_CANCEL,
+  ENUM_ORDER_STATUS,
+  ENUM_PAYMENT_METHOD,
+} from "~/enums/order";
 import { formatDate } from "~/helper/format/datetime";
 import { IOrder } from "~/interface/order";
 import { SelectFilterCore } from "../Core";
 import { DefaultOptionType } from "antd/es/select";
 import { ModalConfirm } from "../Modal";
-import { updateOrder } from "~/api-client";
-import { message } from "antd";
+import { cancelOrder, updateStatusOrder } from "~/api-client";
+import { message, Radio, RadioChangeEvent } from "antd";
+import { InputTextArea } from "../Core/Input";
 
 interface Props {
   data: IOrder;
@@ -25,6 +30,9 @@ const MainInfoOrder = (props: Props) => {
   const tSuccess = useTranslations("Success");
 
   const router = useRouter();
+
+  const [cancel, setCancel] = useState<ENUM_ORDER_CANCEL | null>(null);
+  const [cancelNote, setCancelNote] = useState<string | null>(null);
 
   const [modal, setModal] = useState<{
     process: boolean;
@@ -51,6 +59,14 @@ const MainInfoOrder = (props: Props) => {
   });
 
   const [messageApi, contextHolder] = message.useMessage();
+
+  const isDisableBtnCancel: boolean = useMemo(() => {
+    return (
+      !cancel ||
+      (cancel === ENUM_ORDER_CANCEL.OTHER && !cancelNote) ||
+      loading.cancel
+    );
+  }, [router.locale, cancel, cancelNote, loading.cancel]);
 
   const status: { color: string; title: string } = useMemo(() => {
     let color: string;
@@ -116,6 +132,34 @@ const MainInfoOrder = (props: Props) => {
     }
   }, [router.locale, data]);
 
+  const optionCancel: DefaultOptionType[] = useMemo(
+    (): DefaultOptionType[] => [
+      {
+        value: ENUM_ORDER_CANCEL.OUT_OF_STOCK,
+        label: t("modalCancel.outOfStock"),
+      },
+      {
+        value: ENUM_ORDER_CANCEL.OTHER,
+        label: t("modalCancel.other"),
+      },
+    ],
+    [router.locale, data],
+  );
+
+  const onChangeOptionCancel = (e: RadioChangeEvent) => {
+    const value: ENUM_ORDER_CANCEL = e.target.value;
+    setCancel(value);
+  };
+
+  const onChangeCancelNote = (value: string) => {
+    setCancelNote(value);
+  };
+
+  const onResetCancel = () => {
+    setCancel(null);
+    setCancelNote(null);
+  };
+
   const onModal = (key: keyof typeof modal, value: boolean) => {
     setModal({ ...modal, [key]: value });
   };
@@ -147,7 +191,7 @@ const MainInfoOrder = (props: Props) => {
   const onProcess = async () => {
     onLoading("process", true);
 
-    await updateOrder(data.order_id, ENUM_ORDER_STATUS.PROCESS)
+    await updateStatusOrder(data.order_id, ENUM_ORDER_STATUS.PROCESS)
       .then(() => {
         messageApi.success(tSuccess("update"));
 
@@ -164,7 +208,7 @@ const MainInfoOrder = (props: Props) => {
   const onShipping = async () => {
     onLoading("shipping", true);
 
-    await updateOrder(data.order_id, ENUM_ORDER_STATUS.SHIPPING)
+    await updateStatusOrder(data.order_id, ENUM_ORDER_STATUS.SHIPPING)
       .then(() => {
         messageApi.success(tSuccess("update"));
 
@@ -181,7 +225,7 @@ const MainInfoOrder = (props: Props) => {
   const onSuccess = async () => {
     onLoading("success", true);
 
-    await updateOrder(data.order_id, ENUM_ORDER_STATUS.SUCCESS)
+    await updateStatusOrder(data.order_id, ENUM_ORDER_STATUS.SUCCESS)
       .then(() => {
         messageApi.success(tSuccess("update"));
 
@@ -193,6 +237,30 @@ const MainInfoOrder = (props: Props) => {
       });
 
     onLoading("success", false);
+  };
+
+  const onCancel = async () => {
+    onLoading("cancel", true);
+
+    if (!cancel || (cancel === ENUM_ORDER_CANCEL.OTHER && !cancelNote)) return;
+
+    await cancelOrder(data.order_id, {
+      status: ENUM_ORDER_STATUS.CANCEL,
+      optionCancel: cancel,
+      note: cancelNote,
+    })
+      .then(() => {
+        messageApi.success(tSuccess("update"));
+
+        onModal("cancel", false);
+        onResetCancel();
+        getData();
+      })
+      .catch(() => {
+        messageApi.error(tError("TRY_AGAIN"));
+      });
+
+    onLoading("cancel", false);
   };
 
   return (
@@ -257,349 +325,37 @@ const MainInfoOrder = (props: Props) => {
             <h3 className="capitalize">{t("mainInfo.updatedAt")}:</h3>
             <p>{formatDate(data.updatedAt)}</p>
           </li>
-          <li className="flex items-center flex-wrap text-base mt-2 gap-1">
-            <h3 className="capitalize">{t("mainInfo.status")}:</h3>
-
-            {!!optionStatus.length && (
+          {!!optionStatus.length && (
+            <li className="flex items-center flex-wrap text-base mt-2 gap-2">
+              <h3 className="capitalize">{t("mainInfo.status")}:</h3>
               <SelectFilterCore
                 options={optionStatus}
                 value={status.title}
                 onChange={onChangeOption}
               />
-            )}
-            {!optionStatus.length && (
-              <p
-                className={clsx(
-                  "w-fit font-medium text-white text-xs capitalize px-5 py-2 rounded-md",
-                  [status.color],
-                )}>
-                {status.title}
+            </li>
+          )}
+          {data.cancel.content && (
+            <li className="flex items-start flex-wrap text-base mt-1 gap-1">
+              <h3 className="capitalize">{t("mainInfo.reason")}:</h3>
+              <p>
+                {data.cancel.content === ENUM_ORDER_CANCEL.OUT_OF_STOCK &&
+                  t("modalCancel.outOfStock")}
+                {data.cancel.content === ENUM_ORDER_CANCEL.OTHER &&
+                  t("modalCancel.other")}
               </p>
-            )}
-          </li>
+            </li>
+          )}
+          {data.cancel.note && (
+            <li className="flex items-start flex-wrap text-base mt-1 gap-1">
+              <h3 className="capitalize">{t("mainInfo.noteCancel")}:</h3>
+              <p>{data.cancel.note}</p>
+            </li>
+          )}
         </ul>
       </div>
 
-      {/* {data.payment_status === PaymentStatus.success && (
-        <div>
-          {data.status === statusOrder.cancle && (
-            <Fragment>
-              <li className="flex items-start justify-start text-base mt-1 gap-1">
-                <h3 className="font-medium capitalize">
-                  Why:
-                </h3>
-                <p
-                  className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}>
-                  {data.cancleContent || "updating"}
-                </p>
-              </li>
-              {data.note && (
-                <li className="flex items-start justify-start text-base mt-1 gap-1">
-                  <h3 className="font-medium capitalize">
-                    Note:
-                  </h3>
-                  <p
-                    className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}>
-                    {data.note}
-                  </p>
-                </li>
-              )}
-            </Fragment>
-          )}
-
-          {data.status === statusOrder.pending && (
-            <li className="flex items-center justify-start mt-5 text-base gap-1">
-              <h3 className="font-medium capitalize">
-                Change Status:
-              </h3>
-              <div className="flex items-center gap-3">
-                <ButtonClassic
-                  title="Processing"
-                  size="S"
-                  handleClick={onShowProcessing}
-                  className="bg-primary"
-                />
-                <ButtonClassic
-                  title="Cancle"
-                  size="S"
-                  handleClick={onShowCancle}
-                  className="bg-cancle"
-                />
-              </div>
-            </li>
-          )}
-
-          {data.status === statusOrder.processing && (
-            <li className="flex items-center justify-start mt-5 text-base gap-1">
-              <h3 className="font-medium capitalize">
-                Change Status:
-              </h3>
-              <div className="flex items-center gap-3">
-                <ButtonClassic
-                  title="Delivered"
-                  size="S"
-                  handleClick={onShowDelivered}
-                  className="bg-success"
-                />
-                <ButtonClassic
-                  title="Cancle"
-                  size="S"
-                  handleClick={onShowCancle}
-                  className="bg-cancle"
-                />
-              </div>
-            </li>
-          )}
-        </div>
-      )} */}
-
-      {/* {data.payment_status !== PaymentStatus.success && (
-        <div>
-          {data.status === statusOrder.cancle && (
-            <Fragment>
-              <li className="flex items-start justify-start text-base mt-1 gap-1">
-                <h3 className="font-medium capitalize">
-                  Why:
-                </h3>
-                <p
-                  className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}>
-                  {data.cancleContent || "updating"}
-                </p>
-              </li>
-              {data.note && (
-                <li className="flex items-start justify-start text-base mt-1 gap-1">
-                  <h3 className="font-medium capitalize">
-                    Note:
-                  </h3>
-                  <p
-                    className={`w-fit text-white bg-cancle text-base capitalize px-4 py-1 rounded-md`}>
-                    {data.note}
-                  </p>
-                </li>
-              )}
-            </Fragment>
-          )}
-
-          {data.status === statusOrder.pending && (
-            <li className="flex items-center justify-start mt-5 text-base gap-1">
-              <h3 className="font-medium capitalize">
-                Confirm banking:
-              </h3>
-              <div className="flex items-center gap-3">
-                <ButtonClassic
-                  title="Confirm"
-                  size="S"
-                  handleClick={onShowConfirmBanking}
-                  className="bg-success"
-                />
-                <ButtonClassic
-                  title="Cancle"
-                  size="S"
-                  handleClick={onShowCancle}
-                  className="bg-cancle"
-                />
-              </div>
-            </li>
-          )}
-        </div>
-      )} */}
-
-      {/* {showConfirmBanking && (
-        <Popup
-          show={showConfirmBanking}
-          title="Xác nhận đã chuyển khoản"
-          onClose={onShowConfirmBanking}>
-          <div className="flex items-center justify-between">
-            <ButtonClassic
-              title="Cancle"
-              size="S"
-              handleClick={onShowConfirmBanking}
-              className="bg-error"
-            />
-
-            <ButtonClassic
-              title="Accept"
-              size="S"
-              handleClick={() => {
-                onShowConfirmBanking();
-                hanldeChangePaymentStatus(PaymentStatus.success);
-              }}
-              className="bg-success text-white opacity-80 hover:opacity-100"
-            />
-          </div>
-        </Popup>
-      )} */}
-
-      {/* {showCancle && data?.payment_status === PaymentStatus.success && (
-        <Popup show={showCancle} title="Lý do hủy đơn" onClose={onShowCancle}>
-          <div className="mx-auto">
-            <fieldset>
-              <legend className="sr-only">Countries</legend>
-
-              {optionsCancle.map((option: IOptionCancle) => (
-                <div key={option.id} className="flex items-center mb-4">
-                  <input
-                    id={option.id}
-                    type="radio"
-                    name="options"
-                    onChange={(e) => onChooseOption(e)}
-                    value={option.value}
-                    className="h-4 w-4 border-gray-300"
-                  />
-                  <label
-                    htmlFor={option.id}
-                    className="text-sm font-medium text-gray-900  ml-2 block">
-                    {option.lable}
-                  </label>
-                </div>
-              ))}
-            </fieldset>
-
-            <div className="my-4">
-              <h3 className="text-base mb-2">Note</h3>
-              <textarea
-                ref={noteRef}
-                className="w-full px-3 py-2 rounded-md border-2"
-                name="note_option"
-                id="note_option"
-                cols={30}
-                rows={4}
-                placeholder="Enter note..."></textarea>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <ButtonClassic
-                title="Cancle"
-                size="S"
-                handleClick={onShowCancle}
-                className="bg-error"
-              />
-
-              <ButtonClassic
-                title="Accept"
-                disable={disableBtnCancle}
-                size="S"
-                handleClick={() => {
-                  onShowCancle();
-                  hanldeChangeStatus(statusOrder.cancle);
-                }}
-                className="bg-success"
-              />
-            </div>
-          </div>
-        </Popup>
-      )} */}
-
-      {/* {showCancle && data?.payment_status !== PaymentStatus.success && (
-        <Popup show={showCancle} title="Lý do hủy đơn" onClose={onShowCancle}>
-          <div className="mx-auto">
-            <fieldset>
-              <legend className="sr-only">Countries</legend>
-
-              {optionsCancleByPayment.map((option: IOptionCancle) => (
-                <div key={option.id} className="flex items-center mb-4">
-                  <input
-                    id={option.id}
-                    type="radio"
-                    name="options"
-                    onChange={(e) => onChooseOption(e)}
-                    value={option.value}
-                    className="h-4 w-4 border-gray-300"
-                  />
-                  <label
-                    htmlFor={option.id}
-                    className="text-sm font-medium text-gray-900 ml-2 block">
-                    {option.lable}
-                  </label>
-                </div>
-              ))}
-            </fieldset>
-
-            <div className="my-4">
-              <h3 className="text-base mb-2">Note</h3>
-              <textarea
-                ref={noteRef}
-                className="w-full px-3 py-2 rounded-md border-2"
-                name="note_option"
-                id="note_option"
-                cols={30}
-                rows={4}
-                placeholder="Enter note..."></textarea>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <ButtonClassic
-                title="Cancle"
-                size="S"
-                handleClick={onShowCancle}
-                className="bg-error"
-              />
-
-              <ButtonClassic
-                title="Accept"
-                disable={disableBtnCancle}
-                size="S"
-                handleClick={() => {
-                  onShowCancle();
-                  hanldeChangeStatus(statusOrder.cancle);
-                }}
-                className={`${disableBtnCancle ? "bg-[#d1d6e2]" : "bg-success"}`}
-              />
-            </div>
-          </div>
-        </Popup>
-      )} */}
-      {/* {showDelivered && (
-        <Popup
-          title="Bạn có muốn hoàn thành đơn hàng này"
-          show={showDelivered}
-          onClose={onShowDelivered}>
-          <div className="flex items-center justify-between">
-            <ButtonClassic
-              title="Cancle"
-              size="S"
-              handleClick={onShowDelivered}
-              className="bg-error"
-            />
-
-            <ButtonClassic
-              title="Accept"
-              size="S"
-              handleClick={() => {
-                onShowDelivered();
-                hanldeChangeStatus(statusOrder.delivered);
-              }}
-              className="bg-success text-white opacity-80 hover:opacity-100"
-            />
-          </div>
-        </Popup>
-      )} */}
-      {/* {showProcessing && (
-        <Popup
-          title="Đang chuẩn bị đơn hàng"
-          show={showProcessing}
-          onClose={onShowProcessing}>
-          <div className="flex items-center justify-between">
-            <ButtonClassic
-              title="Cancle"
-              size="S"
-              handleClick={onShowProcessing}
-              className="bg-error"
-            />
-
-            <ButtonClassic
-              title="Accept"
-              size="S"
-              handleClick={() => {
-                onShowProcessing();
-                hanldeChangeStatus(statusOrder.processing);
-              }}
-              className="bg-success text-white opacity-80 hover:opacity-100"
-            />
-          </div>
-        </Popup>
-      )} */}
-
+      {/* Modal process */}
       <ModalConfirm
         title={t("modalProcess.title")}
         open={modal.process}
@@ -617,6 +373,7 @@ const MainInfoOrder = (props: Props) => {
         </p>
       </ModalConfirm>
 
+      {/* Modal shipping */}
       <ModalConfirm
         title={t("modalShipping.title")}
         open={modal.shipping}
@@ -634,6 +391,7 @@ const MainInfoOrder = (props: Props) => {
         </p>
       </ModalConfirm>
 
+      {/* Modal success */}
       <ModalConfirm
         title={t("modalSuccess.title")}
         open={modal.success}
@@ -649,6 +407,46 @@ const MainInfoOrder = (props: Props) => {
         <p className="md:text-lg text-base text-center mb-10">
           {t("modalSuccess.description")}
         </p>
+      </ModalConfirm>
+
+      {/* Modal cancel */}
+      <ModalConfirm
+        title={t("modalCancel.title")}
+        open={modal.cancel}
+        onCancel={() => {
+          onModal("cancel", false);
+          onResetCancel();
+        }}
+        centered
+        type="error"
+        destroyOnClose
+        okButtonProps={{
+          loading: loading.cancel,
+          disabled: isDisableBtnCancel,
+        }}
+        onOk={onCancel}>
+        <div>
+          <p className="text-base mb-2">{t("modalCancel.selectTitle")}</p>
+          <Radio.Group
+            onChange={onChangeOptionCancel}
+            value={cancel}
+            className="flex flex-col">
+            {optionCancel.map((option: DefaultOptionType, index: number) => (
+              <Radio key={index} value={option.value}>
+                {option.label}
+              </Radio>
+            ))}
+          </Radio.Group>
+          {cancel === ENUM_ORDER_CANCEL.OTHER && (
+            <InputTextArea
+              className="mt-2"
+              rows={4}
+              value={cancelNote || ""}
+              placeholder={tError("PLEASE_INPUT")}
+              onChange={(e) => onChangeCancelNote(e.target.value)}
+            />
+          )}
+        </div>
       </ModalConfirm>
 
       {/* Message of antd */}

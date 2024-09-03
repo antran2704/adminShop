@@ -128,11 +128,7 @@ const FormBanner = (props: Props) => {
               title={t("form.thumbnail")}
               height={400}
               width={"100%"}
-              src={
-                getValues("image")
-                  ? process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + getValues("image")
-                  : ""
-              }
+              src={getValues("image") ? getValues("image") : ""}
               error={!!errors.image?.message}
               onChangeImage={onChangeImage}
               option={{

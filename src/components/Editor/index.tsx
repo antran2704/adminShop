@@ -144,11 +144,7 @@ const Editor = (props: Props) => {
 
       if (status === 201) {
         //add image in quill
-        editor.insertEmbed(
-          position,
-          "image",
-          process.env.NEXT_PUBLIC_IMAGE_ENDPOINT + payload,
-        );
+        editor.insertEmbed(position, "image", payload);
         // editor.formatLine(position, position, "align", "center");
         const newPosition: number = position + 1;
         editor.setSelection({ index: newPosition, length: 1 });

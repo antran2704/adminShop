@@ -32,7 +32,8 @@ const OrderProcess = (props: Props) => {
                   index === data.length - 1
                     ? " border text-success border-success"
                     : "text-neutral-400",
-                  item.label === ENUM_ORDER_PROCESS.CANCEL_TIME && "text-error",
+                  item.label === ENUM_ORDER_PROCESS.CANCEL_TIME &&
+                    "!text-error !border-error",
                 ],
               )}>
               {item.label === ENUM_ORDER_PROCESS.ORDER_TIME && (
@@ -57,7 +58,7 @@ const OrderProcess = (props: Props) => {
             <div
               className={clsx([
                 index === data.length - 1 ? "text-success" : "text-neutral-400",
-                item.label === ENUM_ORDER_PROCESS.CANCEL_TIME && "text-error",
+                item.label === ENUM_ORDER_PROCESS.CANCEL_TIME && "!text-error",
               ])}>
               <h4 className="font-medium">
                 {item.label === ENUM_ORDER_PROCESS.ORDER_TIME &&

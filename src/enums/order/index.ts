@@ -30,3 +30,8 @@ export enum ENUM_PAYMENT_METHOD {
   VNPAY = "VNPAY",
   BANKING = "BANKING",
 }
+
+export enum ENUM_ORDER_CANCEL {
+  OUT_OF_STOCK = "OUT_OF_STOCK",
+  OTHER = "OTHER",
+}

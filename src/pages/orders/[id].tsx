@@ -31,6 +31,8 @@ import { formatBigNumber } from "~/helper/format/number";
 import CURRENCY from "~/common/currency";
 import FormFooter from "~/components/Footer/FormFooter";
 import FormLayout from "~/layouts/FormLayout";
+import clsx from "clsx";
+import { ENUM_ORDER_STATUS } from "~/enums/order";
 
 const PDFDocument = dynamic(() => import("~/components/PDFDocument/index"), {
   loading: () => <Loading />,
@@ -48,12 +50,49 @@ const OrderDetail: NextPageWithLayout = () => {
   const [order, setOrder] = useState<IOrder | null>(null);
   const [orderTable, setOrderTable] = useState<IOrderDetailTable[]>([]);
 
-  const [loading, setLoading] = useState<boolean>(true);
   const [showPrint, setShowPrint] = useState<boolean>(false);
 
   const currency = useMemo(() => {
     return CURRENCY[router.locale as keyof typeof CURRENCY];
   }, [router.locale]);
+
+  const status: { color: string; title: string } = useMemo(() => {
+    let color: string = "";
+    let title: string = "";
+
+    if (!order) {
+      return { color, title };
+    }
+
+    switch (order.order_status) {
+      case ENUM_ORDER_STATUS.PENDING:
+        color = "bg-warn";
+        title = t("orderStatus.pending");
+        break;
+
+      case ENUM_ORDER_STATUS.PROCESS:
+        color = "bg-primary";
+        title = t("orderStatus.process");
+        break;
+
+      case ENUM_ORDER_STATUS.SUCCESS:
+        color = "bg-success";
+        title = t("orderStatus.success");
+        break;
+
+      case ENUM_ORDER_STATUS.SHIPPING:
+        color = "bg-[#5856d6]";
+        title = t("orderStatus.shipping");
+        break;
+
+      case ENUM_ORDER_STATUS.CANCEL:
+        color = "bg-error";
+        title = t("orderStatus.cancel");
+        break;
+    }
+
+    return { color, title };
+  }, [router.locale, order]);
 
   const onShow = (
     value: boolean,
@@ -63,8 +102,6 @@ const OrderDetail: NextPageWithLayout = () => {
   };
 
   const getData = async (id: string) => {
-    setLoading(true);
-
     await getOrder(id)
       .then(({ payload }: IResponse<IOrder>) => {
         const dataTable: IOrderDetailTable[] = payload.items.map(
@@ -85,8 +122,6 @@ const OrderDetail: NextPageWithLayout = () => {
 
         setOrder(payload);
         setOrderTable(dataTable);
-
-        setLoading(false);
       })
       .catch(() => {
         router.push("/404");
@@ -114,10 +149,22 @@ const OrderDetail: NextPageWithLayout = () => {
       loading={!order}>
       <Fragment>
         <div className="flex items-center justify-between gap-10">
-          <h1 className="md:text-xl text-lg font-medium">
-            {t("detailTitle")}{" "}
-            <strong className="text-primary">#{orderId}</strong>
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="md:text-xl text-lg font-medium">
+              {t("detailTitle")}{" "}
+              <strong className="text-primary">#{orderId}</strong>
+            </h1>
+
+            {order && (
+              <p
+                className={clsx(
+                  "w-fit min-w-[100px] font-medium text-white text-sm text-center capitalize px-5 py-2 rounded-md",
+                  [status.color],
+                )}>
+                {status.title}
+              </p>
+            )}
+          </div>
 
           <Button
             onClick={() => onShow(showPrint, setShowPrint)}
