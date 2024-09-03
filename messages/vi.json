@@ -460,19 +460,29 @@
     "update": "Cập nhật thành công",
     "delete": "Xóa thành công"
   },
-  "GrossDatePage": {
-    "title": "Tổng quan về thu nhập trong ngày",
-    "grossIn": "Thu nhập ngày",
+  "Gross": {
+    "gross": "Thu nhập",
+    "subGross": "Tạm tính",
+    "grossIn": "Thu nhập",
     "updatedAt": "Dữ liệu cập nhật lúc",
     "subTotal": "Tạm tính",
     "total": "Tổng thu nhập",
     "order": "Đơn hàng",
-    "totalToday": "Tổng thu nhập hôm nay",
-    "orderToday": "Đơn hàng hôm nay",
     "successOrder": "Đơn hàng thành công",
     "pendingOrder": "Chờ xác nhận",
     "processOrder": "Đang chuẩn bị hàng",
     "cancelOrder": "Đơn hủy"
+  },
+  "GrossDatePage": {
+    "title": "Tổng quan về thu nhập trong ngày",
+    "totalToday": "Tổng thu nhập hôm nay",
+    "orderToday": "Đơn hàng hôm nay"
+  },
+  "GrossMonthPage": {
+    "title": "Tổng quan về thu nhập theo tháng"
+  },
+  "GrossYearPage": {
+    "title": "Tổng quan về thu nhập theo năm"
   },
   "Common": {
     "noData": "Chưa có dữ liệu",

@@ -34,9 +34,10 @@ const Layout = PrivateLayout;
 
 const IncomeDatePage: NextPageWithLayout = () => {
   const t = useTranslations("GrossDatePage");
+  const tGross = useTranslations("Gross");
   const tCommon = useTranslations("Common");
 
-  const [growDate, setGrowDate] = useState<IGrossDate>(initOverviewDate);
+  const [grossDate, setGrossDate] = useState<IGrossDate>(initOverviewDate);
   const [selectDate, setSelectDate] = useState<string>(
     dayjs(new Date().toISOString()).format(DAY_DMY),
   );
@@ -49,12 +50,12 @@ const IncomeDatePage: NextPageWithLayout = () => {
     const parseDate: string = dayjs(date, DAY_DMY).toISOString();
 
     await getGross(parseDate)
-      .then(({ payload }: IResponse<IGrossDate>) => setGrowDate(payload))
+      .then(({ payload }: IResponse<IGrossDate>) => setGrossDate(payload))
       .catch((err) => {
         const { status } = hanldeErrorAxios(err);
 
         if (status === 404) {
-          setGrowDate({
+          setGrossDate({
             ...initOverviewDate,
             createdAt: parseDate,
             updatedAt: null,
@@ -69,15 +70,12 @@ const IncomeDatePage: NextPageWithLayout = () => {
 
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
-      <div className="w-full">
-        <h1 className="md:text-3xl text-2xl dark:text-darkText font-bold">
-          {t("title")}
-        </h1>
-      </div>
+      <h1 className="md:text-2xl text-xl dark:text-darkText font-medium">
+        {t("title")}
+      </h1>
 
       <div className="w-full gap-10">
         <div className="w-full rounded-xl py-5">
-          {/* <DateFilter value={selectDate || ""} onSelect={onSelectDate} /> */}
           <DateFilter
             className="lg:w-2/12 md:w-3/12 w-5/12 mb-5"
             format={DAY_DMY}
@@ -87,14 +85,14 @@ const IncomeDatePage: NextPageWithLayout = () => {
 
           <div>
             <h3 className="text-lg text-center dark:text-darkText">
-              {t("grossIn")}: {formatDate(growDate.createdAt as string)}
+              {tGross("grossIn")}: {formatDate(grossDate.createdAt as string)}
             </h3>
-            {growDate.updatedAt && (
+            {grossDate.updatedAt && (
               <p className="text-lg text-center dark:text-darkText">
-                {`${t("updatedAt")} ${formatDate(growDate.updatedAt)}`}
+                {`${tGross("updatedAt")} ${formatDate(grossDate.updatedAt)}`}
               </p>
             )}
-            {!growDate.updatedAt && (
+            {!grossDate.updatedAt && (
               <p className="text-lg text-center dark:text-darkText">
                 {tCommon("noData")}
               </p>
@@ -103,42 +101,42 @@ const IncomeDatePage: NextPageWithLayout = () => {
           <div
             className={`grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300 mt-5`}>
             <Statistic
-              title={t("subTotal")}
+              title={tGross("subTotal")}
               IconElement={<BiDollarCircle className="text-4xl" />}
-              to={growDate.sub_gross}
+              to={grossDate.sub_gross}
               backgroundColor="bg-[#5032fd]"
               duration={0}
               specialCharacter="VND"
             />
             <Statistic
-              title={t("total")}
+              title={tGross("total")}
               IconElement={<BiDollarCircle className="text-4xl" />}
-              to={growDate.total_gross}
+              to={grossDate.total_gross}
               backgroundColor="bg-[#5032fd]"
               duration={0}
               specialCharacter="VND"
             />
 
             <Statistic
-              title={t("order")}
+              title={tGross("order")}
               IconElement={<AiOutlineShoppingCart className="text-4xl" />}
-              to={growDate.orders}
+              to={grossDate.orders}
               backgroundColor="bg-[#0891b2]"
               duration={0}
             />
 
             <Statistic
-              title={t("successOrder")}
+              title={tGross("successOrder")}
               IconElement={<BiPackage className="text-4xl" />}
-              to={growDate.delivered_orders}
+              to={grossDate.delivered_orders}
               backgroundColor="bg-success"
               duration={0}
             />
 
             <Statistic
-              title={t("cancelOrder")}
+              title={tGross("cancelOrder")}
               IconElement={<BiMinusCircle className="text-4xl" />}
-              to={growDate.cancel_orders}
+              to={grossDate.cancel_orders}
               backgroundColor="bg-cancle"
               duration={0}
             />

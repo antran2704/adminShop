@@ -45,7 +45,7 @@ import { NextPageWithLayout } from "~/interface/page";
 import { ORDER_PARAMATER_ENUM } from "~/enums";
 
 import { countOrders, getOrders } from "~/api-client";
-import { getGross, getGrossInWeek } from "~/api-client/gross/gross-date";
+import { getGross, getGrossInWeek } from "~/api-client/gross/grossDate";
 
 import { getFirstDayInWeek } from "~/helper/format/datetime";
 import { ENUM_ORDER_STATUS } from "~/enums/order";

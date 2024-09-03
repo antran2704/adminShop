@@ -461,19 +461,29 @@
     "update": "Updated success",
     "delete": "Deleted success"
   },
-  "GrossDatePage": {
-    "title": "Dashboard Overview Income Date",
+  "Gross": {
+    "gross": "Gross",
+    "subGross": "Sub gross",
     "grossIn": "Gross in",
     "updatedAt": "Updated at",
     "subTotal": "Sub Gross",
     "total": "Total",
     "order": "Order",
-    "totalToday": "Total today",
-    "orderToday": "Today order",
     "successOrder": "Success order",
     "pendingOrder": "Pending order",
     "processOrder": "Process order",
     "cancelOrder": "Cancel order"
+  },
+  "GrossDatePage": {
+    "title": "Dashboard overview income date",
+    "totalToday": "Total today",
+    "orderToday": "Today order"
+  },
+  "GrossMonthPage": {
+    "title": "Dashboard overview income with month"
+  },
+  "GrossYearPage": {
+    "title": "Dashboard overview income with year"
   },
   "Common": {
     "noData": "No data",

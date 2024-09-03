@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, ReactElement } from "react";
+import { useState, useEffect, useRef, ReactElement, useMemo } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { BiDollarCircle, BiPackage, BiMinusCircle } from "react-icons/bi";
 import {
@@ -15,8 +15,7 @@ import dayjs, { Dayjs } from "dayjs";
 
 import Statistic from "~/components/Statistic";
 import { IGrossMonth } from "~/interface/gross/month";
-import { SelectItem } from "~/components/Select";
-import { IGrossDate, IResponse, ISelectItem } from "~/interface";
+import { IGrossDate, IResponse } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/Private";
 import {
@@ -25,6 +24,9 @@ import {
 } from "~/api-client/gross/grossMonth";
 import hanldeErrorAxios from "~/helper/handleErrorAxios";
 import DateFilter from "~/components/Core/Filter/Date";
+import { useRouter } from "next/router";
+import { useTranslations } from "next-intl";
+import { formatDate } from "~/helper/format/datetime";
 
 ChartJS.register(
   CategoryScale,
@@ -54,57 +56,6 @@ const options = {
   },
 };
 
-const MONTHS: ISelectItem[] = [
-  {
-    _id: "1",
-    title: "1",
-  },
-  {
-    _id: "2",
-    title: "2",
-  },
-  {
-    _id: "3",
-    title: "3",
-  },
-  {
-    _id: "4",
-    title: "4",
-  },
-  {
-    _id: "5",
-    title: "5",
-  },
-  {
-    _id: "6",
-    title: "6",
-  },
-  {
-    _id: "7",
-    title: "7",
-  },
-  {
-    _id: "8",
-    title: "8",
-  },
-  {
-    _id: "9",
-    title: "9",
-  },
-  {
-    _id: "10",
-    title: "10",
-  },
-  {
-    _id: "11",
-    title: "11",
-  },
-  {
-    _id: "12",
-    title: "12",
-  },
-];
-
 const initOverview: IGrossMonth = {
   sub_gross: 0,
   total_gross: 0,
@@ -113,32 +64,31 @@ const initOverview: IGrossMonth = {
   orders: 0,
   cancel_orders: 0,
   delivered_orders: 0,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  createdAt: null,
+  updatedAt: null,
 };
-
-const initYears: ISelectItem[] = [
-  {
-    _id: new Date().getFullYear().toString(),
-    title: new Date().getFullYear().toString(),
-  },
-];
 
 const Layout = LayoutWithHeader;
 
 const IncomeMonthPage: NextPageWithLayout = () => {
-  const data = {
+  const router = useRouter();
+
+  const t = useTranslations("GrossMonthPage");
+  const tGross = useTranslations("Gross");
+  const tCommon = useTranslations("Common");
+
+  let data = {
     labels: [],
     datasets: [
       {
-        label: "Sub Gross",
+        label: tGross("subGross"),
         data: [],
         backgroundColor: "rgb(255, 99, 132)",
         borderRadius: 10,
         borderWidth: 0,
       },
       {
-        label: "Gross",
+        label: tGross("gross"),
         data: [],
         backgroundColor: "rgb(75, 192, 192)",
         borderRadius: 10,
@@ -150,26 +100,17 @@ const IncomeMonthPage: NextPageWithLayout = () => {
   const chartMonthRef = useRef<any>();
   const [dataBarMonth, setDataBarMonth] = useState<any>(data);
 
-  const [years, setYears] = useState<ISelectItem[]>(initYears);
+  const [selectGross, setSelectGross] = useState<{
+    startDate: Dayjs;
+    endDate: Dayjs;
+  }>({
+    startDate: dayjs(new Date().toISOString()),
+    endDate: dayjs(new Date().toISOString()),
+  });
   const [grossMonth, setGrossMonth] = useState<IGrossMonth>(initOverview);
 
-  const onChangeGrowMonth = (value: string, name: string) => {
-    if (name === "year") {
-      handleGetStatisticsMonth(selectGrowMonth.month, value);
-      handleGetGrossInMonth(selectGrowMonth.month, value);
-    }
-
-    if (name === "month") {
-      handleGetStatisticsMonth(value, selectGrowMonth.year);
-      handleGetGrossInMonth(value, selectGrowMonth.year);
-    }
-
-    setSelectGrowMonth({ ...selectGrowMonth, [name]: value });
-  };
-
   const onSelectMonth = (value: Dayjs) => {
-    console.log(value.startOf("month").toISOString());
-    // setSelectDate(dayjs(value.toISOString()).format(DAY_DMY));
+    setSelectGross({ startDate: value, endDate: value });
   };
 
   const handleGetStatisticsMonth = async (month: string, year: string) => {
@@ -181,114 +122,79 @@ const IncomeMonthPage: NextPageWithLayout = () => {
         const { status } = hanldeErrorAxios(err);
 
         if (status === 404) {
-          setGrossMonth({
-            ...grossMonth,
-            // createdAt: parseDate,
-            updatedAt: null,
-          });
+          setGrossMonth(initOverview);
         }
       });
   };
 
   const handleGetGrossInMonth = async (startDate: string, endDate: string) => {
-    const { status, payload } = await getGrossInMonth(startDate, endDate);
+    await getGrossInMonth(startDate, endDate)
+      .then(({ payload }: IResponse<IGrossDate[]>) => {
+        const month = (selectGross.startDate.get("month") + 1).toString();
+        const days = selectGross.endDate.endOf("month").date();
+        const newData: any = { ...data };
 
-    if (status === 200) {
-      const month = new Date(startDate).getMonth() + 1;
-      const days = new Date(2023, Number(month), 0).getDate();
-      const newData: any = data;
-      for (let i = 1; i <= days; i++) {
-        newData.labels.push(`${i}/${month}`);
-        newData.datasets[0].data.push(0);
-        newData.datasets[1].data.push(0);
-      }
+        for (let i = 1; i <= days; i++) {
+          newData.labels.push(`${i}/${month}`);
+          newData.datasets[0].data.push(0);
+          newData.datasets[1].data.push(0);
+        }
 
-      payload.map((item: IGrossDate) => {
-        const day = Number(item.day);
-        newData.datasets[0].data[day - 1] = item.sub_gross;
-        newData.datasets[1].data[day - 1] = item.total_gross;
+        payload.map((item: IGrossDate) => {
+          const day = Number(item.day);
+          newData.datasets[0].data[day - 1] = item.sub_gross;
+          newData.datasets[1].data[day - 1] = item.total_gross;
+        });
+        setDataBarMonth(newData);
+      })
+      .catch(() => {
+        setDataBarMonth(data);
       });
-      chartMonthRef.current.update();
-      setDataBarMonth(newData);
-    }
-  };
 
-  const handleGetYear = async () => {
-    const { status, payload } = await axiosGet("/gross-year?year=1");
-    if (status === 200 && payload.length > 0) {
-      const items: ISelectItem[] = payload.map((item: any) => ({
-        _id: item.year,
-        title: item.year,
-      }));
-
-      setYears(items);
-    }
+    chartMonthRef.current.update();
   };
 
   useEffect(() => {
-    const startDate: string = dayjs(new Date().toISOString())
-      .startOf("month")
-      .toISOString();
-    const endDate: string = dayjs(new Date().toISOString())
-      .endOf("month")
-      .toISOString();
-
-    handleGetStatisticsMonth(startDate, endDate);
-    handleGetGrossInMonth(startDate, endDate);
-    // handleGetYear();
-  }, []);
+    handleGetStatisticsMonth(
+      (selectGross.startDate.get("month") + 1).toString(),
+      selectGross.startDate.get("years").toString(),
+    );
+    handleGetGrossInMonth(
+      selectGross.startDate.startOf("month").toISOString(),
+      selectGross.endDate.endOf("month").toISOString(),
+    );
+  }, [selectGross]);
 
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
-      <div className="w-full">
-        <h1 className="md:text-3xl text-2xl font-bold dark:text-darkText">
-          {" "}
-          Dashboard Overview Income Month
-        </h1>
-      </div>
+      <h1 className="md:text-2xl text-xl dark:text-darkText font-medium">
+        {t("title")}
+      </h1>
 
-      <div className="w-full rounded-xl py-5">
+      <div className="w-full rounded-xl py-2">
         <div className="flex items-center gap-5">
           <DateFilter
             className="lg:w-2/12 md:w-3/12 w-5/12 mb-5"
             picker="month"
-            // value={selectDate ? dayjs(selectDate, DAY_DMY) : null}
-            onChangeDate={onSelectMonth}
+            allowClear={false}
+            value={selectGross.startDate ? selectGross.startDate : null}
+            onChangeDate={(_, option: Dayjs) => onSelectMonth(option)}
           />
-
-          {/* <SelectItem
-            width="lg:w-2/12 md:w-3/12 w-5/12"
-            title="Select month"
-            name="month"
-            value={selectGrowMonth.month}
-            data={MONTHS}
-            onSelect={onChangeGrowMonth}
-          />
-
-          <SelectItem
-            width="lg:w-2/12 md:w-3/12 w-5/12"
-            title="Select year"
-            name="year"
-            value={selectGrowMonth.year}
-            data={years}
-            onSelect={onChangeGrowMonth}
-          /> */}
         </div>
 
         <div className="my-5">
           <p className="text-lg font-medium text-center dark:text-darkText">
-            Thu nhập tháng {selectGrowMonth.month} năm {selectGrowMonth.year}
+            {tGross("grossIn")} {selectGross.startDate.get("month") + 1}/
+            {selectGross.startDate.get("year")}
           </p>
           {grossMonth.updatedAt && (
-            <p className="text-lg font-medium text-center dark:text-darkText">
-              (Dữ liệu cập nhật lúc{" "}
-              {new Date(grossMonth.updatedAt).toLocaleTimeString()} ngày{" "}
-              {new Date(grossMonth.updatedAt).toLocaleDateString("en-GB")})
+            <p className="text-lg text-center dark:text-darkText">
+              {`${tGross("updatedAt")} ${formatDate(grossMonth.updatedAt)}`}
             </p>
           )}
           {!grossMonth.updatedAt && (
             <p className="text-lg font-medium text-center dark:text-darkText">
-              Chưa có dữ liệu
+              {tCommon("noData")}
             </p>
           )}
         </div>
@@ -307,7 +213,7 @@ const IncomeMonthPage: NextPageWithLayout = () => {
         <div
           className={`grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300 my-5`}>
           <Statistic
-            title="Thu nhập tạm tính"
+            title={tGross("subTotal")}
             IconElement={<BiDollarCircle className="text-4xl" />}
             to={grossMonth.sub_gross}
             backgroundColor="bg-[#5032fd]"
@@ -315,7 +221,7 @@ const IncomeMonthPage: NextPageWithLayout = () => {
             specialCharacter="VND"
           />
           <Statistic
-            title="Tổng thu nhập"
+            title={tGross("total")}
             IconElement={<BiDollarCircle className="text-4xl" />}
             to={grossMonth.total_gross}
             backgroundColor="bg-[#5032fd]"
@@ -324,7 +230,7 @@ const IncomeMonthPage: NextPageWithLayout = () => {
           />
 
           <Statistic
-            title="Tổng đơn hàng"
+            title={tGross("order")}
             IconElement={<AiOutlineShoppingCart className="text-4xl" />}
             to={grossMonth.orders}
             backgroundColor="bg-[#0891b2]"
@@ -332,7 +238,7 @@ const IncomeMonthPage: NextPageWithLayout = () => {
           />
 
           <Statistic
-            title="Đơn hàng thành công"
+            title={tGross("successOrder")}
             IconElement={<BiPackage className="text-4xl" />}
             to={grossMonth.delivered_orders}
             backgroundColor="bg-success"
@@ -340,7 +246,7 @@ const IncomeMonthPage: NextPageWithLayout = () => {
           />
 
           <Statistic
-            title="Đơn hàng thành công"
+            title={tGross("cancelOrder")}
             IconElement={<BiMinusCircle className="text-4xl" />}
             to={grossMonth.cancel_orders}
             backgroundColor="bg-cancle"
@@ -353,6 +259,15 @@ const IncomeMonthPage: NextPageWithLayout = () => {
 };
 
 export default IncomeMonthPage;
+
+export async function getStaticProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../../../messages/${context.locale}.json`))
+        .default,
+    },
+  };
+}
 
 IncomeMonthPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
