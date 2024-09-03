@@ -291,10 +291,10 @@
     },
     "detailTable": {
       "orderNumber": "NO",
-      "thumbnail":"Thumbnail",
+      "thumbnail": "Thumbnail",
       "product": "Product",
       "model": "Model",
-      "quantity":"Quantity",
+      "quantity": "Quantity",
       "price": "Price",
       "promotionPrice": "Promotion Price",
       "amount": "Amount",
@@ -461,18 +461,22 @@
     "update": "Updated success",
     "delete": "Deleted success"
   },
+  "GrossDatePage": {
+    "title": "Dashboard Overview Income Date",
+    "grossIn": "Gross in",
+    "updatedAt": "Updated at",
+    "subTotal": "Sub Gross",
+    "total": "Total",
+    "order": "Order",
+    "totalToday": "Total today",
+    "orderToday": "Today order",
+    "successOrder": "Success order",
+    "pendingOrder": "Pending order",
+    "processOrder": "Process order",
+    "cancelOrder": "Cancel order"
+  },
   "Common": {
     "noData": "No data",
-    "gross": {
-      "subTotal": "Sub Gross",
-      "total": "Total",
-      "totalToday": "Total today",
-      "orderToday": "Today order",
-      "successOrder": "Success order",
-      "pendingOrder": "Pending order",
-      "processOrder": "Process order",
-      "cancelOrder": "Cancel order"
-    },
     "btn": {
       "exportExcel": "Export excel",
       "back": "Back",

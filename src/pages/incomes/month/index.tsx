@@ -11,14 +11,20 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import dayjs, { Dayjs } from "dayjs";
 
 import Statistic from "~/components/Statistic";
-import { axiosGet } from "~/configs/configAxios";
-import { IGrow, IGrowDate } from "~/interface";
+import { IGrossMonth } from "~/interface/gross/month";
 import { SelectItem } from "~/components/Select";
-import { ISelectItem } from "~/interface";
+import { IGrossDate, IResponse, ISelectItem } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/Private";
+import {
+  getGrossInMonth,
+  getStatisticsMonth,
+} from "~/api-client/gross/grossMonth";
+import hanldeErrorAxios from "~/helper/handleErrorAxios";
+import DateFilter from "~/components/Core/Filter/Date";
 
 ChartJS.register(
   CategoryScale,
@@ -99,23 +105,16 @@ const MONTHS: ISelectItem[] = [
   },
 ];
 
-const initOverview: IGrow = {
-  gross: 0,
+const initOverview: IGrossMonth = {
   sub_gross: 0,
-  orders: 0,
-  cancle_orders: 0,
-  delivered_orders: 0,
-  updatedAt: null,
-};
-
-interface ISelectGrowMonth {
-  month: string;
-  year: string;
-}
-
-const initSelectGrowMonth: ISelectGrowMonth = {
+  total_gross: 0,
   month: (new Date().getMonth() + 1).toString(),
   year: new Date().getFullYear().toString(),
+  orders: 0,
+  cancel_orders: 0,
+  delivered_orders: 0,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 };
 
 const initYears: ISelectItem[] = [
@@ -152,55 +151,50 @@ const IncomeMonthPage: NextPageWithLayout = () => {
   const [dataBarMonth, setDataBarMonth] = useState<any>(data);
 
   const [years, setYears] = useState<ISelectItem[]>(initYears);
-  const [growMonth, setGrowMonth] = useState<IGrow>(initOverview);
-  const [selectGrowMonth, setSelectGrowMonth] =
-    useState<ISelectGrowMonth>(initSelectGrowMonth);
+  const [grossMonth, setGrossMonth] = useState<IGrossMonth>(initOverview);
 
   const onChangeGrowMonth = (value: string, name: string) => {
     if (name === "year") {
-      handleGetGrossMonth(selectGrowMonth.month, value);
+      handleGetStatisticsMonth(selectGrowMonth.month, value);
       handleGetGrossInMonth(selectGrowMonth.month, value);
     }
 
     if (name === "month") {
-      handleGetGrossMonth(value, selectGrowMonth.year);
+      handleGetStatisticsMonth(value, selectGrowMonth.year);
       handleGetGrossInMonth(value, selectGrowMonth.year);
     }
 
     setSelectGrowMonth({ ...selectGrowMonth, [name]: value });
   };
 
-  const handleGetGrossMonth = async (month: string, year: string) => {
-    try {
-      const { status, payload } = await axiosGet(
-        `/gross-month?gross_month=${month}&gross_year=${year}`,
-      );
-
-      if (status === 200) {
-        setGrowMonth({
-          gross: payload.gross,
-          orders: payload.orders,
-          sub_gross: payload.sub_gross || 0,
-          cancle_orders: payload.cancle_orders || 0,
-          delivered_orders: payload.delivered_orders || 0,
-          updatedAt: payload.updatedAt,
-        });
-      }
-    } catch (error: any) {
-      if (error.response.status === 404) {
-        setGrowMonth({
-          ...initOverview,
-          updatedAt: null,
-        });
-      }
-    }
+  const onSelectMonth = (value: Dayjs) => {
+    console.log(value.startOf("month").toISOString());
+    // setSelectDate(dayjs(value.toISOString()).format(DAY_DMY));
   };
 
-  const handleGetGrossInMonth = async (month: string, year: string) => {
-    const { status, payload } = await axiosGet(
-      `/gross-date/month?gross_month=${month}&gross_year=${year}`,
-    );
+  const handleGetStatisticsMonth = async (month: string, year: string) => {
+    await getStatisticsMonth(month, year)
+      .then(({ payload }: IResponse<IGrossMonth>) => {
+        setGrossMonth(payload);
+      })
+      .catch((err) => {
+        const { status } = hanldeErrorAxios(err);
+
+        if (status === 404) {
+          setGrossMonth({
+            ...grossMonth,
+            // createdAt: parseDate,
+            updatedAt: null,
+          });
+        }
+      });
+  };
+
+  const handleGetGrossInMonth = async (startDate: string, endDate: string) => {
+    const { status, payload } = await getGrossInMonth(startDate, endDate);
+
     if (status === 200) {
+      const month = new Date(startDate).getMonth() + 1;
       const days = new Date(2023, Number(month), 0).getDate();
       const newData: any = data;
       for (let i = 1; i <= days; i++) {
@@ -209,10 +203,10 @@ const IncomeMonthPage: NextPageWithLayout = () => {
         newData.datasets[1].data.push(0);
       }
 
-      payload.map((item: IGrowDate) => {
+      payload.map((item: IGrossDate) => {
         const day = Number(item.day);
         newData.datasets[0].data[day - 1] = item.sub_gross;
-        newData.datasets[1].data[day - 1] = item.gross;
+        newData.datasets[1].data[day - 1] = item.total_gross;
       });
       chartMonthRef.current.update();
       setDataBarMonth(newData);
@@ -232,9 +226,16 @@ const IncomeMonthPage: NextPageWithLayout = () => {
   };
 
   useEffect(() => {
-    handleGetGrossMonth(selectGrowMonth.month, selectGrowMonth.year);
-    handleGetGrossInMonth(selectGrowMonth.month, selectGrowMonth.year);
-    handleGetYear();
+    const startDate: string = dayjs(new Date().toISOString())
+      .startOf("month")
+      .toISOString();
+    const endDate: string = dayjs(new Date().toISOString())
+      .endOf("month")
+      .toISOString();
+
+    handleGetStatisticsMonth(startDate, endDate);
+    handleGetGrossInMonth(startDate, endDate);
+    // handleGetYear();
   }, []);
 
   return (
@@ -248,7 +249,14 @@ const IncomeMonthPage: NextPageWithLayout = () => {
 
       <div className="w-full rounded-xl py-5">
         <div className="flex items-center gap-5">
-          <SelectItem
+          <DateFilter
+            className="lg:w-2/12 md:w-3/12 w-5/12 mb-5"
+            picker="month"
+            // value={selectDate ? dayjs(selectDate, DAY_DMY) : null}
+            onChangeDate={onSelectMonth}
+          />
+
+          {/* <SelectItem
             width="lg:w-2/12 md:w-3/12 w-5/12"
             title="Select month"
             name="month"
@@ -264,21 +272,21 @@ const IncomeMonthPage: NextPageWithLayout = () => {
             value={selectGrowMonth.year}
             data={years}
             onSelect={onChangeGrowMonth}
-          />
+          /> */}
         </div>
 
         <div className="my-5">
           <p className="text-lg font-medium text-center dark:text-darkText">
             Thu nhập tháng {selectGrowMonth.month} năm {selectGrowMonth.year}
           </p>
-          {growMonth.updatedAt && (
+          {grossMonth.updatedAt && (
             <p className="text-lg font-medium text-center dark:text-darkText">
               (Dữ liệu cập nhật lúc{" "}
-              {new Date(growMonth.updatedAt).toLocaleTimeString()} ngày{" "}
-              {new Date(growMonth.updatedAt).toLocaleDateString("en-GB")})
+              {new Date(grossMonth.updatedAt).toLocaleTimeString()} ngày{" "}
+              {new Date(grossMonth.updatedAt).toLocaleDateString("en-GB")})
             </p>
           )}
-          {!growMonth.updatedAt && (
+          {!grossMonth.updatedAt && (
             <p className="text-lg font-medium text-center dark:text-darkText">
               Chưa có dữ liệu
             </p>
@@ -301,7 +309,7 @@ const IncomeMonthPage: NextPageWithLayout = () => {
           <Statistic
             title="Thu nhập tạm tính"
             IconElement={<BiDollarCircle className="text-4xl" />}
-            to={growMonth.sub_gross}
+            to={grossMonth.sub_gross}
             backgroundColor="bg-[#5032fd]"
             duration={0}
             specialCharacter="VND"
@@ -309,7 +317,7 @@ const IncomeMonthPage: NextPageWithLayout = () => {
           <Statistic
             title="Tổng thu nhập"
             IconElement={<BiDollarCircle className="text-4xl" />}
-            to={growMonth.gross}
+            to={grossMonth.total_gross}
             backgroundColor="bg-[#5032fd]"
             duration={0}
             specialCharacter="VND"
@@ -318,7 +326,7 @@ const IncomeMonthPage: NextPageWithLayout = () => {
           <Statistic
             title="Tổng đơn hàng"
             IconElement={<AiOutlineShoppingCart className="text-4xl" />}
-            to={growMonth.orders}
+            to={grossMonth.orders}
             backgroundColor="bg-[#0891b2]"
             duration={0}
           />
@@ -326,7 +334,7 @@ const IncomeMonthPage: NextPageWithLayout = () => {
           <Statistic
             title="Đơn hàng thành công"
             IconElement={<BiPackage className="text-4xl" />}
-            to={growMonth.delivered_orders}
+            to={grossMonth.delivered_orders}
             backgroundColor="bg-success"
             duration={0}
           />
@@ -334,7 +342,7 @@ const IncomeMonthPage: NextPageWithLayout = () => {
           <Statistic
             title="Đơn hàng thành công"
             IconElement={<BiMinusCircle className="text-4xl" />}
-            to={growMonth.cancle_orders}
+            to={grossMonth.cancel_orders}
             backgroundColor="bg-cancle"
             duration={0}
           />

@@ -4,7 +4,8 @@ interface IGross {
   orders: number;
   delivered_orders: number;
   cancel_orders: number;
-  updatedAt?: string | null;
+  updatedAt: string | null;
+  createdAt: string | null;
 }
 
 export type { IGross };

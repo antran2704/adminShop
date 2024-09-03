@@ -81,6 +81,8 @@ const initGross: IGross = {
   cancel_orders: 0,
   delivered_orders: 0,
   sub_gross: 0,
+  createdAt: null,
+  updatedAt: null,
 };
 
 const Layout = PrivateLayout;
@@ -88,7 +90,7 @@ const Layout = PrivateLayout;
 const HomePage: NextPageWithLayout = () => {
   const t = useTranslations("HomePage");
   const tOrder = useTranslations("OrderPage");
-  const tGross = useTranslations("Common.gross");
+  const tGross = useTranslations("GrossDatePage");
 
   const router = useRouter();
 

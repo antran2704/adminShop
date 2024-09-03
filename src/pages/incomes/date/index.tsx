@@ -1,116 +1,109 @@
+import { useTranslations } from "next-intl";
 import { useState, useEffect, ReactElement } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { BiDollarCircle, BiPackage, BiMinusCircle } from "react-icons/bi";
+import dayjs, { Dayjs } from "dayjs";
 
-import { SelectDate } from "~/components/Select";
+import { getGross } from "~/api-client/gross/grossDate";
+
+import DateFilter from "~/components/Core/Filter/Date";
 import Statistic from "~/components/Statistic";
-import { axiosGet } from "~/configs/configAxios";
-import { IGrowDate } from "~/interface";
-import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithHeader from "~/layouts/Private";
+import { formatDate } from "~/helper/format/datetime";
+import hanldeErrorAxios from "~/helper/handleErrorAxios";
 
-const initOverviewDate: IGrowDate = {
-  gross: 0,
+import { IResponse } from "~/interface";
+import { IGrossDate } from "~/interface/gross/date";
+import { NextPageWithLayout } from "~/interface/page";
+import { PrivateLayout } from "~/layouts";
+import { DAY_DMY } from "~/common/format/dateTime";
+
+const initOverviewDate: IGrossDate = {
   sub_gross: 0,
+  total_gross: 0,
+  day: new Date().getDate().toString(),
+  month: (new Date().getMonth() + 1).toString(),
+  year: new Date().getFullYear().toString(),
   orders: 0,
-  cancle_orders: 0,
+  cancel_orders: 0,
   delivered_orders: 0,
-  updatedAt: null,
-  date: new Date().toLocaleDateString(),
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 };
 
-const Layout = LayoutWithHeader;
+const Layout = PrivateLayout;
 
 const IncomeDatePage: NextPageWithLayout = () => {
-  const [growDate, setGrowDate] = useState<IGrowDate>(initOverviewDate);
+  const t = useTranslations("GrossDatePage");
+  const tCommon = useTranslations("Common");
+
+  const [growDate, setGrowDate] = useState<IGrossDate>(initOverviewDate);
   const [selectDate, setSelectDate] = useState<string>(
-    `${new Date().getFullYear()}-${
-      new Date().getMonth() + 1
-    }-${new Date().getDate()}`,
+    dayjs(new Date().toISOString()).format(DAY_DMY),
   );
 
-  const onSelectDate = (value: string) => {
-    if (!value) return;
-
-    handleGetGrossDate(value);
-    setSelectDate(value);
+  const onSelectDate = (value: Dayjs) => {
+    setSelectDate(dayjs(value.toISOString()).format(DAY_DMY));
   };
 
   const handleGetGrossDate = async (date: string) => {
-    const convertDate = new Date(date).toLocaleDateString("en-GB");
+    const parseDate: string = dayjs(date, DAY_DMY).toISOString();
 
-    try {
-      const { status, payload } = await axiosGet(
-        `/gross-date?gross_date=${convertDate}`,
-      );
+    await getGross(parseDate)
+      .then(({ payload }: IResponse<IGrossDate>) => setGrowDate(payload))
+      .catch((err) => {
+        const { status } = hanldeErrorAxios(err);
 
-      if (status === 200) {
-        setGrowDate({
-          date: convertDate,
-          gross: payload.gross,
-          orders: payload.orders.length,
-          sub_gross: payload.sub_gross || 0,
-          cancle_orders: payload.cancle_orders || 0,
-          delivered_orders: payload.delivered_orders || 0,
-          updatedAt: payload.updatedAt,
-        });
-      }
-    } catch (error: any) {
-      if (error.response.status === 404) {
-        setGrowDate({
-          ...initOverviewDate,
-          date: convertDate,
-          updatedAt: null,
-        });
-      }
-    }
+        if (status === 404) {
+          setGrowDate({
+            ...initOverviewDate,
+            createdAt: parseDate,
+            updatedAt: null,
+          });
+        }
+      });
   };
 
   useEffect(() => {
-    handleGetGrossDate(new Date().toString());
-  }, []);
+    handleGetGrossDate(selectDate);
+  }, [selectDate]);
 
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
       <div className="w-full">
         <h1 className="md:text-3xl text-2xl dark:text-darkText font-bold">
-          {" "}
-          Dashboard Overview Income Date
+          {t("title")}
         </h1>
       </div>
 
       <div className="w-full gap-10">
         <div className="w-full rounded-xl py-5">
-          <SelectDate
-            type="date"
-            title="Select Date"
-            name="date"
+          {/* <DateFilter value={selectDate || ""} onSelect={onSelectDate} /> */}
+          <DateFilter
             className="lg:w-2/12 md:w-3/12 w-5/12 mb-5"
-            value={selectDate || ""}
-            onSelect={onSelectDate}
+            format={DAY_DMY}
+            value={selectDate ? dayjs(selectDate, DAY_DMY) : null}
+            onChangeDate={(_, value: Dayjs) => onSelectDate(value)}
           />
 
           <div>
-            <h3 className="text-lg font-medium text-center dark:text-darkText">
-              Thu nhập ngày: {growDate.date}
+            <h3 className="text-lg text-center dark:text-darkText">
+              {t("grossIn")}: {formatDate(growDate.createdAt as string)}
             </h3>
             {growDate.updatedAt && (
-              <p className="text-lg font-medium text-center dark:text-darkText">
-                (Dữ liệu cập nhật lúc{" "}
-                {new Date(growDate.updatedAt).toLocaleTimeString()} ngày{" "}
-                {new Date(growDate.updatedAt).toLocaleDateString("en-GB")})
+              <p className="text-lg text-center dark:text-darkText">
+                {`${t("updatedAt")} ${formatDate(growDate.updatedAt)}`}
               </p>
             )}
             {!growDate.updatedAt && (
-              <p className="text-lg font-medium text-center dark:text-darkText">
-                Chưa có dữ liệu
+              <p className="text-lg text-center dark:text-darkText">
+                {tCommon("noData")}
               </p>
             )}
           </div>
           <div
             className={`grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300 mt-5`}>
             <Statistic
-              title="Thu nhập tạm tính"
+              title={t("subTotal")}
               IconElement={<BiDollarCircle className="text-4xl" />}
               to={growDate.sub_gross}
               backgroundColor="bg-[#5032fd]"
@@ -118,16 +111,16 @@ const IncomeDatePage: NextPageWithLayout = () => {
               specialCharacter="VND"
             />
             <Statistic
-              title="Tổng thu nhập"
+              title={t("total")}
               IconElement={<BiDollarCircle className="text-4xl" />}
-              to={growDate.gross}
+              to={growDate.total_gross}
               backgroundColor="bg-[#5032fd]"
               duration={0}
               specialCharacter="VND"
             />
 
             <Statistic
-              title="Tổng đơn hàng"
+              title={t("order")}
               IconElement={<AiOutlineShoppingCart className="text-4xl" />}
               to={growDate.orders}
               backgroundColor="bg-[#0891b2]"
@@ -135,7 +128,7 @@ const IncomeDatePage: NextPageWithLayout = () => {
             />
 
             <Statistic
-              title="Đơn hàng thành công"
+              title={t("successOrder")}
               IconElement={<BiPackage className="text-4xl" />}
               to={growDate.delivered_orders}
               backgroundColor="bg-success"
@@ -143,9 +136,9 @@ const IncomeDatePage: NextPageWithLayout = () => {
             />
 
             <Statistic
-              title="Đơn hàng thành công"
+              title={t("cancelOrder")}
               IconElement={<BiMinusCircle className="text-4xl" />}
-              to={growDate.cancle_orders}
+              to={growDate.cancel_orders}
               backgroundColor="bg-cancle"
               duration={0}
             />
@@ -157,6 +150,15 @@ const IncomeDatePage: NextPageWithLayout = () => {
 };
 
 export default IncomeDatePage;
+
+export async function getStaticProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../../../messages/${context.locale}.json`))
+        .default,
+    },
+  };
+}
 
 IncomeDatePage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;

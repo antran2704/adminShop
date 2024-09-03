@@ -1,11 +1,12 @@
 import { DatePicker, DatePickerProps } from "antd";
 import clsx from "clsx";
+import { Dayjs } from "dayjs";
 
 interface Props extends DatePickerProps {
   title?: string;
   className?: string;
   borderBottom?: boolean;
-  onChangeDate?: (value: string | string[]) => void;
+  onChangeDate?: (value: string | string[], option: Dayjs) => void;
 }
 
 const DateFilter = (props: Props) => {
@@ -18,8 +19,8 @@ const DateFilter = (props: Props) => {
       })}>
       {title && <p className="text-base font-medium">{title}</p>}
       <DatePicker
-        onChange={(_, dateString) => {
-          onChangeDate && onChangeDate(dateString as string);
+        onChange={(date, dateString) => {
+          onChangeDate && onChangeDate(dateString as string, date);
         }}
         className={clsx("!py-2", className)}
         {...rest}
