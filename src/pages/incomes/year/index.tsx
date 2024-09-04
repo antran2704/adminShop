@@ -1,21 +1,11 @@
 import { useState, useEffect, useRef, ReactElement } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { BiDollarCircle, BiPackage, BiMinusCircle } from "react-icons/bi";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Bar } from "react-chartjs-2";
+import { ChartData, ChartOptions } from "chart.js";
 import dayjs, { Dayjs } from "dayjs";
 
 import Statistic from "~/components/Statistic";
 import { IGrossYear } from "~/interface/gross/year";
-import { SelectItem } from "~/components/Select";
 import { IResponse, ISelectItem } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 import { PrivateLayout } from "~/layouts";
@@ -28,33 +18,29 @@ import hanldeErrorAxios from "~/helper/handleErrorAxios";
 import DateFilter from "~/components/Core/Filter/Date";
 import { useTranslations } from "next-intl";
 import { formatDate } from "~/helper/format/datetime";
+import { ChartCore } from "~/components/Core";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-);
-
-const options = {
+const options: ChartOptions<"bar"> = {
   responsive: true,
   plugins: {
     legend: {
       display: false,
-      position: "top" as const,
+    },
+    title: {
+      display: false,
     },
   },
   scales: {
     x: {
-      stacked: true,
-    },
-    y: {
-      stacked: true,
+      grid: {
+        display: false,
+      },
     },
   },
   maintainAspectRatio: false,
+  interaction: {
+    intersect: false,
+  },
 };
 
 const MONTHS: ISelectItem[] = [
@@ -126,18 +112,18 @@ const IncomeYearPage: NextPageWithLayout = () => {
   const tGross = useTranslations("Gross");
   const tCommon = useTranslations("Common");
 
-  const data = {
+  const data: ChartData<"bar"> = {
     labels: [],
     datasets: [
       {
-        label: "Sub Gross",
+        label: tGross("subGross"),
         data: [],
         backgroundColor: "rgb(255, 99, 132)",
         borderRadius: 10,
         borderWidth: 0,
       },
       {
-        label: "Gross",
+        label: tGross("gross"),
         data: [],
         backgroundColor: "rgb(75, 192, 192)",
         borderRadius: 10,
@@ -147,7 +133,7 @@ const IncomeYearPage: NextPageWithLayout = () => {
   };
 
   const chartYearRef = useRef<any>();
-  const [dataBarYear, setDataBarYear] = useState<any>(data);
+  const [dataBarYear, setDataBarYear] = useState<ChartData<"bar">>(data);
 
   const [grossYear, setGrossYear] = useState<IGrossYear>(initOverview);
   const [selectGross, setSelectGross] = useState<{
@@ -212,7 +198,7 @@ const IncomeYearPage: NextPageWithLayout = () => {
         </h1>
       </div>
 
-      <div className="w-full rounded-xl py-5">
+      <div className="w-full rounded-xl py-2">
         <div className="flex items-center gap-5">
           <DateFilter
             className="lg:w-2/12 md:w-3/12 w-5/12 mb-5"
@@ -240,11 +226,12 @@ const IncomeYearPage: NextPageWithLayout = () => {
         </div>
         <div className="flex lg:flex-row flex-col items-start my-5 gap-10">
           <div className="lg:w-6/12 w-full bg-white p-5 rounded-md">
-            <Bar
+            <ChartCore
               ref={chartYearRef}
-              className="w-full min-h-[400px]"
+              type="bar"
               options={options}
               data={dataBarYear}
+              className="w-full min-h-[400px]"
             />
           </div>
           <div

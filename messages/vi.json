@@ -478,6 +478,9 @@
     "totalToday": "Tổng thu nhập hôm nay",
     "orderToday": "Đơn hàng hôm nay"
   },
+  "GrossWeekPage": {
+    "title": "Tổng quan về thu nhập theo tuần"
+  },
   "GrossMonthPage": {
     "title": "Tổng quan về thu nhập theo tháng"
   },

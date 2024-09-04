@@ -1,58 +1,45 @@
-import { useState, useEffect, useRef, ReactElement, useMemo } from "react";
+import { useState, useEffect, useRef, ReactElement } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { BiDollarCircle, BiPackage, BiMinusCircle } from "react-icons/bi";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Bar } from "react-chartjs-2";
+import { ChartData, ChartOptions } from "chart.js";
 import dayjs, { Dayjs } from "dayjs";
 
 import Statistic from "~/components/Statistic";
+import { ChartCore } from "~/components/Core";
+import LayoutWithHeader from "~/layouts/Private";
+
 import { IGrossMonth } from "~/interface/gross/month";
 import { IGrossDate, IResponse } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithHeader from "~/layouts/Private";
 import {
   getGrossInMonth,
   getStatisticsMonth,
 } from "~/api-client/gross/grossMonth";
 import hanldeErrorAxios from "~/helper/handleErrorAxios";
 import DateFilter from "~/components/Core/Filter/Date";
-import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
 import { formatDate } from "~/helper/format/datetime";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-);
-
-const options = {
+const options: ChartOptions<"bar"> = {
   responsive: true,
   plugins: {
     legend: {
       display: false,
-      position: "top" as const,
+    },
+    title: {
+      display: false,
+    },
+  },
+  scales: {
+    x: {
+      grid: {
+        display: false,
+      },
     },
   },
   maintainAspectRatio: false,
-  scales: {
-    x: {
-      stacked: true,
-    },
-    y: {
-      stacked: true,
-    },
+  interaction: {
+    intersect: false,
   },
 };
 
@@ -71,13 +58,11 @@ const initOverview: IGrossMonth = {
 const Layout = LayoutWithHeader;
 
 const IncomeMonthPage: NextPageWithLayout = () => {
-  const router = useRouter();
-
   const t = useTranslations("GrossMonthPage");
   const tGross = useTranslations("Gross");
   const tCommon = useTranslations("Common");
 
-  let data = {
+  const data: ChartData<"bar"> = {
     labels: [],
     datasets: [
       {
@@ -98,7 +83,7 @@ const IncomeMonthPage: NextPageWithLayout = () => {
   };
 
   const chartMonthRef = useRef<any>();
-  const [dataBarMonth, setDataBarMonth] = useState<any>(data);
+  const [dataBarMonth, setDataBarMonth] = useState<ChartData<"bar">>(data);
 
   const [selectGross, setSelectGross] = useState<{
     startDate: Dayjs;
@@ -201,11 +186,12 @@ const IncomeMonthPage: NextPageWithLayout = () => {
 
         <div className="flex items-center justify-center">
           <div className="lg:w-11/12 w-full">
-            <Bar
-              className="w-full min-h-[600px] bg-white p-5 rounded-md"
+            <ChartCore
               ref={chartMonthRef}
+              type="bar"
               options={options}
               data={dataBarMonth}
+              className="w-full min-h-[600px] bg-white p-5 rounded-md"
             />
           </div>
         </div>

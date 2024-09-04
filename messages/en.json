@@ -479,6 +479,9 @@
     "totalToday": "Total today",
     "orderToday": "Today order"
   },
+  "GrossWeekPage": {
+    "title": "Dashboard overview income with week"
+  },
   "GrossMonthPage": {
     "title": "Dashboard overview income with month"
   },

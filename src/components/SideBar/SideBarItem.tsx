@@ -42,7 +42,7 @@ const NavbarItem: FC<Props> = (props: Props) => {
                   : "hover:bg-primary text-black dark:text-darkText hover:text-white"
               } lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}
               href={data.path}>
-              <span>{data.icon}</span>
+              <span className="block text-xl">{data.icon}</span>
               <span className="whitespace-nowrap">
                 {data.name[router.locale as string]}
               </span>
@@ -56,7 +56,7 @@ const NavbarItem: FC<Props> = (props: Props) => {
                   ? "bg-primary text-white"
                   : "hover:bg-primary text-black dark:text-darkText hover:text-white"
               } lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}>
-              <span>{data.icon}</span>
+              <span className="block text-xl">{data.icon}</span>
               <span className="whitespace-nowrap">
                 {data.name[router.locale as string]}
               </span>
@@ -71,7 +71,7 @@ const NavbarItem: FC<Props> = (props: Props) => {
             onClick={handleCollapse}
             className="w-full flex items-center justify-between px-3 py-2 hover:bg-primary hover:text-white lg:rounded-lg rounded-tl-lg rounded-bl-lg transition-all ease-linear duration-200 cursor-pointer">
             <div className="w-full flex items-center text-base dark:text-darkText font-medium gap-3">
-              <span>{data.icon}</span>
+              <span className="block text-xl">{data.icon}</span>
               <span className="whitespace-nowrap">
                 {data.name[router.locale as string]}
               </span>

@@ -117,7 +117,7 @@ const SideBar = (props: Props) => {
               <button
                 onClick={handleLogOut}
                 className={`w-full flex items-center text-base font-medium px-3 py-2 my-1 hover:bg-primary text-black dark:text-darkText hover:text-white lg:rounded-lg rounded-tl-lg rounded-bl-lg gap-3`}>
-                <BiLogOut />
+                <BiLogOut className="text-xl" />
                 <span>Logout</span>
               </button>
             </li>

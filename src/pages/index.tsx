@@ -90,7 +90,8 @@ const Layout = PrivateLayout;
 const HomePage: NextPageWithLayout = () => {
   const t = useTranslations("HomePage");
   const tOrder = useTranslations("OrderPage");
-  const tGross = useTranslations("GrossDatePage");
+  const tGrossDate = useTranslations("GrossDatePage");
+  const tGross = useTranslations("Gross");
 
   const router = useRouter();
 
@@ -265,7 +266,7 @@ const HomePage: NextPageWithLayout = () => {
                 show ? "max-h-[2000px]" : "max-h-[600px]"
               } gap-2 overflow-hidden transition-all ease-in-out duration-300`}>
               <Statistic
-                title={tGross("totalToday")}
+                title={tGrossDate("totalToday")}
                 IconElement={<BiDollarCircle className="text-4xl" />}
                 to={grossToday.total_gross}
                 backgroundColor="bg-[#5032fd]"
@@ -274,7 +275,7 @@ const HomePage: NextPageWithLayout = () => {
               />
 
               <Statistic
-                title={tGross("orderToday")}
+                title={tGrossDate("orderToday")}
                 IconElement={<AiOutlineShoppingCart className="text-4xl" />}
                 to={grossToday.orders}
                 backgroundColor="bg-[#0891b2]"

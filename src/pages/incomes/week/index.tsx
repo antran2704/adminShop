@@ -1,81 +1,66 @@
 import { useState, useEffect, useRef, ReactElement } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { BiDollarCircle, BiPackage, BiMinusCircle } from "react-icons/bi";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Bar } from "react-chartjs-2";
+import { ChartData, ChartOptions } from "chart.js";
+import dayjs, { Dayjs } from "dayjs";
 
 import Statistic from "~/components/Statistic";
-import { axiosGet } from "~/configs/configAxios";
-import { IGrow, IGrowDate } from "~/interface";
-import { getEndDayInWeek, getFirstDayInWeek } from "~/helper/format/datetime";
+import { IGrossDate } from "~/interface/gross/date";
+
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithHeader from "~/layouts/Private";
+import { getGrossInMonth } from "~/api-client/gross/grossMonth";
+import { IResponseWithPagination } from "~/interface";
+import DateFilter from "~/components/Core/Filter/Date";
+import { DAY_DMY } from "~/common/format/dateTime";
+import { useTranslations } from "next-intl";
+import { formatDate } from "~/helper/format/datetime";
+import { ChartCore } from "~/components/Core";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-);
-
-const options = {
+const options: ChartOptions<"bar"> = {
   responsive: true,
   plugins: {
     legend: {
       display: false,
-      position: "top" as const,
+    },
+    title: {
+      display: false,
+    },
+  },
+  scales: {
+    x: {
+      grid: {
+        display: false,
+      },
     },
   },
   maintainAspectRatio: false,
+  interaction: {
+    intersect: false,
+  },
 };
 
-const initOverview: IGrow = {
-  gross: 0,
+const initOverview: IGrossDate = {
   sub_gross: 0,
+  total_gross: 0,
+  day: new Date().getDate().toString(),
+  month: (new Date().getMonth() + 1).toString(),
+  year: new Date().getFullYear().toString(),
   orders: 0,
-  cancle_orders: 0,
+  cancel_orders: 0,
   delivered_orders: 0,
+  createdAt: null,
   updatedAt: null,
-};
-
-const initOverviewDate: IGrowDate = {
-  gross: 0,
-  sub_gross: 0,
-  orders: 0,
-  cancle_orders: 0,
-  delivered_orders: 0,
-  updatedAt: null,
-  date: new Date().toLocaleDateString(),
-};
-
-interface ISelectGrowWeek {
-  startDay: string;
-  endDay: string;
-  year: string;
-  month: string;
-}
-
-const initSelectGrowWeek: ISelectGrowWeek = {
-  startDay: "",
-  endDay: "",
-  year: "",
-  month: "",
 };
 
 const Layout = LayoutWithHeader;
 
 const IncomeWeekPage: NextPageWithLayout = () => {
-  const data = {
+  const t = useTranslations("GrossMonthPage");
+  const tGross = useTranslations("Gross");
+  const tCommon = useTranslations("Common");
+
+  const data: ChartData<"bar"> = {
     labels: [],
     datasets: [
       {
@@ -96,176 +81,166 @@ const IncomeWeekPage: NextPageWithLayout = () => {
   };
 
   const chartWeekRef = useRef<any>();
-  const [dataBarWeek, setDataBarWeek] = useState<any>(data);
+  const [dataBarWeek, setDataBarWeek] = useState<ChartData<"bar">>(data);
 
-  const [growWeek, setGrowWeek] = useState<IGrowDate>(initOverviewDate);
-  const [selectGrowWeek, setSelectGrowWeek] =
-    useState<ISelectGrowWeek>(initSelectGrowWeek);
+  const [grossWeek, setGrossWeek] = useState<IGrossDate>(initOverview);
+  const [selectWeek, setSelectWeek] = useState<Dayjs>(
+    dayjs(new Date().toISOString()),
+  );
 
-  const onSelectWeek = (value: Date) => {
-    if (!value) return;
-
-    handleGetGrossInWeek(value);
+  const onSelectWeek = (value: Dayjs) => {
+    setSelectWeek(value);
   };
 
-  const handleGetGrossInWeek = async (startDate: Date) => {
-    const endDay = getEndDayInWeek(startDate.toDateString())
-      .getDate()
-      .toString();
-    const month = (startDate.getMonth() + 1).toString();
-    const year = startDate.getFullYear().toString();
+  const handleGetGrossInWeek = async (startDate: string, endDate: string) => {
+    await getGrossInMonth(startDate, endDate).then(
+      ({ payload }: IResponseWithPagination<IGrossDate[]>) => {
+        const startDay = selectWeek.startOf("week").date();
+        const newData: any = data;
 
-    const { status, payload } = await axiosGet(
-      `/gross-date/week?start_date=${startDate.toDateString()}`,
-    );
+        for (let i = 0; i <= 6; i++) {
+          const nextDay = new Date();
+          nextDay.setDate(startDay + i);
+          newData.labels.push(nextDay.getDate());
+          newData.datasets[0].data[i] = 0;
+          newData.datasets[1].data[i] = 0;
+        }
 
-    const startDay = startDate.getDate();
-    const newData: any = data;
+        if (payload.length === 0) {
+          setGrossWeek(initOverview);
+          setDataBarWeek(newData);
+          chartWeekRef.current.update();
 
-    for (let i = 0; i <= 6; i++) {
-      const nextDay = new Date();
-      nextDay.setDate(startDay + i);
-      newData.labels.push(nextDay.getDate());
-      newData.datasets[0].data[i] = 0;
-      newData.datasets[1].data[i] = 0;
-    }
+          return;
+        }
 
-    if (payload.length === 0) {
-      setGrowWeek(initOverviewDate);
-      setDataBarWeek(newData);
-      chartWeekRef.current.update();
-    }
+        payload.map((item: IGrossDate) => {
+          const day = Number(item.day);
+          const index = newData.labels.findIndex(
+            (label: number) => label === day,
+          );
+          newData.datasets[0].data[index] = item.sub_gross;
+          newData.datasets[1].data[index] = item.total_gross;
+        });
 
-    if (status === 200 && payload.length > 0) {
-      payload.map((item: IGrowDate) => {
-        const day = Number(item.day);
-        const index = newData.labels.findIndex(
-          (label: number) => label === day,
+        const dataOverview: IGrossDate = payload.reduce(
+          (accumulator: IGrossDate, item: any) => {
+            accumulator = {
+              ...accumulator,
+              total_gross: accumulator.total_gross + (item.gross || 0),
+              sub_gross: accumulator.sub_gross + (item.sub_gross || 0),
+              orders: accumulator.orders + (item.orders.length || 0),
+              cancel_orders:
+                accumulator.cancel_orders + (item.cancel_orders || 0),
+              delivered_orders:
+                accumulator.delivered_orders + (item.delivered_orders || 0),
+              updatedAt: null,
+            };
+
+            return accumulator;
+          },
+          initOverview,
         );
-        newData.datasets[0].data[index] = item.sub_gross;
-        newData.datasets[1].data[index] = item.gross;
-      });
 
-      const dataOverview: IGrowDate = payload.reduce(
-        (accumulator: IGrow, item: any) => {
-          accumulator = {
-            gross: accumulator.gross + (item.gross || 0),
-            sub_gross: accumulator.sub_gross + (item.sub_gross || 0),
-            orders: accumulator.orders + (item.orders.length || 0),
-            cancle_orders:
-              accumulator.cancle_orders + (item.cancle_orders || 0),
-            delivered_orders:
-              accumulator.delivered_orders + (item.delivered_orders || 0),
-            updatedAt: null,
-          };
+        dataOverview.updatedAt = payload[payload.length - 1].updatedAt;
+        dataOverview.createdAt = payload[payload.length - 1].createdAt;
 
-          return accumulator;
-        },
-        initOverview,
-      );
-
-      dataOverview.updatedAt = payload[payload.length - 1].updatedAt;
-      dataOverview.date = payload[payload.length - 1].date;
-
-      setGrowWeek(dataOverview);
-      setDataBarWeek(newData);
-      chartWeekRef.current.update();
-    }
-
-    setSelectGrowWeek({ startDay: startDay.toString(), endDay, year, month });
+        setGrossWeek(dataOverview);
+        setDataBarWeek(newData);
+        chartWeekRef.current.update();
+      },
+    );
   };
 
   useEffect(() => {
-    const firstDay = getFirstDayInWeek(new Date().toDateString());
-    handleGetGrossInWeek(firstDay);
-  }, []);
+    handleGetGrossInWeek(
+      selectWeek.startOf("week").toISOString(),
+      selectWeek.endOf("week").toISOString(),
+    );
+  }, [selectWeek]);
 
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
-      <div className="w-full">
-        <h1 className="md:text-3xl text-2xl font-bold dark:text-darkText">
-          {" "}
-          Dashboard Overview Income Week
-        </h1>
-      </div>
+      <h1 className="md:text-2xl text-xl dark:text-darkText font-medium">
+        {t("title")}
+      </h1>
 
-      <div className="w-full rounded-xl py-5">
-        <div className="lg:w-2/12 md:w-3/12 w-5/12 mb-5">
-          <input
-            type="week"
-            onChange={(e) => onSelectWeek(e.target.valueAsDate as Date)}
-            className="w-full min-h-[40px] rounded-md px-2 py-1 border-2 focus:border-[#4f46e5]"
-          />
-        </div>
+      <div className="w-full rounded-xl py-2">
+        <DateFilter
+          className="lg:w-2/12 md:w-3/12 w-5/12 mb-5"
+          picker="week"
+          allowClear={false}
+          value={selectWeek ? selectWeek : null}
+          onChangeDate={(_, option: Dayjs) => onSelectWeek(option)}
+        />
 
-        <div className="my-10">
+        <div className="my-5">
           <p className="text-lg font-medium text-center dark:text-darkText">
-            Thu nhập từ ngày {selectGrowWeek.startDay} đến ngày{" "}
-            {selectGrowWeek.endDay} tháng {selectGrowWeek.month} năm{" "}
-            {selectGrowWeek.year}
+            {`${tGross("grossIn")} ${dayjs(selectWeek.startOf("week")).format(DAY_DMY)} - ${dayjs(selectWeek.endOf("week")).format(DAY_DMY)}`}
           </p>
-          {growWeek.updatedAt && (
+
+          {grossWeek.updatedAt && (
             <p className="text-lg font-medium text-center dark:text-darkText">
-              (Dữ liệu cập nhật lúc{" "}
-              {new Date(growWeek.updatedAt).toLocaleTimeString()} ngày{" "}
-              {new Date(growWeek.updatedAt).toLocaleDateString("en-GB")})
+              {`${tGross("updatedAt")} ${formatDate(grossWeek.updatedAt)}`}
             </p>
           )}
-          {!growWeek.updatedAt && (
+
+          {!grossWeek.updatedAt && (
             <p className="text-lg font-medium text-center dark:text-darkText">
-              Chưa có dữ liệu
+              {tCommon("noData")}
             </p>
           )}
         </div>
 
         <div className="flex lg:flex-row flex-col items-start my-5 gap-10">
           <div className="lg:w-6/12 w-full bg-white p-5 rounded-md">
-            <Bar
-              className="w-full min-h-[400px]"
+            <ChartCore
               ref={chartWeekRef}
+              type="bar"
               options={options}
               data={dataBarWeek}
+              className="w-full min-h-[400px]"
             />
           </div>
           <div
             className={`grid md:grid-cols-2 grid-cols-1 lg:w-6/12 w-full h-full md:max-h-max gap-2 overflow-hidden transition-all ease-in-out duration-300`}>
             <Statistic
-              title="Thu nhập tạm tính"
+              title={tGross("subTotal")}
               IconElement={<BiDollarCircle className="text-4xl" />}
-              to={growWeek.sub_gross}
+              to={grossWeek.sub_gross}
               backgroundColor="bg-[#5032fd]"
               duration={0}
               specialCharacter="VND"
             />
             <Statistic
-              title="Tổng thu nhập"
+              title={tGross("total")}
               IconElement={<BiDollarCircle className="text-4xl" />}
-              to={growWeek.gross}
+              to={grossWeek.total_gross}
               backgroundColor="bg-[#5032fd]"
               duration={0}
               specialCharacter="VND"
             />
 
             <Statistic
-              title="Tổng đơn hàng"
+              title={tGross("order")}
               IconElement={<AiOutlineShoppingCart className="text-4xl" />}
-              to={growWeek.orders}
+              to={grossWeek.orders}
               backgroundColor="bg-[#0891b2]"
               duration={0}
             />
 
             <Statistic
-              title="Đơn hàng thành công"
+              title={tGross("successOrder")}
               IconElement={<BiPackage className="text-4xl" />}
-              to={growWeek.delivered_orders}
+              to={grossWeek.delivered_orders}
               backgroundColor="bg-success"
               duration={0}
             />
 
             <Statistic
-              title="Đơn hàng thành công"
+              title={tGross("cancelOrder")}
               IconElement={<BiMinusCircle className="text-4xl" />}
-              to={growWeek.cancle_orders}
+              to={grossWeek.cancel_orders}
               backgroundColor="bg-cancle"
               duration={0}
             />
@@ -277,6 +252,15 @@ const IncomeWeekPage: NextPageWithLayout = () => {
 };
 
 export default IncomeWeekPage;
+
+export async function getStaticProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../../../messages/${context.locale}.json`))
+        .default,
+    },
+  };
+}
 
 IncomeWeekPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
