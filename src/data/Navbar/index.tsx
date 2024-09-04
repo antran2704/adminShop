@@ -69,10 +69,10 @@ const listBody: itemNav[] = [
       },
       {
         name: {
-          en: "Coupons",
+          en: "Discounts",
           vi: "Mã giảm giá",
         },
-        path: "/coupons",
+        path: "/discounts",
         role: [ERole.ADMIN, ERole.STAFF],
       },
       {

@@ -207,13 +207,51 @@
       "description": "Thay đổi giá trị tại đây"
     }
   },
-  "CouponsPage": {
+  "DiscountPage": {
     "title": "Danh sách mã giảm giá",
-    "create": "Tạo mã giảm",
-    "search": "Tìm kiếm theo tên/mã...",
-    "filter": {
+    "create": "Thêm mã",
+    "table": {
+      "name": "Tên mã",
+      "code": "Code",
+      "type": "Loại",
+      "value": "Giá trị",
+      "status": "Trạng thái",
+      "thumbnail": "Hình ảnh",
+      "startDate":"Ngày bắt đầu",
+      "endDate": "Ngày kết thúc",
+      "public": "Hiển thị",
+      "action": "Action"
+    },
+    "type": {
+      "fixed": "Cố định",
+      "percentage": "Phần trăm"
+    },
+    "applies": {
+      "all": "Tất cả",
+      "specific": "Chỉ định"
+    },
+    "form": {
+      "name": "Tên mã",
+      "code": "Code",
+      "type": "Loại",
+      "value": "Giá trị",
+      "thumbnail": "Hình ảnh",
       "startDate": "Ngày bắt đầu",
-      "endDate": "Ngày kết thúc"
+      "endDate": "Ngày kết thúc",
+      "maxUses": "Sử dụng tối đa",
+      "perUser": "Mỗi người sử dụng",
+      "minValue": "Giá trị tối thiểu",
+      "status": "Trạng thái",
+      "public": "Hiển thị"
+    },
+    "modalDelete": {
+      "title": "Xác nhận xóa mã giảm giá",
+      "description": "Lưu ý: Không thể phục hồi dữ liệu sau khi xóa"
+    },
+    "breadcrumb": {
+      "list": "Danh sách mã giảm giá",
+      "create": "Tạo mã giảm giá",
+      "update": "Chỉnh sửa mã giảm giá"
     }
   },
   "BlogPage": {
@@ -386,25 +424,6 @@
       "parent": "Thư mục cha",
       "thumbnail": "Hình ảnh",
       "public": "Hiện"
-    }
-  },
-  "CreateCouponPage": {
-    "title": "Tạo mã giảm giá",
-    "field": {
-      "title": "Tên",
-      "code": "Mã",
-      "public": "Hiện",
-      "startDate": "Ngày bắt đầu",
-      "endDate": "Ngày kết thúc",
-      "value": "Giá trị",
-      "minimumValue": "Giá trị tối thiểu",
-      "quantity": "Số lượng mã giảm giá",
-      "perUser": "Số lượng mỗi người"
-    },
-    "type": {
-      "title": "Thể loại",
-      "percentage": "Phần trăm",
-      "fixedAmount": "Số tiền"
     }
   },
   "EditCategoryPage": {

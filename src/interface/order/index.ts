@@ -5,7 +5,7 @@ import {
   ENUM_PAYMENT_METHOD,
   ENUM_PAYMENT_STATUS,
 } from "~/enums/order";
-import { ICoupon } from "../coupon";
+import { ICoupon } from "../discount";
 import { ISearch } from "../queryParams";
 
 type ICouponOrder = Pick<

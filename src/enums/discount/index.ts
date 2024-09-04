@@ -1,9 +1,10 @@
-export enum EDiscount_applies {
-  ALL = "all",
-  SPECIFIC = "specific",
+/* eslint-disable no-unused-vars */
+export enum ENUM_DISCOUNT_APPLIES {
+  ALL = "ALL",
+  SPECIFIC = "SPECIFIC",
 }
 
-export enum EDicount_type {
-  PERCENTAGE = "percentage",
-  FIXED_AMOUNT = "fixed_amount",
+export enum ENUM_DISCOUNT_TYPE {
+  PERCENTAGE = "PERCENTAGE",
+  FIXED_AMOUNT = "FIXED_AMOUNT",
 }

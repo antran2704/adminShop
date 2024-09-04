@@ -207,13 +207,51 @@
       "description": "Update your attribute values"
     }
   },
-  "CouponsPage": {
-    "title": "Coupons",
-    "create": "Create coupon",
-    "search": "Search by coupon code/name...",
-    "filter": {
+  "DiscountPage": {
+    "title": "List of discount",
+    "create": "Create discount",
+    "table": {
+      "name": "Name",
+      "code": "Code",
+      "type": "Type",
+      "value": "Value",
+      "status": "Status",
+      "thumbnail": "Thumbnail",
+      "public": "Public",
+      "action": "Action",
       "startDate": "Start date",
       "endDate": "End date"
+    },
+    "type": {
+      "fixed": "Fixed",
+      "percentage": "Percentage"
+    },
+    "applies": {
+      "all": "All",
+      "specific": "Specific"
+    },
+    "form": {
+      "name": "Name",
+      "code": "Code",
+      "type": "Type",
+      "value": "Value",
+      "thumbnail": "Thumbnail",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "maxUses": "Max uses",
+      "perUser": "Per user",
+      "minValue": "Min value",
+      "status": "Status",
+      "public": "Public"
+    },
+    "modalDelete": {
+      "title": "Confirm delete discount",
+      "description": "Note: Data can't restore after delete"
+    },
+    "breadcrumb": {
+      "list": "List of discount",
+      "create": "Create discount",
+      "update": "Update discount"
     }
   },
   "BlogPage": {
@@ -222,10 +260,10 @@
     "edit": "Edit Blog",
     "table": {
       "id": "ID",
-      "title": "Tiêu đề",
-      "thumbnail": "Hình ảnh",
-      "status": "Trạng thái",
-      "createdAt": "Ngày tạo",
+      "title": "Title",
+      "thumbnail": "Thumbnail",
+      "status": "Status",
+      "createdAt": "Created At",
       "action": "Action"
     },
     "form": {
@@ -386,25 +424,6 @@
       "parent": "Parent category",
       "thumbnail": "Thumbnail",
       "public": "Public"
-    }
-  },
-  "CreateCouponPage": {
-    "title": "Create coupon",
-    "field": {
-      "title": "Title",
-      "code": "Code",
-      "public": "Public",
-      "startDate": "Start date",
-      "endDate": "End date",
-      "value": "Value",
-      "minimumValue": "Minimum Amount",
-      "quantity": "Coupon quantity",
-      "perUser": "Coupon per user"
-    },
-    "type": {
-      "title": "Coupon type",
-      "percentage": "Percentage",
-      "fixedAmount": "Fixed Amount"
     }
   },
   "EditCategoryPage": {

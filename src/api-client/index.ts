@@ -3,7 +3,6 @@ export * from "./categories";
 export * from "./product";
 export * from "./attributes";
 export * from "./variations";
-export * from "./coupons";
 export * from "./auth";
 export * from "./banners";
 export * from "./notifications";
