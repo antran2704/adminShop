@@ -236,11 +236,12 @@
       "type": "Type",
       "value": "Value",
       "thumbnail": "Thumbnail",
+      "date": "Time in process",
       "startDate": "Start date",
       "endDate": "End date",
-      "maxUses": "Max uses",
       "perUser": "Per user",
       "minValue": "Min value",
+      "quantity": "Quantity",
       "status": "Status",
       "public": "Public"
     },

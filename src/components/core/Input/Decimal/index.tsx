@@ -1,14 +1,17 @@
 import { Input, InputProps } from "antd";
-import { forwardRef } from "react";
+import clsx from "clsx";
+import { forwardRef, Fragment } from "react";
 import { revertBigNumberToString } from "~/helper/format/number";
 
 interface Props extends InputProps {
+  title?: string;
   maximum?: number;
+  error?: boolean;
   onChangeValue?: (value: string) => void;
 }
 
 const InputDecimal = (props: Props, ref: any) => {
-  const { maximum, onChangeValue, ...rest } = props;
+  const { title, maximum, error = false, onChangeValue, ...rest } = props;
 
   const onChange = (value: string) => {
     if (value === "" && onChangeValue) onChangeValue(value);
@@ -26,12 +29,19 @@ const InputDecimal = (props: Props, ref: any) => {
   };
 
   return (
-    <Input
-      type="number"
-      ref={ref}
-      {...rest}
-      onChange={(e) => onChange(e.target.value)}
-    />
+    <Fragment>
+      {title && (
+        <p className={clsx("text-base pb-2 dark:text-darkInput")}>{title}</p>
+      )}
+      <Input
+        type="number"
+        status={error ? "error" : ""}
+        ref={ref}
+        {...rest}
+        size="large"
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </Fragment>
   );
 };
 

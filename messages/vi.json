@@ -236,12 +236,13 @@
       "type": "Loại",
       "value": "Giá trị",
       "thumbnail": "Hình ảnh",
+      "date": "Thời gian diễn ra",
       "startDate": "Ngày bắt đầu",
       "endDate": "Ngày kết thúc",
-      "maxUses": "Sử dụng tối đa",
       "perUser": "Mỗi người sử dụng",
       "minValue": "Giá trị tối thiểu",
       "status": "Trạng thái",
+      "quantity": "Số lượng",
       "public": "Hiển thị"
     },
     "modalDelete": {

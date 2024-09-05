@@ -1,6 +1,5 @@
 import { useState, useEffect, Fragment, ReactElement } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { message } from "antd";
 
@@ -30,7 +29,7 @@ const CouponsPage: NextPageWithLayout = () => {
   const searchParam = query.search ? query.search : "";
   const orderParam = query.order ? query.order : ORDER_PARAMATER_ENUM.DESC;
 
-  const tBanner = useTranslations("DiscountPage");
+  const t = useTranslations("DiscountPage");
   const tError = useTranslations("Error");
 
   const [discounts, setDiscounts] = useState<IDiscountTable[]>([]);
@@ -93,12 +92,12 @@ const CouponsPage: NextPageWithLayout = () => {
 
   return (
     <ShowItemsLayout
-      title={tBanner("title")}
-      titleCreate={tBanner("create")}
-      link="/create/discounts"
+      title={t("title")}
+      titleCreate={t("create")}
+      link="/create/discount"
       dataBreadcrumb={[
         {
-          title: tBanner("breadcrumb.list"),
+          title: t("breadcrumb.list"),
         },
       ]}>
       <Fragment>

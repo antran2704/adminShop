@@ -12,7 +12,6 @@ import {
 import PopupForm from "../Popup/PopupForm";
 import Popup from "../Popup";
 
-import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import { useTranslations } from "next-intl";
 
 interface Props {
@@ -45,7 +44,6 @@ const Specifications = (props: Props) => {
   const [showPopupAttribute, setPopupAttribute] = useState<boolean>(false);
 
   const [showPopup, setShowPopup] = useState<boolean>(false);
-  const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
 
   const [newSpecification, setNewSpecification] =
     useState(initNewSpecification);
@@ -84,30 +82,10 @@ const Specifications = (props: Props) => {
   };
 
   const onChangeValue = (name: string, value: string) => {
-    if (fieldsCheck.includes(name)) {
-      const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
-      setFieldsCheck(newFieldsCheck);
-    }
-
     setNewSpecification({ ...newSpecification, [name]: value });
   };
 
-  const checkData = (data: any) => {
-    let fields = handleCheckFields(data);
-    setFieldsCheck(fields);
-    return fields;
-  };
-
   const onAddSpecification = () => {
-    const fields = checkData([
-      {
-        name: "name",
-        value: newSpecification.name,
-      },
-    ]);
-
-    if (fields.length > 0) return;
-
     const newItem: ISpecificationsProduct = {
       id: uuidv4(),
       name: newSpecification.name,
@@ -288,7 +266,6 @@ const Specifications = (props: Props) => {
                 name="name"
                 value={newSpecification.name}
                 getValue={onChangeValue}
-                error={fieldsCheck.includes("name")}
                 placeholder="Color or Size or Material"
               />
             </div>

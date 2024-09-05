@@ -153,7 +153,7 @@ const DiscountTable = (props: Props) => {
                 }}
               />
               <BtnEdit
-                onClick={() => router.push(`/edit/discounts/${record.id}`)}
+                onClick={() => router.push(`/edit/discount/${record.id}`)}
               />
             </div>
           );

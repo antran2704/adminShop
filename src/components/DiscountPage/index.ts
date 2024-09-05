@@ -1,2 +1,2 @@
 export { default as DiscountTable } from "./table";
-// export { default as BannerForm } from "./form";
+export { default as DiscountForm } from "./form";

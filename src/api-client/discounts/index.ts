@@ -25,7 +25,7 @@ const updateDiscount = async (discountId: string, data: ICreateDiscount) => {
     .then((res) => res.data);
 };
 
-const uploadDiscountImage = async (formData: FormData) => {
+const uploadDiscountThumbnail = async (formData: FormData) => {
   return await httpConfig
     .post(BASE_URL + `/admin/discounts/uploadThumbnail`, formData)
     .then((res) => res.data);
@@ -55,5 +55,6 @@ export {
   updateDiscount,
   activeDiscount,
   disableDiscount,
+  uploadDiscountThumbnail,
   deleteDiscount,
 };

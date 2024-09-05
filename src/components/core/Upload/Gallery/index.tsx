@@ -97,12 +97,7 @@ const UploadGallery = ({
   return (
     <div className={clsx("w-full h-full", className)}>
       {title && (
-        <p
-          className={clsx("text-base pb-2 dark:text-darkInput", [
-            error && "text-error",
-          ])}>
-          {title}
-        </p>
+        <p className={clsx("text-base pb-2 dark:text-darkInput")}>{title}</p>
       )}
       <Upload
         listType="picture-card"
