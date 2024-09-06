@@ -12,10 +12,10 @@ interface Props {
 }
 
 const ManagerLayout = (props: Props) => {
-  const { title, titleCreate, link, dataBreadcrumb, children } = props;
+  const { title, titleCreate, link, dataBreadcrumb = [], children } = props;
   return (
     <section className="px-5">
-      {!!dataBreadcrumb?.length && <BreadcrumbCore data={dataBreadcrumb} />}
+      {dataBreadcrumb.length > 0 && <BreadcrumbCore data={dataBreadcrumb} />}
 
       <div className="flex items-center justify-between pb-10 gap-5">
         <h1 className="lg:text-2xl text-xl font-bold dark:text-darkText">

@@ -34,7 +34,7 @@ const initData: ICreateDiscount = {
   discount_per_user: 0,
   discount_min_value: 0,
   discount_max_uses: 0,
-  discount_thumbnail: null,
+  discount_thumbnail: "",
   discount_active: true,
   discount_public: true,
 };

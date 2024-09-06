@@ -13,6 +13,12 @@ const getDiscounts = async (query: ISearch) => {
     .then((res) => res.data);
 };
 
+const getDiscount = async (id: string) => {
+  return await httpConfig
+    .get(BASE_URL + `/admin/discounts/id/${id}`)
+    .then((res) => res.data);
+};
+
 const createDiscount = async (data: ICreateDiscount) => {
   return await httpConfig
     .post(BASE_URL + "/admin/discounts", data)
@@ -45,12 +51,13 @@ const disableDiscount = async (discountId: string) => {
 
 const deleteDiscount = async (discountId: string) => {
   return await httpConfig
-    .delete(BASE_URL + `/discounts/${discountId}`)
+    .delete(BASE_URL + `/admin/discounts/${discountId}`)
     .then((res) => res.data);
 };
 
 export {
   getDiscounts,
+  getDiscount,
   createDiscount,
   updateDiscount,
   activeDiscount,

@@ -4,7 +4,7 @@ import { FaRegClipboard } from "react-icons/fa";
 
 import { INotificationItem, IconNoti } from "~/interface";
 import { styleTypeNoti } from "./data";
-import { getDateTime } from "~/helper/format/datetime";
+import { formatDate } from "~/helper/format/datetime";
 
 interface Props {
   data: INotificationItem;
@@ -41,7 +41,7 @@ const NotificationItem = (props: Props) => {
               {data.type}
             </p>
             <p className="text-start whitespace-nowrap text-xs">
-              {getDateTime(data.createdAt)}
+              {formatDate(data.createdAt)}
             </p>
           </div>
         </div>

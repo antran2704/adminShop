@@ -1,13 +1,11 @@
-import { AxiosError } from "axios";
+import { Button } from "antd";
+import axios, { AxiosError } from "axios";
 import Link from "next/link";
 import { FormEvent, ReactElement, useState } from "react";
-import { toast } from "react-toastify";
-import { ButtonClassic } from "~/components/Button";
+import { InputText } from "~/components/Core/Input";
 import ImageCus from "~/components/Image/ImageCus";
-import { InputText } from "~/components/InputField";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithoutHeader from "~/layouts/Public";
-import { axiosPost } from "~/configs/configAxios";
 
 interface IDataSend {
   email: string | null;
@@ -42,7 +40,7 @@ const PasswordResetPage: NextPageWithLayout = () => {
     setLoading(true);
 
     try {
-      const { status } = await axiosPost("/admin/forget-password/send-email", {
+      const { status } = await axios.post("/admin/forget-password/send-email", {
         email: data.email.toLowerCase(),
       });
 
@@ -53,18 +51,18 @@ const PasswordResetPage: NextPageWithLayout = () => {
       const error = err as AxiosError;
 
       if (!error.response) {
-        toast.error("Server is busy, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        // toast.error("Server is busy, please try again", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
         setLoading(false);
         return;
       }
       const { status } = error.response;
 
       if (status === 500) {
-        toast.error("Server is busy, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        // toast.error("Server is busy, please try again", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
       }
 
       if (status === 400) {
@@ -102,19 +100,24 @@ const PasswordResetPage: NextPageWithLayout = () => {
                   value={data.email || ""}
                   name="email"
                   required={true}
-                  size="M"
+                  size="large"
                   placeholder="Your Email..."
-                  getValue={onChangeData}
+                  onChange={(e) => {
+                    const name: string = e.target.name;
+                    const value: string = e.target.value;
+
+                    onChangeData(name, value);
+                  }}
                 />
 
                 {message && <p className="text-base text-error">{message}</p>}
               </div>
 
               <div className="mt-5">
-                <ButtonClassic
+                <Button
                   loading={loading}
                   title="Submit"
-                  size="M"
+                  size="large"
                   className="w-full flex items-center justify-center h-10 bg-primary"
                 />
               </div>

@@ -96,6 +96,7 @@ const FormBanner = (props: Props) => {
       setValue("discount_value", 100);
     }
 
+    setValue("discount_type", key);
     setSelectType(key);
   };
 
@@ -114,7 +115,7 @@ const FormBanner = (props: Props) => {
     handleChangeThumbnail(file);
   };
 
-  const onDeleteBanner = async (id: string) => {
+  const onDelete = async (id: string) => {
     if (!id) return;
     setDeleteLoading(true);
 
@@ -442,7 +443,7 @@ const FormBanner = (props: Props) => {
           loading: deleteLoading,
           disabled: deleteLoading,
         }}
-        onOk={() => onDeleteBanner(data?._id as string)}>
+        onOk={() => onDelete(data?._id as string)}>
         <img
           src="/popup/trash.svg"
           className="size-[200px] mx-auto"

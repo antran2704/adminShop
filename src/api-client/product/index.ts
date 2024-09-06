@@ -50,7 +50,7 @@ const uploadThumbnailProduct = async (formData: FormData) => {
   return await uploadImageOnServer(
     BASE_URL + `/admin/products/uploadImage`,
     formData,
-  );
+  ).then((res) => res.data);
 };
 
 const deleteProduct = async (product_id: string) => {

@@ -21,9 +21,9 @@ const PaginationCus = (props: Props) => {
   return (
     <Pagination
       className="pagination"
-      total={pagination.totalItems}
-      pageSize={pagination.pageSize}
-      current={pagination.currentPage}
+      total={pagination.total}
+      pageSize={pagination.take}
+      current={pagination.page}
       onChange={onPagination}
       prevIcon={() => (
         <button className="flex items-center justify-center hover:bg-primary dark:text-darkText hover:text-white w-10 h-10 border transition-all ease-linear duration-100">

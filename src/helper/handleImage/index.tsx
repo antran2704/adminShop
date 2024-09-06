@@ -1,7 +1,7 @@
 import axios from "axios";
 import Resizer from "react-image-file-resizer";
+import httpConfig from "~/configs/configAxios";
 import { IOptionImage, IThumbnail } from "~/interface/image";
-import { axiosPost } from "~/configs/configAxios";
 
 const uploadImage = (el: Element) => {
   const target = el as HTMLInputElement;
@@ -12,8 +12,7 @@ const uploadImage = (el: Element) => {
 };
 
 const uploadImageOnServer = async (url: string, formData: FormData) => {
-  const payload = await axiosPost(url, formData);
-  return payload;
+  return await httpConfig.post(url, formData).then((res) => res.data);
 };
 
 const uploadGalleryOnServer = async (url: string, formData: FormData) => {

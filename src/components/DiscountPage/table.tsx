@@ -94,24 +94,6 @@ const DiscountTable = (props: Props) => {
         },
       },
       {
-        title: t("table.status"),
-        dataIndex: "public",
-        className: "whitespace-nowrap",
-        render: (isPublic: boolean, reccord: IDiscountTable) => (
-          <Switch
-            checked={isPublic}
-            onClick={() => {
-              if (isPublic) {
-                onDisable(reccord);
-              } else {
-                onActive(reccord);
-              }
-            }}
-          />
-        ),
-        align: "center",
-      },
-      {
         title: t("table.startDate"),
         dataIndex: "startDate",
         className: "whitespace-nowrap",
@@ -136,6 +118,25 @@ const DiscountTable = (props: Props) => {
             </span>
           );
         },
+      },
+      {
+        title: t("table.status"),
+        dataIndex: "active",
+        className: "whitespace-nowrap",
+        align: "center",
+        fixed: "right",
+        render: (isPublic: boolean, reccord: IDiscountTable) => (
+          <Switch
+            checked={isPublic}
+            onClick={() => {
+              if (isPublic) {
+                onDisable(reccord);
+              } else {
+                onActive(reccord);
+              }
+            }}
+          />
+        ),
       },
       {
         title: t("table.action"),
@@ -180,7 +181,7 @@ const DiscountTable = (props: Props) => {
 
       if (indexItem > -1) {
         const newItems: IDiscountTable[] = [...listItem];
-        newItems[indexItem] = { ...reccord, public: true };
+        newItems[indexItem] = { ...reccord, active: true };
         setListItem(newItems);
       }
 
@@ -200,7 +201,7 @@ const DiscountTable = (props: Props) => {
 
       if (indexItem > -1) {
         const newItems: IDiscountTable[] = [...listItem];
-        newItems[indexItem] = { ...reccord, public: false };
+        newItems[indexItem] = { ...reccord, active: false };
         setListItem(newItems);
       }
 

@@ -13,12 +13,7 @@ import { IBlog, ICreateBlog } from "~/interface/blog";
 import FormLayout from "~/layouts/FormLayout";
 import { PrivateLayout } from "~/layouts";
 import FormFooter from "~/components/Footer/FormFooter";
-import {
-  createBlog,
-  getBlog,
-  updateBlog,
-  uploadBlogImage,
-} from "~/api-client/blogs";
+import { getBlog, updateBlog, uploadBlogImage } from "~/api-client/blogs";
 import FormBlog from "~/components/BlogPage/form";
 
 const initData: ICreateBlog = {

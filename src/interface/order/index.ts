@@ -5,11 +5,11 @@ import {
   ENUM_PAYMENT_METHOD,
   ENUM_PAYMENT_STATUS,
 } from "~/enums/order";
-import { ICoupon } from "../discount";
+import { IDiscount } from "../discount";
 import { ISearch } from "../queryParams";
 
 type ICouponOrder = Pick<
-  ICoupon,
+  IDiscount,
   "discount_name" | "discount_code" | "discount_type" | "discount_value"
 >;
 

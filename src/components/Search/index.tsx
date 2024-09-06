@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { FC, memo, useEffect, useState, useCallback } from "react";
-import { InputText } from "../InputField";
 import { useTranslations } from "next-intl";
+import { InputText } from "../Core/Input";
 
 interface Props {
   placeholder?: string;
@@ -49,12 +49,11 @@ const Search: FC<Props> = (props: Props) => {
       <InputText
         width="lg:w-4/12 md:w-6/12 w-full"
         name="search"
-        size="M"
         value={search}
-        getValue={onSearch}
+        // onChange={onSearch}
         placeholder={placeholder ? placeholder : "Search..."}
-        enableEnter={true}
-        onEnter={handleFilter}
+        // enableEnter={true}
+        // onEnter={handleFilter}
       />
 
       {children}

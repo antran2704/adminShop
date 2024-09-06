@@ -34,7 +34,7 @@ const uploadTagBlogImage = async (formData: FormData) => {
   return await uploadImageOnServer(
     BASE_URL + `/admin/blog-tags/uploadImage`,
     formData,
-  );
+  ).then((res) => res.data);
 };
 
 const activeTagBlog = async (tagId: string) => {

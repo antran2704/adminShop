@@ -144,7 +144,7 @@ const NotificationPage: NextPageWithLayout = () => {
           ))}
         </div>
 
-        {pagination.totalItems > pagination.pageSize && (
+        {pagination.total > pagination.take && (
           <PaginationTop pagination={pagination} />
         )}
 
@@ -167,7 +167,7 @@ const NotificationPage: NextPageWithLayout = () => {
             ))}
         </ul>
 
-        {pagination.totalItems > pagination.pageSize && (
+        {pagination.total > pagination.take && (
           <PaginationCus pagination={pagination} />
         )}
       </div>

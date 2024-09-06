@@ -1,16 +1,13 @@
-import { AxiosError } from "axios";
+import { Button, Input } from "antd";
+import axios, { AxiosError } from "axios";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { FormEvent, useState, useEffect, Fragment, ReactElement } from "react";
-import { toast } from "react-toastify";
-import { ButtonClassic } from "~/components/Button";
 import ImageCus from "~/components/Image/ImageCus";
-import { InputPassword } from "~/components/InputField";
 import Loading from "~/components/Loading";
 import { NextPageWithLayout } from "~/interface/page";
 import LayoutWithoutHeader from "~/layouts/Public";
-import { axiosPost } from "~/configs/configAxios";
 
 interface IDataSend {
   password: string | null;
@@ -75,7 +72,7 @@ const CheckPasswordKeyPage: NextPageWithLayout = () => {
 
     setLoading(true);
     try {
-      const { status } = await axiosPost("/admin/forget-password", {
+      const { status } = await axios.post("/admin/forget-password", {
         email,
         token,
         key,
@@ -89,18 +86,18 @@ const CheckPasswordKeyPage: NextPageWithLayout = () => {
       const error = err as AxiosError;
 
       if (!error.response) {
-        toast.error("Server is busy, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        // toast.error("Server is busy, please try again", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
         setLoading(false);
         return;
       }
       const { status, data: payload }: any = error.response;
 
       if (status === 500) {
-        toast.error("Server is busy, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        // toast.error("Server is busy, please try again", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
       }
 
       if (status === 400) {
@@ -118,7 +115,7 @@ const CheckPasswordKeyPage: NextPageWithLayout = () => {
     setLoadingCheck(true);
 
     try {
-      const { status } = await axiosPost("/admin/forget-password/check-key", {
+      const { status } = await axios.post("/admin/forget-password/check-key", {
         email,
         t_k: token,
         k_y: key,
@@ -130,9 +127,9 @@ const CheckPasswordKeyPage: NextPageWithLayout = () => {
     } catch (err) {
       const error = err as AxiosError;
       if (error.code === "ERR_NETWORK") {
-        toast.error("Error in server, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        // toast.error("Error in server, please try again", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
       }
 
       setCheckError(true);
@@ -178,36 +175,47 @@ const CheckPasswordKeyPage: NextPageWithLayout = () => {
 
             <form onSubmit={onSubmit} method="POST" className="flex flex-col">
               <div className="flex flex-col items-start mt-5 gap-5">
-                <InputPassword
+                <Input.Password
                   title="Password"
                   width="w-full"
                   value={data.password || ""}
                   name="password"
                   required={true}
-                  size="M"
+                  size="large"
                   placeholder="New Password..."
-                  getValue={onChangeData}
+                  onChange={(e) => {
+                    const name: string = e.target.name;
+                    const value: string = e.target.value;
+
+                    onChangeData(name, value);
+                  }}
+                  // getValue={onChangeData}
                 />
 
-                <InputPassword
+                <Input.Password
                   title="Confirm Password"
                   width="w-full"
                   value={data.confirmPassword || ""}
                   name="confirmPassword"
                   required={true}
-                  size="M"
+                  size="large"
                   placeholder="Confirm Password..."
-                  getValue={onChangeData}
+                  onChange={(e) => {
+                    const name: string = e.target.name;
+                    const value: string = e.target.value;
+
+                    onChangeData(name, value);
+                  }}
                 />
 
                 {message && <p className="text-base text-error">{message}</p>}
               </div>
 
               <div className="mt-5">
-                <ButtonClassic
+                <Button
                   loading={loading}
                   title="Submit"
-                  size="L"
+                  size="large"
                   className="w-full flex items-center justify-center h-[52px] bg-primary"
                 />
               </div>

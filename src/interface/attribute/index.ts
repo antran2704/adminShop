@@ -13,7 +13,7 @@ interface IAttribute {
   _id: string;
   code: string;
   name: string;
-  // children: IAttributeChild[];
+  children: IAttributeChild[];
   public: boolean;
   createdAt: string;
 }
@@ -21,7 +21,7 @@ interface IAttribute {
 interface ICreateAttibute {
   code: string;
   name: string;
-  // children: INewAttributeChild[];
+  children: INewAttributeChild[];
   public: boolean;
 }
 

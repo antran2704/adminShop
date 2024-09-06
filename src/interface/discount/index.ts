@@ -32,7 +32,7 @@ interface ICreateDiscount {
   discount_max_uses: number;
   discount_per_user: number;
   discount_min_value: number;
-  discount_thumbnail: string | null;
+  discount_thumbnail: string;
   discount_active: boolean;
   discount_public: boolean;
 }

@@ -35,7 +35,7 @@ const uploadBlogImage = async (formData: FormData) => {
   return await uploadImageOnServer(
     BASE_URL + `/admin/blogs/uploadImage`,
     formData,
-  );
+  ).then((res) => res.data);
 };
 
 const activeBlog = async (blogId: string) => {

@@ -3,7 +3,6 @@ import { AiOutlinePlus, AiOutlineMinus, AiOutlineFile } from "react-icons/ai";
 
 import Tree from ".";
 import { ICategorySelect } from "~/interface/category";
-import { toast } from "react-toastify";
 
 interface Props {
   parent_id: string | null;
@@ -44,9 +43,9 @@ const TreeNode = (props: Props) => {
     }
 
     if (checkOnMove && defaultSelect) {
-      toast.success("Can't move parent category into children category", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+      // toast.success("Can't move parent category into children category", {
+      //   position: toast.POSITION.TOP_RIGHT,
+      // });
 
       return;
     }

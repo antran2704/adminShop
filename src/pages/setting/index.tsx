@@ -1,19 +1,17 @@
+import { Input } from "antd";
 import { AxiosError } from "axios";
 import { ReactElement, useCallback, useState } from "react";
-import { toast } from "react-toastify";
-import Thumbnail from "~/components/Image/Thumbnail";
-import { InputText, InputPassword } from "~/components/InputField";
+import { InputText } from "~/components/Core/Input";
 import Loading from "~/components/Loading";
 import Popup from "~/components/Popup";
+import httpConfig from "~/configs/configAxios";
 import { uploadImageOnServer } from "~/helper/handleImage";
 import { IUserInfor } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 import FormLayout from "~/layouts/FormLayout";
 import LayoutWithHeader from "~/layouts/Private";
-import LayoutWithoutHeader from "~/layouts/Public";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { loginReducer } from "~/store/slice/user";
-import { axiosPatch, axiosPost } from "~/configs/configAxios";
 
 interface IPassword {
   password: string | null;
@@ -75,9 +73,9 @@ const SettingPage: NextPageWithLayout = () => {
             setAvartar(payload);
           }
         } catch (error) {
-          toast.error("Upload avartar failed", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
+          // toast.error("Upload avartar failed", {
+          //   position: toast.POSITION.TOP_RIGHT,
+          // });
           console.log(error);
         }
 
@@ -90,18 +88,18 @@ const SettingPage: NextPageWithLayout = () => {
   const handleChangePassword = async () => {
     const { password, newPassword, reNewPassword } = passwordData;
     if (!password || !newPassword || !reNewPassword) {
-      toast.error("Vui lòng nhập đầy đủ  thông tin", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+      // toast.error("Vui lòng nhập đầy đủ  thông tin", {
+      //   position: toast.POSITION.TOP_RIGHT,
+      // });
 
       return;
     }
 
     if (newPassword !== reNewPassword) {
       setPasswordData({ ...passwordData, reNewPassword: null });
-      toast.error("Vui lòng nhập lại mật khâủ mới", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+      // toast.error("Vui lòng nhập lại mật khâủ mới", {
+      //   position: toast.POSITION.TOP_RIGHT,
+      // });
 
       return;
     }
@@ -113,47 +111,50 @@ const SettingPage: NextPageWithLayout = () => {
         newPassword,
       };
 
-      const { status } = await axiosPost("/admin/changePassword", sendData);
+      const { status } = await httpConfig.post(
+        "/admin/changePassword",
+        sendData,
+      );
 
       if (status === 201) {
         onShowPopup();
-        toast.success("Thay đổi thành công", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        // toast.success("Thay đổi thành công", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
         setPasswordData(initPassword);
       }
     } catch (err) {
       const error = err as AxiosError;
 
       if (!error.response) {
-        toast.error("Server is busy, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        // toast.error("Server is busy, please try again", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
 
         return;
       }
       const { status } = error.response;
 
       if (status === 500) {
-        toast.error("Server is busy, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        // toast.error("Server is busy, please try again", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
 
         return;
       }
 
       if (status === 401) {
-        toast.error("Mật khẩu không đúng", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        // toast.error("Mật khẩu không đúng", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
         setPasswordData(initPassword);
         return;
       }
 
       if (status === 400) {
-        toast.error("Thay đổi không thành công", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        // toast.error("Thay đổi không thành công", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
 
         return;
       }
@@ -166,29 +167,31 @@ const SettingPage: NextPageWithLayout = () => {
     setLoading(true);
 
     try {
-      const { status, payload } = await axiosPatch(`/admin/${user._id}`, {
-        name: user.name ? user.name : infor.name,
-        email: user.email ? user.email : infor.email,
-        avartar,
-      });
+      const { status, payload } = await httpConfig
+        .patch(`/admin/${user._id}`, {
+          name: user.name ? user.name : infor.name,
+          email: user.email ? user.email : infor.email,
+          avartar,
+        })
+        .then((res) => res.data);
 
       if (status !== 201) {
-        toast.error("Upload setting failed", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        // toast.error("Upload setting failed", {
+        //   position: toast.POSITION.TOP_RIGHT,
+        // });
 
         return;
       }
 
-      toast.success("Upload setting success", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+      // toast.success("Upload setting success", {
+      //   position: toast.POSITION.TOP_RIGHT,
+      // });
 
       dispatch(loginReducer(payload));
     } catch (error) {
-      toast.error("Upload setting failed", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+      // toast.error("Upload setting failed", {
+      //   position: toast.POSITION.TOP_RIGHT,
+      // });
       console.log(error);
     }
 
@@ -196,10 +199,7 @@ const SettingPage: NextPageWithLayout = () => {
   };
 
   return (
-    <FormLayout
-      title="Quản lý tài khoản"
-      backLink="/"
-      onSubmit={handleOnSubmit}>
+    <FormLayout title="Quản lý tài khoản">
       <div>
         <div className="my-5">
           <h3 className="md:text-lg dark:text-white text-base font-medium">
@@ -213,7 +213,12 @@ const SettingPage: NextPageWithLayout = () => {
           value={user.email}
           name="email"
           placeholder="Your Email..."
-          getValue={changeValue}
+          onChange={(e) => {
+            const name: string = e.target.name;
+            const value: string = e.target.value;
+
+            changeValue(name, value);
+          }}
         />
 
         <InputText
@@ -222,7 +227,12 @@ const SettingPage: NextPageWithLayout = () => {
           value={user.name}
           name="name"
           placeholder="Your Name..."
-          getValue={changeValue}
+          onChange={(e) => {
+            const name: string = e.target.name;
+            const value: string = e.target.value;
+
+            changeValue(name, value);
+          }}
         />
 
         <div className="my-5">
@@ -238,12 +248,12 @@ const SettingPage: NextPageWithLayout = () => {
         </div>
 
         <div>
-          <Thumbnail
+          {/* <Thumbnail
             url={avartar}
             loading={loadingAvartar}
             onChange={uploadAvartar}
             className="max-w-[200px] max-h-[200px] min-w-[200px] min-h-[200px]"
-          />
+          /> */}
         </div>
 
         {loading && <Loading />}
@@ -255,30 +265,44 @@ const SettingPage: NextPageWithLayout = () => {
             onClose={onShowPopup}>
             <div>
               <div className="mb-10">
-                <InputPassword
+                <Input.Password
                   title="Mật khẩu cũ"
                   width="w-full my-5"
                   value={passwordData.password || ""}
                   name="password"
-                  getValue={changePassword}
+                  onChange={(e) => {
+                    const name: string = e.target.name;
+                    const value: string = e.target.value;
+
+                    changeValue(name, value);
+                  }}
                 />
 
-                <InputPassword
+                <Input.Password
                   title="Mật khẩu mới"
                   width="w-full my-5"
                   value={passwordData.newPassword || ""}
                   name="newPassword"
-                  getValue={changePassword}
+                  onChange={(e) => {
+                    const name: string = e.target.name;
+                    const value: string = e.target.value;
+
+                    changeValue(name, value);
+                  }}
                 />
 
-                <InputPassword
+                <Input.Password
                   title="Nhập lại mật khẩu mới"
                   width="w-full my-5"
                   value={passwordData.reNewPassword || ""}
                   name="reNewPassword"
-                  enableEnter={true}
-                  onEnter={handleChangePassword}
-                  getValue={changePassword}
+                  onPressEnter={handleChangePassword}
+                  onChange={(e) => {
+                    const name: string = e.target.name;
+                    const value: string = e.target.value;
+
+                    changeValue(name, value);
+                  }}
                 />
               </div>
 

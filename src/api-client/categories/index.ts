@@ -84,7 +84,7 @@ const uploadThumbnailCategory = async (formData: FormData) => {
   return await uploadImageOnServer(
     BASE_URL + `/admin/categories/uploadThumbnail`,
     formData,
-  );
+  ).then((res) => res.data);
 };
 
 const deleteCategory = async (category_id: string) => {

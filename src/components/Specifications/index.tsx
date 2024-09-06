@@ -2,7 +2,6 @@ import { Fragment, memo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AiOutlineCloseCircle, AiOutlinePlus } from "react-icons/ai";
 
-import { InputText } from "../InputField";
 import {
   ISelectItem,
   ISpecificationAttributes,
@@ -13,6 +12,7 @@ import PopupForm from "../Popup/PopupForm";
 import Popup from "../Popup";
 
 import { useTranslations } from "next-intl";
+import { InputText } from "../Core/Input";
 
 interface Props {
   className?: string;
@@ -198,28 +198,42 @@ const Specifications = (props: Props) => {
                       width="w-1/2"
                       value={attribute.name}
                       name="name"
-                      getValue={(name, value) =>
+                      onChange={(e) => {
+                        const name: string = e.target.name;
+                        const value: string = e.target.value;
+
                         onChangeAtribute(
                           name,
                           value,
                           specificationIndex,
                           attributeIndex,
-                        )
-                      }
+                        );
+                      }}
+                      // getValue={(name, value) =>
+                      //   onChangeAtribute(
+                      //     name,
+                      //     value,
+                      //     specificationIndex,
+                      //     attributeIndex,
+                      //   )
+                      // }
                     />
                     <InputText
                       title={t("value")}
                       width="w-1/2"
                       value={attribute.value}
                       name="value"
-                      getValue={(name, value) =>
+                      onChange={(e) => {
+                        const name: string = e.target.name;
+                        const value: string = e.target.value;
+
                         onChangeAtribute(
                           name,
                           value,
                           specificationIndex,
                           attributeIndex,
-                        )
-                      }
+                        );
+                      }}
                     />
 
                     <button
@@ -261,11 +275,16 @@ const Specifications = (props: Props) => {
               <InputText
                 title={t("addPopup.inpTitle")}
                 width="w-full"
-                enableEnter={true}
-                onEnter={onAddSpecification}
+                onPressEnter={onAddSpecification}
                 name="name"
                 value={newSpecification.name}
-                getValue={onChangeValue}
+                onChange={(e) => {
+                  const name: string = e.target.name;
+                  const value: string = e.target.value;
+
+                  onChangeValue(name, value);
+                }}
+                // getValue={onChangeValue}
                 placeholder="Color or Size or Material"
               />
             </div>
