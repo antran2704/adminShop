@@ -10,7 +10,7 @@ interface IInitData {
 
 const initialState: IInitData = {
   infor: {
-    _id: null,
+    _id: "",
     name: "",
     email: "",
     avartar: null,

@@ -417,18 +417,21 @@
     "submit": "Login",
     "forgetPassword": "Forget password"
   },
-  "CreateCategoryPage": {
-    "title": "Create category",
-    "field": {
-      "title": "Title",
-      "description": "Description",
-      "parent": "Parent category",
-      "thumbnail": "Thumbnail",
-      "public": "Public"
+  "AccountPage": {
+    "title": "Account",
+    "form": {
+      "email": "Email",
+      "name": "Name",
+      "avartar": "Avartar",
+      "password": "Password",
+      "changePassword": "Change password"
+    },
+    "changePasswordModal": {
+      "title": "Change password",
+      "curentPassword": "Current password",
+      "newPassword": "New password",
+      "rePassword": "Re-input password"
     }
-  },
-  "EditCategoryPage": {
-    "title": "Edit category"
   },
   "Thumbnail": {
     "upload": "Click to upload",

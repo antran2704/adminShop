@@ -123,7 +123,7 @@ const NotificationPage: NextPageWithLayout = () => {
 
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
-      <div className="w-full">
+      {/* <div className="w-full">
         <h1 className="md:text-3xl text-2xl font-bold dark:text-darkText mb-1">
           Notifications
         </h1>
@@ -170,7 +170,7 @@ const NotificationPage: NextPageWithLayout = () => {
         {pagination.total > pagination.take && (
           <PaginationCus pagination={pagination} />
         )}
-      </div>
+      </div> */}
     </section>
   );
 };

@@ -404,6 +404,22 @@
       "update": "Cập nhật đơn hàng"
     }
   },
+  "AccountPage": {
+    "title": "Tài khoản",
+    "form": {
+      "email": "Email",
+      "name": "Tên",
+      "avartar": "Ảnh đại diện",
+      "password": "Mật khẩu",
+      "changePassword": "Thay đổi mật khẩu"
+    },
+    "changePasswordModal": {
+      "title": "Thay đổi mật khẩu",
+      "curentPassword": "Mật khẩu hiện tại",
+      "newPassword": "Mật khẩu mới",
+      "rePassword": "Nhập lại mật khẩu"
+    }
+  },
   "LoginPage": {
     "title": "Đăng nhập",
     "email": {
@@ -416,19 +432,6 @@
     },
     "submit": "Đăng nhập",
     "forgetPassword": "Quên mật khẩu"
-  },
-  "CreateCategoryPage": {
-    "title": "Tạo thư mục",
-    "field": {
-      "title": "Tiêu đề",
-      "description": "Mô tả",
-      "parent": "Thư mục cha",
-      "thumbnail": "Hình ảnh",
-      "public": "Hiện"
-    }
-  },
-  "EditCategoryPage": {
-    "title": "Chỉnh sửa thư mục"
   },
   "Thumbnail": {
     "upload": "Ấn để tải ảnh",

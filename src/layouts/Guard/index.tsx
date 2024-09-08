@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { loginReducer, setPermisson } from "~/store/slice/user";
 
-import { getPermission, getInfoUser } from "~/api-client";
+import { getPermission } from "~/api-client";
 
 import SpinLoading from "~/components/Loading/SpinLoading";
 import { IResponse, IUserInfor } from "~/interface";
+import { getAccount } from "~/api-client/account";
 
 interface Props {
   children: JSX.Element;
@@ -16,7 +17,7 @@ interface Props {
 const GuardLayout = ({ children }: Props) => {
   const router = useRouter();
 
-  const { infor } = useAppSelector((state) => state.user);
+  const { infor, permission } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
 
   const [loading, setLoading] = useState<boolean>(!infor._id);
@@ -37,7 +38,7 @@ const GuardLayout = ({ children }: Props) => {
     setLoading(true);
 
     try {
-      const { status, payload }: IResponse<IUserInfor> = await getInfoUser();
+      const { status, payload }: IResponse<IUserInfor> = await getAccount();
 
       if (status === 200) {
         dispatch(loginReducer(payload));
@@ -55,7 +56,7 @@ const GuardLayout = ({ children }: Props) => {
   }, [infor._id]);
 
   useEffect(() => {
-    if (!infor._id) return;
+    if (!infor._id || !!permission) return;
 
     handleGetPermission(infor._id);
   }, [infor]);

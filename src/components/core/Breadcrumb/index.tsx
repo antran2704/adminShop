@@ -10,7 +10,7 @@ interface Props {
 }
 
 const BreadcrumbCompoent = (props: Props) => {
-  const { data, separator = ">" } = props;
+  const { data = [], separator = ">" } = props;
 
   const t = useTranslations("Common");
 

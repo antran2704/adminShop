@@ -1,8 +1,20 @@
 interface IUserInfor {
-  _id: string | null;
+  _id: string;
   name: string;
   email: string;
   avartar: string | null;
 }
 
-export type { IUserInfor };
+interface IUpdateAccount {
+  name: string;
+  email: string;
+  avartar: string | null;
+}
+
+interface IChangePassword {
+  password: string;
+  newPassword: string;
+  reNewPassword: string;
+}
+
+export type { IUserInfor, IUpdateAccount, IChangePassword };

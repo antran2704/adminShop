@@ -51,10 +51,7 @@ const SideBar = (props: Props) => {
         {infor?._id && (
           <div className="h-20 flex items-center gap-3">
             <ImageCus
-              src={
-                ((process.env.NEXT_PUBLIC_ENDPOINT_API as string) +
-                  infor.avartar) as string
-              }
+              src={infor.avartar as string}
               className="min-w-[60px] w-[60px] min-h-[60px] h-[60px] object-cover rounded-full"
               title="avartar"
             />

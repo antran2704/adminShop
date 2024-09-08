@@ -3,10 +3,6 @@ import httpConfig from "~/configs/configAxios";
 
 const BASE_URL: string = process.env.NEXT_PUBLIC_ENDPOINT_API as string;
 
-const getInfoUser = async () => {
-  return await httpConfig.get(BASE_URL + "/admin").then((res) => res.data);
-};
-
 const logout = async () => {
   return await httpConfig
     .post(BASE_URL + "/admin/logout")
@@ -33,4 +29,4 @@ const getPermission = async (userId: string) => {
     .then((res) => res.data);
 };
 
-export { getRefreshToken, getInfoUser, logout, login, getPermission };
+export { getRefreshToken, logout, login, getPermission };

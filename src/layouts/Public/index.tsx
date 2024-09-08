@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { getInfoUser } from "~/api-client";
+import { getAccount } from "~/api-client/account";
 import DarkMode from "~/components/DarkMode";
 import Translation from "~/components/Translation";
 import { checkDarkMode } from "~/helper/darkMode";
@@ -20,7 +20,7 @@ const PublicLayout = ({ children }: Props) => {
 
   const checkAuth = async () => {
     try {
-      const { status, payload }: IResponse<IUserInfor> = await getInfoUser();
+      const { status, payload }: IResponse<IUserInfor> = await getAccount();
 
       if (status === 200) {
         dispatch(loginReducer(payload));
