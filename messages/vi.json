@@ -217,7 +217,7 @@
       "value": "Giá trị",
       "status": "Trạng thái",
       "thumbnail": "Hình ảnh",
-      "startDate":"Ngày bắt đầu",
+      "startDate": "Ngày bắt đầu",
       "endDate": "Ngày kết thúc",
       "public": "Hiển thị",
       "action": "Action"
@@ -415,7 +415,7 @@
     },
     "changePasswordModal": {
       "title": "Thay đổi mật khẩu",
-      "curentPassword": "Mật khẩu hiện tại",
+      "currentPassword": "Mật khẩu hiện tại",
       "newPassword": "Mật khẩu mới",
       "rePassword": "Nhập lại mật khẩu"
     }
@@ -476,7 +476,9 @@
     "PLEASE_SELECT": "Vui lòng lựa chọn",
     "PLEASE_INPUT": "Vui lòng nhập",
     "PLEASE_UPLOAD": "Vui lòng upload",
-    "SESSION_EXPRIED": "Hết phiên đăng nhập"
+    "SESSION_EXPRIED": "Hết phiên đăng nhập",
+    "RE_PASSWORD_INCORECT": "Nhập lại mật khẩu không đúng",
+    "PASSWORD_INCORECT": "Mật khẩu không đúng"
   },
   "Success": {
     "create": "Tạo thành công",
@@ -516,6 +518,7 @@
       "exportExcel": "Xuất excel",
       "back": "Trờ lại",
       "confirm": "Xác nhận",
+      "update": "Cập nhật",
       "create": "Tạo",
       "cancel": "Hủy",
       "delete": "Xóa"

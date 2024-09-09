@@ -62,12 +62,13 @@ const ProductPage: NextPageWithLayout = () => {
 
     try {
       const res: IResponseWithPagination<IProduct[]> = await getProducts(query);
+
       const data: IProductTable[] = res.payload.map((item: IProduct) => ({
         key: item._id,
         productId: item._id,
         title: item.title,
         thumbnail: item.thumbnail,
-        category: item.category.title,
+        category: item.category ? item.category.title : "",
         price: item.price,
         promotionPrice: item.promotion_price,
         public: item.public,

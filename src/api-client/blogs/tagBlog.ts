@@ -1,4 +1,3 @@
-import { uploadImageOnServer } from "~/helper/handleImage";
 import httpConfig from "~/configs/configAxios";
 import { parseQueryString } from "~/helper/url";
 import { IBlogTagSearch, ICreateBlogTag } from "~/interface/blog/blogTag";
@@ -31,10 +30,9 @@ const updateTagBlog = async (tagId: string, data: ICreateBlogTag) => {
 };
 
 const uploadTagBlogImage = async (formData: FormData) => {
-  return await uploadImageOnServer(
-    BASE_URL + `/admin/blog-tags/uploadImage`,
-    formData,
-  ).then((res) => res.data);
+  return await httpConfig
+    .post(BASE_URL + `/admin/blog-tags/uploadImage`, formData)
+    .then((res) => res.data);
 };
 
 const activeTagBlog = async (tagId: string) => {

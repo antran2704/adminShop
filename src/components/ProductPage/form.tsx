@@ -134,7 +134,8 @@ const FormProduct = (props: Props) => {
             setValue("thumbnail", payload);
           }
         })
-        .catch(() => {
+        .catch((err) => {
+          console.log(errors);
           messageApi.error(tError("UPLOAD_IMAGE"));
         });
     },

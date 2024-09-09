@@ -20,13 +20,13 @@ import Loading from "~/components/Loading";
 import Can from "~/components/Ability/Can";
 import { BannerTable } from "~/components/BannerPage";
 
-import LayoutWithHeader from "~/layouts/Private";
+import { PrivateLayout } from "~/layouts";
 
 import { getBanners } from "~/api-client";
 
 import useAbility from "~/hooks/useAbility";
 
-const Layout = LayoutWithHeader;
+const Layout = PrivateLayout;
 const BannersPage: NextPageWithLayout = () => {
   const router = useRouter();
   const { query } = router;

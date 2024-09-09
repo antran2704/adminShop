@@ -8,7 +8,6 @@ import { ORDER_PARAMATER_ENUM } from "~/enums";
 import { IResponseWithPagination, ISearch } from "~/interface";
 import { initPagination } from "~/components/Pagination/initData";
 import { getOrders } from "~/api-client";
-import { NextPageWithLayout } from "~/interface/page";
 import { PrivateLayout } from "~/layouts";
 import { useRouter } from "next/router";
 import Loading from "~/components/Loading";
@@ -18,7 +17,7 @@ import { OrderTable } from "~/components/OrderPage";
 
 const Layout = PrivateLayout;
 
-const OrdersPage: NextPageWithLayout = () => {
+const OrdersPage = () => {
   const router = useRouter();
 
   const { query } = router;

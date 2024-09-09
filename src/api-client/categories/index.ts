@@ -1,6 +1,5 @@
 import qs from "qs";
 
-import { uploadImageOnServer } from "~/helper/handleImage";
 import { ICategory, IFilter, ISearch } from "~/interface";
 import httpConfig from "~/configs/configAxios";
 
@@ -81,10 +80,9 @@ const disableCategory = async (id: string) => {
 };
 
 const uploadThumbnailCategory = async (formData: FormData) => {
-  return await uploadImageOnServer(
-    BASE_URL + `/admin/categories/uploadThumbnail`,
-    formData,
-  ).then((res) => res.data);
+  return await httpConfig
+    .post(BASE_URL + `/admin/categories/uploadThumbnail`, formData)
+    .then((res) => res.data);
 };
 
 const deleteCategory = async (category_id: string) => {

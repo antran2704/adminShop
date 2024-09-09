@@ -1,6 +1,5 @@
 import qs from "qs";
 
-import { uploadImageOnServer } from "~/helper/handleImage";
 import { ICreateProduct, ISearch } from "~/interface";
 import httpConfig from "~/configs/configAxios";
 
@@ -47,10 +46,9 @@ const disableProduct = async (product_id: string) => {
 };
 
 const uploadThumbnailProduct = async (formData: FormData) => {
-  return await uploadImageOnServer(
-    BASE_URL + `/admin/products/uploadImage`,
-    formData,
-  ).then((res) => res.data);
+  return await httpConfig
+    .post(BASE_URL + `/admin/products/uploadImage`, formData)
+    .then((res) => res.data);
 };
 
 const deleteProduct = async (product_id: string) => {

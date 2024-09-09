@@ -1,6 +1,6 @@
 import { FaBars } from "react-icons/fa";
 import { useAppSelector } from "~/store/hooks";
-import Notification from "../Notification";
+// import Notification from "../Notification";
 import Translation from "../Translation";
 import DarkMode from "../DarkMode";
 
@@ -24,7 +24,7 @@ const Navbar = (props: Props) => {
       <div className="flex items-center gap-2">
         <Translation />
         <DarkMode />
-        {infor._id && <Notification />}
+        {/* {infor._id && <Notification />} */}
       </div>
     </div>
   );

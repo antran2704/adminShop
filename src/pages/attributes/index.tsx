@@ -14,15 +14,13 @@ import ShowItemsLayout from "~/layouts/ManagerLayout";
 
 import { initPagination } from "~/components/Pagination/initData";
 import { getAttributes } from "~/api-client";
-import { NextPageWithLayout } from "~/interface/page";
-import LayoutWithHeader from "~/layouts/Private";
+import { PrivateLayout } from "~/layouts";
 import { AttributeTable } from "~/components/AttributePage";
 import { ORDER_PARAMATER_ENUM } from "~/enums";
-import Loading from "~/components/Loading";
 
-const Layout = LayoutWithHeader;
+const Layout = PrivateLayout;
 
-const AttributesPage: NextPageWithLayout = () => {
+const AttributesPage = () => {
   const router = useRouter();
 
   const { query } = router;
@@ -83,10 +81,6 @@ const AttributesPage: NextPageWithLayout = () => {
   useEffect(() => {
     handleGetData(paramater);
   }, [paramater]);
-
-  if (!router.isReady) {
-    return <Loading />;
-  }
 
   return (
     <ShowItemsLayout

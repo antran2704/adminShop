@@ -23,7 +23,7 @@ const changePasswordAccount = async (
   data: Omit<IChangePassword, "reNewPassword">,
 ) => {
   return await httpConfig
-    .post(BASE_URL + `/admin/changePassword`, data)
+    .patch(BASE_URL + `/admin/changePassword`, data)
     .then((res) => res.data);
 };
 

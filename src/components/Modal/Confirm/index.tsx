@@ -1,4 +1,4 @@
-import { ButtonProps, Modal, ModalProps } from "antd";
+import { Modal, ModalProps } from "antd";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import { BiSolidError } from "react-icons/bi";

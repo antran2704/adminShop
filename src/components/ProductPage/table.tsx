@@ -35,6 +35,7 @@ const ProductTable = (props: Props) => {
 
   const t = useTranslations("ProductPage");
   const tError = useTranslations("Error");
+  const tCommon = useTranslations("Common");
   const tSuccess = useTranslations("Success");
 
   const router = useRouter();
@@ -81,6 +82,9 @@ const ProductTable = (props: Props) => {
           dataIndex: "category",
           className: "whitespace-nowrap",
           align: "center",
+          render: (value: string) => (
+            <span>{value ? value : tCommon("noData")}</span>
+          ),
         },
         {
           title: t("table.price"),

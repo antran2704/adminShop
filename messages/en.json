@@ -428,9 +428,9 @@
     },
     "changePasswordModal": {
       "title": "Change password",
-      "curentPassword": "Current password",
+      "currentPassword": "Current password",
       "newPassword": "New password",
-      "rePassword": "Re-input password"
+      "rePassword": "Repassword"
     }
   },
   "Thumbnail": {
@@ -477,7 +477,9 @@
     "PLEASE_SELECT": "Please select",
     "PLEASE_INPUT": "Please input",
     "PLEASE_UPLOAD": "Please upload",
-    "SESSION_EXPRIED": "Session is expried"
+    "SESSION_EXPRIED": "Session is expried",
+    "RE_PASSWORD_INCORECT": "Repassword incorrect",
+    "PASSWORD_INCORECT": "Password incorrect"
   },
   "Success": {
     "create": "Created success",
@@ -518,6 +520,7 @@
       "back": "Back",
       "create": "Create",
       "confirm": "Confirm",
+      "update": "Update",
       "cancel": "Cancel",
       "delete": "Delete"
     },

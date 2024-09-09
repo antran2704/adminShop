@@ -1,10 +1,6 @@
-import { Input, message } from "antd";
-import { AxiosError } from "axios";
+import { message } from "antd";
 import { ReactElement, useCallback, useEffect, useMemo, useState } from "react";
 import { InputText } from "~/components/Core/Input";
-import Loading from "~/components/Loading";
-import Popup from "~/components/Popup";
-import httpConfig from "~/configs/configAxios";
 import { IResponse, IUpdateAccount, IUserInfor } from "~/interface";
 import { NextPageWithLayout } from "~/interface/page";
 import FormLayout from "~/layouts/FormLayout";
@@ -21,18 +17,7 @@ import { UploadImage } from "~/components/Core/Upload";
 import { ECompressFormat, ETypeImage } from "~/enums";
 import { updateAccount, uploadAvartar } from "~/api-client/account";
 import FormFooter from "~/components/Footer/FormFooter";
-
-interface IPassword {
-  password: string | null;
-  newPassword: string | null;
-  reNewPassword: string | null;
-}
-
-const initPassword: IPassword = {
-  password: null,
-  newPassword: null,
-  reNewPassword: null,
-};
+import ChangePasswordModal from "~/components/AccountPage/ChangePasswordModal";
 
 const initData: IUpdateAccount = {
   email: "",
@@ -44,6 +29,7 @@ const Layout = PrivateLayout;
 
 const SettingPage: NextPageWithLayout = () => {
   const t = useTranslations("AccountPage");
+  const tCommon = useTranslations("Common");
   const tError = useTranslations("Error");
 
   const router = useRouter();
@@ -72,32 +58,15 @@ const SettingPage: NextPageWithLayout = () => {
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  // const [thumbnail, setThumbnail] = useState<File | null>(null);
-
-  // const [user, setUser] = useState<IUserInfor>(infor);
-  const [passwordData, setPasswordData] = useState<IPassword>(initPassword);
   const [avartar, setAvartar] = useState<File | null>(null);
 
   const [loading, setLoading] = useState<{ getData: boolean; submit: boolean }>(
     { getData: false, submit: false },
   );
 
-  const [showPopup, setShowPopup] = useState<boolean>(false);
-
   const onLoading = (key: keyof typeof loading, value: boolean) => {
     setLoading({ ...loading, [key]: value });
   };
-
-  const onShowPopup = () => {
-    setShowPopup(!showPopup);
-  };
-
-  const changePassword = useCallback(
-    (name: string, value: string) => {
-      setPasswordData({ ...passwordData, [name]: value });
-    },
-    [passwordData],
-  );
 
   const onChangeAvartar = (source: File | null) => {
     setAvartar(source);
@@ -118,84 +87,6 @@ const SettingPage: NextPageWithLayout = () => {
     },
     [avartar],
   );
-
-  const handleChangePassword = async () => {
-    const { password, newPassword, reNewPassword } = passwordData;
-    if (!password || !newPassword || !reNewPassword) {
-      // toast.error("Vui lòng nhập đầy đủ  thông tin", {
-      //   position: toast.POSITION.TOP_RIGHT,
-      // });
-
-      return;
-    }
-
-    if (newPassword !== reNewPassword) {
-      setPasswordData({ ...passwordData, reNewPassword: null });
-      // toast.error("Vui lòng nhập lại mật khâủ mới", {
-      //   position: toast.POSITION.TOP_RIGHT,
-      // });
-
-      return;
-    }
-
-    try {
-      const sendData = {
-        email: "",
-        password,
-        newPassword,
-      };
-
-      const { status } = await httpConfig.post(
-        "/admin/changePassword",
-        sendData,
-      );
-
-      if (status === 201) {
-        onShowPopup();
-        // toast.success("Thay đổi thành công", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
-        setPasswordData(initPassword);
-      }
-    } catch (err) {
-      const error = err as AxiosError;
-
-      if (!error.response) {
-        // toast.error("Server is busy, please try again", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
-
-        return;
-      }
-      const { status } = error.response;
-
-      if (status === 500) {
-        // toast.error("Server is busy, please try again", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
-
-        return;
-      }
-
-      if (status === 401) {
-        // toast.error("Mật khẩu không đúng", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
-        setPasswordData(initPassword);
-        return;
-      }
-
-      if (status === 400) {
-        // toast.error("Thay đổi không thành công", {
-        //   position: toast.POSITION.TOP_RIGHT,
-        // });
-
-        return;
-      }
-
-      console.log(error);
-    }
-  };
 
   const handleOnSubmit = async (values: IUpdateAccount) => {
     onLoading("submit", true);
@@ -236,19 +127,6 @@ const SettingPage: NextPageWithLayout = () => {
         },
       ]}>
       <div className="w-full flex flex-col gap-5">
-        {/* <InputText
-          title={t("form.email")}
-          value={user.email}
-          name="email"
-          placeholder="Your Email..."
-          onChange={(e) => {
-            const name: string = e.target.name;
-            const value: string = e.target.value;
-
-            // changeValue(name, value);
-          }}
-        /> */}
-
         {/* email */}
         <div className={clsx([errors.email && "pb-2"])}>
           <Controller
@@ -291,19 +169,6 @@ const SettingPage: NextPageWithLayout = () => {
           )}
         </div>
 
-        {/* <InputText
-          title="Name"
-          value={user.name}
-          name="name"
-          placeholder="Your Name..."
-          onChange={(e) => {
-            const name: string = e.target.name;
-            const value: string = e.target.value;
-
-            // changeValue(name, value);
-          }}
-        /> */}
-
         {/* avartar */}
         {infor._id && (
           <Controller
@@ -336,90 +201,32 @@ const SettingPage: NextPageWithLayout = () => {
 
         <div className="my-5">
           <span className="block text-base text-[#1E1E1E] font-medium">
-            Password
+            {t("form.password")}
           </span>
 
-          <button
+          {/* <button
             onClick={onShowPopup}
             className="bg-primary text-white text-base px-5 py-2 mt-2 rounded-lg">
-            Thay đổi mật khẩu
-          </button>
-        </div>
+            {t("form.changePassword")}
+          </button> */}
 
-        {/* {loading && <Loading />} */}
+          {/* Change Password */}
+          <ChangePasswordModal />
+        </div>
 
         <FormFooter
           okProps={{
             loading: loading.submit,
             disabled: loading.submit,
+            className: "bg-primary text-white",
           }}
           cancelElement={null}
+          okText={tCommon("btn.update")}
           onOk={handleSubmit(handleOnSubmit)}
         />
 
-        {/* {showPopup && (
-          <Popup
-            title="Thay đổi mật khẩu"
-            show={showPopup}
-            onClose={onShowPopup}>
-            <div>
-              <div className="mb-10">
-                <Input.Password
-                  title="Mật khẩu cũ"
-                  width="w-full my-5"
-                  value={passwordData.password || ""}
-                  name="password"
-                  onChange={(e) => {
-                    const name: string = e.target.name;
-                    const value: string = e.target.value;
-
-                    // changeValue(name, value);
-                  }}
-                />
-
-                <Input.Password
-                  title="Mật khẩu mới"
-                  width="w-full my-5"
-                  value={passwordData.newPassword || ""}
-                  name="newPassword"
-                  onChange={(e) => {
-                    const name: string = e.target.name;
-                    const value: string = e.target.value;
-
-                    // changeValue(name, value);
-                  }}
-                />
-
-                <Input.Password
-                  title="Nhập lại mật khẩu mới"
-                  width="w-full my-5"
-                  value={passwordData.reNewPassword || ""}
-                  name="reNewPassword"
-                  onPressEnter={handleChangePassword}
-                  onChange={(e) => {
-                    const name: string = e.target.name;
-                    const value: string = e.target.value;
-
-                    // changeValue(name, value);
-                  }}
-                />
-              </div>
-
-              <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
-                <button
-                  onClick={onShowPopup}
-                  className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 rounded-md transition-cus">
-                  Cancle
-                </button>
-                <button
-                  onClick={handleChangePassword}
-                  className="lg:w-fit w-full text-lg text-white font-medium bg-primary px-5 py-1 rounded-md">
-                  Cập nhật
-                </button>
-              </div>
-            </div>
-          </Popup>
-        )} */}
+        {/* Context Antd */}
+        {contextHolder}
       </div>
     </FormLayout>
   );

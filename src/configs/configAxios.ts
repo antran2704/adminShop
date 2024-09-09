@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 import { getRefreshToken } from "~/api-client";
@@ -12,40 +12,6 @@ import { message } from "antd";
 const httpConfig = axios.create({
   timeout: 30000,
 });
-
-// const axiosGet = async (
-//   path: string,
-//   config?: AxiosRequestConfig | undefined,
-// ) => {
-//   const payload = await httpConfig.get(path, { ...config });
-//   return payload.data;
-// };
-
-// const axiosPost = async <T>(
-//   path: string,
-//   data?: T,
-//   config?: AxiosRequestConfig | undefined,
-// ) => {
-//   const payload = await httpConfig.post(path, data, { ...config });
-//   return payload.data;
-// };
-
-// const axiosPatch = async <T>(
-//   path: string,
-//   data: T,
-//   config?: AxiosRequestConfig | undefined,
-// ) => {
-//   const payload = await httpConfig.patch(path, data, { ...config });
-//   return payload.data;
-// };
-
-// const axiosDelete = async (
-//   path: string,
-//   config?: AxiosRequestConfig | undefined,
-// ) => {
-//   const payload = await httpConfig.delete(path, { ...config });
-//   return payload.data;
-// };
 
 let isRefresh = false;
 const resfreshTokenUrl: string =

@@ -1,4 +1,3 @@
-import { uploadImageOnServer } from "~/helper/handleImage";
 import httpConfig from "~/configs/configAxios";
 import { parseQueryString } from "~/helper/url";
 import { ISearch } from "~/interface";
@@ -32,10 +31,9 @@ const updateBlog = async (blogId: string, data: ICreateBlog) => {
 };
 
 const uploadBlogImage = async (formData: FormData) => {
-  return await uploadImageOnServer(
-    BASE_URL + `/admin/blogs/uploadImage`,
-    formData,
-  ).then((res) => res.data);
+  return await httpConfig
+    .post(BASE_URL + `/admin/blogs/uploadImage`, formData)
+    .then((res) => res.data);
 };
 
 const activeBlog = async (blogId: string) => {

@@ -137,25 +137,25 @@ const CheckPasswordKeyPage: NextPageWithLayout = () => {
     setLoadingCheck(false);
   };
 
-  useEffect(() => {
-    if (!router.isReady) return;
+  // useEffect(() => {
+  //   if (!router.isReady) return;
 
-    const emailParams = query.get("email");
-    const tokenParams = query.get("t_k");
-    const keyParams = query.get("k_y");
+  //   const emailParams = query.get("email");
+  //   const tokenParams = query.get("t_k");
+  //   const keyParams = query.get("k_y");
 
-    if (!emailParams || !tokenParams || !keyParams) {
-      setLoadingCheck(false);
-      setCheckError(true);
-      return;
-    }
+  //   if (!emailParams || !tokenParams || !keyParams) {
+  //     setLoadingCheck(false);
+  //     setCheckError(true);
+  //     return;
+  //   }
 
-    handleCheckKey(emailParams, tokenParams, keyParams);
-  }, [router.isReady]);
+  //   handleCheckKey(emailParams, tokenParams, keyParams);
+  // }, [router.isReady]);
 
-  if (loadingCheck) {
-    return loadingCheck && <Loading />;
-  }
+  // if (loadingCheck) {
+  //   return loadingCheck && <Loading />;
+  // }
 
   return (
     <div className="lg:min-w-[1000px] md:w-4/6 sm:w-5/6 w-full flex items-start bg-white dark:bg-[#1f2937] rounded-lg transition-all ease-linear duration-100 shadow-xl overflow-hidden">
@@ -251,6 +251,15 @@ const CheckPasswordKeyPage: NextPageWithLayout = () => {
 };
 
 export default CheckPasswordKeyPage;
+
+export async function getStaticProps(context: { locale: string }) {
+  return {
+    props: {
+      messages: (await import(`../../../../messages/${context.locale}.json`))
+        .default,
+    },
+  };
+}
 
 CheckPasswordKeyPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
